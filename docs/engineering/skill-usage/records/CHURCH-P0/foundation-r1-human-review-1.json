@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "event_id": "CHURCH-P0/foundation-design/human-review/1",
+  "event_type": "evaluation",
+  "task_id": "CHURCH-P0",
+  "scope_id": "foundation-design",
+  "recorded_at": "2026-11-10T22:44:47.470082+07:00",
+  "reported_by": "delivery_owner",
+  "source_kind": "human_feedback",
+  "subject_event_id": "CHURCH-P0/foundation-design/planning/1",
+  "assessment_source": "human",
+  "review_attempt": 1,
+  "decision": "CHANGES_REQUESTED",
+  "findings": [
+    {
+      "category": "REQUIREMENT_CHANGE",
+      "description": "C19 clarifies owner is a provider employee and each church user account belongs to exactly one tenant. Only owner accounts may work across tenants; prior global-account/multiple-memberships design is superseded.",
+      "evidence": "docs/tasks/CHURCH-P0.md#16-c19--owner-nhân-viên-user-account-một-hội-thánh",
+      "skill_attribution": null
+    }
+  ],
+  "evidence_refs": [
+    "docs/tasks/CHURCH-P0.md",
+    "docs/engineering/P0-FOUNDATION-r1.md",
+    "docs/engineering/P0-FOUNDATION.md"
+  ]
+}

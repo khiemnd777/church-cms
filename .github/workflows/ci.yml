@@ -1,0 +1,25 @@
+name: P1 local checks
+on: [push, pull_request, workflow_dispatch]
+permissions:
+  contents: read
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.3.1
+      - run: bun install --frozen-lockfile --ignore-scripts
+      - run: bun run local:setup
+      - run: docker compose up -d --wait
+      - run: docker compose exec -T mongo mongosh --quiet --eval 'rs.initiate({_id:"church-local",members:[{_id:0,host:"localhost:27017"}]})'
+      - run: bun run db:init
+      - run: mkdir -p output
+      - run: bun run lint && bun run typecheck && bun run build && bun run build:ui && bun run ui:check && bun test --timeout 30000 tests && bun audit
+      - run: bun run test:browser:p1.4
+      - run: bun run qualify:p1.4
+      - run: bun run benchmark
+      - if: always()
+        run: docker compose down

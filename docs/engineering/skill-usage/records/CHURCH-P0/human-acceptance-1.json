@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "event_id": "CHURCH-P0/planning/human-acceptance/1",
+  "event_type": "evaluation",
+  "task_id": "CHURCH-P0",
+  "scope_id": "planning",
+  "recorded_at": "2026-11-10T22:23:50.928273+07:00",
+  "reported_by": "delivery_owner",
+  "source_kind": "human_feedback",
+  "subject_event_id": "CHURCH-P0/planning/planning/1",
+  "assessment_source": "human",
+  "review_attempt": 1,
+  "decision": "ACCEPTED",
+  "findings": [
+    {
+      "category": "REQUIREMENT_CHANGE",
+      "description": "C16 explicitly excludes 2FA from the current implementation plan; possible future work requires a new scope/approval. Supersedes the earlier mandatory D2 for the current scope.",
+      "evidence": "docs/tasks/CHURCH-P0.md#14-phê-duyệt-p0--c16",
+      "skill_attribution": null
+    },
+    {
+      "category": "REQUIREMENT_CHANGE",
+      "description": "C16 confirms account handover/support follows the agreed owner-operated flow and accepts other P0 parts as presented. Acceptance is of planning/design, not application implementation or unknown parameter values.",
+      "evidence": "docs/tasks/CHURCH-P0.md",
+      "skill_attribution": null
+    }
+  ],
+  "evidence_refs": [
+    "docs/tasks/CHURCH-P0.md",
+    "docs/project-context.md",
+    "docs/project-plan.md",
+    "docs/project-state.md",
+    "output/p0-approval-validation.json"
+  ],
+  "limitations": [
+    "No P1 implementation authorization or runtime/UAT/release acceptance.",
+    "No new skill usage event; planning-1 remains immutable with its historical outcome and contribution estimates.",
+    "Missing concrete inputs are retained for relevant package planning, not invented."
+  ]
+}

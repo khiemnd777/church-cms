@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "event_id": "CHURCH-P1/P1.4/human-review/1",
+  "event_type": "evaluation",
+  "task_id": "CHURCH-P1",
+  "scope_id": "P1.4",
+  "recorded_at": "2026-11-11T01:35:43.380091+00:00",
+  "reported_by": "delivery_owner",
+  "source_kind": "human_feedback",
+  "subject_event_id": "CHURCH-P1/P1.4/implementation/1",
+  "assessment_source": "human",
+  "review_attempt": 1,
+  "decision": "ACCEPTED",
+  "findings": [],
+  "milestone_closure": {
+    "milestone": "P1",
+    "status": "CLOSED",
+    "accepted_packages": [
+      "P1.1",
+      "P1.2",
+      "P1.3",
+      "P1.4"
+    ],
+    "next_milestone": "P2",
+    "next_milestone_status": "NOT_OPENED",
+    "authority": "Khiêm: Nghiệm thu P1.4 và Đóng P1. Chưa mở P2."
+  },
+  "record_maintenance": {
+    "skill_id": "documentation-and-adrs",
+    "source": "Repo",
+    "contribution_summary": "Ghi nhận nghiệm thu P1.4/đóng P1, cập nhật state/plan/task và liên kết bằng chứng, giữ nguyên lịch sử kỹ thuật.",
+    "contribution_percent_estimate": 100,
+    "estimate_source": "agent_self_report",
+    "source_identity": {
+      "kind": "repository",
+      "path": ".agents/skills/documentation-and-adrs/SKILL.md",
+      "version": null,
+      "sha256": "f3199cfec5d6fdfa6533f180b1e6cbee584cd6175d8eb25c0d186c833120609c",
+      "fingerprint_basis": "Skill đọc để cập nhật hồ sơ; evaluation không tính lại usage implementation P1."
+    }
+  },
+  "evidence_refs": [
+    "current_chat:Nghiệm thu P1.4 và Đóng P1. Chưa mở P2.",
+    "docs/tasks/CHURCH-P1.md",
+    "docs/tasks/CHURCH-P1.4.md",
+    "output/p1.4/verification.json",
+    "output/p1.4/ac-matrix.json"
+  ],
+  "limits": [
+    "Nghiệm thu trong phạm vi đã bàn giao P1 local/synthetic, không suy là production-ready/released.",
+    "P2 không mở: không planning/implementation/migration hoặc thao tác mới cho P2.",
+    "Không Git publication/deploy/dữ liệu thật; không thay đổi API/services hoặc chạy lại tests cho bước ghi nhận này.",
+    "Giữ nguyên implementation journal/technical receipts r1 dạng snapshot; evaluation này không là implementation usage mới.",
+    "Các NOT_RUN của P1.4 giữ nguyên: remote CI/Linux runner/physical devices/Safari/OS clipboard/production failover/real-data restore/RPO-RTO."
+  ]
+}

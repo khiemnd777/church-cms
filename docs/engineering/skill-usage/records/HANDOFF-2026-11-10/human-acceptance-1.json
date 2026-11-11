@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "event_id": "HANDOFF-2026-11-10/visual-handoff/human-acceptance/1",
+  "event_type": "evaluation",
+  "task_id": "HANDOFF-2026-11-10",
+  "scope_id": "visual-handoff",
+  "recorded_at": "2026-11-10T20:38:33.247899+07:00",
+  "reported_by": "delivery_owner",
+  "source_kind": "human_feedback",
+  "subject_event_id": "HANDOFF-2026-11-10/visual-handoff/implementation/1",
+  "assessment_source": "human",
+  "review_attempt": 1,
+  "decision": "ACCEPTED",
+  "findings": [],
+  "evidence_refs": [
+    "Current chat: Khiêm explicitly approved the delivered handoff convention and requested implementation.",
+    "docs/handoff-templates.md",
+    "docs/project-state.md"
+  ],
+  "limitations": [
+    "Acceptance covers the local Church CMS handoff rules and templates. It does not close P0, authorize application implementation or prove cross-session behavior."
+  ]
+}

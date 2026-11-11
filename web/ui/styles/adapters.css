@@ -1,0 +1,381 @@
+/* Source-derived HTML → semantic React adapters; additions documented in docs/ui-system.md. */
+:root {
+  --space-1: 6px;
+  --space-2: 10px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 18px;
+  --space-6: 22px;
+  --space-7: 24px;
+  --control-touch: 44px;
+}
+:root[data-theme="light"] {
+  color-scheme: light;
+}
+@media (max-width: 560px) {
+  .btn,
+  .link,
+  .opt,
+  .nav-a,
+  .ui-dialog .x,
+  .tab {
+    min-height: var(--control-touch);
+  }
+  .ui-icon-button,
+  .menu-btn {
+    min-width: var(--control-touch);
+  }
+  .input,
+  .select {
+    min-height: var(--control-touch);
+    font-size: 16px;
+  }
+}
+p,
+h1,
+h2,
+h3,
+dl {
+  margin: 0;
+}
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+a {
+  color: var(--primary);
+}
+.sp {
+  flex: 1;
+}
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+.ui-tip {
+  position: relative;
+  display: inline-flex;
+  max-width: 100%;
+}
+.ui-nav-copy {
+  min-width: 0;
+}
+.ui-nav-label,
+.ui-nav-description {
+  display: block;
+  overflow-wrap: anywhere;
+}
+.ui-nav-description {
+  font-size: 12px;
+  font-weight: 400;
+}
+.ui-tooltip-bubble {
+  position: fixed;
+  padding: var(--space-1) var(--space-2);
+  background: var(--fg);
+  color: var(--bg);
+  border-radius: 6px;
+  width: max-content;
+  max-width: calc(100vw - 32px);
+  white-space: normal;
+  font-size: 12px;
+  z-index: 60;
+  pointer-events: none;
+}
+.ui-icon-button {
+  justify-content: center;
+}
+.ui-heading-actions {
+  margin-left: auto;
+  display: flex;
+  gap: var(--space-2);
+}
+.card-h h2 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+}
+.ui-field {
+  min-width: 0;
+}
+.ui-field small {
+  font-weight: 400;
+}
+.ui-field .input,
+.ui-field .select {
+  width: 100%;
+}
+.ui-required,
+.ui-field-error {
+  color: var(--bad);
+}
+.input[aria-invalid="true"],
+.select[aria-invalid="true"] {
+  border-color: var(--bad);
+}
+.ui-danger {
+  background: var(--bad);
+  border-color: var(--bad);
+  color: var(--surface);
+}
+.ui-feedback {
+  display: block;
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--surface-2);
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+.ui-feedback-error {
+  background: var(--bad-soft);
+  color: var(--bad);
+  border-color: var(--bad);
+}
+.ui-feedback-warning {
+  background: var(--warn-soft);
+  color: var(--warn);
+  border-color: var(--warn);
+}
+.ui-feedback-success {
+  background: var(--good-soft);
+  color: var(--good);
+}
+.ui-feedback ul {
+  margin: var(--space-1) 0 0;
+  padding-left: var(--space-5);
+}
+.ui-loading {
+  color: var(--muted);
+  font-size: 13px;
+}
+.ui-kv {
+  display: block;
+  margin: 0;
+}
+.ui-kv-row {
+  display: grid;
+  grid-template-columns: 130px minmax(0, 1fr);
+  gap: 6px 10px;
+}
+.ui-kv-row + .ui-kv-row {
+  margin-top: 6px;
+}
+.ui-kv dt {
+  color: var(--muted);
+}
+.ui-kv dd {
+  margin: 0;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+.ui-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-7);
+  border-top: 1px solid var(--line);
+  margin-top: var(--space-4);
+  padding-top: var(--space-3);
+}
+.ui-stat .lbl {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--muted);
+}
+.ui-stat .big {
+  font-family: var(--f-display);
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1.2;
+  margin-top: var(--space-1);
+}
+.ui-stat-unavailable .big {
+  color: var(--muted);
+}
+.tbl-wrap {
+  min-width: 0;
+  max-width: 100%;
+  position: relative;
+}
+.tbl-wrap th {
+  position: relative;
+}
+.ui-pagination {
+  display: flex;
+  justify-content: center;
+}
+.ui-dialog {
+  border: 0;
+  color: var(--fg);
+  margin: 0;
+  max-width: none;
+}
+.ui-dialog:not([open]) {
+  display: none;
+}
+.ui-dialog::backdrop {
+  background: rgba(8, 20, 22, 0.45);
+}
+.ui-dialog-heading {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: 14px;
+}
+.ui-dialog-heading h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+}
+.ui-dialog .x {
+  display: flex;
+}
+.ui-dialog form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+.ui-dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-top: var(--space-1);
+}
+.drawer.ui-dialog {
+  left: auto;
+  transform: none;
+  max-height: none;
+  height: 100dvh;
+}
+.ui-auth-layout {
+  min-height: 100dvh;
+  display: grid;
+  place-items: center;
+  padding: var(--space-7) var(--space-4);
+}
+.ui-auth-card {
+  width: min(100%, 400px);
+  padding: var(--space-7);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+.ui-auth-card .brand {
+  padding: 0;
+}
+.ui-auth-card h1 {
+  font-size: 20px;
+  font-weight: 700;
+}
+.ui-auth-card form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+.ui-auth-card .form label {
+  font-size: 12px;
+}
+.ui-auth-card .ui-field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+}
+.ui-auth-card .input {
+  font-weight: 400;
+  color: var(--fg);
+}
+.wide {
+  width: 100%;
+  justify-content: center;
+}
+.identity {
+  overflow-wrap: anywhere;
+}
+.ui-page-heading {
+  min-width: 0;
+}
+.ui-page-heading h1:focus-visible,
+.ui-auth-card h1:focus-visible {
+  outline: none;
+}
+.top h1 {
+  overflow-wrap: anywhere;
+}
+.top .sub {
+  overflow-wrap: anywhere;
+}
+.side-foot p {
+  margin-top: var(--space-1);
+  overflow-wrap: anywhere;
+}
+.btn.menu-btn {
+  display: none;
+}
+.ui-nav-close {
+  display: none;
+}
+.link:disabled {
+  opacity: 0.55;
+}
+.ui-arrow {
+  font-size: 18px;
+  line-height: 1;
+}
+.empty p {
+  margin: 0;
+}
+.ui-preview-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-4);
+}
+@media (max-width: 900px) {
+  .side:not(.open) {
+    visibility: hidden;
+  }
+  .side.open {
+    visibility: visible;
+  }
+  .btn.menu-btn {
+    display: inline-flex;
+  }
+  .ui-nav-close {
+    display: block;
+    z-index: 39;
+    border: 0;
+  }
+  .ui-page-heading .sub {
+    font-size: 11px;
+  }
+  .ui-preview-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+@media (max-width: 560px) {
+  .ui-kv-row {
+    grid-template-columns: 110px minmax(0, 1fr);
+  }
+  .ui-stats {
+    gap: var(--space-3) var(--space-6);
+  }
+  .ui-auth-card {
+    padding: var(--space-5);
+  }
+  .ui-dialog .x {
+    min-width: var(--control-touch);
+  }
+}
+.ui-text-danger {
+  color: var(--bad);
+}

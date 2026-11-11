@@ -1,0 +1,80 @@
+{
+  "schema_version": 1,
+  "event_id": "CHURCH-P1/plan-r1/planning/1",
+  "event_type": "phase_handoff",
+  "task_id": "CHURCH-P1",
+  "scope_id": "plan-r1",
+  "recorded_at": "2026-11-10T15:56:37.185818+00:00",
+  "reported_by": "delivery_owner",
+  "source_kind": "agent_self_report",
+  "phase": "planning",
+  "handoff_index": 1,
+  "classification": {
+    "delivery": "roadmap",
+    "complexity": "complex",
+    "ui": true
+  },
+  "authority": {
+    "approval": "Khiêm duyệt P1-plan-r1/hai mockup và mở P1.1 trong chat",
+    "scope": "P1.1 local synthetic; không publication/deploy"
+  },
+  "skills": [
+    {
+      "skill_id": "planning-and-task-breakdown",
+      "contribution_summary": "Chia gói, dependencies và acceptance theo r2",
+      "contribution_percent_estimate": 100,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/planning-and-task-breakdown/SKILL.md",
+        "version": null,
+        "sha256": "fb768e0a3d3a77f733eb613c078fb61dde0845a438c65cc095fc6448dc166d4c",
+        "fingerprint_basis": "bytes read this session"
+      }
+    }
+  ],
+  "outcome": {
+    "delivery_status": "COMPLETED",
+    "verification_level": "source_document_review",
+    "human_acceptance": "ACCEPTED",
+    "limitations": [
+      "Chưa runtime evidence; không backdate thời gian lưu planning"
+    ]
+  },
+  "measurements": {
+    "elapsed_seconds": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có bộ đếm đo được cho pha này"
+    },
+    "tool_calls": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có bộ đếm đo được cho pha này"
+    },
+    "input_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có bộ đếm đo được cho pha này"
+    },
+    "output_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có bộ đếm đo được cho pha này"
+    },
+    "cached_input_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có bộ đếm đo được cho pha này"
+    },
+    "reasoning_output_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có bộ đếm đo được cho pha này"
+    }
+  },
+  "evidence_refs": [
+    "docs/tasks/CHURCH-P1.md",
+    "docs/engineering/P0-FOUNDATION.md"
+  ]
+}

@@ -1,0 +1,23 @@
+name: church-cms-local
+services:
+  mongo:
+    image: mongo:8.0.16
+    command: [mongod, --replSet, church-local, --bind_ip_all]
+    ports: ["127.0.0.1:27119:27017"]
+    volumes: [mongo_data:/data/db]
+    healthcheck:
+      test: [CMD, mongosh, --quiet, --eval, "db.adminCommand('ping').ok"]
+      interval: 3s
+      timeout: 3s
+      retries: 30
+  redis:
+    image: redis:7.4.6-alpine
+    command: [redis-server, --save, "", --appendonly, "no", --maxmemory, 128mb, --maxmemory-policy, noeviction]
+    ports: ["127.0.0.1:6391:6379"]
+    healthcheck:
+      test: [CMD, redis-cli, ping]
+      interval: 3s
+      timeout: 3s
+      retries: 30
+volumes:
+  mongo_data:

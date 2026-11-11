@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "event_id": "CHURCH-P1/P1.2/human-review/1",
+  "event_type": "evaluation",
+  "task_id": "CHURCH-P1",
+  "scope_id": "P1.2",
+  "recorded_at": "2026-11-10T16:58:28.803854+00:00",
+  "reported_by": "delivery_owner",
+  "source_kind": "human_feedback",
+  "subject_event_id": "CHURCH-P1/P1.2/implementation/1",
+  "assessment_source": "human",
+  "review_attempt": 1,
+  "decision": "CHANGES_REQUESTED",
+  "findings": [
+    {
+      "category": "IMPLEMENTATION_DEFECT",
+      "description": "Khiêm từ chối nghiệm thu P1.2 vì giao diện UI/UX chưa đạt. Audit của agent phân biệt interaction/API PASS với visual fidelity và UX quality chưa đạt; không quy các chi tiết audit thành phát biểu của Khiêm.",
+      "evidence_refs": [
+        "docs/tasks/CHURCH-P1.md",
+        "output/p1.2-o02-desktop.png",
+        "output/p1.2-o02-mobile-dark.png"
+      ],
+      "skill_attribution": null
+    }
+  ],
+  "evidence_refs": [
+    "docs/tasks/CHURCH-P1.md"
+  ]
+}

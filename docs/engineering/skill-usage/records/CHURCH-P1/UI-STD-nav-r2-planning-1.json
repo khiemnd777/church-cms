@@ -1,0 +1,99 @@
+{
+  "schema_version": 1,
+  "event_id": "CHURCH-P1/P1.2/UI-STD-r1/navigation-label/planning/1",
+  "event_type": "phase_handoff",
+  "task_id": "CHURCH-P1",
+  "scope_id": "P1.2/UI-STD-r1/navigation-label",
+  "recorded_at": "2026-11-10T23:19:38.970920+00:00",
+  "reported_by": "delivery_owner",
+  "source_kind": "agent_self_report",
+  "phase": "planning",
+  "handoff_index": 1,
+  "classification": {
+    "delivery": "roadmap",
+    "complexity": "bounded_ui_repair",
+    "ui": true
+  },
+  "authority": {
+    "approval": "Khiêm trả lời Approved cho N01–N03: nhãn AppShell, cập nhật chuẩn, kiểm chứng visible text; một gói trong P1.2.",
+    "scope": "Không P1.3/backend/schema/Git publication/deploy/dữ liệu thật."
+  },
+  "skills": [
+    {
+      "skill_id": "debugging-and-error-recovery",
+      "contribution_summary": "Đối chiếu ảnh, AppShell/caller/HTML và rule wordless; xác định label không được render và coverage thiếu visible text.",
+      "contribution_percent_estimate": 70,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/debugging-and-error-recovery/SKILL.md",
+        "version": null,
+        "sha256": "9f42e9d582ae78e42e1b4e65ef2c4848f4debed2f2a9092037387d572ea5d358",
+        "fingerprint_basis": "Skill đã đọc trong lượt phân tích/kế hoạch trước; fingerprint ghi sau approval, file không sửa."
+      }
+    },
+    {
+      "skill_id": "planning-and-task-breakdown",
+      "contribution_summary": "Khoanh N01–N03 tại bộ chung, ASCII preview, tiêu chí nghiệm thu và điểm dừng P1.2 đã được Khiêm duyệt.",
+      "contribution_percent_estimate": 30,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/planning-and-task-breakdown/SKILL.md",
+        "version": null,
+        "sha256": "fb768e0a3d3a77f733eb613c078fb61dde0845a438c65cc095fc6448dc166d4c",
+        "fingerprint_basis": "Skill đã đọc trong lượt phân tích/kế hoạch trước; fingerprint ghi sau approval, file không sửa."
+      }
+    }
+  ],
+  "outcome": {
+    "delivery_status": "COMPLETED",
+    "verification_level": "source_and_screenshot_diagnosis_approved_chat_plan",
+    "human_acceptance": "ACCEPTED",
+    "limitations": [
+      "ACCEPTED ở đây là kế hoạch sửa, không nghiệm thu implementation/P1.2.",
+      "Planning read-only đã trình trong chat; record chỉ lưu sau approval, không backdate."
+    ]
+  },
+  "measurements": {
+    "elapsed_seconds": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có bộ đếm đo được theo scope/phase"
+    },
+    "tool_calls": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có bộ đếm đo được theo scope/phase"
+    },
+    "input_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có bộ đếm đo được theo scope/phase"
+    },
+    "output_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có bộ đếm đo được theo scope/phase"
+    },
+    "cached_input_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có bộ đếm đo được theo scope/phase"
+    },
+    "reasoning_output_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có bộ đếm đo được theo scope/phase"
+    },
+    "client": null,
+    "model": null,
+    "effort": null,
+    "identity_missing_reason": "Không có measured metadata theo scope"
+  },
+  "evidence_refs": [
+    "docs/tasks/UI-STD-r1.md",
+    "docs/engineering/skill-usage/records/CHURCH-P1/UI-STD-r1-human-review-1.json",
+    "current_chat:Approved_N01_N03"
+  ]
+}

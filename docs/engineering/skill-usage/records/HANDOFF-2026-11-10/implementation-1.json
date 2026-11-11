@@ -1,0 +1,116 @@
+{
+  "schema_version": 1,
+  "event_id": "HANDOFF-2026-11-10/visual-handoff/implementation/1",
+  "event_type": "phase_handoff",
+  "task_id": "HANDOFF-2026-11-10",
+  "scope_id": "visual-handoff",
+  "recorded_at": "2026-11-10T20:35:36.288300+07:00",
+  "reported_by": "delivery_owner",
+  "source_kind": "agent_self_report",
+  "phase": "implementation",
+  "handoff_index": 1,
+  "classification": {
+    "size": "small",
+    "complexity": "low",
+    "ui": false
+  },
+  "authority": {
+    "approval_source": "Current chat: Khiêm reviewed the two proposed handoff templates, distinguished short tasks from roadmap work, then explicitly requested applying the actual-result-image/technical-diagram proposal.",
+    "authorized_scope": "Local Church CMS handoff documentation and operating rules, supporting project context/plan/state, manifest and journal. No original-kit edits, application implementation, Git publication, real data or deployment."
+  },
+  "skills": [
+    {
+      "skill_id": "documentation-and-adrs",
+      "contribution_summary": "Lưu hai mẫu có bằng chứng trực quan, đồng bộ core/workflow/context/plan/state và kiểm tra tài liệu.",
+      "contribution_percent_estimate": 70,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/documentation-and-adrs/SKILL.md",
+        "version": null,
+        "sha256": "f3199cfec5d6fdfa6533f180b1e6cbee584cd6175d8eb25c0d186c833120609c",
+        "fingerprint_basis": "Unchanged bytes read and applied during this task; fingerprint checked at handoff, not proof of native invocation."
+      }
+    },
+    {
+      "skill_id": "planning-and-task-breakdown",
+      "contribution_summary": "Phân biệt task ngắn và roadmap dài; xác định gói có ý nghĩa, kế hoạch trước và điểm dừng nghiệm thu.",
+      "contribution_percent_estimate": 30,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/planning-and-task-breakdown/SKILL.md",
+        "version": null,
+        "sha256": "fb768e0a3d3a77f733eb613c078fb61dde0845a438c65cc095fc6448dc166d4c",
+        "fingerprint_basis": "Unchanged bytes read and applied during this task; fingerprint checked at handoff, not proof of native invocation."
+      }
+    }
+  ],
+  "outcome": {
+    "delivery_status": "COMPLETED",
+    "verification_level": "Local document, link, inventory, mirror and consistency checks PASS; delivery-owner source review only.",
+    "human_acceptance": "PENDING_REVIEW",
+    "limitations": [
+      "P0 remains IN_PROGRESS; roadmap P0–P8 is directional, detailed implementation packages not approved.",
+      "No application/runtime/UAT evidence is produced by these templates.",
+      "Cross-session agent adherence NOT_RUN; no independent reviewer."
+    ]
+  },
+  "measurements": {
+    "elapsed_seconds": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có số đo/metadata đáng tin cậy cho toàn pha; không suy ra từ tỷ lệ đóng góp."
+    },
+    "tool_calls": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có số đo/metadata đáng tin cậy cho toàn pha; không suy ra từ tỷ lệ đóng góp."
+    },
+    "input_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có số đo/metadata đáng tin cậy cho toàn pha; không suy ra từ tỷ lệ đóng góp."
+    },
+    "output_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có số đo/metadata đáng tin cậy cho toàn pha; không suy ra từ tỷ lệ đóng góp."
+    },
+    "cached_input_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có số đo/metadata đáng tin cậy cho toàn pha; không suy ra từ tỷ lệ đóng góp."
+    },
+    "reasoning_output_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có số đo/metadata đáng tin cậy cho toàn pha; không suy ra từ tỷ lệ đóng góp."
+    },
+    "client": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có số đo/metadata đáng tin cậy cho toàn pha; không suy ra từ tỷ lệ đóng góp."
+    },
+    "model": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có số đo/metadata đáng tin cậy cho toàn pha; không suy ra từ tỷ lệ đóng góp."
+    },
+    "effort": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có số đo/metadata đáng tin cậy cho toàn pha; không suy ra từ tỷ lệ đóng góp."
+    }
+  },
+  "evidence_refs": [
+    "AGENTS.md",
+    "docs/team-workflow.md",
+    "docs/handoff-templates.md",
+    "docs/project-context.md",
+    "docs/project-plan.md",
+    "docs/project-state.md",
+    "docs/skills-manifest.json",
+    "output/handoff-documentation-validation.json"
+  ]
+}

@@ -1,0 +1,149 @@
+{
+  "schema_version": 1,
+  "event_id": "CHURCH-P0/foundation-design/planning/1",
+  "event_type": "phase_handoff",
+  "task_id": "CHURCH-P0",
+  "scope_id": "foundation-design",
+  "recorded_at": "2026-11-10T22:32:24.568755+07:00",
+  "reported_by": "delivery_owner",
+  "source_kind": "agent_self_report",
+  "phase": "planning",
+  "handoff_index": 1,
+  "classification": {
+    "size": "large",
+    "complexity": "high",
+    "ui": false,
+    "delivery_type": "roadmap",
+    "parent_roadmap": "Church CMS P0–P8 / P0",
+    "note": "Technical foundation contracts for previously approved UI callers; no new UI mockup or application implementation."
+  },
+  "authority": {
+    "approval_source": "C18 in current chat: Khiêm requested completion and saving of P0 foundation data model, API and acceptance criteria, explicitly no application implementation.",
+    "authorized_scope": "Foundation design documentation, existing P0 dossier and three project documents, scoped skill journal and local document validation. No application/database/schema deployment, migrations, runtime tests, external messages, dependency install or publication."
+  },
+  "skills": [
+    {
+      "skill_id": "api-and-interface-design",
+      "contribution_summary": "Đặc tả 23 endpoint, DTO, validation, lỗi, version/ETag, pagination và retry cho callers A/O đã duyệt.",
+      "contribution_percent_estimate": 35,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/api-and-interface-design/SKILL.md",
+        "version": null,
+        "sha256": "2550ac99404f1d52566cdd95fd809e0984eb29f1174132a864fb7beb9f688f79",
+        "fingerprint_basis": "Current skill bytes read and applied in the authorized foundation-design handoff; not retrospective proof or native-discovery evidence."
+      }
+    },
+    {
+      "skill_id": "database-workflow",
+      "contribution_summary": "Thiết kế MongoDB account/church/membership/session, indexes, invariants, transaction, concurrency và truy vấn theo tenant khi chưa có database hiện hữu.",
+      "contribution_percent_estimate": 25,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "host_skill",
+        "path": "personal/database-workflow/SKILL.md",
+        "version": null,
+        "sha256": "e5aef3bee52a14834f899219f5cb30f0c8814d7da13e95539a3de2295a54eba9",
+        "fingerprint_basis": "Current skill bytes read and applied in the authorized foundation-design handoff; not retrospective proof or native-discovery evidence."
+      }
+    },
+    {
+      "skill_id": "security-and-hardening",
+      "contribution_summary": "Thiết kế quyền owner/tenant, credential/session/CSRF, revocation, secret replay và các tiêu chí từ chối/thu hồi quyền.",
+      "contribution_percent_estimate": 25,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/security-and-hardening/SKILL.md",
+        "version": null,
+        "sha256": "4549688254258d5d6836a0f2d8cf606460a9baf426e9c644d3244a9973778ad3",
+        "fingerprint_basis": "Current skill bytes read and applied in the authorized foundation-design handoff; not retrospective proof or native-discovery evidence."
+      }
+    },
+    {
+      "skill_id": "documentation-and-adrs",
+      "contribution_summary": "Lưu thiết kế nền tảng r1, liên kết hồ sơ P0, sửa giới hạn acceptance và đồng bộ ba file/journal/bằng chứng tài liệu.",
+      "contribution_percent_estimate": 15,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/documentation-and-adrs/SKILL.md",
+        "version": null,
+        "sha256": "f3199cfec5d6fdfa6533f180b1e6cbee584cd6175d8eb25c0d186c833120609c",
+        "fingerprint_basis": "Current skill bytes read and applied in the authorized foundation-design handoff; not retrospective proof or native-discovery evidence."
+      }
+    }
+  ],
+  "outcome": {
+    "delivery_status": "COMPLETED",
+    "verification_level": "Design source/document completeness, link/journal/traceability checks and agent self-review only. No independent reviewer or runtime verification.",
+    "human_acceptance": "PENDING_REVIEW",
+    "limitations": [
+      "New technical FD01–FD07/contracts/parameters r1 are proposals awaiting human review; C16 approval covers earlier presented design only.",
+      "P0 overall remains IN_PROGRESS; P1 NOT_STARTED.",
+      "No application source or database exists to validate contracts at runtime; all AC01–AC26 runtime criteria NOT_RUN.",
+      "Concrete workload, hosting, support contact and later-module data inputs remain unspecified; no values fabricated."
+    ]
+  },
+  "measurements": {
+    "elapsed_seconds": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có bộ đếm đo được cho phạm vi gói thiết kế nền tảng; không ước lượng từ nội dung hoặc tỷ lệ đóng góp."
+    },
+    "tool_calls": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có bộ đếm đo được cho phạm vi gói thiết kế nền tảng; không ước lượng từ nội dung hoặc tỷ lệ đóng góp."
+    },
+    "input_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có bộ đếm đo được cho phạm vi gói thiết kế nền tảng; không ước lượng từ nội dung hoặc tỷ lệ đóng góp."
+    },
+    "output_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có bộ đếm đo được cho phạm vi gói thiết kế nền tảng; không ước lượng từ nội dung hoặc tỷ lệ đóng góp."
+    },
+    "cached_input_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có bộ đếm đo được cho phạm vi gói thiết kế nền tảng; không ước lượng từ nội dung hoặc tỷ lệ đóng góp."
+    },
+    "reasoning_output_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có bộ đếm đo được cho phạm vi gói thiết kế nền tảng; không ước lượng từ nội dung hoặc tỷ lệ đóng góp."
+    },
+    "client": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có bộ đếm đo được cho phạm vi gói thiết kế nền tảng; không ước lượng từ nội dung hoặc tỷ lệ đóng góp."
+    },
+    "model": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có bộ đếm đo được cho phạm vi gói thiết kế nền tảng; không ước lượng từ nội dung hoặc tỷ lệ đóng góp."
+    },
+    "effort": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có bộ đếm đo được cho phạm vi gói thiết kế nền tảng; không ước lượng từ nội dung hoặc tỷ lệ đóng góp."
+    }
+  },
+  "evidence_refs": [
+    "docs/engineering/P0-FOUNDATION.md",
+    "docs/tasks/CHURCH-P0.md",
+    "docs/project-context.md",
+    "docs/project-plan.md",
+    "docs/project-state.md",
+    "output/p0-foundation-validation.json"
+  ],
+  "related_event_ids": [
+    "CHURCH-P0/planning/planning/1",
+    "CHURCH-P0/planning/human-acceptance/1"
+  ],
+  "recording_note": "New bounded foundation-design handoff requested at C18; no replay or duplicate usage of the earlier consolidation or human acceptance events."
+}

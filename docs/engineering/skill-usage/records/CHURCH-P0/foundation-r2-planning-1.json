@@ -1,0 +1,150 @@
+{
+  "schema_version": 1,
+  "event_id": "CHURCH-P0/foundation-design/planning/2",
+  "event_type": "phase_handoff",
+  "task_id": "CHURCH-P0",
+  "scope_id": "foundation-design",
+  "recorded_at": "2026-11-10T22:44:47.470082+07:00",
+  "reported_by": "delivery_owner",
+  "source_kind": "agent_self_report",
+  "phase": "planning",
+  "handoff_index": 2,
+  "classification": {
+    "size": "large",
+    "complexity": "high",
+    "ui": false,
+    "delivery_type": "roadmap",
+    "parent_roadmap": "Church CMS P0–P8 / P0",
+    "note": "Technical foundation contracts for previously approved UI callers; no new UI mockup or application implementation."
+  },
+  "authority": {
+    "approval_source": "C19 directly corrects the identity/tenant model after reviewing r1; prior C18/current task authorizes updates to saved design documents only.",
+    "authorized_scope": "Revise P0 foundation design and affected saved records to owner-employee accounts and church-user accounts with one immutable tenant each. Preserve history and update journal/validation. No application, migrations, real data, external messages, installs or deployment."
+  },
+  "skills": [
+    {
+      "skill_id": "api-and-interface-design",
+      "contribution_summary": "Sửa contracts r2: user tenant cố định, owner realm/routes riêng, retired F08/F20, cấp/reset account đúng church và28 endpoint active.",
+      "contribution_percent_estimate": 35,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/api-and-interface-design/SKILL.md",
+        "version": null,
+        "sha256": "2550ac99404f1d52566cdd95fd809e0984eb29f1174132a864fb7beb9f688f79",
+        "fingerprint_basis": "Skill bytes already read and applied in this continuing P0 foundation scope; no intervening skill edits. Estimate pertains to this C19 revision handoff only."
+      }
+    },
+    {
+      "skill_id": "database-workflow",
+      "contribution_summary": "Thay global account/membership bằng accounts có churchId bất biến và owners riêng; unique churchId/email, credential/session principal typed và cách ly dữ liệu.",
+      "contribution_percent_estimate": 25,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "host_skill",
+        "path": "personal/database-workflow/SKILL.md",
+        "version": null,
+        "sha256": "e5aef3bee52a14834f899219f5cb30f0c8814d7da13e95539a3de2295a54eba9",
+        "fingerprint_basis": "Skill bytes already read and applied in this continuing P0 foundation scope; no intervening skill edits. Estimate pertains to this C19 revision handoff only."
+      }
+    },
+    {
+      "skill_id": "security-and-hardening",
+      "contribution_summary": "Rà ngoại lệ owner across tenant, cookie/route realm tách biệt, user không fallback quyền owner hoặc đổi tenant, reset/rate-limit scoped.",
+      "contribution_percent_estimate": 25,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/security-and-hardening/SKILL.md",
+        "version": null,
+        "sha256": "4549688254258d5d6836a0f2d8cf606460a9baf426e9c644d3244a9973778ad3",
+        "fingerprint_basis": "Skill bytes already read and applied in this continuing P0 foundation scope; no intervening skill edits. Estimate pertains to this C19 revision handoff only."
+      }
+    },
+    {
+      "skill_id": "documentation-and-adrs",
+      "contribution_summary": "Lưu r1 và hồ sơ trước C19, cập nhật hồ sơ hiện hành/ba file, linked evaluation và journal revision cùng scope.",
+      "contribution_percent_estimate": 15,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/documentation-and-adrs/SKILL.md",
+        "version": null,
+        "sha256": "f3199cfec5d6fdfa6533f180b1e6cbee584cd6175d8eb25c0d186c833120609c",
+        "fingerprint_basis": "Skill bytes already read and applied in this continuing P0 foundation scope; no intervening skill edits. Estimate pertains to this C19 revision handoff only."
+      }
+    }
+  ],
+  "outcome": {
+    "delivery_status": "COMPLETED",
+    "verification_level": "Document model/API/acceptance consistency and local validation/self-review only.",
+    "human_acceptance": "PENDING_REVIEW",
+    "limitations": [
+      "C19 product boundary is confirmed; new technical r2 wiring including tenant-specific login URLs/email uniqueness/cookie realms remains pending review.",
+      "No application/runtime/schema implementation or migration; no live database to verify isolation.",
+      "P0 IN_PROGRESS and P1 NOT_STARTED; historical r1 checks are not r2 runtime evidence."
+    ]
+  },
+  "measurements": {
+    "elapsed_seconds": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có bộ đếm đo được cho phạm vi gói thiết kế nền tảng; không ước lượng từ nội dung hoặc tỷ lệ đóng góp."
+    },
+    "tool_calls": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có bộ đếm đo được cho phạm vi gói thiết kế nền tảng; không ước lượng từ nội dung hoặc tỷ lệ đóng góp."
+    },
+    "input_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có bộ đếm đo được cho phạm vi gói thiết kế nền tảng; không ước lượng từ nội dung hoặc tỷ lệ đóng góp."
+    },
+    "output_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có bộ đếm đo được cho phạm vi gói thiết kế nền tảng; không ước lượng từ nội dung hoặc tỷ lệ đóng góp."
+    },
+    "cached_input_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có bộ đếm đo được cho phạm vi gói thiết kế nền tảng; không ước lượng từ nội dung hoặc tỷ lệ đóng góp."
+    },
+    "reasoning_output_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có bộ đếm đo được cho phạm vi gói thiết kế nền tảng; không ước lượng từ nội dung hoặc tỷ lệ đóng góp."
+    },
+    "client": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có bộ đếm đo được cho phạm vi gói thiết kế nền tảng; không ước lượng từ nội dung hoặc tỷ lệ đóng góp."
+    },
+    "model": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có bộ đếm đo được cho phạm vi gói thiết kế nền tảng; không ước lượng từ nội dung hoặc tỷ lệ đóng góp."
+    },
+    "effort": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có bộ đếm đo được cho phạm vi gói thiết kế nền tảng; không ước lượng từ nội dung hoặc tỷ lệ đóng góp."
+    }
+  },
+  "evidence_refs": [
+    "docs/engineering/P0-FOUNDATION.md",
+    "docs/engineering/P0-FOUNDATION-r1.md",
+    "docs/tasks/CHURCH-P0.md",
+    "docs/tasks/CHURCH-P0-pre-C19.md",
+    "docs/project-context.md",
+    "docs/project-plan.md",
+    "docs/project-state.md",
+    "output/p0-foundation-r2-validation.json"
+  ],
+  "related_event_ids": [
+    "CHURCH-P0/foundation-design/planning/1",
+    "CHURCH-P0/foundation-design/human-review/1"
+  ],
+  "recording_note": "Revision handoff 2 of the same CHURCH-P0/foundation-design scope after C19 feedback; earlier records are immutable and not duplicated as new tasks."
+}

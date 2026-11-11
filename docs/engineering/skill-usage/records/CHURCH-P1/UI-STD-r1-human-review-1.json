@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "event_id": "CHURCH-P1/P1.2/UI-STD-r1/human-review/1",
+  "event_type": "evaluation",
+  "task_id": "CHURCH-P1",
+  "scope_id": "P1.2/UI-STD-r1",
+  "recorded_at": "2026-11-10T22:59:16.515703+00:00",
+  "reported_by": "delivery_owner",
+  "source_kind": "human_feedback",
+  "subject_event_id": "CHURCH-P1/P1.2/UI-STD-r1/correction/1",
+  "assessment_source": "human",
+  "review_attempt": 1,
+  "decision": "CHANGES_REQUESTED",
+  "findings": [
+    {
+      "category": "IMPLEMENTATION_DEFECT",
+      "description": "Khiêm từ chối nghiệm thu vì mất text sidebar. AppShell chỉ render Icon trong nav button, label chỉ có ở aria-label/title/Tooltip; không có text hiển thị thường trực. Quy tắc wordless cũ ẩn nhãn menu cần được điều chỉnh theo phản hồi mới; sửa application chờ duyệt phạm vi.",
+      "evidence_refs": [
+        "current_chat:sidebar_missing_text_screenshot",
+        "web/ui/components/index.tsx",
+        "web/main.tsx",
+        "docs/tasks/CHURCH-P0.md#6-wordless-w01w18--đã-duyệt"
+      ],
+      "skill_attribution": null
+    }
+  ],
+  "evidence_refs": [
+    "current_chat:Chua_nghiem_thu_duoc_vi_bi_mat_text",
+    "docs/tasks/UI-STD-r1.md",
+    "docs/project-state.md"
+  ]
+}

@@ -1,0 +1,49 @@
+{
+  "name": "church-cms",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "packageManager": "bun@1.3.1",
+  "scripts": {
+    "local:setup": "bun scripts/local-setup.ts",
+    "db:init": "bun scripts/db-init.ts",
+    "owner": "bun scripts/owner.ts",
+    "dev": "bun run build && bun api/main.ts",
+    "start": "bun api/main.ts",
+    "build": "vite build",
+    "build:ui": "vite build --mode ui-reference",
+    "ui:check": "bun scripts/ui-standard-check.ts",
+    "typecheck": "tsc --noEmit",
+    "lint": "biome check api web scripts tests vite.config.ts",
+    "format": "biome check --write api web scripts tests vite.config.ts",
+    "test": "bun test tests",
+    "benchmark": "bun scripts/benchmark.ts",
+    "test:browser": "bash scripts/browser-check.sh",
+    "test:browser:p1.2": "bash scripts/browser-check.sh browser-churches.ts",
+    "test:ui": "bash scripts/browser-check.sh browser-ui-standard.ts",
+    "test:browser:p1.3": "bash scripts/browser-check.sh browser-accounts.ts",
+    "qualify:p1.4": "bun scripts/p1-qualification.ts",
+    "test:browser:p1.4": "CHURCH_EVIDENCE_DIR=output/p1.4 bash scripts/browser-check.sh browser-accounts.ts && CHURCH_EVIDENCE_DIR=output/p1.4 bash scripts/browser-check.sh browser-churches.ts && CHURCH_EVIDENCE_DIR=output/p1.4 bash scripts/browser-check.sh browser-check.ts && CHURCH_EVIDENCE_DIR=output/p1.4 bash scripts/browser-check.sh browser-ui-standard.ts"
+  },
+  "dependencies": {
+    "@fontsource/be-vietnam-pro": "5.2.7",
+    "@fontsource/lora": "5.2.8",
+    "mongodb": "6.21.0",
+    "react": "19.2.0",
+    "react-dom": "19.2.0",
+    "redis": "5.9.0",
+    "zod": "4.6.6"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.3.5",
+    "@playwright/test": "1.56.1",
+    "@tailwindcss/vite": "4.1.17",
+    "@types/bun": "1.3.1",
+    "@types/react": "19.2.2",
+    "@types/react-dom": "19.2.2",
+    "@vitejs/plugin-react": "5.1.1",
+    "tailwindcss": "4.1.17",
+    "typescript": "5.9.3",
+    "vite": "7.3.7"
+  }
+}

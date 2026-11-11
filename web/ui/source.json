@@ -1,0 +1,11 @@
+{
+  "revision": "UI-STD-r1",
+  "source": "documents/Quản lý Hội Thánh Tin Lành(1).html",
+  "sha256": "4bdc4ebdb3bcc7ccb98e675162ef9f14568c46bf9b1ad2d38c9a979cda2dc8b6",
+  "approved_differences": [
+    "Wordless W01–W18 and owner mockups",
+    "Native dialog accessibility, source appearance preserved",
+    "Unavailable counters compact; unavailable actions secondary",
+    "Local font files; no demo controls or demo business logic"
+  ]
+}

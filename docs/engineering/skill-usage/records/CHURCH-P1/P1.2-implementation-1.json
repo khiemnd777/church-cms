@@ -1,0 +1,133 @@
+{
+  "schema_version": 1,
+  "event_id": "CHURCH-P1/P1.2/implementation/1",
+  "event_type": "phase_handoff",
+  "task_id": "CHURCH-P1",
+  "scope_id": "P1.2",
+  "recorded_at": "2026-11-10T16:51:50.947092+00:00",
+  "reported_by": "delivery_owner",
+  "source_kind": "agent_self_report",
+  "phase": "implementation",
+  "handoff_index": 1,
+  "classification": {
+    "delivery": "roadmap",
+    "complexity": "complex",
+    "ui": true
+  },
+  "authority": {
+    "approval": "Khiêm nghiệm thu P1.1 và cho mở P1.2/O01/O02 theo P1-plan-r1 trong chat",
+    "scope": "Local/synthetic F10–F14/F22 và O01/O02; không P1.3/publication/deploy/dữ liệu thật"
+  },
+  "skills": [
+    {
+      "skill_id": "incremental-implementation",
+      "contribution_summary": "Hoàn tất vertical slice O01/O02 qua API/data/operations trước tests; tích hợp vào app owner",
+      "contribution_percent_estimate": 35,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/incremental-implementation/SKILL.md",
+        "version": null,
+        "sha256": "4663b276ac0d2f38be6f14a23d792783a255efe714710726af21c0f52c873359",
+        "fingerprint_basis": "Bytes đã đọc trước áp dụng; file không bị sửa"
+      }
+    },
+    {
+      "skill_id": "api-and-interface-design",
+      "contribution_summary": "DTO/ETag/PATCH omit-null, ledger/F22, signed cursor và caller contracts",
+      "contribution_percent_estimate": 25,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/api-and-interface-design/SKILL.md",
+        "version": null,
+        "sha256": "2550ac99404f1d52566cdd95fd809e0984eb29f1174132a864fb7beb9f688f79",
+        "fingerprint_basis": "Bytes đã đọc trước áp dụng; file không bị sửa"
+      }
+    },
+    {
+      "skill_id": "security-and-hardening",
+      "contribution_summary": "OwnerGrant/fences, CSRF/realm, atomic audit/revoke, concurrency/fault/negative tests",
+      "contribution_percent_estimate": 25,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/security-and-hardening/SKILL.md",
+        "version": null,
+        "sha256": "4549688254258d5d6836a0f2d8cf606460a9baf426e9c644d3244a9973778ad3",
+        "fingerprint_basis": "Bytes đã đọc trước áp dụng; file không bị sửa"
+      }
+    },
+    {
+      "skill_id": "frontend-ui-engineering",
+      "contribution_summary": "O01/O02 theo mẫu, retry/conflict UI, responsive table/dialog, keyboard và rendered verification",
+      "contribution_percent_estimate": 15,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/frontend-ui-engineering/SKILL.md",
+        "version": null,
+        "sha256": "b5c47fed383892428172bf0b9c1ed1aeab50066ff9421a87a6c344f746386495",
+        "fingerprint_basis": "Bytes đã đọc trước áp dụng; file không bị sửa"
+      }
+    }
+  ],
+  "outcome": {
+    "delivery_status": "COMPLETED",
+    "verification_level": "real_mongo_redis_integration_and_firefox_https",
+    "human_acceptance": "PENDING_REVIEW",
+    "limitations": [
+      "Remote CI NOT_RUN; không Git repo/publication",
+      "Physical mobile/Safari/human UAT/production NOT_RUN",
+      "Faults tại driver/transport boundary sau real commits, không production failover proof",
+      "Explain dataset nhỏ, không SLA/capacity",
+      "Tự review, không reviewer độc lập",
+      "User auth suspended verification tiếp ở P1.3"
+    ]
+  },
+  "measurements": {
+    "elapsed_seconds": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có bộ đếm đo được theo scope/phase"
+    },
+    "tool_calls": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có bộ đếm đo được theo scope/phase"
+    },
+    "input_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có bộ đếm đo được theo scope/phase"
+    },
+    "output_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có bộ đếm đo được theo scope/phase"
+    },
+    "cached_input_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có bộ đếm đo được theo scope/phase"
+    },
+    "reasoning_output_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có bộ đếm đo được theo scope/phase"
+    },
+    "client": null,
+    "model": null,
+    "effort": null,
+    "identity_missing_reason": "Không có measured metadata client/model/effort theo scope"
+  },
+  "evidence_refs": [
+    "docs/tasks/CHURCH-P1.md",
+    "docs/engineering/P1.2-tenancy.md",
+    "output/p1.2-integration.log",
+    "output/p1.2-browser-results.json",
+    "output/p1.2-query-explain.json",
+    "output/p1.2-dependency-audit.json",
+    "output/p1.2-startup-readiness.json"
+  ]
+}

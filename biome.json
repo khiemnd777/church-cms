@@ -1,0 +1,1 @@
+{"$schema":"https://biomejs.dev/schemas/2.3.5/schema.json","files":{"includes":["**/*.ts","**/*.tsx","**/*.css"]},"formatter":{"indentStyle":"space","lineWidth":100},"linter":{"enabled":true,"rules":{"recommended":true,"correctness":{"useExhaustiveDependencies":"off"}}},"assist":{"actions":{"source":{"organizeImports":"on"}}}}

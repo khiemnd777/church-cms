@@ -1,0 +1,118 @@
+{
+  "schema_version": 1,
+  "event_id": "HANDOFF-2026-11-10/delivery-classification/implementation/1",
+  "event_type": "phase_handoff",
+  "task_id": "HANDOFF-2026-11-10",
+  "scope_id": "delivery-classification",
+  "recorded_at": "2026-11-10T20:46:24.890459+07:00",
+  "reported_by": "delivery_owner",
+  "source_kind": "agent_self_report",
+  "phase": "implementation",
+  "handoff_index": 1,
+  "classification": {
+    "size": "small",
+    "complexity": "low",
+    "ui": false,
+    "delivery_type": "one_handoff",
+    "rationale": "One documentation-rule change can be assessed together; not an implementation package under P0–P8.",
+    "parent_roadmap": null
+  },
+  "authority": {
+    "approval_source": "Current chat: Khiêm explicitly approved adding the proposed classification criteria and requiring delivery type and rationale at the start of planning.",
+    "authorized_scope": "Local Church CMS documentation/instructions and supporting manifest, state, journal and validation. No application code, original-kit changes, Git publication, production or deployment."
+  },
+  "skills": [
+    {
+      "skill_id": "documentation-and-adrs",
+      "contribution_summary": "Bổ sung tiêu chí vào mẫu, đồng bộ core/workflow/context/state, manifest và kiểm tra tài liệu.",
+      "contribution_percent_estimate": 60,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/documentation-and-adrs/SKILL.md",
+        "version": null,
+        "sha256": "f3199cfec5d6fdfa6533f180b1e6cbee584cd6175d8eb25c0d186c833120609c",
+        "fingerprint_basis": "Repository skill bytes read and applied in this authorized task; no skill edits."
+      }
+    },
+    {
+      "skill_id": "planning-and-task-breakdown",
+      "contribution_summary": "Diễn đạt thứ tự phân loại, căn cứ nghiệm thu, kế thừa roadmap và khai báo bắt buộc trong kế hoạch.",
+      "contribution_percent_estimate": 40,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/planning-and-task-breakdown/SKILL.md",
+        "version": null,
+        "sha256": "fb768e0a3d3a77f733eb613c078fb61dde0845a438c65cc095fc6448dc166d4c",
+        "fingerprint_basis": "Repository skill bytes read and applied in this authorized task; no skill edits."
+      }
+    }
+  ],
+  "outcome": {
+    "delivery_status": "COMPLETED",
+    "verification_level": "Source review, classification example review, links/anchor, manifest and consistency checks PASS.",
+    "human_acceptance": "PENDING_REVIEW",
+    "limitations": [
+      "Checks validate documentation only, not automatic classification behavior across sessions.",
+      "P0 remains IN_PROGRESS; no application implementation or release is authorized by this task.",
+      "Self-review by delivery owner; no independent reviewer."
+    ]
+  },
+  "measurements": {
+    "elapsed_seconds": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có số đo/metadata đáng tin cậy cho toàn pha; không suy ra từ tỷ lệ đóng góp."
+    },
+    "tool_calls": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có số đo/metadata đáng tin cậy cho toàn pha; không suy ra từ tỷ lệ đóng góp."
+    },
+    "input_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có số đo/metadata đáng tin cậy cho toàn pha; không suy ra từ tỷ lệ đóng góp."
+    },
+    "output_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có số đo/metadata đáng tin cậy cho toàn pha; không suy ra từ tỷ lệ đóng góp."
+    },
+    "cached_input_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có số đo/metadata đáng tin cậy cho toàn pha; không suy ra từ tỷ lệ đóng góp."
+    },
+    "reasoning_output_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có số đo/metadata đáng tin cậy cho toàn pha; không suy ra từ tỷ lệ đóng góp."
+    },
+    "client": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có số đo/metadata đáng tin cậy cho toàn pha; không suy ra từ tỷ lệ đóng góp."
+    },
+    "model": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có số đo/metadata đáng tin cậy cho toàn pha; không suy ra từ tỷ lệ đóng góp."
+    },
+    "effort": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có số đo/metadata đáng tin cậy cho toàn pha; không suy ra từ tỷ lệ đóng góp."
+    }
+  },
+  "evidence_refs": [
+    "AGENTS.md",
+    "docs/handoff-templates.md",
+    "docs/team-workflow.md",
+    "docs/project-context.md",
+    "docs/project-state.md",
+    "docs/skills-manifest.json",
+    "output/handoff-classification-validation.json"
+  ]
+}

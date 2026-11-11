@@ -1,0 +1,91 @@
+/* UI-STD-r1: extracted from approved HTML, SHA256 4bdc4ebdb3bcc7ccb98e675162ef9f14568c46bf9b1ad2d38c9a979cda2dc8b6. Do not hand-patch generated source styles. */
+:root {
+  --bg: #f2f5f4;
+  --surface: #ffffff;
+  --surface-2: #ebf0ef;
+  --line: #dae2e0;
+  --fg: #14222a;
+  --muted: #5a6a6f;
+  --faint: #8a989b;
+  --primary: #0e5a5f;
+  --primary-ink: #ffffff;
+  --primary-soft: #dcedec;
+  --gold: #a86c12;
+  --gold-soft: #f6ead2;
+  --friend: #6e4ba6;
+  --friend-soft: #ede6f7;
+  --good: #2c7a4b;
+  --good-soft: #dff0e5;
+  --warn: #a6530a;
+  --warn-soft: #fbead4;
+  --bad: #b0252f;
+  --bad-soft: #f8e0e2;
+  --hero: #0f2e33;
+  --hero-2: #163f45;
+  --hero-fg: #f1f6f5;
+  --hero-muted: #a6c1bf;
+  --hero-line: rgba(255, 255, 255, 0.14);
+  --shadow: 0 1px 2px rgba(20, 34, 42, 0.05), 0 6px 20px rgba(20, 34, 42, 0.05);
+  --f-ui: "Be Vietnam Pro", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --f-display: "Lora", Georgia, "Times New Roman", serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0d1416;
+    --surface: #142023;
+    --surface-2: #1a2a2e;
+    --line: #26393e;
+    --fg: #e4ecea;
+    --muted: #97a9ab;
+    --faint: #6e8285;
+    --primary: #5bb8b3;
+    --primary-ink: #06201f;
+    --primary-soft: #183a3b;
+    --gold: #e2aa4e;
+    --gold-soft: #382b15;
+    --friend: #bfa6ea;
+    --friend-soft: #2c2340;
+    --good: #6fc28d;
+    --good-soft: #173322;
+    --warn: #e9a45a;
+    --warn-soft: #3a2915;
+    --bad: #f27f87;
+    --bad-soft: #3d1c20;
+    --hero: #0a2125;
+    --hero-2: #11343a;
+    --hero-fg: #eef5f4;
+    --hero-muted: #93b3b1;
+    --hero-line: rgba(255, 255, 255, 0.12);
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0d1416;
+  --surface: #142023;
+  --surface-2: #1a2a2e;
+  --line: #26393e;
+  --fg: #e4ecea;
+  --muted: #97a9ab;
+  --faint: #6e8285;
+  --primary: #5bb8b3;
+  --primary-ink: #06201f;
+  --primary-soft: #183a3b;
+  --gold: #e2aa4e;
+  --gold-soft: #382b15;
+  --friend: #bfa6ea;
+  --friend-soft: #2c2340;
+  --good: #6fc28d;
+  --good-soft: #173322;
+  --warn: #e9a45a;
+  --warn-soft: #3a2915;
+  --bad: #f27f87;
+  --bad-soft: #3d1c20;
+  --hero: #0a2125;
+  --hero-2: #11343a;
+  --hero-fg: #eef5f4;
+  --hero-muted: #93b3b1;
+  --hero-line: rgba(255, 255, 255, 0.12);
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  color-scheme: dark;
+}

@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "event_id": "CHURCH-P0/foundation-design/human-acceptance/2",
+  "event_type": "evaluation",
+  "task_id": "CHURCH-P0",
+  "scope_id": "foundation-design",
+  "recorded_at": "2026-11-10T22:47:07.971728+07:00",
+  "reported_by": "delivery_owner",
+  "source_kind": "human_feedback",
+  "subject_event_id": "CHURCH-P0/foundation-design/planning/2",
+  "assessment_source": "human",
+  "review_attempt": 2,
+  "decision": "ACCEPTED",
+  "findings": [],
+  "evidence_refs": [
+    "docs/engineering/P0-FOUNDATION.md",
+    "docs/tasks/CHURCH-P0.md",
+    "docs/project-state.md"
+  ],
+  "acceptance_source": "C20 in current chat: Khiêm explicitly states “Duyệt r2.”",
+  "accepted_artifact": {
+    "path": "docs/engineering/P0-FOUNDATION.md",
+    "revision": "P0-FOUNDATION-r2",
+    "sha256": "7ae4295cc72aa4bb231fd82e1471510cac35943527278eb26d8395902ed74a6e"
+  },
+  "limitations": [
+    "Design acceptance only; no application implementation, runtime/UAT/release acceptance or authorization to open P1.",
+    "Historical handoff records remain unchanged; evaluation does not add another skill-use event."
+  ]
+}

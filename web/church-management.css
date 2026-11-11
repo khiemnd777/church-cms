@@ -1,0 +1,78 @@
+/* Feature layout only. Visual primitives belong to web/ui/styles. */
+.church-search {
+  flex: 1 1 220px;
+  min-width: 0;
+  position: relative;
+}
+.church-search-input {
+  width: 100%;
+}
+.church-back {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+.church-record {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+.church-record-status {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+  flex-wrap: wrap;
+}
+.church-record-columns {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-4) var(--space-7);
+}
+.church-status-action {
+  align-self: flex-start;
+}
+.church-future-actions {
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+  margin-top: var(--space-1);
+}
+.church-name {
+  text-align: left;
+}
+.church-table td {
+  overflow-wrap: anywhere;
+}
+@media (max-width: 900px) {
+  .church-record-columns {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+@media (max-width: 560px) {
+  .church-code {
+    display: none;
+  }
+  .church-table {
+    min-width: 560px;
+  }
+  .church-search {
+    flex-basis: 100%;
+  }
+}
+.account-search {
+  flex: 1 1 220px;
+  min-width: 0;
+  position: relative;
+}
+.account-search-input {
+  width: 100%;
+}
+.account-cell {
+  overflow-wrap: anywhere;
+}
+@media (max-width: 560px) {
+  .account-search {
+    flex-basis: 100%;
+  }
+}

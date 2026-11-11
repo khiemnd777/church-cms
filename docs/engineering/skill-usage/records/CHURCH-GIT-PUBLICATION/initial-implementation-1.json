@@ -1,0 +1,82 @@
+{
+  "schema_version": 1,
+  "event_id": "CHURCH-GIT-PUBLICATION/initial/implementation/1",
+  "event_type": "phase_handoff",
+  "task_id": "CHURCH-GIT-PUBLICATION",
+  "scope_id": "initial",
+  "recorded_at": "2026-11-11T02:00:18.971224+00:00",
+  "reported_by": "delivery_owner",
+  "source_kind": "agent_self_report",
+  "phase": "implementation",
+  "handoff_index": 1,
+  "classification": {
+    "delivery": "one_time",
+    "complexity": "initial_git_publication",
+    "ui": false
+  },
+  "authority": {
+    "source": "current_chat: commit, push; plan approved: Duyệt.",
+    "scope": "Initialize main, commit current source, push to khiemnd777/church-cms; no deploy or P2."
+  },
+  "skills": [
+    {
+      "skill_id": "git-workflow",
+      "contribution_summary": "Inspect empty remote, initialize Git, review scoped files, verify checks and publish initial commit.",
+      "contribution_percent_estimate": 100,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "host_skill",
+        "path": "host:git-workflow/SKILL.md",
+        "version": null,
+        "sha256": "fae3c6e8c1994066b751a2405c0278e979e0589048d4ced3ae43b324fe9c4f87",
+        "fingerprint_basis": "Read skill bytes in current task."
+      }
+    }
+  ],
+  "outcome": {
+    "delivery_status": "INCOMPLETE",
+    "verification_level": "Local checks PASS; commit/push pending, verify using Git refs.",
+    "human_acceptance": "PENDING_REVIEW",
+    "limitations": [
+      "Remote CI and browser suite not rerun for publication.",
+      "output evidence retained locally and excluded from Git.",
+      "Initial sandbox test connection failures; rerun with local service access: 76 PASS/997 assertions."
+    ]
+  },
+  "measurements": {
+    "elapsed_seconds": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "No measured session counter available."
+    },
+    "tool_calls": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "No measured session counter available."
+    },
+    "input_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "No measured session counter available."
+    },
+    "output_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "No measured session counter available."
+    },
+    "cached_input_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "No measured session counter available."
+    },
+    "reasoning_output_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "No measured session counter available."
+    }
+  },
+  "evidence_refs": [
+    "docs/project-state.md",
+    "current_chat:publication_checks"
+  ]
+}

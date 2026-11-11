@@ -1,0 +1,3 @@
+/* Single UI entry point. Components/tokens live in web/ui, feature CSS contains layout only. */
+@import "./ui/styles/index.css";
+@import "./church-management.css";

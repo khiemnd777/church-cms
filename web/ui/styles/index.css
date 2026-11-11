@@ -1,0 +1,6 @@
+@import "tailwindcss";
+@import "./prelude.css";
+@import "./tokens.css";
+@import "./base.css";
+@import "./patterns.css";
+@import "./adapters.css";

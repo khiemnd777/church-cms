@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "event_id": "CHURCH-P1/P1.2/human-review/2",
+  "event_type": "evaluation",
+  "task_id": "CHURCH-P1",
+  "scope_id": "P1.2",
+  "recorded_at": "2026-11-10T23:29:43.655970+00:00",
+  "reported_by": "delivery_owner",
+  "source_kind": "human_feedback",
+  "subject_event_id": "CHURCH-P1/P1.2/implementation/1",
+  "assessment_source": "human",
+  "review_attempt": 2,
+  "decision": "ACCEPTED",
+  "findings": [],
+  "evidence_refs": [
+    "current_chat:Nghiem_thu_P1.2_Tiep_theo_ke_hoach_P1.3",
+    "docs/tasks/CHURCH-P1.md",
+    "docs/tasks/UI-STD-r1.md"
+  ],
+  "limits": [
+    "Nghiệm thu P1.2 bao gồm bản sửa UI-STD-r1/UI-STD-nav-r2 đã bàn giao gần nhất.",
+    "Chỉ yêu cầu kế hoạch P1.3; chưa duyệt implementation P1.3 hoặc Git publication/deploy/dữ liệu thật."
+  ]
+}

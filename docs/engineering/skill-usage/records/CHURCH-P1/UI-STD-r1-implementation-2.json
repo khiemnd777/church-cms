@@ -1,0 +1,105 @@
+{
+  "schema_version": 1,
+  "event_id": "CHURCH-P1/P1.2/UI-STD-r1/implementation/2",
+  "event_type": "phase_handoff",
+  "task_id": "CHURCH-P1",
+  "scope_id": "P1.2/UI-STD-r1",
+  "recorded_at": "2026-11-10T23:22:53.040799+00:00",
+  "reported_by": "delivery_owner",
+  "source_kind": "agent_self_report",
+  "phase": "implementation",
+  "handoff_index": 2,
+  "classification": {
+    "delivery": "roadmap",
+    "complexity": "bounded_ui_repair",
+    "ui": true
+  },
+  "authority": {
+    "approval": "Khiêm Approved cho N01–N03 sau human CHANGES_REQUESTED vì thiếu text menu.",
+    "scope": "Sửa nhãn tại AppShell chung, caller/chuẩn và regression trên hai theme/desktop/mobile. Cùng P1.2, không mở P1.3/backend/schema/deploy/Git publication/dữ liệu thật."
+  },
+  "skills": [
+    {
+      "skill_id": "frontend-ui-engineering",
+      "contribution_summary": "Render nhãn/description tại AppShell chung, giữ tokens và sidebar/drawer, cập nhật caller/rules và xác minh ảnh/text thật trên desktop/mobile.",
+      "contribution_percent_estimate": 80,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/frontend-ui-engineering/SKILL.md",
+        "version": null,
+        "sha256": "b5c47fed383892428172bf0b9c1ed1aeab50066ff9421a87a6c344f746386495",
+        "fingerprint_basis": "Skill đã đọc trước áp dụng; file không sửa, fingerprint ghi tại bàn giao."
+      }
+    },
+    {
+      "skill_id": "debugging-and-error-recovery",
+      "contribution_summary": "Sửa nguyên nhân label không render, bổ sung regression không phụ thuộc aria-label, giữ disabled/focus/caller thật và kiểm tra bundle runtime.",
+      "contribution_percent_estimate": 20,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/debugging-and-error-recovery/SKILL.md",
+        "version": null,
+        "sha256": "9f42e9d582ae78e42e1b4e65ef2c4848f4debed2f2a9092037387d572ea5d358",
+        "fingerprint_basis": "Skill đã đọc trước áp dụng; file không sửa, fingerprint ghi tại bàn giao."
+      }
+    }
+  ],
+  "outcome": {
+    "delivery_status": "COMPLETED",
+    "verification_level": "399_firefox_checks_including_10_visible_navigation_configurations_and_local_bundle_identity",
+    "human_acceptance": "PENDING_REVIEW",
+    "limitations": [
+      "Firefox viewport emulation; physical devices/Safari NOT_RUN",
+      "Human acceptance pending, no production/publication",
+      "API/CAS/F22 suite not rerun for this navigation-only repair; prior API38tests/347assertions and P1.2 receipts remain historical evidence",
+      "Self review; no independent reviewer"
+    ]
+  },
+  "measurements": {
+    "elapsed_seconds": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có bộ đếm đo được theo scope/phase"
+    },
+    "tool_calls": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có bộ đếm đo được theo scope/phase"
+    },
+    "input_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có bộ đếm đo được theo scope/phase"
+    },
+    "output_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có bộ đếm đo được theo scope/phase"
+    },
+    "cached_input_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có bộ đếm đo được theo scope/phase"
+    },
+    "reasoning_output_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có bộ đếm đo được theo scope/phase"
+    },
+    "client": null,
+    "model": null,
+    "effort": null,
+    "identity_missing_reason": "Không có measured metadata theo scope"
+  },
+  "evidence_refs": [
+    "docs/tasks/UI-STD-r1.md",
+    "docs/ui-system.md",
+    "docs/engineering/skill-usage/records/CHURCH-P1/UI-STD-r1-human-review-1.json",
+    "docs/engineering/skill-usage/records/CHURCH-P1/UI-STD-nav-r2-planning-1.json",
+    "output/ui-std-nav-r2/verification.json",
+    "output/ui-std-nav-r2/nav-crop-1440-light.png",
+    "output/ui-std-nav-r2/nav-crop-390-dark.png"
+  ]
+}
