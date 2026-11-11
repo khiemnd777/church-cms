@@ -6,7 +6,7 @@ Cập nhật: 2026-11-11. Đây là bản tóm tắt hiện hành duy nhất. Au
 
 - Khiêm đã duyệt kế hoạch khởi tạo Git, commit và push repository `khiemnd777/church-cms`. Remote trống đã được kiểm tra; nhánh ban đầu `main`. Publication không mở P2 hoặc cấp quyền deploy.
 - Kiểm tra trước publication: lint PASS (10 warnings CSS có sẵn), typecheck/product build/reference build/ui:check PASS; integration 76 PASS/997 assertions với MongoDB/Redis local. Browser/remote CI chưa chạy lại trong task này.
-- `.env`, `.local/`, dependencies, build và `output/` không đưa lên Git; liên kết bằng chứng `output/` trong tài liệu chỉ dùng ở workspace local. Trạng thái publication thực tế đối chiếu Git refs/local–remote; journal lưu checkpoint trước commit.
+- `.env`, `.local/`, dependencies, build và `output/` không đưa lên Git; liên kết bằng chứng `output/` trong tài liệu chỉ dùng ở workspace local. Đã push commit nguồn `d372743832232eb62797629bc040170c01d68d0b` lên `origin/main`; remote hash khớp local khi readback. Đây là Git publication, chưa deploy; remote CI chưa xác minh.
 
 ## Trạng thái hiện hành
 
