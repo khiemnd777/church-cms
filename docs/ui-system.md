@@ -72,6 +72,12 @@ Tabs nhận id riêng, caller nối panel bằng `${id}-panel-${item.id}`/`${id}
 
 Task UI tiếp theo phải: xác định source pattern → dùng component hiện có → cập nhật kit nếu thiếu mẫu nhỏ trong phạm vi đã duyệt → kiểm tra cả light/dark/responsive/keyboard → ghi bằng chứng và giới hạn. Không sao chép CSS sang module khác hoặc thêm UI library/inline colors/fonts. Screen CSS chỉ chứa bố trí nội dung và breakpoint900/560.
 
+## Reference cho checkout và CI
+
+Bản sao nguyên byte của HTML đã duyệt nằm tại `tools/ui-reference/Quản lý Hội Thánh Tin Lành(1).html`. `scripts/ui-standard-check.ts` đọc bản này; `scripts/browser-check.sh` mount cùng thư mục vào `/work/reference` (read-only). Checkout độc lập không cần thư mục `../documents`. SHA256 vẫn phải khớp `web/ui/source.json` và browser gate; không cập nhật hash để vượt source drift.
+
+HTML chỉ là nguồn đối chiếu cho kiểm tra, không được import vào ứng dụng hoặc product build. Nguồn gốc tại `documents/` trong `web/ui/source.json` được giữ nguyên để truy vết. Khi thay revision chuẩn phải duyệt lại trước khi cập nhật snapshot và provenance.
+
 ## Kiểm tra
 
 - `bun run ui:check`: source SHA/CSS nguyên bản và cấm feature tự định nghĩa palette/font/breakpoint/component override. Guard này nhỏ, không chứng minh toàn bộ UX; reviewer vẫn phải xem ảnh/runtime.

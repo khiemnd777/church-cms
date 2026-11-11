@@ -1,0 +1,114 @@
+{
+  "schema_version": 1,
+  "event_id": "CI-REFERENCE/publication/1",
+  "event_type": "phase_handoff",
+  "task_id": "CI-REFERENCE",
+  "scope_id": "publication-r1",
+  "recorded_at": "2026-11-11T03:00:55.319399+00:00",
+  "reported_by": "delivery_owner",
+  "source_kind": "agent_self_report",
+  "phase": "implementation",
+  "handoff_index": 1,
+  "classification": {
+    "delivery": "one_time",
+    "complexity": "git_publication_and_ci_verification",
+    "ui": false
+  },
+  "authority": {
+    "approval": "Khiêm: commit and push.",
+    "scope": "Task branch, scoped commits, push, PR into main and verification; evidenced browser synchronization repair during tests. No merge/deploy/P2."
+  },
+  "skills": [
+    {
+      "skill_id": "git-workflow",
+      "contribution_summary": "Kiểm tra Git/base/remote; tạo branch, scoped commit/push và PR; verify remote SHA; giữ main và không merge.",
+      "contribution_percent_estimate": 50,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "host_skill",
+        "path": "Personal/git-workflow/SKILL.md",
+        "version": null,
+        "sha256": "fae3c6e8c1994066b751a2405c0278e979e0589048d4ced3ae43b324fe9c4f87",
+        "fingerprint_basis": "Đã đọc và áp dụng; fingerprint tại bàn giao."
+      }
+    },
+    {
+      "skill_id": "debugging-and-error-recovery",
+      "contribution_summary": "Theo dõi Linux CI, đối chiếu PR failure với async list source; sửa test waitFor đúng state, giữ assertion; rerun119browser checks.",
+      "contribution_percent_estimate": 50,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/debugging-and-error-recovery/SKILL.md",
+        "version": null,
+        "sha256": "9f42e9d582ae78e42e1b4e65ef2c4848f4debed2f2a9092037387d572ea5d358",
+        "fingerprint_basis": "Đã đọc và áp dụng; fingerprint tại bàn giao."
+      }
+    }
+  ],
+  "outcome": {
+    "delivery_status": "COMPLETED",
+    "verification_level": "Publication verified at 3f80508, remote gates through browser observed; follow-up browser sync repair locally verified, latest remote result tracked in PR checks",
+    "human_acceptance": "PENDING_REVIEW",
+    "limitations": [
+      "PR not merged; no deploy",
+      "Initial PR run failed separate browser synchronization assertion; corrected test requires new remote execution",
+      "Local lint/typecheck and119 browser checks passed after test repair",
+      "No independent reviewer; skill percentages are estimates"
+    ]
+  },
+  "measurements": {
+    "elapsed_seconds": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có counters được đo cho toàn phase; không suy đoán."
+    },
+    "tool_calls": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có counters được đo cho toàn phase; không suy đoán."
+    },
+    "input_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có counters được đo cho toàn phase; không suy đoán."
+    },
+    "output_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có counters được đo cho toàn phase; không suy đoán."
+    },
+    "cached_input_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có counters được đo cho toàn phase; không suy đoán."
+    },
+    "reasoning_output_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có counters được đo cho toàn phase; không suy đoán."
+    },
+    "client": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có counters được đo cho toàn phase; không suy đoán."
+    },
+    "model": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có counters được đo cho toàn phase; không suy đoán."
+    },
+    "effort": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có counters được đo cho toàn phase; không suy đoán."
+    }
+  },
+  "evidence_refs": [
+    "https://github.com/khiemnd777/church-cms/pull/1",
+    "https://github.com/khiemnd777/church-cms/actions/runs/42949331660",
+    "https://github.com/khiemnd777/church-cms/actions/runs/42949303549",
+    "scripts/browser-check.ts",
+    "docs/project-state.md"
+  ]
+}

@@ -6,6 +6,16 @@ Ngày tổng hợp: 2026-11-10. Nguồn chi tiết: [hồ sơ P0](tasks/CHURCH-P
 
 **P1 đã đóng. P1.1–P1.4 HUMAN ACCEPTED.** Khiêm: “Nghiệm thu P1.4 và Đóng P1. Chưa mở P2.” [Biên bản đóng](tasks/CHURCH-P1.md#đóng-p1), [acceptance P1.4](engineering/skill-usage/records/CHURCH-P1/P1.4-human-acceptance-1.json). **P2 NOT_OPENED**; roadmap P2–P8 chỉ là định hướng, chưa quyền planning/implementation hoặc release. Giữ kết quả trong phạm vi local/synthetic đã bàn giao; không publication/deploy/production/dữ liệu thật.
 
+## CI-REFERENCE-r1 — sửa CI sau publication, bàn giao một lần
+
+Khiêm duyệt kế hoạch trong chat ngày 2026-11-11: “Duyệt.” Phạm vi: snapshot HTML chuẩn trong repo, đồng bộ source check/browser mount, kiểm chứng local và cập nhật tài liệu/journal. Đây là sửa CI ngoài roadmap; không mở lại P1/P2, không commit/push/deploy.
+
+Tiêu chí: `ui:check` chạy khi checkout không có `../documents`; SHA256/CSS drift vẫn bị chặn; browser check dùng đúng snapshot; các gates hiện có được chạy và ghi kết quả thực tế. Lỗi gốc: run `42943023514`, commit `9ebb3df8a1788746b2b150f720c9a8c5dbf16dbf`, thiếu thư mục sibling tại `ui:check`.
+
+Kết quả CI-REFERENCE-r1: hoàn tất source và wiring; local gates PASS gồm checkout độc lập, negative hash test, 76 integration/997 assertions, 658 Firefox checks và qualification/restore/cleanup. Chi tiết hiện hành và giới hạn tại [project-state](project-state.md#ci-reference-r1--2026-11-11). Remote Linux CI NOT_RUN; chờ nghiệm thu, chưa publication.
+
+Publication được Khiêm yêu cầu tiếp theo: “commit and push.” Đã tạo PR #1; trong test phase sửa thêm synchronization của browser assertion `full-login-O01-empty` theo lỗi thực từ Linux, giữ nguyên expected state và app. Chi tiết và giới hạn tại project-state.
+
 ## P0 — Đặc tả và phê duyệt
 
 Đầu ra: ma trận nguồn → tính năng → quyền/trạng thái → mockup → tiêu chí kiểm chứng; chốt phạm vi bản đầu và các quyết định ảnh hưởng kiến trúc.

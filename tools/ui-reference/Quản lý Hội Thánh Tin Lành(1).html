@@ -1,0 +1,1149 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Quản lý Hội Thánh Tin Lành</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=Lora:ital,wght@0,600;0,700;1,500&display=swap">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+/* Layout: sidebar điều hướng cố định bên trái + vùng làm việc; điện thoại: sidebar thành ngăn kéo */
+:root{
+  --bg:#F2F5F4; --surface:#FFFFFF; --surface-2:#EBF0EF; --line:#DAE2E0;
+  --fg:#14222A; --muted:#5A6A6F; --faint:#8A989B;
+  --primary:#0E5A5F; --primary-ink:#FFFFFF; --primary-soft:#DCEDEC;
+  --gold:#A86C12; --gold-soft:#F6EAD2; --friend:#6E4BA6; --friend-soft:#EDE6F7;
+  --good:#2C7A4B; --good-soft:#DFF0E5; --warn:#A6530A; --warn-soft:#FBEAD4; --bad:#B0252F; --bad-soft:#F8E0E2;
+  --hero:#0F2E33; --hero-2:#163F45; --hero-fg:#F1F6F5; --hero-muted:#A6C1BF; --hero-line:rgba(255,255,255,.14);
+  --shadow:0 1px 2px rgba(20,34,42,.05),0 6px 20px rgba(20,34,42,.05);
+  --f-ui:"Be Vietnam Pro",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --f-display:"Lora",Georgia,"Times New Roman",serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0D1416; --surface:#142023; --surface-2:#1A2A2E; --line:#26393E;
+  --fg:#E4ECEA; --muted:#97A9AB; --faint:#6E8285;
+  --primary:#5BB8B3; --primary-ink:#06201F; --primary-soft:#183A3B;
+  --gold:#E2AA4E; --gold-soft:#382B15; --friend:#BFA6EA; --friend-soft:#2C2340; --good:#6FC28D; --good-soft:#173322; --warn:#E9A45A; --warn-soft:#3A2915; --bad:#F27F87; --bad-soft:#3D1C20;
+  --hero:#0A2125; --hero-2:#11343A; --hero-fg:#EEF5F4; --hero-muted:#93B3B1; --hero-line:rgba(255,255,255,.12);
+  --shadow:0 1px 2px rgba(0,0,0,.3); color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0D1416; --surface:#142023; --surface-2:#1A2A2E; --line:#26393E;
+  --fg:#E4ECEA; --muted:#97A9AB; --faint:#6E8285;
+  --primary:#5BB8B3; --primary-ink:#06201F; --primary-soft:#183A3B;
+  --gold:#E2AA4E; --gold-soft:#382B15; --friend:#BFA6EA; --friend-soft:#2C2340; --good:#6FC28D; --good-soft:#173322; --warn:#E9A45A; --warn-soft:#3A2915; --bad:#F27F87; --bad-soft:#3D1C20;
+  --hero:#0A2125; --hero-2:#11343A; --hero-fg:#EEF5F4; --hero-muted:#93B3B1; --hero-line:rgba(255,255,255,.12);
+  --shadow:0 1px 2px rgba(0,0,0,.3); color-scheme:dark}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{background:var(--bg);color:var(--fg);font-family:var(--f-ui);font-size:14px;line-height:1.5}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--primary);outline-offset:2px;border-radius:6px}
+.num{font-variant-numeric:tabular-nums}
+svg.i{width:18px;height:18px;flex:none;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+
+.app{display:grid;grid-template-columns:256px minmax(0,1fr);min-height:100%}
+/* Sidebar */
+.side{background:var(--surface);border-right:1px solid var(--line);display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow:auto}
+.brand{display:flex;gap:12px;align-items:center;padding:20px 18px 14px}
+.logo{width:42px;height:42px;border-radius:11px;background:var(--primary);color:var(--primary-ink);display:grid;place-items:center}
+.logo svg{width:22px;height:22px;stroke-width:2.6}
+.brand small{display:block;font-size:11px;letter-spacing:.12em;color:var(--primary);font-weight:700}
+.brand b{font-size:16px;font-weight:700}
+.side-note{margin:0 16px 10px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--surface-2);font-size:12px;color:var(--muted)}
+.side-note .ver{display:flex;justify-content:space-between;margin-top:6px;font-size:11px;letter-spacing:.06em}
+nav{padding:6px 12px 16px;display:flex;flex-direction:column;gap:2px}
+.nav-h{font-size:11px;letter-spacing:.12em;font-weight:700;color:var(--faint);padding:14px 10px 6px}
+.nav-a{display:flex;align-items:center;gap:11px;padding:9px 10px;border-radius:9px;border:0;background:none;text-align:left;color:var(--muted);font-weight:500;width:100%}
+.nav-a:hover{background:var(--surface-2);color:var(--fg)}
+.nav-a.on{background:var(--primary);color:var(--primary-ink)}
+.nav-a .cnt{margin-left:auto;font-size:11px;background:var(--warn-soft);color:var(--warn);border-radius:20px;padding:1px 7px;font-weight:600}
+.nav-a.on .cnt{background:rgba(255,255,255,.2);color:inherit}
+.side-foot{margin-top:auto;border-top:1px solid var(--line);padding:14px 18px;font-size:12px;color:var(--muted)}
+.side-foot b{color:var(--fg);font-size:13px}
+.role-sel{margin-top:8px;width:100%;padding:6px 8px;border:1px solid var(--line);border-radius:8px;background:var(--surface)}
+
+/* Main */
+.main{min-width:0;display:flex;flex-direction:column}
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line);display:flex;align-items:center;gap:12px;padding-block:12px;padding-left:max(24px,env(safe-area-inset-left,0px));padding-right:max(24px,env(safe-area-inset-right,0px))}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.top h1{font-size:16px;margin:0;font-weight:700}
+.top .sub{font-size:11px;letter-spacing:.1em;color:var(--muted);font-weight:600}
+.top .sp{flex:1}
+.demo-tag{font-size:12px;font-weight:600;color:var(--gold);background:var(--gold-soft);border-radius:20px;padding:5px 11px;white-space:nowrap}
+.menu-btn{display:none;border:1px solid var(--line);background:var(--surface);border-radius:9px;padding:7px}
+.content{padding-block:22px 48px;padding-left:max(24px,env(safe-area-inset-left,0px));padding-right:max(24px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:18px;max-width:1360px;width:100%}
+
+/* Common */
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);padding:18px;min-width:0}
+.card-h{display:flex;align-items:baseline;gap:10px;margin-bottom:12px;flex-wrap:wrap}
+.card-h h3{margin:0;font-size:15px;font-weight:700}
+.card-h p{margin:0;font-size:12px;color:var(--muted);flex-basis:100%}
+.card-h .link{margin-left:auto}
+.link{border:0;background:none;color:var(--primary);font-weight:600;font-size:13px;padding:0}
+.grid{display:grid;gap:16px}
+.g4{grid-template-columns:repeat(4,minmax(0,1fr))}
+.g3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.g2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.g-73{grid-template-columns:minmax(0,1.6fr) minmax(0,1fr)}
+.pill{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:600;border-radius:20px;padding:2px 9px;white-space:nowrap}
+.p-good{background:var(--good-soft);color:var(--good)}
+.p-warn{background:var(--warn-soft);color:var(--warn)}
+.p-bad{background:var(--bad-soft);color:var(--bad)}
+.p-pri{background:var(--primary-soft);color:var(--primary)}
+.p-gold{background:var(--gold-soft);color:var(--gold)}
+.p-mute{background:var(--surface-2);color:var(--muted)}
+.btn{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--line);background:var(--surface);border-radius:9px;padding:8px 13px;font-weight:600;font-size:13px}
+.btn:hover{border-color:var(--primary)}
+.btn.pri{background:var(--primary);color:var(--primary-ink);border-color:var(--primary)}
+.btn.sm{padding:5px 10px;font-size:12px}
+.input,.select{border:1px solid var(--line);background:var(--surface);border-radius:9px;padding:8px 11px;min-width:0}
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.toolbar .input{flex:1 1 220px}
+.muted{color:var(--muted)}
+.small{font-size:12px}
+h2.page{font-size:20px;margin:0;font-weight:700}
+.page-h{display:flex;align-items:flex-end;gap:12px;flex-wrap:wrap}
+.page-h p{margin:2px 0 0;color:var(--muted);font-size:13px}
+.page-h .sp{flex:1}
+
+/* Hero */
+.hero{background:linear-gradient(135deg,var(--hero),var(--hero-2));color:var(--hero-fg);border-radius:18px;padding:26px 28px;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:20px;position:relative;overflow:hidden}
+.hero::after{content:"";position:absolute;right:-30px;top:-40px;width:220px;height:300px;opacity:.06;background:
+ linear-gradient(var(--hero-fg),var(--hero-fg)) center/22px 100% no-repeat,
+ linear-gradient(var(--hero-fg),var(--hero-fg)) center 32%/150px 22px no-repeat;pointer-events:none}
+.eyebrow{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:11px;letter-spacing:.12em;font-weight:700;color:var(--hero-muted)}
+.eyebrow span:first-child{background:rgba(255,255,255,.1);border-radius:20px;padding:3px 10px;color:var(--hero-fg)}
+.hero h2{font-family:var(--f-display);font-size:32px;margin:12px 0 6px;letter-spacing:.01em;text-wrap:balance}
+.hero .meta{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:13px;color:var(--hero-muted)}
+.hero .meta b{color:var(--hero-fg);font-weight:600}
+.staff{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}
+.staff div{border:1px solid var(--hero-line);border-radius:10px;padding:8px 12px;background:rgba(255,255,255,.04)}
+.staff small{display:block;font-size:10px;letter-spacing:.1em;color:var(--hero-muted);font-weight:700}
+.staff b{font-size:13px}
+.hero-r{text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:8px;position:relative;z-index:1}
+.hero-r small{font-size:11px;letter-spacing:.12em;color:var(--hero-muted);font-weight:700}
+.hero-r .d{font-family:var(--f-display);font-size:21px;font-style:italic}
+.next-sun{border:1px solid var(--hero-line);border-radius:10px;padding:9px 12px;text-align:left;font-size:12px;color:var(--hero-muted);max-width:280px}
+.next-sun b{color:var(--hero-fg)}
+.btn.hero-btn{background:var(--hero-fg);color:var(--hero);border-color:transparent}
+
+/* KPI */
+.kpi .lbl{font-size:11px;letter-spacing:.1em;font-weight:700;color:var(--muted)}
+.kpi .big{font-family:var(--f-display);font-size:34px;font-weight:700;line-height:1.15;margin:6px 0 2px}
+.kpi .foot{border-top:1px solid var(--line);margin-top:12px;padding-top:10px;display:flex;flex-wrap:wrap;gap:4px 14px;font-size:12px;color:var(--muted)}
+.kpi .foot b{color:var(--fg)}
+.delta-up{color:var(--good);font-weight:600}
+.delta-dn{color:var(--bad);font-weight:600}
+
+/* Quick actions */
+.qa{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:10px}
+.qa button{border:1px solid var(--line);background:var(--surface-2);border-radius:12px;padding:14px 8px;display:flex;flex-direction:column;align-items:center;gap:8px;font-weight:600;font-size:12px;text-align:center}
+.qa button:hover{border-color:var(--primary);color:var(--primary)}
+.qa svg.i{width:22px;height:22px;color:var(--primary)}
+
+/* Bars */
+.hbar{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 10px;align-items:center;margin-bottom:10px;font-size:13px}
+.hbar .track{grid-column:1/-1;height:7px;background:var(--surface-2);border-radius:5px;overflow:hidden}
+.hbar .fill{height:100%;background:var(--primary);border-radius:5px}
+.chart svg{width:100%;height:auto;display:block}
+.chart text{fill:var(--muted);font-size:11px;font-family:var(--f-ui)}
+
+/* Lists */
+.list{display:flex;flex-direction:column}
+.li{display:flex;gap:12px;align-items:center;padding:10px 0;border-top:1px solid var(--line)}
+.li:first-child{border-top:0}
+.li .t{flex:1;min-width:0}
+.li .t b{display:block;font-size:13px}
+.li .t span{font-size:12px;color:var(--muted)}
+.av{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-weight:700;font-size:12px;flex:none;background:var(--primary-soft);color:var(--primary)}
+.av.f{background:var(--gold-soft);color:var(--gold)}
+
+/* Table */
+.tbl-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;min-width:760px}
+th{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);text-align:left;padding:10px 12px;background:var(--surface-2);font-weight:700;white-space:nowrap}
+td{padding:10px 12px;border-top:1px solid var(--line);vertical-align:middle}
+tr.click{cursor:pointer}
+tr.click:hover td{background:var(--surface-2)}
+td .nm{font-weight:600}
+td.nm.num,td.right.num,td.num.muted{white-space:nowrap}
+.dots{display:flex;gap:3px}
+.dots i{width:8px;height:8px;border-radius:2px;background:var(--line);display:block}
+.dots i.on{background:var(--good)}
+.right{text-align:right}
+
+/* Tabs */
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);overflow-x:auto}
+.tab{border:0;background:none;padding:9px 14px;font-weight:600;color:var(--muted);border-bottom:2px solid transparent;white-space:nowrap}
+.tab.on{color:var(--primary);border-color:var(--primary)}
+
+/* Drawer & modal */
+.scrim{position:fixed;inset:0;background:rgba(8,20,22,.45);z-index:30}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:min(460px,100%);background:var(--surface);z-index:31;overflow:auto;box-shadow:-8px 0 30px rgba(0,0,0,.15);padding-block:calc(20px + env(safe-area-inset-top,0px)) calc(24px + env(safe-area-inset-bottom,0px));padding-left:22px;padding-right:max(22px,env(safe-area-inset-right,0px))}
+.modal{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);width:min(720px,calc(100% - 32px));max-height:calc(100% - 48px);overflow:auto;background:var(--surface);z-index:31;border-radius:16px;padding:22px}
+.x{border:0;background:var(--surface-2);border-radius:8px;padding:6px;margin-left:auto}
+.dsec{border-top:1px solid var(--line);padding-top:14px;margin-top:14px}
+.dsec h4{margin:0 0 8px;font-size:11px;letter-spacing:.1em;color:var(--muted)}
+.kv{display:grid;grid-template-columns:130px minmax(0,1fr);gap:6px 10px;font-size:13px}
+.kv span{color:var(--muted)}
+.locked{display:flex;gap:10px;align-items:center;background:var(--surface-2);border:1px dashed var(--line);border-radius:10px;padding:10px 12px;font-size:12px;color:var(--muted)}
+.idcard{display:flex;gap:14px;align-items:center;border-radius:12px;padding:14px;background:linear-gradient(135deg,var(--hero),var(--hero-2));color:var(--hero-fg)}
+.idcard .qr{background:#fff;padding:6px;border-radius:8px;width:96px;height:96px;flex:none}
+.idcard .qr img,.idcard .qr canvas{width:84px!important;height:84px!important}
+.idcard small{color:var(--hero-muted);font-size:11px;letter-spacing:.08em;display:block}
+.form{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.form label{display:flex;flex-direction:column;gap:5px;font-size:12px;font-weight:600;color:var(--muted)}
+.form .full{grid-column:1/-1}
+
+/* Certificate */
+.cert{border:2px solid var(--gold);outline:1px solid var(--gold);outline-offset:4px;border-radius:6px;padding:28px 24px;text-align:center;background:var(--surface);margin:8px}
+.cert .org{font-size:11px;letter-spacing:.14em;font-weight:700;color:var(--muted)}
+.cert h3{font-family:var(--f-display);font-size:26px;color:var(--gold);margin:14px 0 4px}
+.cert .who{font-family:var(--f-display);font-size:22px;font-style:italic;margin:14px 0}
+.cert .sig{display:flex;justify-content:space-around;margin-top:26px;font-size:12px;color:var(--muted);gap:12px}
+.cert .sig b{display:block;color:var(--fg);margin-top:34px}
+
+/* Attendance */
+.att-head{display:flex;gap:16px;align-items:center;flex-wrap:wrap}
+.att-count{font-family:var(--f-display);font-size:30px;font-weight:700}
+.att-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:8px}
+.att-item{display:flex;align-items:center;gap:10px;border:1px solid var(--line);border-radius:10px;padding:8px 10px;background:var(--surface);text-align:left}
+.att-item.on{border-color:var(--good);background:var(--good-soft)}
+.att-item .chk{width:20px;height:20px;border-radius:6px;border:1.5px solid var(--line);display:grid;place-items:center;flex:none}
+.att-item.on .chk{background:var(--good);border-color:var(--good);color:#fff}
+.att-item .t{min-width:0;flex:1}
+.att-item b{font-size:13px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.att-item span{font-size:11px;color:var(--muted)}
+.flash{animation:fl 1s ease}
+@keyframes fl{0%{box-shadow:0 0 0 3px var(--good)}100%{box-shadow:0 0 0 0 transparent}}
+
+.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--fg);color:var(--bg);padding:10px 16px;border-radius:10px;font-weight:600;z-index:50;font-size:13px;max-width:calc(100% - 32px)}
+.ban-card .lead{font-size:12px;color:var(--muted)}
+.ban-card .n{font-family:var(--f-display);font-size:26px;font-weight:700}
+.feature{display:flex;gap:12px}
+.feature .ic{width:38px;height:38px;border-radius:10px;background:var(--primary-soft);color:var(--primary);display:grid;place-items:center;flex:none}
+.feature b{display:block;font-size:13px;margin-bottom:2px}
+.feature p{margin:0;font-size:12px;color:var(--muted)}
+.empty{padding:20px;text-align:center;color:var(--muted)}
+
+.flow{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.flow .step{border:1px solid var(--line);border-radius:10px;padding:8px 12px;background:var(--surface-2);font-size:12px;color:var(--muted);min-width:0}
+.flow .step b{display:block;color:var(--fg);font-size:13px}
+.flow .arr{color:var(--faint)}
+.opts{display:flex;flex-wrap:wrap;gap:8px}
+.opt{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--line);border-radius:9px;padding:7px 11px;background:var(--surface);font-weight:500;cursor:pointer}
+.form .opt{flex-direction:row;font-size:13px;color:var(--fg)}
+.opt:has(input:checked){border-color:var(--primary);background:var(--primary-soft);color:var(--primary);font-weight:600}
+.opt:has(input:disabled){cursor:not-allowed;opacity:.75}
+.tagrow{display:flex;flex-wrap:wrap;gap:8px}
+.tag{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:20px;padding:4px 6px 4px 12px;background:var(--surface-2);font-weight:500}
+.tag small{color:var(--muted)}
+.tag button{border:0;background:none;padding:2px;border-radius:50%;color:var(--muted);display:grid}
+.tag button svg.i{width:14px;height:14px}
+.addrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.addrow .input{flex:1 1 200px}
+.fund-row{display:flex;gap:8px;align-items:center;padding:7px 0;border-top:1px solid var(--line)}
+.fund-row:first-child{border-top:0}
+.fund-row .input{flex:1;min-width:0}
+.sub-h{font-size:12px;letter-spacing:.1em;font-weight:700;color:var(--muted);margin:4px 0 -6px}
+.auto-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:16px}
+textarea.input{resize:vertical;min-height:70px}
+.p-friend{background:var(--friend-soft);color:var(--friend)}
+.mini{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.mini>div{background:var(--surface-2);border-radius:10px;padding:10px 12px;min-width:0}
+.mini b{display:block;font-family:var(--f-display);font-size:24px;line-height:1.2}
+.mini span{font-size:12px;color:var(--muted)}
+.stagebar{display:flex;height:10px;border-radius:6px;overflow:hidden;margin:16px 0 8px;gap:2px;background:var(--surface-2)}
+.stagebar i{display:block;background:var(--friend)}
+.lgd{display:flex;flex-wrap:wrap;gap:4px 16px;font-size:12px;color:var(--muted);margin-bottom:6px}
+.lgd i{display:inline-block;width:9px;height:9px;border-radius:3px;margin-right:6px;background:var(--friend)}
+.lgd b{color:var(--fg)}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:10px;padding:3px;background:var(--surface);gap:2px;flex-wrap:wrap}
+.seg button{border:0;background:none;border-radius:7px;padding:6px 12px;font-weight:600;color:var(--muted)}
+.seg button.on{background:var(--primary);color:var(--primary-ink)}
+.seg button span{font-weight:500;opacity:.8;margin-left:4px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.chip-f{border:1px dashed var(--conn,var(--line));border-color:var(--line);background:var(--surface);border-radius:20px;padding:5px 12px;font-size:12px;font-weight:600}
+.chip-f.on{border-style:solid;border-color:var(--primary);background:var(--primary-soft);color:var(--primary)}
+tr.bd-today td{background:var(--good-soft)}
+.links-row{display:flex;flex-wrap:wrap;gap:6px 16px;border-top:1px solid var(--line);margin-top:8px;padding-top:10px}
+@media (max-width:560px){.mini{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:1180px){.qa{grid-template-columns:repeat(4,minmax(0,1fr))}.g4{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:900px){
+  .app{grid-template-columns:minmax(0,1fr)}
+  .side{position:fixed;left:0;top:0;bottom:0;width:272px;z-index:40;transform:translateX(-105%);transition:transform .2s;padding-top:env(safe-area-inset-top,0px);padding-left:env(safe-area-inset-left,0px)}
+  .side.open{transform:none;box-shadow:8px 0 30px rgba(0,0,0,.2)}
+  .menu-btn{display:inline-flex}
+  .g3,.g2,.g-73{grid-template-columns:minmax(0,1fr)}
+  .hero{grid-template-columns:minmax(0,1fr)}
+  .hero-r{align-items:flex-start;text-align:left}
+}
+@media (max-width:560px){
+  .g4{grid-template-columns:minmax(0,1fr)}
+  .qa{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .top,.content{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+  .top .demo-tag{display:none}
+  .hero{padding:20px}
+  .hero h2{font-size:25px}
+  .form{grid-template-columns:1fr}
+  .kv{grid-template-columns:110px minmax(0,1fr)}
+}
+@media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<div class="app">
+  <aside class="side" id="side"></aside>
+  <div class="main">
+    <header class="top">
+      <button class="menu-btn" id="menuBtn" aria-label="Mở menu"><svg class="i" viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
+      <div><h1 id="pageTitle">Tổng quan</h1><div class="sub">HỘI THÁNH BÌNH AN · ĐỊA HẠT KHÁNH HÒA</div></div>
+      <div class="sp"></div>
+      <span class="demo-tag">Bản demo · dữ liệu mẫu</span>
+    </header>
+    <main class="content" id="view"></main>
+  </div>
+</div>
+<div id="layer"></div>
+
+<script>
+(function(){
+/* ============ Tiện ích ============ */
+let seed=20261021;
+function rnd(){seed|=0;seed=seed+0x6D2B79F5|0;let t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}
+const pick=a=>a[Math.floor(rnd()*a.length)];
+const ri=(a,b)=>a+Math.floor(rnd()*(b-a+1));
+const pad=n=>String(n).padStart(2,'0');
+const fmt=d=>pad(d.getDate())+'/'+pad(d.getMonth()+1)+'/'+d.getFullYear();
+const fmtS=d=>pad(d.getDate())+'/'+pad(d.getMonth()+1);
+const D=(y,m,d)=>new Date(y,m-1,d);
+const addD=(d,n)=>{const x=new Date(d);x.setDate(x.getDate()+n);return x};
+const nf=n=>n.toLocaleString('vi-VN');
+const money=n=>nf(Math.round(n))+' đ';
+const tr=n=>(n/1e6).toLocaleString('vi-VN',{maximumFractionDigits:1})+' tr';
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const DOW=['Chúa nhật','Thứ Hai','Thứ Ba','Thứ Tư','Thứ Năm','Thứ Sáu','Thứ Bảy'];
+const TODAY=D(2026,10,21);
+const LAST_SUN=addD(TODAY,-TODAY.getDay());   // 18/10/2026
+const NEXT_SUN=addD(LAST_SUN,7);               // 25/10/2026
+const SUNDAYS=[];for(let i=11;i>=0;i--)SUNDAYS.push(addD(LAST_SUN,-7*i));
+const WEEK_START=addD(TODAY,-TODAY.getDay()),WEEK_END=addD(WEEK_START,6);
+const bdThisYear=m=>new Date(2026,m.dob.getMonth(),m.dob.getDate());
+const turnAge=m=>2026-m.dob.getFullYear();
+const isBdToday=m=>m.dob.getMonth()===TODAY.getMonth()&&m.dob.getDate()===TODAY.getDate()&&turnAge(m)>=1;
+const inWeek=m=>{const t=bdThisYear(m);return turnAge(m)>=1&&t>=WEEK_START&&t<=WEEK_END};
+const MONTH_VI=m=>'Tháng '+(m+1);
+
+const P={
+ home:'<path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>',
+ users:'<circle cx="9" cy="7" r="4"/><path d="M2 21v-1a6 6 0 0 1 6-6h2a6 6 0 0 1 6 6v1"/><path d="M16 3.1a4 4 0 0 1 0 7.8M22 21v-1a5 5 0 0 0-3.5-4.8"/>',
+ house:'<path d="M3 10 12 3l9 7v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z"/><path d="M9 21v-6h6v6"/>',
+ grid:'<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>',
+ check:'<path d="m9 11 3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>',
+ drop:'<path d="M12 2.7S6 9 6 14a6 6 0 0 0 12 0c0-5-6-11.3-6-11.3z"/>',
+ book:'<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V3H6.5A2.5 2.5 0 0 0 4 5.5z"/><path d="M4 19.5A2.5 2.5 0 0 0 6.5 22H20v-5"/><path d="M12 6v7M9.5 8.5h5"/>',
+ heart:'<path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21l7.8-7.5 1-1.1a5.5 5.5 0 0 0 0-7.8z"/>',
+ wallet:'<path d="M20 7V5a2 2 0 0 0-2-2H5a2 2 0 0 0 0 4h15v13H5a2 2 0 0 1-2-2V5"/><path d="M16 13.5h.01"/>',
+ file:'<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M8 13h8M8 17h5"/>',
+ shield:'<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>',
+ cross:'<path d="M12 2v20M5.5 8h13"/>',
+ qr:'<rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><path d="M14 14h3v3h-3zM20 14v.01M14 20h.01M17 20h4v-3"/>',
+ search:'<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>',
+ plus:'<path d="M12 5v14M5 12h14"/>',
+ lock:'<rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>',
+ x:'<path d="M18 6 6 18M6 6l12 12"/>',
+ chart:'<path d="M3 3v18h18M8 16v-4M13 16V8M18 16v-7"/>',
+ pray:'<path d="M12 3v8M12 11l-4 9M12 11l4 9M7 7l5 4 5-4"/>',
+ cal:'<rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>',
+ print:'<path d="M6 9V2h12v7"/><rect x="6" y="14" width="12" height="8"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/>',
+ scan:'<path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2M7 12h10"/>',
+ tick:'<path d="M20 6 9 17l-5-5"/>',
+ gear:'<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.9 4.9 7 7M17 17l2.1 2.1M2 12h3M19 12h3M4.9 19.1 7 17M17 7l2.1-2.1"/>',
+ stamp:'<rect x="3" y="3" width="18" height="18" rx="3"/><path d="m8.5 12 2.5 2.5 4.5-5"/>',
+ trash:'<path d="M3 6h18M8 6V4h8v2M6 6l1 15h10l1-15"/>'
+};
+const ic=(n,cls='')=>`<svg class="i ${cls}" viewBox="0 0 24 24" aria-hidden="true">${P[n]||''}</svg>`;
+
+/* ============ Dữ liệu mẫu ============ */
+const HO=['Nguyễn','Trần','Lê','Phạm','Hoàng','Huỳnh','Phan','Võ','Đặng','Bùi','Đỗ','Hồ','Ngô','Dương','Lý','Mai','Đinh','Trương'];
+const DEM={Nam:['Văn','Minh','Hữu','Đức','Quốc','Thanh','Công','Gia','Đình','Ngọc'],Nữ:['Thị','Ngọc','Thu','Kim','Bảo','Mỹ','Thanh','Hoài','Phương','Diệu']};
+const TEN={Nam:['Ân','Phúc','Thiện','Vinh','Khang','Hiếu','Nhân','Tín','Trung','Hòa','Bình','Lộc','Phước','Sang','Tâm','Hưng','Quang','Đạt','Khải','Thành','Nghĩa','Huy'],
+ Nữ:['Ân','Hồng','Hạnh','Lan','Mai','Ngọc','Thảo','Hiền','Nhung','Trang','Hoa','Yến','Linh','Phương','Vy','Diễm','Hà','Thùy','Hân','Uyên','Giang','Nhi']};
+/* Cấu hình do Mục sư Quản nhiệm thiết lập */
+const cfg={unitType:'Khu vực',unitCustom:'',banMode:'auto',
+  serviceBans:['Ban Hát Thánh ca','Ban Thăm viếng','Ban Truyền giảng','Giáo viên Trường Chúa nhật'],
+  proposers:new Set(['tk','tq','tb']),approver:'ms'};
+const U=()=>cfg.unitType==='Khác'?(cfg.unitCustom.trim()||'Đơn vị'):cfg.unitType;
+const Ul=()=>U().toLowerCase();
+const GROUPS=[
+ {id:'g1',name:'Bình Minh',day:'Tối thứ Sáu',lead:''},
+ {id:'g2',name:'Hy Vọng',day:'Tối thứ Năm',lead:''},
+ {id:'g3',name:'Ân Điển',day:'Tối thứ Sáu',lead:''},
+ {id:'g4',name:'Sự Sáng',day:'Tối thứ Ba',lead:''},
+ {id:'g5',name:'Phước Hạnh',day:'Chiều thứ Bảy',lead:''},
+ {id:'g6',name:'Bình An',day:'Tối thứ Năm',lead:''}];
+const gName=id=>{const g=GROUPS.find(g=>g.id===id);return g?U()+' '+g.name:''};
+const AGE_BANS=[['Ban Thiếu nhi',4,11],['Ban Thiếu niên',12,17],['Ban Thanh niên',18,35],['Ban Trung niên',36,59],['Ban Cao niên',60,120]];
+const BAN_INFO={'Ban Chấp sự':'Họp tối thứ Hai đầu tháng','Ban Thiếu nhi':'Trường Chúa nhật 9:00','Ban Thiếu niên':'Chiều thứ Bảy 16:00','Ban Thanh niên':'Tối thứ Bảy 19:00','Ban Trung niên':'Chiều Chúa nhật thứ 2 & 4','Ban Cao niên':'Sáng thứ Năm 8:00','Ban Hát Thánh ca':'Tập tối thứ Sáu','Ban Thăm viếng':'Theo lịch phân công','Ban Truyền giảng':'Chiều thứ Bảy','Giáo viên Trường Chúa nhật':'Soạn bài tối thứ Năm'};
+const allBanNames=()=>['Ban Chấp sự',...AGE_BANS.map(b=>b[0]),...cfg.serviceBans];
+const ageBansFor=a=>AGE_BANS.filter(x=>a>=x[1]&&a<=x[2]).map(x=>x[0]);
+
+const members=[],families=[];let mid=1;
+function person(ho,g,age,role,fam,opts={}){
+  const by=2026-age;let dob=D(by,ri(1,12),ri(1,28));
+  if(dob>TODAY)dob=D(by-1,dob.getMonth()+1,dob.getDate());
+  const m={id:'TH-'+String(mid++).padStart(4,'0'),ho,dem:pick(DEM[g]),ten:pick(TEN[g]),g,dob,role,fam:fam.id,group:fam.group,
+    phone:age>=16?'09'+ri(0,9)+' '+ri(100,999)+' '+ri(100,999):'',bans:[],notes:[]};
+  m.name=m.ho+' '+m.dem+' '+m.ten;m.type='Tín hữu';
+  m.age=ageOf(dob);
+  if(m.age<13){m.status='Thiếu nhi';
+    if(rnd()<.8){m.dedication=D(by+(dob.getMonth()>9?1:0),Math.min(12,dob.getMonth()+ri(2,5)),ri(1,28));if(m.dedication>TODAY)m.dedication=null}}
+  else if(rnd()<.86){m.status='Thành viên';const y=Math.max(by+13,1978);m.baptism=D(Math.min(2025,y+ri(0,Math.max(0,2025-y))),ri(1,12),ri(1,28))}
+  else m.status='Dự bị';
+  const r=rnd();m.active=opts.active||(m.age>=18&&r<.025?'Chuyển đi':r<.085?'Vắng lâu':'Đang sinh hoạt');
+  const p=ri(55,97)/100;
+  m.att=SUNDAYS.map((s,i)=>m.active==='Chuyển đi'?false:m.active==='Vắng lâu'?(i<6&&rnd()<.4):rnd()<p);
+  for(const[b,a1,a2]of AGE_BANS)if(m.age>=a1&&m.age<=a2&&m.active!=='Chuyển đi')m.bans.push(b);
+  if(m.age>=16&&m.active==='Đang sinh hoạt'){
+    if(rnd()<.12)m.bans.push('Ban Hát Thánh ca');
+    if(m.age>30&&rnd()<.07)m.bans.push('Ban Thăm viếng');
+    if(m.age>18&&rnd()<.05)m.bans.push('Ban Truyền giảng');
+    if(m.age>=18&&m.age<=55&&m.status==='Thành viên'&&rnd()<.06)m.bans.push('Giáo viên Trường Chúa nhật');
+  }
+  members.push(m);fam.members.push(m.id);return m;
+}
+function ageOf(d){let a=TODAY.getFullYear()-d.getFullYear();if(TODAY.getMonth()<d.getMonth()||(TODAY.getMonth()===d.getMonth()&&TODAY.getDate()<d.getDate()))a--;return a}
+for(let f=0;f<112;f++){
+  const grp=GROUPS[Math.floor(rnd()*6)].id;
+  const fam={id:'GĐ-'+String(f+1).padStart(3,'0'),group:grp,members:[],since:ri(1975,2025)};
+  families.push(fam);
+  const ha=ri(25,82),hg=rnd()<.8?'Nam':'Nữ',hho=pick(HO);
+  person(hho,hg,ha,'Chủ hộ',fam);
+  let fatherHo=hg==='Nam'?hho:null;
+  if(ha<74||rnd()<.45){if(rnd()<.86){const sg=hg==='Nam'?'Nữ':'Nam';const sho=pick(HO);person(sho,sg,Math.max(20,ha+ri(-6,3)),hg==='Nam'?'Vợ':'Chồng',fam);if(sg==='Nam')fatherHo=sho}}
+  const ch=ha<31?ri(0,2):ha<72?ri(0,3):0;
+  for(let c=0;c<ch;c++){const ca=ha-ri(23,36);if(ca<0)continue;person(fatherHo||hho,rnd()<.5?'Nam':'Nữ',ca,'Con',fam)}
+}
+// Trẻ dâng con năm 2026
+const youngFam=families.filter(f=>{const h=members.find(m=>m.id===f.members[0]);return h.age>=25&&h.age<=38});
+const DED_DATES=[D(2026,1,11),D(2026,3,8),D(2026,5,10),D(2026,6,14),D(2026,8,9),D(2026,10,11)];
+DED_DATES.forEach((dd,i)=>{const f=youngFam[i*2%youngFam.length];const h=members.find(m=>m.id===f.members[0]);const sp=f.members.map(id=>members.find(m=>m.id===id)).find(m=>m.role!=='Con'&&m.g==='Nam');
+  const k=person((sp||h).ho,rnd()<.5?'Nam':'Nữ',0,'Con',f,{active:'Đang sinh hoạt'});k.dob=addD(dd,-ri(40,120));k.age=0;k.dedication=dd;k.status='Thiếu nhi';k.bans=[];});
+// Báp-têm năm 2026
+const BAP_DATES=[D(2026,4,5),D(2026,5,24),D(2026,9,13)];
+const bapCand=members.filter(m=>m.status==='Thành viên'&&m.age>=13&&m.age<=45&&m.active==='Đang sinh hoạt');
+const bap2026=[];for(let i=0;i<14;i++){const m=bapCand[(i*7+3)%bapCand.length];if(bap2026.includes(m))continue;m.baptism=BAP_DATES[i<6?0:i<10?1:2];bap2026.push(m)}
+// Lớp dự bị Báp-têm
+const catechumens=members.filter(m=>m.status==='Dự bị'&&m.age>=13&&m.active!=='Chuyển đi').slice(0,11);
+// Ban Chấp sự
+const deaconPool=members.filter(m=>m.status==='Thành viên'&&m.age>=35&&m.age<=66&&m.active==='Đang sinh hoạt');
+const DEACON_ROLES=['Thư ký','Thủ quỹ','Chấp sự','Chấp sự','Chấp sự','Chấp sự','Chấp sự'];
+const deacons=[];for(let i=0;i<7;i++){const m=deaconPool[(i*11+5)%deaconPool.length];if(deacons.find(d=>d.m===m))continue;deacons.push({m,role:DEACON_ROLES[deacons.length]});m.bans.unshift('Ban Chấp sự')}
+const SECRETARY=deacons[0].m,TREASURER=deacons[1].m;
+GROUPS.forEach((g,i)=>{const c=members.filter(m=>m.group===g.id&&m.status==='Thành viên'&&m.age>=30&&m.age<65&&m.active==='Đang sinh hoạt');g.lead=c.length?c[i%c.length].name:''});
+const PASTOR='MS. Trần Đình Phúc',PREACHER2='TĐ. Lê Thị Ngọc Hân';
+
+const living=()=>members.filter(m=>m.active!=='Chuyển đi');
+const byId=id=>members.find(m=>m.id===id);
+
+// Thành hôn, An táng
+const weddings=[
+ {d:D(2026,2,28),a:'',b:'',note:'Cả hai là tín hữu HT Bình An'},
+ {d:D(2026,6,20),a:'',b:'',note:'Cô dâu thuộc Hội Thánh khác (có thư giới thiệu)'},
+ {d:D(2026,9,19),a:'',b:'',note:'Cả hai là tín hữu HT Bình An'},
+ {d:D(2026,11,28),a:'',b:'',note:'Đã rao hôn phối 3 Chúa nhật · Sắp cử hành'}];
+const ya=members.filter(m=>m.age>=22&&m.age<=32&&m.status==='Thành viên');
+const yaM=ya.filter(m=>m.g==='Nam'),yaF=ya.filter(m=>m.g==='Nữ');
+weddings.forEach((w,i)=>{w.a=(yaM[i*3%yaM.length]||{}).name||'Phạm Minh Khang';w.b=i===1?'Đinh Thị Mỹ Uyên':(yaF[i*3%yaF.length]||{}).name||'Lê Ngọc Hân'});
+const funerals=[
+ {d:D(2026,3,14),name:'Cụ Hoàng Văn Thạnh',age:88,note:'Tín hữu từ năm 1968'},
+ {d:D(2026,7,2),name:'Cụ bà Nguyễn Thị Lựu',age:91,note:'An táng tại nghĩa trang Hội Thánh'},
+ {d:D(2026,9,27),name:'Ông Võ Đức Toàn',age:67,note:'Lễ tại tư gia, Ban Thăm viếng phục vụ'}];
+const COMMUNION=[D(2026,1,4),D(2026,2,1),D(2026,3,1),D(2026,4,5),D(2026,5,3),D(2026,6,7),D(2026,7,5),D(2026,8,2),D(2026,9,6),D(2026,10,4)].map(d=>({d,n:ri(205,245)}));
+
+// Thờ phượng: lịch giảng
+const SERMONS=[
+ ['Giăng 15:1-8','Ở trong Chúa và kết quả'],['Rô-ma 12:1-2','Của lễ sống'],['Gia-cơ 1:19-27','Nghe và làm theo Lời'],
+ ['Phi-líp 4:4-9','Bình an vượt trên sự hiểu biết'],['Thi Thiên 100','Lấy lòng cảm tạ mà vào cửa Ngài'],['Ê-sai 9:1-6','Một Con Trẻ đã sinh cho chúng ta']];
+const SPEAKERS=[PASTOR,PREACHER2,PASTOR,'MS. Nguyễn Hữu Lộc (khách mời)',PASTOR,PREACHER2];
+const schedule=SERMONS.map((s,i)=>{const d=addD(NEXT_SUN,7*i);return{d,ref:s[0],topic:s[1],speaker:SPEAKERS[i],lead:deacons[(i+2)%deacons.length].m.name,choir:i%2?'Ban Thanh niên':'Ban Hát Thánh ca',communion:d.getDate()<=7}});
+
+// Dâng hiến
+const FUNDS=[{id:'pm',name:'Phần mười',base:72e6},{id:'lh',name:'Lạc hiến Chúa nhật',base:18e6},{id:'tg',name:'Quỹ Truyền giáo',base:9e6},{id:'tt',name:'Quỹ Từ thiện',base:6e6},{id:'xd',name:'Quỹ Xây dựng',base:11e6}];
+const MONTHS=[];for(let m=1;m<=10;m++){const row={m,locked:m<10,funds:{}};FUNDS.forEach(f=>{const v=f.base*(.82+rnd()*.36)*(m===10?.68:1)*(f.id==='lh'&&m===4?1.5:1)*(f.id==='lh'&&m===12?1.6:1);row.funds[f.id]=Math.round(v/1e5)*1e5});MONTHS.push(row)}
+const OCT_TX=[];let tn=1;
+[D(2026,10,4),D(2026,10,11),D(2026,10,18)].forEach(d=>{
+  OCT_TX.push({d,code:'PT-10'+pad(tn++),fund:'lh',type:'Thu',desc:'Lạc hiến thờ phượng Chúa nhật '+fmtS(d),amt:ri(55,75)*1e5,by:TREASURER.name});
+  OCT_TX.push({d,code:'PT-10'+pad(tn++),fund:'pm',type:'Thu',desc:'Phần mười · '+ri(38,62)+' phong bì (theo mã dâng hiến)',amt:ri(150,190)*1e5,by:TREASURER.name});
+  if(d.getDate()===4)OCT_TX.push({d,code:'PT-10'+pad(tn++),fund:'tg',type:'Thu',desc:'Dâng hiến Truyền giáo · Chúa nhật Tiệc Thánh',amt:ri(60,80)*1e5,by:TREASURER.name});
+});
+OCT_TX.push({d:D(2026,10,8),code:'PC-1001',fund:'tt',type:'Chi',desc:'Thăm và hỗ trợ gia đình tín hữu nằm viện',amt:3e6,by:TREASURER.name,dx:'DX-1001'});
+OCT_TX.push({d:D(2026,10,12),code:'PC-1002',fund:'lh',type:'Chi',desc:'Tiền điện, nước nhà thờ tháng 9',amt:2.85e6,by:TREASURER.name,dx:'DX-1002'});
+OCT_TX.push({d:D(2026,10,15),code:'PC-1003',fund:'tg',type:'Chi',desc:'Hỗ trợ chuyến truyền giảng vùng xa (đoàn 6 người)',amt:8e6,by:TREASURER.name,dx:'DX-1003'});
+OCT_TX.push({d:D(2026,10,19),code:'PT-10'+pad(tn++),fund:'xd',type:'Thu',desc:'Dâng hiến sửa mái nhà thờ · đợt 3',amt:2.45e7,by:TREASURER.name});
+OCT_TX.sort((a,b)=>b.d-a.d);
+const fundName=id=>(FUNDS.find(f=>f.id===id)||{name:'(quỹ đã xóa)'}).name;
+// Đề xuất chi → Phê duyệt → Phiếu chi → Sổ thu chi
+const proposals=[
+ {id:'DX-1005',d:D(2026,10,20),fund:'tt',amt:5e6,desc:'Quà Giáng sinh cho 50 gia đình khó khăn, đợt 1',by:'tb',st:'Chờ duyệt'},
+ {id:'DX-1004',d:D(2026,10,17),fund:'xd',amt:4.2e7,desc:'Tạm ứng mua vật tư sửa mái nhà thờ',by:'tk',st:'Chờ duyệt'},
+ {id:'DX-1003',d:D(2026,10,13),fund:'tg',amt:8e6,desc:'Hỗ trợ chuyến truyền giảng vùng xa (đoàn 6 người)',by:'tb',st:'Đã chi',ad:D(2026,10,14),pc:'PC-1003'},
+ {id:'DX-1002',d:D(2026,10,9),fund:'lh',amt:2.85e6,desc:'Tiền điện, nước nhà thờ tháng 9',by:'tq',st:'Đã chi',ad:D(2026,10,10),pc:'PC-1002'},
+ {id:'DX-1001',d:D(2026,10,6),fund:'tt',amt:3e6,desc:'Thăm và hỗ trợ gia đình tín hữu nằm viện',by:'tk',st:'Đã chi',ad:D(2026,10,7),pc:'PC-1001'},
+ {id:'DX-0930',d:D(2026,9,28),fund:'lh',amt:1.5e7,desc:'Thay hệ thống âm thanh hội trường',by:'tk',st:'Từ chối',ad:D(2026,9,30),note:'Hoãn sang năm 2027, đưa vào dự toán'}];
+let dxN=6,pcN=4;
+
+// Chăm sóc
+const absentees=living().filter(m=>m.age>=13&&m.att.slice(-3).every(a=>!a));
+const visits=absentees.slice(0,10).map((m,i)=>({m,reason:m.active==='Vắng lâu'?'Vắng '+(12-m.att.lastIndexOf(true)-1)+' Chúa nhật liên tiếp':'Vắng 3 Chúa nhật gần nhất',who:(members.filter(x=>x.bans.includes('Ban Thăm viếng'))[i%3]||SECRETARY).name,done:i%4===3,last:i%4===3?addD(TODAY,-ri(1,5)):null}));
+[['Đau ốm','Đang điều trị tại bệnh viện'],['Tân tín hữu','Mới tin Chúa tháng 9, cần môn đồ hóa'],['Gia đình có tang','Thăm viếng an ủi']].forEach((r,i)=>{const m=living().filter(x=>x.age>40)[i*9+4];visits.unshift({m,reason:r[0]+' · '+r[1],who:i===1?PREACHER2:PASTOR,done:false,last:null,urgent:i===0})});
+const prayers=[
+ ['Xin cầu thay cho chị em đang chờ kết quả xét nghiệm','Sức khỏe','Đang cầu nguyện'],
+ ['Cảm tạ Chúa: con trai đậu đại học, xin ơn gìn giữ đời sống đức tin','Cảm tạ','Đã chia sẻ'],
+ ['Cầu nguyện cho chồng chưa tin Chúa','Gia đình','Đang cầu nguyện'],
+ ['Xin cầu thay cho công việc làm ăn sau bão','Công việc','Đang cầu nguyện'],
+ ['Cầu nguyện cho chuyến truyền giảng vùng xa tháng 11','Hội Thánh','Đang cầu nguyện'],
+ ['Cảm tạ Chúa vì ca mổ thành công','Cảm tạ','Đã chia sẻ'],
+ ['Xin cầu thay cho kỳ thi tốt nghiệp của các em Thiếu niên','Học tập','Đang cầu nguyện']
+].map((p,i)=>({text:p[0],cat:p[1],st:p[2],by:i===4?'Ban Truyền giảng':living().filter(m=>m.age>20)[i*13+2].name,d:addD(TODAY,-i*2-1),priv:i===0||i===2}));
+
+/* Thân hữu: người đến nhóm nhưng chưa tin Chúa hoặc chưa làm thuộc viên chính thức */
+const STAGES=['Mới đến','Đang tìm hiểu','Đã tin Chúa'];
+const carerPool=(()=>{const c=living().filter(m=>m.bans.includes('Ban Thăm viếng'));return c.length?c:deacons.map(d=>d.m)})();
+let famSeq=families.length;
+function addFriend(fam,role,age,g,ho,first,ref){
+  const m=person(ho,g,age,role,fam);
+  m.type='Thân hữu';m.status='Thân hữu';m.baptism=null;m.dedication=null;m.active='Đang sinh hoạt';m.bans=ageBansFor(m.age);
+  m.firstVisit=first;m.ref=ref;m.carer=pick(carerPool).name;
+  const days=(TODAY-first)/864e5;
+  m.stage=days<=30?'Mới đến':rnd()<.22?'Đã tin Chúa':'Đang tìm hiểu';
+  const p=ri(30,80)/100;m.att=SUNDAYS.map(s=>s>=first&&rnd()<p);
+  if(days<=30&&!m.att.some(Boolean))m.att[11]=true;
+  return m;
+}
+// Vợ hoặc chồng chưa tin Chúa trong gia đình tín hữu
+families.filter(f=>{const h=byId(f.members[0]);return h.age>=28&&h.age<=68&&!f.members.some(id=>['Vợ','Chồng'].includes(byId(id).role))}).slice(0,9)
+ .forEach(f=>{const h=byId(f.members[0]);addFriend(f,h.g==='Nam'?'Vợ':'Chồng',Math.max(25,h.age+ri(-4,4)),h.g==='Nam'?'Nữ':'Nam',pick(HO),addD(TODAY,-ri(40,700)),h.name)});
+// Thân hữu đến qua bạn bè, đồng nghiệp, chương trình truyền giảng
+for(let i=0;i<24;i++){
+  const first=i<6?addD(TODAY,-ri(3,28)):addD(TODAY,-ri(35,640));
+  const fam={id:'GĐ-'+String(++famSeq).padStart(3,'0'),group:GROUPS[i%6].id,members:[],since:first.getFullYear()};families.push(fam);
+  const via=rnd()<.25?'Ban Truyền giảng':pick(living().filter(m=>m.type==='Tín hữu'&&m.age>=16&&m.active==='Đang sinh hoạt')).name;
+  addFriend(fam,'Cá nhân',ri(16,62),rnd()<.5?'Nam':'Nữ',pick(HO),first,via);
+}
+// Thân hữu đã tin Chúa trong năm 2026, nay đang học lớp dự bị Báp-têm
+catechumens.slice(0,4).forEach((m,i)=>{m.convertedAt=D(2026,[3,5,7,8][i],ri(1,28));m.firstVisit=addD(m.convertedAt,-ri(90,300))});
+// Hai người có sinh nhật hôm nay để minh họa
+[living().find(m=>m.type==='Tín hữu'&&m.age>=40&&m.active==='Đang sinh hoạt'),living().filter(m=>m.type==='Thân hữu')[3]].forEach(m=>{if(m){m.dob=new Date(m.dob.getFullYear(),TODAY.getMonth(),TODAY.getDate());m.age=ageOf(m.dob)}});
+
+/* ============ Trạng thái giao diện ============ */
+const state={view:'overview',q:'',grp:'',st:'',ban:'',limit:30,lnTab:'bap',attSess:'cn',attOn:new Set(),attQ:'',locked10:false,role:'ms',famQ:'',progBan:'Ban Thanh niên',type:'',bap:'',bday:''};
+const VIEWS=[
+ ['TRUNG TÂM',[['overview','Tổng quan','home']]],
+ ['THUỘC VIÊN',[['members','Thuộc viên','users'],['families','Gia đình','house'],['bans','Ban ngành & Nhóm','grid'],['attendance','Điểm danh','check']]],
+ ['MỤC VỤ',[['rites','Lễ nghi','drop'],['worship','Thờ phượng & Lịch giảng','book'],['care','Chăm sóc & Cầu thay','heart']]],
+ ['HÀNH CHÁNH',[['giving','Dâng hiến & Quỹ','wallet'],['expense','Đề xuất chi & Duyệt','stamp'],['forms','Biểu mẫu & Báo cáo','file']]],
+ ['HỆ THỐNG',[['config','Cấu hình Hội Thánh','gear'],['roles','Phân quyền','shield']]]];
+const ROLES={ms:'Mục sư Quản nhiệm',tk:'Thư ký Ban Chấp sự',tq:'Thủ quỹ',tb:'Trưởng ban / Giáo viên'};
+const ROLE_NAME={ms:PASTOR,tk:SECRETARY.name,tq:TREASURER.name,tb:'Trưởng Ban Thanh niên'};
+const canMoney=()=>state.role==='ms'||state.role==='tq';
+const isApprover=()=>state.role===cfg.approver;
+const canPropose=()=>cfg.proposers.has(state.role)||isApprover();
+const canPay=()=>state.role==='tq'||state.role==='ms';
+
+function renderSide(){
+  const pending=visits.filter(v=>!v.done).length,pendDx=proposals.filter(p=>p.st==='Chờ duyệt').length;
+  document.getElementById('side').innerHTML=`
+  <div class="brand"><div class="logo">${ic('cross')}</div><div><small>QLHT</small><b>Quản lý Hội Thánh</b></div></div>
+  <div class="side-note">Hồ sơ tín hữu, mục vụ và hành chánh Hội Thánh địa phương<div class="ver"><span>PHIÊN BẢN DEMO 0.3</span><span>21/10/2026</span></div></div>
+  <nav>${VIEWS.map(([h,items])=>`<div class="nav-h">${h}</div>`+items.map(([id,l,i])=>`<button class="nav-a ${state.view===id?'on':''}" data-go="${id}">${ic(i)}<span>${id==='bans'?'Ban ngành & '+U():l}</span>${id==='care'&&pending?`<span class="cnt">${pending}</span>`:''}${id==='expense'&&pendDx?`<span class="cnt">${pendDx}</span>`:''}</button>`).join('')).join('')}</nav>
+  <div class="side-foot"><b>Đang xem với vai trò</b>
+    <select class="role-sel" id="roleSel" aria-label="Vai trò">${Object.entries(ROLES).map(([k,v])=>`<option value="${k}" ${state.role===k?'selected':''}>${v}</option>`).join('')}</select>
+    <div style="margin-top:6px">Đổi vai trò để xem phân quyền: Thủ quỹ mới thấy số liệu dâng hiến chi tiết.</div></div>`;
+}
+
+/* ============ Các màn hình ============ */
+const V={};
+const statusPill=m=>m.type==='Thân hữu'?'<span class="pill p-friend">Thân hữu</span>':m.active==='Vắng lâu'?'<span class="pill p-warn">Vắng lâu</span>':m.active==='Chuyển đi'?'<span class="pill p-mute">Chuyển đi</span>':m.status==='Thành viên'?'<span class="pill p-good">Thành viên</span>':m.status==='Dự bị'?'<span class="pill p-gold">Dự bị</span>':'<span class="pill p-pri">Thiếu nhi</span>';
+const initials=m=>(m.dem?m.dem.split(' ').pop().slice(0,1):m.ho.slice(0,1))+m.ten.slice(0,1);
+const av=m=>`<div class="av ${m.g==='Nữ'?'f':''}">${esc(initials(m))}</div>`;
+const attCount=i=>living().filter(m=>m.age>=3&&m.att[i]).length;
+
+V.overview=()=>{
+  const L=living(),nam=L.filter(m=>m.g==='Nam').length;
+  const mem=L.filter(m=>m.status==='Thành viên').length,cat=L.filter(m=>m.status==='Dự bị').length,kid=L.filter(m=>m.status==='Thiếu nhi').length;
+  const TH=L.filter(m=>m.type==='Tín hữu'),friends=L.filter(m=>m.type==='Thân hữu');
+  const famN=families.filter(f=>f.members.some(id=>{const x=byId(id);return x.active!=='Chuyển đi'&&x.type==='Tín hữu'})).length;
+  const noBap=TH.filter(m=>!m.baptism).length;
+  const fNew=friends.filter(m=>(TODAY-m.firstVisit)/864e5<=30).sort((a,b)=>b.firstVisit-a.firstVisit);
+  const fSun=friends.filter(m=>m.att[11]).length,conv=members.filter(m=>m.convertedAt&&m.convertedAt.getFullYear()===2026).length;
+  const stageN=STAGES.map(s=>friends.filter(m=>m.stage===s).length);
+  const latest=[...friends].sort((a,b)=>b.firstVisit-a.firstVisit).slice(0,3);
+  const bw=L.filter(inWeek).sort((a,b)=>bdThisYear(a)-bdThisYear(b));
+  const mNow=TODAY.getMonth(),mNext=(mNow+1)%12,bmN=L.filter(m=>m.dob.getMonth()===mNow&&turnAge(m)>=1).length,bnN=L.filter(m=>m.dob.getMonth()===mNext).length;
+  const bdTag=m=>isBdToday(m)?'<span class="pill p-good">Hôm nay</span>':bdThisYear(m)<TODAY?'<span class="pill p-mute">Đã qua</span>':`<span class="pill p-gold">Còn ${Math.round((bdThisYear(m)-TODAY)/864e5)} ngày</span>`;
+  const a11=attCount(11),a10=attCount(10),avg4=Math.round([8,9,10,11].reduce((s,i)=>s+attCount(i),0)/4);
+  const ded=members.filter(m=>m.dedication&&m.dedication.getFullYear()===2026).length;
+  const wed=weddings.filter(w=>w.d<=TODAY).length;
+  const groupCounts=GROUPS.map(g=>({g,n:families.filter(f=>f.group===g.id).length,p:L.filter(m=>m.group===g.id).length}));
+  const maxP=Math.max(...groupCounts.map(x=>x.p));
+  const recent=[...bap2026.map(m=>({d:m.baptism,t:'Báp-têm',n:m.name,c:'p-pri'})),...members.filter(m=>m.dedication&&m.dedication.getFullYear()===2026).map(m=>({d:m.dedication,t:'Dâng con',n:m.name,c:'p-gold'})),...weddings.filter(w=>w.d<=TODAY).map(w=>({d:w.d,t:'Thành hôn',n:w.a+' & '+w.b,c:'p-good'}))].sort((a,b)=>b.d-a.d).slice(0,6);
+  const nx=schedule[0];
+  return `
+  <section class="hero">
+    <div style="position:relative;z-index:1;min-width:0">
+      <div class="eyebrow"><span>HTTLVN (MIỀN NAM)</span><span>ĐỊA HẠT KHÁNH HÒA</span><span>THÀNH LẬP 1962</span></div>
+      <h2>Hội Thánh Bình An</h2>
+      <div class="meta"><span>Câu gốc năm 2026: <b>Giô-suê 1:9</b></span><span>Địa chỉ mẫu · Khánh Hòa</span></div>
+      <div class="staff">
+        <div><small>MỤC SƯ QUẢN NHIỆM</small><b>${PASTOR}</b></div>
+        <div><small>TRUYỀN ĐẠO</small><b>${PREACHER2}</b></div>
+        <div><small>BAN CHẤP SỰ (${deacons.length})</small><b>Thư ký: ${esc(SECRETARY.name)}</b></div>
+      </div>
+    </div>
+    <div class="hero-r">
+      <small>HÔM NAY</small><div class="d">${DOW[TODAY.getDay()]}, ${fmt(TODAY)}</div>
+      <div class="next-sun">Chúa nhật ${fmtS(nx.d)} · <b>${esc(nx.speaker)}</b> giảng<br><b>${nx.ref}</b> · “${nx.topic}”</div>
+      <button class="btn hero-btn" data-go="worship">${ic('book')}Lịch giảng & sinh hoạt</button>
+    </div>
+  </section>
+
+  <section class="grid g4">
+    <div class="card kpi"><div class="lbl">THUỘC VIÊN</div><div class="big num">${nf(L.length)}</div><div class="small muted">Tín hữu <b style="color:var(--fg)">${TH.length}</b> · Thân hữu <b style="color:var(--friend)">${friends.length}</b></div>
+      <div class="foot num"><span>Đã báp-têm <b>${mem}</b></span><button class="link" data-act="goFlt" data-k="bap" data-v="no">Chưa báp-têm ${noBap}</button><span>Dự bị <b>${cat}</b></span><span>Thiếu nhi <b>${kid}</b></span><span>Nam <b>${nam}</b></span><span>Nữ <b>${L.length-nam}</b></span></div></div>
+    <div class="card kpi"><div class="lbl">GIA ĐÌNH TÍN HỮU</div><div class="big num" style="color:var(--good)">${famN}</div><div class="small muted">Sinh hoạt trong ${GROUPS.length} ${esc(Ul())}</div>
+      <div class="foot num"><span>Bình quân <b>${(TH.length/famN).toLocaleString('vi-VN',{maximumFractionDigits:1})}</b> tín hữu/gia đình</span><button class="link" data-go="families">Xem danh sách →</button></div></div>
+    <div class="card kpi"><div class="lbl">THỜ PHƯỢNG CN ${fmtS(LAST_SUN)}</div><div class="big num" style="color:var(--primary)">${a11}</div><div class="small muted">Người hiện diện (điểm danh QR) <span class="${a11>=a10?'delta-up':'delta-dn'}">${a11>=a10?'+':''}${a11-a10}</span> so với CN trước</div>
+      <div class="foot num"><span>TB 4 tuần <b>${avg4}</b></span><span>Tỷ lệ <b>${Math.round(a11/L.filter(m=>m.age>=3).length*100)}%</b></span><span>Có <b>${fSun}</b> thân hữu</span></div></div>
+    <div class="card kpi"><div class="lbl">LỄ NGHI NĂM 2026</div><div class="big num" style="color:var(--gold)">${bap2026.length+ded+wed+funerals.length}</div><div class="small muted">Tổng số lễ đã cử hành</div>
+      <div class="foot num"><span>Báp-têm <b>${bap2026.length}</b></span><span>Dâng con <b>${ded}</b></span><span>Thành hôn <b>${wed}</b></span><span>An táng <b>${funerals.length}</b></span></div></div>
+  </section>
+
+  <section class="grid g2">
+    <div class="card"><div class="card-h"><h3>Thân hữu</h3><button class="link" data-act="goFlt" data-k="type" data-v="Thân hữu">Xem danh sách →</button><p>Người đến nhóm nhưng chưa tin Chúa hoặc chưa làm thuộc viên chính thức</p></div>
+      <div class="mini">
+        <div><b class="num">${friends.length}</b><span>Đang theo dõi</span></div>
+        <div><b class="num" style="color:var(--friend)">${fNew.length}</b><span>Mới đến 30 ngày</span></div>
+        <div><b class="num">${fSun}</b><span>Dự thờ phượng CN ${fmtS(LAST_SUN)}</span></div>
+        <div><b class="num" style="color:var(--good)">${conv}</b><span>Thành tín hữu năm 2026</span></div>
+      </div>
+      <div class="stagebar" role="img" aria-label="Thân hữu theo giai đoạn">${STAGES.map((s,i)=>stageN[i]?`<i style="flex:${stageN[i]};opacity:${[.35,.65,1][i]}"></i>`:'').join('')}</div>
+      <div class="lgd num">${STAGES.map((s,i)=>`<span><i style="opacity:${[.35,.65,1][i]}"></i>${s} <b>${stageN[i]}</b></span>`).join('')}</div>
+      <div class="list">${latest.map(m=>`<div class="li" data-m="${m.id}" style="cursor:pointer">${av(m)}<div class="t"><b>${esc(m.name)}</b><span>Đến lần đầu ${fmt(m.firstVisit)} · giới thiệu: ${esc(m.ref)}</span></div><span class="pill p-friend">${m.stage}</span></div>`).join('')}</div></div>
+    <div class="card"><div class="card-h"><h3>Sinh nhật tuần này</h3><button class="link" data-act="goFlt" data-k="bday" data-v="week">Xem tất cả →</button><p>Chúa nhật ${fmtS(WEEK_START)} đến thứ Bảy ${fmtS(WEEK_END)} · ${bw.length} người</p></div>
+      <div class="list">${bw.slice(0,6).map(m=>`<div class="li" data-m="${m.id}" style="cursor:pointer">${av(m)}<div class="t"><b>${esc(m.name)}</b><span>${DOW[bdThisYear(m).getDay()]} ${fmtS(m.dob)} · tròn ${turnAge(m)} tuổi${m.type==='Thân hữu'?' · Thân hữu':''}</span></div>${bdTag(m)}</div>`).join('')||'<div class="empty">Không có sinh nhật trong tuần này</div>'}</div>
+      ${bw.length>6?`<div class="small muted">và ${bw.length-6} người khác</div>`:''}
+      <div class="links-row"><button class="link" data-act="goFlt" data-k="bday" data-v="m${mNow+1}">${MONTH_VI(mNow)}: ${bmN} người →</button><button class="link" data-act="goFlt" data-k="bday" data-v="m${mNext+1}">${MONTH_VI(mNext)}: ${bnN} người →</button></div></div>
+  </section>
+
+  <section class="card"><div class="card-h"><h3>Thao tác nhanh</h3><span class="small muted" style="margin-left:auto">Dành cho Mục sư, Thư ký, Thủ quỹ</span></div>
+    <div class="qa">
+      <button data-go="members">${ic('search')}Tra cứu thuộc viên</button>
+      <button data-act="add">${ic('plus')}Thêm thuộc viên</button>
+      <button data-go="attendance">${ic('qr')}Điểm danh QR</button>
+      <button data-go="rites">${ic('drop')}Sổ Báp-têm</button>
+      <button data-go="expense">${ic('stamp')}Đề xuất chi</button>
+      <button data-go="forms">${ic('print')}In giấy chứng nhận</button>
+      <button data-go="care">${ic('heart')}Thăm viếng</button>
+      <button data-act="report">${ic('chart')}Báo cáo Tổng Liên Hội</button>
+    </div></section>
+
+  <section class="grid g-73">
+    <div class="card"><div class="card-h"><h3>Hiện diện thờ phượng 12 Chúa nhật gần nhất</h3><p>Số người được điểm danh, tính cả thiếu nhi từ 3 tuổi. Ngày có Tiệc Thánh tô màu vàng.</p></div>
+      <div class="chart">${attChart()}</div></div>
+    <div class="card"><div class="card-h"><h3>Cần quan tâm tuần này</h3></div>
+      <div class="list">
+        <div class="li"><div class="av" style="background:var(--warn-soft);color:var(--warn)">${absentees.length}</div><div class="t"><b>Vắng 3 Chúa nhật liên tiếp</b><span>Đã giao Ban Thăm viếng ${visits.filter(v=>!v.done).length} trường hợp</span></div><button class="link" data-go="care">Xem →</button></div>
+        <div class="li"><div class="av" style="background:var(--friend-soft);color:var(--friend)">${fNew.length}</div><div class="t"><b>Thân hữu mới đến trong 30 ngày</b><span>Mời dự nhóm ${esc(Ul())}, giao người chăm sóc</span></div><button class="link" data-act="goFlt" data-k="type" data-v="Thân hữu">Xem →</button></div>
+        <div class="li"><div class="av">${catechumens.length}</div><div class="t"><b>Lớp dự bị Báp-têm khóa 2/2026</b><span>Dự kiến Lễ Báp-têm Chúa nhật 13/12/2026</span></div><button class="link" data-go="rites">Xem →</button></div>
+        ${(()=>{const pd=proposals.filter(p=>p.st==='Chờ duyệt');return pd.length?`<div class="li"><div class="av" style="background:var(--gold-soft);color:var(--gold)">${pd.length}</div><div class="t"><b>Đề xuất chi chờ duyệt</b><span>${canMoney()||isApprover()?'Tổng '+tr(pd.reduce((s,p)=>s+p.amt,0))+' · ':''}Người duyệt: ${ROLES[cfg.approver]}</span></div><button class="link" data-go="expense">Xem →</button></div>`:''})()}
+        <div class="li"><div class="av" style="background:var(--bad-soft);color:var(--bad)">${prayers.filter(p=>p.st==='Đang cầu nguyện').length}</div><div class="t"><b>Lời cầu thay đang mở</b><span>Chia sẻ trong buổi nhóm cầu nguyện tối thứ Tư</span></div><button class="link" data-go="care">Xem →</button></div>
+      </div></div>
+  </section>
+
+  <section class="grid g2">
+    <div class="card"><div class="card-h"><h3>Thuộc viên theo ${esc(Ul())}</h3><button class="link" data-go="bans">Xem chi tiết →</button></div>
+      ${groupCounts.map(x=>`<div class="hbar"><span>${x.g.name} <span class="muted small">· ${x.g.day}</span></span><span class="num"><b>${x.p}</b> <span class="muted small">người · ${x.n} GĐ</span></span><div class="track"><div class="fill" style="width:${x.p/maxP*100}%"></div></div></div>`).join('')}</div>
+    <div class="card"><div class="card-h"><h3>Lễ nghi gần đây</h3><button class="link" data-go="rites">Mở sổ lễ nghi →</button></div>
+      <div class="list">${recent.map(r=>`<div class="li"><span class="pill ${r.c}">${r.t}</span><div class="t"><b>${esc(r.n)}</b></div><span class="small muted num">${fmt(r.d)}</span></div>`).join('')}</div></div>
+  </section>`;
+};
+function attChart(){
+  const vals=SUNDAYS.map((s,i)=>attCount(i)),W=640,H=230,l=34,b=26,t=12,max=Math.ceil(Math.max(...vals)/50)*50;
+  const bw=(W-l-8)/vals.length,y=v=>t+(H-t-b)*(1-v/max);
+  let g='';for(let v=0;v<=max;v+=50)g+=`<line x1="${l}" x2="${W}" y1="${y(v)}" y2="${y(v)}" stroke="var(--line)"/><text x="${l-6}" y="${y(v)+4}" text-anchor="end">${v}</text>`;
+  const bars=vals.map((v,i)=>{const x=l+i*bw+bw*.18,w=bw*.64,comm=SUNDAYS[i].getDate()<=7;return `<rect x="${x}" y="${y(v)}" width="${w}" height="${y(0)-y(v)}" rx="3" fill="${comm?'var(--gold)':'var(--primary)'}" opacity="${i===vals.length-1?1:.78}"/>${i===vals.length-1||comm?`<text x="${x+w/2}" y="${y(v)-5}" text-anchor="middle" style="fill:var(--fg);font-weight:600">${v}</text>`:''}<text x="${x+w/2}" y="${H-8}" text-anchor="middle">${fmtS(SUNDAYS[i])}</text>`}).join('');
+  return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Biểu đồ hiện diện">${g}${bars}</svg>`;
+}
+
+const bapCell=m=>m.baptism?`<span class="pill p-good">Đã · ${m.baptism.getFullYear()}</span>`:catechumens.includes(m)?'<span class="pill p-gold">Chưa · đang học</span>':m.status==='Thiếu nhi'?'<span class="pill p-mute">Chưa · thiếu nhi</span>':'<span class="pill p-mute">Chưa</span>';
+const typePill=m=>m.type==='Thân hữu'?'<span class="pill p-friend">Thân hữu</span>':'<span class="pill p-pri">Tín hữu</span>';
+const bdOK=m=>!state.bday||(state.bday==='week'?inWeek(m):m.dob.getMonth()+1===+state.bday.slice(1)&&turnAge(m)>=1);
+const bapOK=m=>!state.bap||(state.bap==='yes'?!!m.baptism:!m.baptism);
+V.members=()=>{
+  const q=state.q.toLowerCase().trim();
+  let L=members.filter(m=>(!q||m.name.toLowerCase().includes(q)||m.id.toLowerCase().includes(q)||m.phone.replace(/\s/g,'').includes(q.replace(/\s/g,'')))&&(!state.grp||m.group===state.grp)&&(!state.ban||m.bans.includes(state.ban))&&
+    (!state.type||m.type===state.type)&&bapOK(m)&&bdOK(m)&&
+    (!state.st?(m.active!=='Chuyển đi'||!!q):(state.st==='Vắng lâu'||state.st==='Chuyển đi'?m.active===state.st:m.status===state.st&&m.active!=='Chuyển đi')));
+  if(state.bday)L.sort((a,b)=>bdThisYear(a)-bdThisYear(b));
+  const total=L.length;L=L.slice(0,state.limit);
+  const Lv=living(),nT=Lv.filter(m=>m.type==='Tín hữu').length,nF=Lv.length-nT;
+  const mNow=TODAY.getMonth();
+  const anyF=state.q||state.grp||state.st||state.ban||state.type||state.bap||state.bday;
+  const chip=(k,v,l,n)=>`<button class="chip-f ${state[k]===v?'on':''}" data-act="flt" data-k="${k}" data-v="${v}">${l} · <span class="num">${n}</span></button>`;
+  return `<div class="page-h"><div><h2 class="page">Thuộc viên Hội Thánh</h2><p>${nT} tín hữu · ${nF} thân hữu · bấm vào một dòng để xem hồ sơ và thẻ QR</p></div><div class="sp"></div><button class="btn pri" data-act="add">${ic('plus')}Thêm thuộc viên</button></div>
+  <div class="seg" role="tablist" aria-label="Loại thuộc viên">${[['','Tất cả',Lv.length],['Tín hữu','Tín hữu',nT],['Thân hữu','Thân hữu',nF]].map(([v,l,n])=>`<button class="${state.type===v?'on':''}" data-act="seg" data-v="${v}">${l}<span class="num">${n}</span></button>`).join('')}</div>
+  <div class="toolbar">
+    <input class="input" id="q" placeholder="Tìm theo tên, mã thuộc viên hoặc số điện thoại" value="${esc(state.q)}">
+    <select class="select" id="fGrp" aria-label="${esc(U())}"><option value="">Tất cả ${esc(Ul())}</option>${GROUPS.map(g=>`<option value="${g.id}" ${state.grp===g.id?'selected':''}>${esc(gName(g.id))}</option>`).join('')}</select>
+    <select class="select" id="fSt" aria-label="Tình trạng"><option value="">Mọi tình trạng</option>${['Thành viên','Dự bị','Thiếu nhi','Vắng lâu','Chuyển đi'].map(s=>`<option ${state.st===s?'selected':''}>${s}</option>`).join('')}</select>
+    <select class="select" id="fBap" aria-label="Báp-têm"><option value="">Báp-têm: tất cả</option><option value="yes" ${state.bap==='yes'?'selected':''}>Đã báp-têm</option><option value="no" ${state.bap==='no'?'selected':''}>Chưa báp-têm</option></select>
+    <select class="select" id="fBd" aria-label="Sinh nhật"><option value="">Sinh nhật: mọi tháng</option><option value="week" ${state.bday==='week'?'selected':''}>Sinh nhật tuần này</option>${Array.from({length:12},(_,i)=>`<option value="m${i+1}" ${state.bday==='m'+(i+1)?'selected':''}>Sinh nhật ${MONTH_VI(i).toLowerCase()}</option>`).join('')}</select>
+    <select class="select" id="fBan" aria-label="Ban ngành"><option value="">Mọi ban ngành</option>${allBanNames().map(s=>`<option ${state.ban===s?'selected':''}>${esc(s)}</option>`).join('')}</select>
+  </div>
+  <div class="chips"><span class="small muted">Lọc nhanh:</span>
+    ${chip('bday','week','Sinh nhật tuần này',Lv.filter(inWeek).length)}
+    ${chip('bday','m'+(mNow+1),'Sinh nhật '+MONTH_VI(mNow).toLowerCase(),Lv.filter(m=>m.dob.getMonth()===mNow&&turnAge(m)>=1).length)}
+    ${chip('bap','no','Chưa báp-têm',Lv.filter(m=>!m.baptism).length)}
+    ${anyF?'<button class="link" data-act="clr">Xóa bộ lọc</button>':''}</div>
+  <div class="tbl-wrap"><table style="min-width:1060px"><thead><tr><th>Mã</th><th>Họ tên</th><th>Loại</th><th>Sinh nhật</th><th>Báp-têm</th><th>${esc(U())}</th><th>Tình trạng</th><th>Hiện diện 12 CN</th><th>Ban ngành</th></tr></thead><tbody>
+  ${L.map(m=>`<tr class="click ${isBdToday(m)?'bd-today':''}" data-m="${m.id}"><td class="num muted">${m.id}</td><td><span class="nm">${esc(m.name)}</span><div class="small muted">${m.role}${m.phone?' · '+m.phone:''}</div></td><td>${typePill(m)}</td>
+    <td><span class="num">${fmt(m.dob)}</span><div class="small muted">${m.age} tuổi · ${m.g}${isBdToday(m)?' · <b style="color:var(--good)">hôm nay</b>':inWeek(m)?' · <b style="color:var(--gold)">tuần này</b>':''}</div></td>
+    <td>${bapCell(m)}</td><td>${esc(gName(m.group))}</td><td>${m.type==='Thân hữu'?`<span class="pill p-friend">${m.stage}</span>`:statusPill(m)}</td>
+    <td><div class="dots">${m.att.map(a=>`<i class="${a?'on':''}"></i>`).join('')}</div></td><td class="small">${m.bans.slice(0,2).join(', ')}${m.bans.length>2?' +'+(m.bans.length-2):''}</td></tr>`).join('')||`<tr><td colspan="9" class="empty">Không có thuộc viên khớp bộ lọc. Thử bỏ bớt điều kiện lọc.</td></tr>`}
+  </tbody></table></div>
+  ${total>L.length?`<div style="text-align:center"><button class="btn" data-act="more">Xem thêm (${total-L.length} người)</button></div>`:`<div class="small muted" style="text-align:center">Hiển thị ${total} người${state.st?'':' (không gồm người đã chuyển đi)'}</div>`}`;
+};
+
+V.families=()=>{
+  const q=state.famQ.toLowerCase();
+  const F=families.filter(f=>!q||f.id.toLowerCase().includes(q)||f.members.some(id=>byId(id).name.toLowerCase().includes(q))).slice(0,40);
+  return `<div class="page-h"><div><h2 class="page">Gia đình</h2><p>${families.length} gia đình · khi con cái lập gia đình riêng, hồ sơ được tách sang mã gia đình mới nhưng vẫn giữ liên kết với gia đình gốc</p></div></div>
+  <div class="toolbar"><input class="input" id="famQ" placeholder="Tìm theo mã gia đình hoặc tên thành viên" value="${esc(state.famQ)}"></div>
+  <div class="grid g3">${F.map(f=>{const ms=f.members.map(byId);return `<div class="card"><div class="card-h"><h3 class="num">${f.id}</h3><span class="pill p-pri">${gName(f.group)}</span><p>Sinh hoạt tại Hội Thánh từ ${f.since}</p></div>
+    <div class="list">${ms.map(m=>`<div class="li click" data-m="${m.id}" style="cursor:pointer">${av(m)}<div class="t"><b>${esc(m.name)}</b><span>${m.role} · ${m.age} tuổi</span></div>${statusPill(m)}</div>`).join('')}</div></div>`}).join('')}</div>
+  ${families.length>40&&!q?'<div class="small muted" style="text-align:center">Hiển thị 40 gia đình đầu. Dùng ô tìm kiếm để tìm gia đình khác.</div>':''}`;
+};
+
+V.bans=()=>{
+  const L=living();
+  const card=b=>{const ms=L.filter(m=>m.bans.includes(b));const act=ms.length?Math.round(ms.reduce((s,m)=>s+m.att.slice(-4).filter(Boolean).length,0)/(ms.length*4)*100):0;
+    return `<div class="card ban-card"><div class="lead">${esc(BAN_INFO[b]||'Chưa đặt lịch sinh hoạt')}</div><h3 style="margin:4px 0 6px;font-size:15px">${esc(b)}</h3><div class="n num">${ms.length}</div><div class="small muted">thành viên${ms.length?' · hiện diện 4 tuần '+act+'%':''}</div><button class="link" style="margin-top:8px" data-ban="${esc(b)}">Xem danh sách →</button></div>`};
+  return `<div class="page-h"><div><h2 class="page">Ban ngành & ${esc(U())}</h2><p>Ban theo độ tuổi là cố định. Ban phục vụ và tên gọi “${esc(U())}” do Hội Thánh tự thiết lập trong Cấu hình.</p></div><div class="sp"></div><button class="btn" data-go="config">${ic('gear')}Thiết lập ban phục vụ</button></div>
+  <div class="card"><div class="card-h"><h3>Ban Chấp sự nhiệm kỳ 2025–2027</h3></div>
+    <div class="grid g4">${deacons.map(d=>`<div class="li" style="border:0">${av(d.m)}<div class="t"><b>${esc(d.m.name)}</b><span>${d.role}</span></div></div>`).join('')}</div></div>
+  <div class="sub-h">BAN THEO ĐỘ TUỔI</div>
+  <div class="auto-grid">${AGE_BANS.map(b=>card(b[0])).join('')}</div>
+  <div class="sub-h">BAN PHỤC VỤ · ${cfg.serviceBans.length} BAN DO HỘI THÁNH THIẾT LẬP</div>
+  ${cfg.serviceBans.length?`<div class="auto-grid">${cfg.serviceBans.map(card).join('')}</div>`:`<div class="card empty">Chưa có ban phục vụ. Mục sư Quản nhiệm thêm ban trong Cấu hình Hội Thánh.</div>`}
+  <div class="card"><div class="card-h"><h3>${esc(U())} (nhóm gia đình theo nơi ở)</h3></div>
+    <div class="tbl-wrap"><table style="min-width:560px"><thead><tr><th>${esc(U())}</th><th>Trưởng ${esc(Ul())}</th><th>Lịch nhóm</th><th class="right">Gia đình</th><th class="right">Tín hữu</th></tr></thead><tbody>
+    ${GROUPS.map(g=>`<tr><td class="nm">${esc(gName(g.id))}</td><td>${esc(g.lead)}</td><td>${g.day}</td><td class="right num">${families.filter(f=>f.group===g.id).length}</td><td class="right num">${L.filter(m=>m.group===g.id).length}</td></tr>`).join('')}</tbody></table></div></div>`;
+};
+
+const SESS={cn:{n:'Thờ phượng Chúa nhật '+fmt(NEXT_SUN),f:m=>m.age>=3},tcn:{n:'Trường Chúa nhật · Lớp Thiếu nhi',f:m=>m.bans.includes('Ban Thiếu nhi')},tn:{n:'Ban Thanh niên · Thứ Bảy 24/10',f:m=>m.bans.includes('Ban Thanh niên')},bt:{n:'Lớp dự bị Báp-têm · buổi 7',f:m=>catechumens.includes(m)}};
+V.attendance=()=>{
+  const s=SESS[state.attSess],q=state.attQ.toLowerCase();
+  const all=living().filter(m=>m.active!=='Chuyển đi'&&s.f(m));
+  const L=all.filter(m=>!q||m.name.toLowerCase().includes(q));
+  const on=all.filter(m=>state.attOn.has(state.attSess+m.id)).length;
+  return `<div class="page-h"><div><h2 class="page">Điểm danh</h2><p>Mỗi tín hữu có thẻ QR riêng. Người phụ trách quét bằng điện thoại tại cửa, hoặc bấm chọn trên danh sách.</p></div></div>
+  <div class="card"><div class="att-head">
+    <select class="select" id="attSess" aria-label="Buổi nhóm">${Object.entries(SESS).map(([k,v])=>`<option value="${k}" ${state.attSess===k?'selected':''}>${v.n}</option>`).join('')}</select>
+    <div><span class="att-count num" id="attCount">${on}</span><span class="muted"> / ${all.length} hiện diện</span></div>
+    <div style="flex:1"></div>
+    <button class="btn pri" data-act="scan">${ic('scan')}Mô phỏng quét QR</button>
+    <button class="btn" data-act="attReset">Làm lại</button>
+  </div>
+  <div class="track" style="height:8px;background:var(--surface-2);border-radius:5px;margin-top:14px;overflow:hidden"><div style="height:100%;width:${all.length?on/all.length*100:0}%;background:var(--good)"></div></div></div>
+  <input class="input" id="attQ" placeholder="Tìm nhanh tên người đến muộn" value="${esc(state.attQ)}">
+  <div class="att-list">${L.map(m=>{const k=state.attSess+m.id,o=state.attOn.has(k);return `<button class="att-item ${o?'on':''}" data-att="${m.id}" id="a-${m.id}"><span class="chk">${o?ic('tick'):''}</span><span class="t"><b>${esc(m.name)}</b><span>${m.type==='Thân hữu'?'Thân hữu · ':''}${m.id} · ${esc(gName(m.group))}</span></span></button>`}).join('')}</div>`;
+};
+
+V.rites=()=>{
+  const tabs=[['bap','Báp-têm'],['class','Lớp dự bị Báp-têm'],['ded','Dâng con'],['wed','Thành hôn'],['fun','An táng'],['com','Tiệc Thánh']];
+  let body='';
+  if(state.lnTab==='bap'){
+    const all=members.filter(m=>m.baptism).sort((a,b)=>b.baptism-a.baptism).slice(0,40);
+    body=`<div class="toolbar"><span class="muted small">${members.filter(m=>m.baptism).length} hồ sơ trong sổ Báp-têm · năm 2026: ${bap2026.length} người tại 3 lễ (Phục sinh 05/04, Ngũ tuần 24/05, 13/09)</span><div style="flex:1"></div><button class="btn sm" data-act="ocr">${ic('scan')}Nhập từ ảnh sổ cũ (AI)</button></div>
+    <div class="tbl-wrap"><table><thead><tr><th>Ngày Báp-têm</th><th>Họ tên</th><th>Ngày sinh</th><th>Mục sư cử hành</th><th>Nơi</th><th></th></tr></thead><tbody>
+    ${all.map(m=>`<tr><td class="num">${fmt(m.baptism)}</td><td class="nm click" data-m="${m.id}" style="cursor:pointer">${esc(m.name)}</td><td class="num">${fmt(m.dob)}</td><td>${m.baptism.getFullYear()>=2015?PASTOR:'MS. Hồ Văn Nghĩa (nguyên QN)'}</td><td>HT Bình An</td><td><button class="btn sm" data-cert="bap" data-id="${m.id}">${ic('print')}Giấy chứng nhận</button></td></tr>`).join('')}</tbody></table></div>`;
+  }else if(state.lnTab==='class'){
+    body=`<div class="card"><div class="card-h"><h3>Lớp dự bị Báp-têm khóa 2/2026</h3><p>Khai giảng 06/09/2026 · 12 buổi chiều Chúa nhật · Giảng dạy: ${PREACHER2} · Dự kiến Lễ Báp-têm 13/12/2026</p></div>
+    <div class="tbl-wrap"><table><thead><tr><th>Học viên</th><th>Tuổi</th><th>Nhóm</th><th>Số buổi dự</th><th>Phỏng vấn đức tin</th></tr></thead><tbody>
+    ${catechumens.map((m,i)=>{const n=Math.max(3,7-(i%4));return `<tr class="click" data-m="${m.id}"><td class="nm">${esc(m.name)}</td><td class="num">${m.age}</td><td>${gName(m.group)}</td><td class="num">${n}/7</td><td>${i%3===0?'<span class="pill p-good">Đã phỏng vấn</span>':n<5?'<span class="pill p-warn">Cần học bù</span>':'<span class="pill p-mute">Chưa</span>'}</td></tr>`}).join('')}</tbody></table></div></div>`;
+  }else if(state.lnTab==='ded'){
+    const all=members.filter(m=>m.dedication).sort((a,b)=>b.dedication-a.dedication).slice(0,30);
+    body=`<div class="tbl-wrap"><table><thead><tr><th>Ngày dâng con</th><th>Tên con</th><th>Ngày sinh</th><th>Cha mẹ</th><th></th></tr></thead><tbody>
+    ${all.map(m=>{const ps=families.find(f=>f.id===m.fam).members.map(byId).filter(x=>x.role!=='Con');return `<tr><td class="num">${fmt(m.dedication)}</td><td class="nm click" data-m="${m.id}" style="cursor:pointer">${esc(m.name)}</td><td class="num">${fmt(m.dob)}</td><td>${ps.map(p=>esc(p.name)).join(' & ')}</td><td><button class="btn sm" data-cert="ded" data-id="${m.id}">${ic('print')}Giấy chứng nhận</button></td></tr>`}).join('')}</tbody></table></div>`;
+  }else if(state.lnTab==='wed'){
+    body=`<div class="tbl-wrap"><table><thead><tr><th>Ngày cử hành</th><th>Chú rể</th><th>Cô dâu</th><th>Ghi chú</th><th></th></tr></thead><tbody>
+    ${weddings.map((w,i)=>`<tr><td class="num">${fmt(w.d)} ${w.d>TODAY?'<span class="pill p-gold">Sắp tới</span>':''}</td><td class="nm">${esc(w.a)}</td><td class="nm">${esc(w.b)}</td><td class="small">${w.note}</td><td><button class="btn sm" data-cert="wed" data-id="${i}">${ic('print')}Chứng thư</button></td></tr>`).join('')}</tbody></table></div>`;
+  }else if(state.lnTab==='fun'){
+    body=`<div class="tbl-wrap"><table><thead><tr><th>Ngày</th><th>Người qua đời</th><th>Hưởng thọ</th><th>Ghi chú</th></tr></thead><tbody>
+    ${funerals.map(f=>`<tr><td class="num">${fmt(f.d)}</td><td class="nm">${f.name}</td><td class="num">${f.age}</td><td class="small">${f.note}</td></tr>`).join('')}</tbody></table></div>`;
+  }else{
+    body=`<div class="card"><div class="card-h"><h3>Lễ Tiệc Thánh năm 2026</h3><p>Cử hành Chúa nhật đầu mỗi tháng · lễ kế tiếp: Chúa nhật 01/11/2026</p></div>
+    <div class="tbl-wrap"><table style="min-width:480px"><thead><tr><th>Chúa nhật</th><th>Chủ lễ</th><th class="right">Số người dự</th></tr></thead><tbody>
+    ${COMMUNION.slice().reverse().map(c=>`<tr><td class="num">${fmt(c.d)}</td><td>${PASTOR}</td><td class="right num">${c.n}</td></tr>`).join('')}</tbody></table></div></div>`;
+  }
+  return `<div class="page-h"><div><h2 class="page">Sổ lễ nghi</h2><p>Báp-têm, Dâng con, Thành hôn, An táng và Tiệc Thánh. Mỗi lễ nghi tự gắn vào hồ sơ tín hữu.</p></div></div>
+  <div class="tabs">${tabs.map(([k,l])=>`<button class="tab ${state.lnTab===k?'on':''}" data-tab="${k}">${l}</button>`).join('')}</div>${body}`;
+};
+
+V.worship=()=>`<div class="page-h"><div><h2 class="page">Thờ phượng & Lịch giảng</h2><p>Phân công 6 Chúa nhật tới và soạn chương trình sinh hoạt cho từng ban ngành.</p></div></div>
+  <div class="tbl-wrap"><table><thead><tr><th>Chúa nhật</th><th>Người giảng</th><th>Kinh Thánh</th><th>Chủ đề</th><th>Hướng dẫn</th><th>Ban hát</th><th></th></tr></thead><tbody>
+  ${schedule.map(s=>`<tr><td class="num nm">${fmt(s.d)}</td><td>${esc(s.speaker)}</td><td>${s.ref}</td><td>${s.topic}</td><td>${esc(s.lead)}</td><td>${s.choir}</td><td>${s.communion?'<span class="pill p-gold">Tiệc Thánh</span>':''}</td></tr>`).join('')}</tbody></table></div>
+  <div class="grid g2">
+    <div class="card"><div class="card-h"><h3>Lịch sinh hoạt trong tuần</h3></div>
+      <div class="list">${[['Chúa nhật','07:30','Thờ phượng sáng'],['Chúa nhật','09:00','Trường Chúa nhật'],['Chúa nhật','17:00','Thờ phượng chiều'],['Thứ Tư','19:30','Nhóm cầu nguyện'],['Thứ Năm, thứ Sáu','19:30','Sinh hoạt theo '+Ul()],['Thứ Bảy','19:00','Ban Thanh niên']].map(r=>`<div class="li"><span class="pill p-pri num">${r[1]}</span><div class="t"><b>${r[2]}</b><span>${r[0]}</span></div></div>`).join('')}</div></div>
+    <div class="card"><div class="card-h"><h3>Chương trình sinh hoạt ban ngành</h3>
+      <select class="select" id="progBan" aria-label="Chọn ban" style="margin-left:auto">${allBanNames().map(b=>`<option ${state.progBan===b?'selected':''}>${esc(b)}</option>`).join('')}</select>
+      <p>Lịch: ${esc(BAN_INFO[state.progBan]||'Chưa đặt lịch')} · bản nháp tự sinh từ danh sách thành viên ban, trưởng ban chỉnh lại trước khi in</p></div>
+      <div class="list">${banProgram(state.progBan).map((r,i)=>`<div class="li"><span class="small muted num" style="width:20px">${i+1}</span><div class="t"><b>${r[0]}</b><span>${esc(r[1])}</span></div></div>`).join('')}</div></div>
+  </div>`;
+function banProgram(b){
+  if(!allBanNames().includes(b))b=state.progBan='Ban Thanh niên';
+  let ms=living().filter(m=>m.bans.includes(b)&&m.age>=16);
+  if(!ms.length)ms=living().filter(m=>m.bans.includes('Giáo viên Trường Chúa nhật'));
+  const p=i=>ms.length?ms[(i*7+3)%ms.length].name:'(chưa phân công)';
+  const s=schedule[(allBanNames().indexOf(b)+1)%schedule.length];
+  return [['Hướng dẫn chương trình',p(1)],['Ca ngợi',p(2)+' và nhóm hát'],['Cầu nguyện mở đầu',p(3)],['Chia sẻ Lời Chúa',s.ref+' · “'+s.topic+'”'],['Thảo luận, sinh hoạt nhóm',p(4)],['Thông báo của ban',p(5)],['Cầu nguyện kết thúc',p(6)]];
+}
+
+V.care=()=>`<div class="page-h"><div><h2 class="page">Chăm sóc & Cầu thay</h2><p>Hệ thống tự đưa vào danh sách khi tín hữu vắng 3 Chúa nhật liên tiếp, đau ốm, hoặc mới tin Chúa</p></div></div>
+  <div class="card"><div class="card-h"><h3>Danh sách thăm viếng</h3><span class="small muted" style="margin-left:auto">${visits.filter(v=>v.done).length}/${visits.length} đã thăm</span></div>
+  <div class="tbl-wrap"><table><thead><tr><th>Tín hữu</th><th>Lý do</th><th>Người phụ trách</th><th>Trạng thái</th><th></th></tr></thead><tbody>
+  ${visits.map((v,i)=>`<tr><td class="nm click" data-m="${v.m.id}" style="cursor:pointer">${esc(v.m.name)}<div class="small muted">${gName(v.m.group)} · ${v.m.phone||'—'}</div></td><td class="small">${v.urgent?'<span class="pill p-bad">Ưu tiên</span> ':''}${esc(v.reason)}</td><td class="small">${esc(v.who)}</td>
+    <td>${v.done?`<span class="pill p-good">Đã thăm ${fmtS(v.last)}</span>`:'<span class="pill p-warn">Chờ thăm</span>'}</td><td>${v.done?'':`<button class="btn sm" data-visit="${i}">${ic('tick')}Đã thăm</button>`}</td></tr>`).join('')}</tbody></table></div></div>
+  <div class="card"><div class="card-h"><h3>Lời cầu thay</h3><p>Tín hữu gửi qua cổng tra cứu hoặc qua trưởng nhóm. Mục “riêng tư” chỉ Mục sư xem được.</p></div>
+  <div class="list">${prayers.map(p=>`<div class="li">${ic('pray')}<div class="t"><b>${state.role!=='ms'&&p.priv?'<span class="muted">Nội dung riêng tư · chỉ Mục sư xem</span>':esc(p.text)}</b><span>${esc(p.by)} · ${fmt(p.d)} · ${p.cat}</span></div>${p.priv?`<span class="pill p-mute">${ic('lock')}Riêng tư</span>`:''}<span class="pill ${p.st==='Đã chia sẻ'?'p-good':'p-pri'}">${p.st}</span></div>`).join('')}</div></div>`;
+
+V.giving=()=>{
+  if(!canMoney())return `<div class="page-h"><div><h2 class="page">Dâng hiến & Quỹ</h2></div></div>
+   <div class="card"><div class="locked">${ic('lock')}<div><b style="color:var(--fg)">Phân hệ được bảo vệ</b><br>Vai trò “${ROLES[state.role]}” không xem được số liệu dâng hiến. Chọn vai trò Thủ quỹ hoặc Mục sư Quản nhiệm ở góc dưới thanh bên trái để xem bản demo.</div></div></div>`;
+  const oct=MONTHS[9],locked10=state.locked10;
+  const thu10=OCT_TX.filter(t=>t.type==='Thu').reduce((s,t)=>s+t.amt,0),chi10=OCT_TX.filter(t=>t.type==='Chi').reduce((s,t)=>s+t.amt,0);
+  const ytd=f=>MONTHS.reduce((s,m)=>s+(m.funds[f]||0),0);
+  const W=640,H=200,l=44,b=24,t=10,tots=MONTHS.map(m=>FUNDS.reduce((s,f)=>s+(m.funds[f.id]||0),0)),mx=Math.ceil(Math.max(...tots)/5e7)*5e7,bw=(W-l)/10,y=v=>t+(H-t-b)*(1-v/mx);
+  let g='';for(let v=0;v<=mx;v+=5e7)g+=`<line x1="${l}" x2="${W}" y1="${y(v)}" y2="${y(v)}" stroke="var(--line)"/><text x="${l-6}" y="${y(v)+4}" text-anchor="end">${v/1e6}tr</text>`;
+  const bars=tots.map((v,i)=>{const x=l+i*bw+bw*.2,w=bw*.6;return `<rect x="${x}" y="${y(v)}" width="${w}" height="${y(0)-y(v)}" rx="3" fill="var(--primary)" opacity="${i===9?.45:.85}"/><text x="${x+w/2}" y="${H-6}" text-anchor="middle">T${i+1}</text>`}).join('');
+  return `<div class="page-h"><div><h2 class="page">Dâng hiến & Quỹ</h2><p>Phần mười ghi theo mã dâng hiến, không hiện tên người dâng trên báo cáo chung. Tháng đã khóa sổ thì không sửa được.</p></div><div class="sp"></div>
+   ${locked10?'<span class="pill p-good">'+ic('lock')+'Tháng 10 đã khóa sổ</span>':`<span id="lockArea"><button class="btn" data-act="lockAsk">${ic('lock')}Khóa sổ tháng 10</button></span>`}</div>
+  <div class="grid g4">
+    <div class="card kpi"><div class="lbl">THU THÁNG 10 (ĐẾN 21/10)</div><div class="big num" style="font-size:26px">${tr(thu10)}</div><div class="foot"><span>${OCT_TX.filter(t=>t.type==='Thu').length} phiếu thu</span></div></div>
+    <div class="card kpi"><div class="lbl">CHI THÁNG 10</div><div class="big num" style="font-size:26px;color:var(--bad)">${tr(chi10)}</div><div class="foot"><span>${OCT_TX.filter(t=>t.type==='Chi').length} phiếu chi · đều từ đề xuất đã duyệt</span><button class="link" data-go="expense">Đề xuất chi →</button></div></div>
+    <div class="card kpi"><div class="lbl">PHẦN MƯỜI TỪ ĐẦU NĂM</div><div class="big num" style="font-size:26px;color:var(--good)">${tr(ytd('pm'))}</div><div class="foot"><span>10 tháng năm 2026</span></div></div>
+    <div class="card kpi"><div class="lbl">QUỸ XÂY DỰNG TỪ ĐẦU NĂM</div><div class="big num" style="font-size:26px;color:var(--gold)">${tr(ytd('xd'))}</div><div class="foot"><span>Mục tiêu sửa mái: 350 tr</span></div></div>
+  </div>
+  <div class="grid g-73">
+    <div class="card"><div class="card-h"><h3>Tổng dâng hiến theo tháng, năm 2026</h3><p>Tháng 10 đang mở, cột nhạt là số liệu tạm tính.</p></div><div class="chart"><svg viewBox="0 0 ${W} ${H}">${g}${bars}</svg></div></div>
+    <div class="card"><div class="card-h"><h3>Các quỹ</h3>${state.role==='ms'?'<button class="link" data-go="config">Đặt tên quỹ →</button>':''}<p>Tên quỹ do Mục sư Quản nhiệm đặt trong Cấu hình</p></div>
+      <div class="list">${FUNDS.map(f=>`<div class="li"><div class="t"><b>${esc(f.name)}</b><span>Tháng 10: ${tr(oct.funds[f.id]||0)}</span></div><span class="num nm">${tr(ytd(f.id))}</span></div>`).join('')}</div></div>
+  </div>
+  <div class="card"><div class="card-h"><h3>Sổ thu chi tháng 10/2026</h3><p>Toàn bộ phiếu thu và phiếu chi. Phiếu chi luôn gắn với số đề xuất đã được duyệt.</p></div>
+  <div class="tbl-wrap"><table><thead><tr><th>Ngày</th><th>Số phiếu</th><th>Quỹ</th><th>Diễn giải</th><th>Chứng từ gốc</th><th class="right">Số tiền</th></tr></thead><tbody>
+  ${OCT_TX.map(t=>`<tr><td class="num">${fmt(t.d)}</td><td class="num muted">${t.code}</td><td>${esc(fundName(t.fund))}</td><td>${esc(t.desc)}</td><td>${t.dx?`<button class="pill p-pri" style="border:0" data-go="expense">${t.dx}</button>`:'<span class="small muted">Phong bì, hòm dâng</span>'}</td><td class="right num nm" style="color:${t.type==='Chi'?'var(--bad)':'var(--good)'}">${t.type==='Chi'?'−':'+'}${money(t.amt)}</td></tr>`).join('')}</tbody></table></div></div>`;
+};
+
+const FORMS=[
+ ['bap','Giấy chứng nhận Báp-têm','Chọn tín hữu, hệ thống điền ngày Báp-têm và Mục sư cử hành'],
+ ['ded','Giấy chứng nhận Dâng con','Lấy tên cha mẹ từ hồ sơ gia đình'],
+ ['wed','Chứng thư Thành hôn','Kèm số Chúa nhật đã rao hôn phối'],
+ ['transfer','Thư giới thiệu chuyển sinh hoạt','Gửi Hội Thánh nơi tín hữu chuyển đến'],
+ ['member','Giấy xác nhận tín hữu','Dùng cho hồ sơ học tập, hành chánh'],
+ ['apply','Đơn xin chịu Báp-têm','Có lời làm chứng và ý kiến người hướng dẫn'],
+ ['visit','Phiếu thăm viếng','In cho Ban Thăm viếng theo tuần'],
+ ['report','Báo cáo thống kê gửi Tổng Liên Hội','Tự tổng hợp số liệu tín hữu, lễ nghi, ban ngành']];
+V.forms=()=>`<div class="page-h"><div><h2 class="page">Biểu mẫu & Báo cáo</h2><p>Chọn tên tín hữu là hệ thống tự điền. Bản thật có thể xuất Word hoặc PDF.</p></div></div>
+  <div class="grid g4">${FORMS.map(f=>`<button class="card feature" style="text-align:left;cursor:pointer" data-cert="${f[0]}"><div class="ic">${ic(f[0]==='report'?'chart':'file')}</div><div><b>${f[1]}</b><p>${f[2]}</p></div></button>`).join('')}</div>
+  <div class="card"><div class="card-h"><h3>Tính năng đề xuất cho bản chính thức</h3><p>Chuyển từ 8 điểm nổi bật của phần mềm Giáo xứ sang nhu cầu Hội Thánh Tin Lành</p></div>
+  <div class="grid g2">${[
+   ['scan','Đọc sổ Báp-têm viết tay bằng AI','Chụp ảnh trang sổ cũ, AI tách chữ viết tay vào đúng ô dữ liệu. Thư ký kiểm lại trước khi lưu.'],
+   ['qr','Điểm danh QR','Thẻ tín hữu có mã QR. Giáo viên Trường Chúa nhật quét tại cửa lớp, một lớp 40 em xong trong khoảng 1 phút.'],
+   ['book','Lịch giảng & chương trình sinh hoạt ban ngành','Phân công người giảng, hướng dẫn, ban hát; tự soạn chương trình sinh hoạt cho từng ban để trưởng ban chỉnh và in.'],
+   ['file','Biểu mẫu tự điền','Giấy chứng nhận Báp-têm, Dâng con, Thành hôn, thư chuyển sinh hoạt, báo cáo gửi Tổng Liên Hội.'],
+   ['house','Tách, gộp gia đình','Con cái lập gia đình được cấp mã mới, vẫn giữ liên kết với gia đình gốc.'],
+   ['heart','Chăm sóc tự động','Vắng 3 Chúa nhật là tự vào danh sách thăm viếng, giao người phụ trách và theo dõi đến khi thăm xong.'],
+   ['wallet','Quỹ tùy chỉnh, đề xuất chi & phê duyệt','Quản nhiệm tự đặt tên quỹ. Mọi khoản chi đi qua đề xuất, phê duyệt, phiếu chi rồi tự vào sổ. Khóa sổ hằng tháng.'],
+   ['shield','Phân quyền & bảo mật','Dâng hiến và lời cầu thay riêng tư chỉ người có thẩm quyền xem. Mã PIN, xác thực 2 lớp, nhật ký thao tác.']
+  ].map(f=>`<div class="feature"><div class="ic">${ic(f[0])}</div><div><b>${f[1]}</b><p>${f[2]}</p></div></div>`).join('')}</div></div>`;
+
+V.roles=()=>{
+  const dx=k=>[isA(k)?'Phê duyệt (cấp cao nhất)':'',cfg.proposers.has(k)&&!isA(k)?'Lập đề xuất':''].filter(Boolean).join(', ')||'Không';
+  const isA=k=>cfg.approver===k;
+  const R=[['Mục sư Quản nhiệm','Toàn quyền','Toàn quyền','Toàn quyền','Xem toàn bộ thu chi',dx('ms'),'Xem tất cả'],['Thư ký Ban Chấp sự','Thêm, sửa','Ghi sổ, in giấy','Phân công','Không',dx('tk'),'Không xem mục riêng tư'],['Thủ quỹ','Xem tên, mã dâng hiến','Không','Không','Ghi thu, lập phiếu chi, khóa sổ',dx('tq'),'Không'],['Trưởng ban / Giáo viên','Xem thành viên ban mình','Không','Điểm danh ban mình','Không',dx('tb'),'Không'],['Tín hữu (cổng tra cứu)','Hồ sơ của mình','Xem lễ nghi của mình','Không','Xem phần dâng của mình','Không','Gửi lời cầu thay']];
+  return `<div class="page-h"><div><h2 class="page">Phân quyền</h2><p>Thông tin tôn giáo là dữ liệu cá nhân nhạy cảm. Mỗi vai trò chỉ thấy phần cần cho công việc của mình. Cột “Đề xuất chi, phê duyệt” đổi theo Cấu hình Hội Thánh.</p></div></div>
+  <div class="tbl-wrap"><table><thead><tr><th>Vai trò</th><th>Hồ sơ tín hữu</th><th>Sổ lễ nghi</th><th>Thờ phượng, điểm danh</th><th>Dâng hiến, sổ thu chi</th><th>Đề xuất chi, phê duyệt</th><th>Cầu thay</th></tr></thead><tbody>
+  ${R.map(r=>`<tr><td class="nm">${r[0]}</td>${r.slice(1).map(c=>`<td class="small">${c==='Không'?'<span class="muted">Không</span>':c}</td>`).join('')}</tr>`).join('')}</tbody></table></div>
+  <div class="card"><div class="locked">${ic('shield')}<div>Bản chính thức cần: mã PIN tự khóa sau 15 phút, xác thực 2 lớp, nhật ký thao tác, sao lưu hằng ngày, và văn bản đồng ý của tín hữu khi thu thập dữ liệu.</div></div></div>`;
+};
+
+const DX_PILL={'Chờ duyệt':'p-warn','Đã duyệt':'p-pri','Đã chi':'p-good','Từ chối':'p-bad'};
+V.expense=()=>{
+  if(!(canPropose()||canMoney()))return `<div class="page-h"><div><h2 class="page">Đề xuất chi & Phê duyệt</h2></div></div>
+   <div class="card"><div class="locked">${ic('lock')}<div><b style="color:var(--fg)">Vai trò “${ROLES[state.role]}” chưa được cấp quyền đề xuất chi</b><br>Mục sư Quản nhiệm cấp quyền trong Cấu hình Hội Thánh, mục Đề xuất chi & phê duyệt.</div></div></div>`;
+  const by=s=>proposals.filter(p=>p.st===s),sum=a=>a.reduce((s,p)=>s+p.amt,0);
+  const mine=canMoney()||isApprover()?proposals:proposals.filter(p=>p.by===state.role);
+  const props=[...cfg.proposers].filter(k=>k!==cfg.approver).map(k=>ROLES[k]);
+  const act=p=>{
+    if(p.st==='Chờ duyệt')return isApprover()?`<div style="display:flex;gap:6px"><button class="btn sm pri" data-act="dxOk" data-id="${p.id}">${ic('tick')}Duyệt</button><button class="btn sm" data-act="dxNo" data-id="${p.id}">Từ chối</button></div>`:`<span class="small muted">Chờ ${ROLES[cfg.approver]}</span>`;
+    if(p.st==='Đã duyệt')return canPay()?`<button class="btn sm pri" data-act="dxPay" data-id="${p.id}">${ic('file')}Lập phiếu chi</button>`:'<span class="small muted">Chờ Thủ quỹ chi</span>';
+    if(p.st==='Đã chi')return `<span class="small muted">Phiếu ${p.pc} · đã vào sổ</span>`;
+    return `<span class="small muted">${esc(p.note||'')}</span>`;
+  };
+  return `<div class="page-h"><div><h2 class="page">Đề xuất chi & Phê duyệt</h2><p>Mọi khoản chi đều qua 4 bước dưới đây. Người được đề xuất và người phê duyệt do Mục sư Quản nhiệm chọn trong Cấu hình.</p></div><div class="sp"></div>
+   ${canPropose()?`<button class="btn pri" data-act="propose">${ic('plus')}Tạo đề xuất chi</button>`:''}</div>
+  <div class="card"><div class="flow">
+    <div class="step">Bước 1 · Đề xuất<b>${props.join(', ')||'Chưa cấp quyền cho vai trò nào'}</b></div><span class="arr">→</span>
+    <div class="step">Bước 2 · Phê duyệt<b>${ROLES[cfg.approver]}</b></div><span class="arr">→</span>
+    <div class="step">Bước 3 · Lập phiếu chi<b>Thủ quỹ</b></div><span class="arr">→</span>
+    <div class="step">Bước 4 · Vào sổ thu chi<b>Tự động, hiện trên Dâng hiến & Quỹ</b></div>
+  </div></div>
+  <div class="grid g4">
+    <div class="card kpi"><div class="lbl">CHỜ DUYỆT</div><div class="big num" style="color:var(--warn)">${by('Chờ duyệt').length}</div><div class="foot num"><span>Tổng <b>${tr(sum(by('Chờ duyệt')))}</b></span></div></div>
+    <div class="card kpi"><div class="lbl">ĐÃ DUYỆT, CHỜ CHI</div><div class="big num" style="color:var(--primary)">${by('Đã duyệt').length}</div><div class="foot num"><span>Tổng <b>${tr(sum(by('Đã duyệt')))}</b></span></div></div>
+    <div class="card kpi"><div class="lbl">ĐÃ CHI</div><div class="big num" style="color:var(--good)">${by('Đã chi').length}</div><div class="foot num"><span>Tổng <b>${tr(sum(by('Đã chi')))}</b></span></div></div>
+    <div class="card kpi"><div class="lbl">TỪ CHỐI</div><div class="big num" style="color:var(--bad)">${by('Từ chối').length}</div><div class="foot num"><span>Tổng <b>${tr(sum(by('Từ chối')))}</b></span></div></div>
+  </div>
+  <div class="tbl-wrap"><table><thead><tr><th>Số</th><th>Ngày</th><th>Người đề xuất</th><th>Quỹ</th><th>Nội dung</th><th class="right">Số tiền</th><th>Trạng thái</th><th></th></tr></thead><tbody>
+  ${mine.map(p=>`<tr><td class="num nm">${p.id}</td><td class="num">${fmt(p.d)}</td><td>${esc(ROLE_NAME[p.by]||'')}<div class="small muted">${ROLES[p.by]||''}</div></td><td>${esc(fundName(p.fund))}</td><td>${esc(p.desc)}</td><td class="right num nm">${money(p.amt)}</td>
+    <td><span class="pill ${DX_PILL[p.st]}">${p.st}</span>${p.ad?`<div class="small muted num">${fmt(p.ad)}</div>`:''}</td><td>${act(p)}</td></tr>`).join('')||'<tr><td colspan="8" class="empty">Chưa có đề xuất nào của bạn.</td></tr>'}
+  </tbody></table></div>
+  <div class="small muted">Đổi vai trò ở góc dưới thanh bên trái để thử: Trưởng ban lập đề xuất, Mục sư duyệt, Thủ quỹ lập phiếu chi.</div>`;
+};
+function openPropose(){
+  layer.innerHTML=`<div class="scrim" data-close></div><div class="modal" role="dialog" aria-label="Tạo đề xuất chi">
+  <div style="display:flex;align-items:center;margin-bottom:14px"><h3 style="margin:0">Tạo đề xuất chi</h3><button class="x" data-close aria-label="Đóng">${ic('x')}</button></div>
+  <form class="form" id="dxForm">
+   <label>Chi từ quỹ<select class="select" id="dxFund">${FUNDS.map(f=>`<option value="${f.id}">${esc(f.name)}</option>`).join('')}</select></label>
+   <label>Số tiền (đồng)<input class="input" id="dxAmt" type="number" min="1000" step="1000" required value="2500000"></label>
+   <label class="full">Nội dung chi<textarea class="input" id="dxDesc" required>Mua văn phòng phẩm cho Trường Chúa nhật quý IV</textarea></label>
+   <div class="full small muted">Người đề xuất: <b style="color:var(--fg)">${esc(ROLE_NAME[state.role])}</b> (${ROLES[state.role]}) · Người phê duyệt: <b style="color:var(--fg)">${ROLES[cfg.approver]}</b></div>
+   <div class="full" style="display:flex;gap:10px;justify-content:flex-end"><button type="button" class="btn" data-close>Hủy</button><button class="btn pri" type="submit">Gửi đề xuất</button></div>
+  </form></div>`;
+  document.getElementById('dxForm').addEventListener('submit',e=>{e.preventDefault();
+    const amt=+document.getElementById('dxAmt').value,desc=document.getElementById('dxDesc').value.trim();
+    if(!(amt>0)||!desc)return toast('Nhập số tiền và nội dung chi');
+    const p={id:'DX-10'+pad(dxN++),d:TODAY,fund:document.getElementById('dxFund').value,amt,desc,by:state.role,st:isApprover()?'Đã duyệt':'Chờ duyệt'};
+    if(isApprover())p.ad=TODAY;
+    proposals.unshift(p);close();go('expense');toast(isApprover()?'Đã tạo và tự duyệt '+p.id:'Đã gửi '+p.id+' đến '+ROLES[cfg.approver]);});
+}
+
+V.config=()=>{
+  const ed=state.role==='ms',dis=ed?'':'disabled';
+  const fundUsed=f=>MONTHS.some(m=>m.funds[f.id])||OCT_TX.some(t=>t.fund===f.id)||proposals.some(p=>p.fund===f.id);
+  return `<div class="page-h"><div><h2 class="page">Cấu hình Hội Thánh</h2><p>Mỗi Hội Thánh tự thiết lập theo quy mô và cách tổ chức của mình. Thay đổi áp dụng ngay trên toàn hệ thống.</p></div></div>
+  ${ed?'':`<div class="card"><div class="locked">${ic('lock')}<div>Bạn đang xem với vai trò “${ROLES[state.role]}”. Chỉ Mục sư Quản nhiệm sửa được cấu hình.</div></div></div>`}
+  <div class="grid g2">
+   <div class="card"><div class="card-h"><h3>Tên gọi đơn vị sinh hoạt</h3><p>Cách Hội Thánh chia tín hữu theo nơi ở hoặc nhóm gia đình. Tên này hiện trên menu, bộ lọc, hồ sơ và báo cáo.</p></div>
+     <div class="opts">${['Chi phái','Nhóm tế bào','Khu vực','Khác'].map(u=>`<label class="opt"><input type="radio" name="cfgUnit" value="${u}" ${cfg.unitType===u?'checked':''} ${dis}> ${u==='Khác'?'Khác (tự nhập)':u}</label>`).join('')}</div>
+     ${cfg.unitType==='Khác'?`<div class="addrow"><input class="input" id="cfgCustom" placeholder="Nhập tên gọi, ví dụ: Giáo khu" value="${esc(cfg.unitCustom)}" ${dis}></div>`:''}
+     <div class="small muted" style="margin-top:10px">Ví dụ hiển thị: <b style="color:var(--fg)">${esc(gName('g1'))}</b>, <b style="color:var(--fg)">${esc(gName('g2'))}</b></div></div>
+   <div class="card"><div class="card-h"><h3>Xếp ban khi thêm thuộc viên</h3><p>Chế độ mặc định trong biểu mẫu Thêm thuộc viên. Người nhập vẫn đổi được cho từng người.</p></div>
+     <div class="opts"><label class="opt"><input type="radio" name="cfgBanMode" value="auto" ${cfg.banMode==='auto'?'checked':''} ${dis}> Tự động theo độ tuổi</label><label class="opt"><input type="radio" name="cfgBanMode" value="manual" ${cfg.banMode==='manual'?'checked':''} ${dis}> Thủ công (người nhập tự chọn ban)</label></div>
+     <div class="list" style="margin-top:10px">${AGE_BANS.map(b=>`<div class="li"><div class="t"><b>${b[0]}</b></div><span class="small muted num">${b[2]>100?'từ '+b[1]+' tuổi':b[1]+'–'+b[2]+' tuổi'}</span></div>`).join('')}</div></div>
+   <div class="card"><div class="card-h"><h3>Ban phục vụ</h3><p>Thêm, bớt theo quy mô Hội Thánh. Ban Chấp sự và ban theo độ tuổi là cố định.</p></div>
+     <div class="tagrow">${cfg.serviceBans.map((b,i)=>`<span class="tag">${esc(b)} <small class="num">${living().filter(m=>m.bans.includes(b)).length}</small>${ed?`<button data-act="svcDel" data-id="${i}" aria-label="Xóa ${esc(b)}">${ic('x')}</button>`:''}</span>`).join('')||'<span class="small muted">Chưa có ban phục vụ nào</span>'}</div>
+     ${ed?`<div class="addrow"><input class="input" id="svcNew" placeholder="Tên ban mới, ví dụ: Ban Âm thanh, Ban Tiếp tân"><button class="btn" data-act="svcAdd">${ic('plus')}Thêm ban</button></div>`:''}</div>
+   <div class="card"><div class="card-h"><h3>Quỹ Hội Thánh</h3><p>Mục sư Quản nhiệm đặt tên các quỹ. Quỹ đã có số liệu thì chỉ đổi tên, không xóa được.</p></div>
+     <div>${FUNDS.map(f=>`<div class="fund-row"><input class="input" id="fundName_${f.id}" value="${esc(f.name)}" aria-label="Tên quỹ" ${dis}>${fundUsed(f)?'<span class="pill p-mute">Có số liệu</span>':ed?`<button class="btn sm" data-act="fundDel" data-id="${f.id}" aria-label="Xóa quỹ">${ic('trash')}</button>`:''}</div>`).join('')}</div>
+     ${ed?`<div class="addrow"><input class="input" id="fundNew" placeholder="Tên quỹ mới, ví dụ: Quỹ Học bổng"><button class="btn" data-act="fundAdd">${ic('plus')}Thêm quỹ</button></div>`:''}</div>
+  </div>
+  <div class="card"><div class="card-h"><h3>Đề xuất chi & phê duyệt</h3><p>Chọn vai trò được lập đề xuất chi và vai trò phê duyệt cao nhất. Bảng Phân quyền cập nhật theo lựa chọn này.</p></div>
+   <div class="grid g2">
+    <div><div class="small" style="font-weight:600;margin-bottom:8px">Vai trò được lập đề xuất chi</div>
+      <div class="opts">${['tk','tq','tb'].map(k=>`<label class="opt"><input type="checkbox" id="prop_${k}" ${cfg.proposers.has(k)?'checked':''} ${dis}> ${ROLES[k]}</label>`).join('')}</div></div>
+    <div><div class="small" style="font-weight:600;margin-bottom:8px">Phê duyệt cấp cao nhất</div>
+      <select class="select" id="cfgApprover" ${dis}>${['ms','tk','tq'].map(k=>`<option value="${k}" ${cfg.approver===k?'selected':''}>${ROLES[k]}</option>`).join('')}</select>
+      <div class="small muted" style="margin-top:6px">Người phê duyệt tự tạo đề xuất thì được duyệt luôn.</div></div>
+   </div></div>`;
+};
+
+/* ============ Drawer, modal, toast ============ */
+const layer=document.getElementById('layer');
+function close(){layer.innerHTML=''}
+function openMember(id){
+  const m=byId(id);if(!m)return;
+  const fam=families.find(f=>f.id===m.fam),fm=fam.members.map(byId).filter(x=>x.id!==m.id);
+  const pct=Math.round(m.att.filter(Boolean).length/12*100);
+  layer.innerHTML=`<div class="scrim" data-close></div><aside class="drawer" role="dialog" aria-label="Hồ sơ tín hữu">
+   <div style="display:flex;gap:12px;align-items:center">${av(m)}<div><div style="font-weight:700;font-size:17px">${esc(m.name)}</div><div class="small muted num">${m.id} · ${m.role} · ${fam.id}</div></div><button class="x" data-close aria-label="Đóng">${ic('x')}</button></div>
+   <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:12px">${statusPill(m)}${m.bans.map(b=>`<span class="pill p-mute">${b}</span>`).join('')}</div>
+   <div class="dsec"><h4>THÔNG TIN CÁ NHÂN</h4><div class="kv"><span>Loại</span><b>${typePill(m)}</b><span>Ngày sinh</span><b class="num">${fmt(m.dob)} (${m.age} tuổi)</b><span>Giới tính</span><b>${m.g}</b><span>Điện thoại</span><b class="num">${m.phone||'—'}</b><span>${esc(U())}</span><b>${esc(gName(m.group))}</b><span>Sinh hoạt</span><b>${m.active}</b><span>Xếp ban</span><b>${m.banMode||'Tự động theo độ tuổi'}</b></div></div>
+   <div class="dsec"><h4>LỄ NGHI</h4><div class="kv">
+     <span>Báp-têm</span><b>${m.baptism?fmt(m.baptism)+' · HT Bình An':catechumens.includes(m)?'Chưa · đang học lớp dự bị':'Chưa'}</b>
+     <span>Dâng con</span><b>${m.dedication?fmt(m.dedication):'—'}</b>${m.convertedAt?`<span>Nguồn</span><b>Từ thân hữu, tin Chúa ${fmt(m.convertedAt)}</b>`:''}</div></div>
+   ${m.type==='Thân hữu'?`<div class="dsec"><h4>THEO DÕI THÂN HỮU</h4><div class="kv"><span>Giai đoạn</span><b><span class="pill p-friend">${m.stage}</span></b><span>Đến lần đầu</span><b class="num">${m.firstVisit?fmt(m.firstVisit):'—'}</b><span>Người giới thiệu</span><b>${esc(m.ref||'—')}</b><span>Người chăm sóc</span><b>${esc(m.carer||'Chưa giao')}</b></div>
+     <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:10px">${STAGES.map(s=>`<button class="btn sm ${m.stage===s?'pri':''}" data-act="stage" data-id="${m.id}" data-v="${s}">${s}</button>`).join('')}</div>
+     <button class="btn sm" style="margin-top:8px" data-act="convert" data-id="${m.id}">${ic('tick')}Chuyển thành tín hữu (vào lớp dự bị Báp-têm)</button></div>`:''}
+   <div class="dsec"><h4>HIỆN DIỆN 12 CHÚA NHẬT · ${pct}%</h4><div class="dots" style="gap:5px">${m.att.map((a,i)=>`<i class="${a?'on':''}" title="${fmt(SUNDAYS[i])}" style="width:16px;height:16px;border-radius:4px"></i>`).join('')}</div></div>
+   <div class="dsec"><h4>GIA ĐÌNH</h4><div class="list">${fm.map(x=>`<div class="li" data-m="${x.id}" style="cursor:pointer">${av(x)}<div class="t"><b>${esc(x.name)}</b><span>${x.role} · ${x.age} tuổi</span></div></div>`).join('')||'<div class="small muted">Sống một mình</div>'}</div></div>
+   <div class="dsec"><h4>DÂNG HIẾN</h4>${canMoney()?`<div class="kv"><span>Mã dâng hiến</span><b class="num">PM-${m.id.slice(3)}</b><span>Phần mười 2026</span><b class="num">${m.age>=18&&m.status==='Thành viên'?ri(8,20)+' lần':'—'}</b></div>`:`<div class="locked">${ic('lock')}Chỉ Thủ quỹ và Mục sư Quản nhiệm xem được</div>`}</div>
+   <div class="dsec"><h4>THẺ TÍN HỮU</h4><div class="idcard"><div class="qr" id="qrBox"></div><div><small>HỘI THÁNH BÌNH AN</small><b style="font-size:15px">${esc(m.name)}</b><small style="margin-top:4px">${m.id} · ${gName(m.group)}</small></div></div></div>
+  </aside>`;
+  try{new QRCode(document.getElementById('qrBox'),{text:'QLHT:'+m.id,width:84,height:84})}catch(e){document.getElementById('qrBox').innerHTML='<div class="small" style="color:#333">QR</div>'}
+}
+function openAdd(){
+  layer.innerHTML=`<div class="scrim" data-close></div><div class="modal" role="dialog" aria-label="Thêm thuộc viên">
+  <div style="display:flex;align-items:center;margin-bottom:14px"><h3 style="margin:0">Thêm thuộc viên</h3><button class="x" data-close aria-label="Đóng">${ic('x')}</button></div>
+  <form class="form" id="addForm">
+   <label class="full">Họ và tên<input class="input" id="fName" required placeholder="Ví dụ: Nguyễn Thị Hồng Ân"></label>
+   <label>Giới tính<select class="select" id="fG"><option>Nam</option><option>Nữ</option></select></label>
+   <label>Ngày sinh<input class="input" id="fDob" type="date" value="1995-06-15"></label>
+   <label>Điện thoại<input class="input" id="fPhone" placeholder="09x xxx xxx"></label>
+   <label>${esc(U())}<select class="select" id="fGroup">${GROUPS.map(g=>`<option value="${g.id}">${esc(gName(g.id))}</option>`).join('')}</select></label>
+   <label>Loại thuộc viên<select class="select" id="fType"><option>Tín hữu</option><option>Thân hữu</option></select></label>
+   <label>Người giới thiệu (với thân hữu)<input class="input" id="fRef" placeholder="Ví dụ: tên tín hữu mời đến"></label>
+   <label>Tình trạng (với tín hữu)<select class="select" id="fStatus"><option>Dự bị</option><option>Thành viên</option><option>Thiếu nhi</option></select></label>
+   <label>Gia đình<select class="select" id="fFam"><option value="new">Tạo gia đình mới</option>${families.slice(0,40).map(f=>`<option value="${f.id}">${f.id} · ${esc(byId(f.members[0]).name)}</option>`).join('')}</select></label>
+   <div class="full"><div style="font-size:12px;font-weight:600;color:var(--muted);margin-bottom:6px">Xếp ban</div>
+     <div class="opts"><label class="opt"><input type="radio" name="fBanMode" value="auto" ${cfg.banMode==='auto'?'checked':''}> Tự động theo độ tuổi</label><label class="opt"><input type="radio" name="fBanMode" value="manual" ${cfg.banMode==='manual'?'checked':''}> Thủ công</label></div>
+     <div id="banAuto" class="small muted" style="margin-top:8px"></div>
+     <div id="banManual" class="opts" style="margin-top:8px" hidden>${allBanNames().filter(b=>b!=='Ban Chấp sự').map(b=>`<label class="opt"><input type="checkbox" name="fBan" value="${esc(b)}"> ${esc(b)}</label>`).join('')}</div></div>
+   <label class="full" style="flex-direction:row;align-items:center;gap:8px;font-weight:500"><input type="checkbox" id="fConsent" required> Tín hữu đã đồng ý cho Hội Thánh lưu trữ thông tin cá nhân</label>
+   <div class="full" style="display:flex;gap:10px;justify-content:flex-end"><button type="button" class="btn" data-close>Hủy</button><button class="btn pri" type="submit">${ic('plus')}Lưu hồ sơ</button></div>
+  </form></div>`;
+  const banMode=()=>document.querySelector('input[name=fBanMode]:checked').value;
+  const upd=()=>{const md=banMode(),a=ageOf(new Date(document.getElementById('fDob').value||'1995-06-15')),bs=ageBansFor(a);
+    document.getElementById('banManual').hidden=md!=='manual';const au=document.getElementById('banAuto');au.hidden=md!=='auto';
+    au.textContent=(isNaN(a)?'':a+' tuổi → tự xếp vào: ')+(bs.join(', ')||'chưa đủ tuổi vào ban nào');
+    if(md==='manual')document.querySelectorAll('input[name=fBan]').forEach(c=>{if(!c.dataset.touched)c.checked=bs.includes(c.value)})};
+  document.querySelectorAll('input[name=fBanMode]').forEach(r=>r.addEventListener('change',upd));
+  document.querySelectorAll('input[name=fBan]').forEach(c=>c.addEventListener('change',()=>c.dataset.touched='1'));
+  document.getElementById('fDob').addEventListener('input',upd);upd();
+  document.getElementById('addForm').addEventListener('submit',e=>{e.preventDefault();
+    const nm=document.getElementById('fName').value.trim().replace(/\s+/g,' ');if(!nm)return;
+    const parts=nm.split(' ');const g=document.getElementById('fG').value;const dob=new Date(document.getElementById('fDob').value||'1995-06-15');
+    let famId=document.getElementById('fFam').value,fam;
+    if(famId==='new'){fam={id:'GĐ-'+String(families.length+1).padStart(3,'0'),group:document.getElementById('fGroup').value,members:[],since:2026};families.push(fam)}else fam=families.find(f=>f.id===famId);
+    const m={id:'TH-'+String(mid++).padStart(4,'0'),ho:parts[0],dem:parts.slice(1,-1).join(' '),ten:parts[parts.length-1],name:nm,g,dob,age:ageOf(dob),role:famId==='new'?'Chủ hộ':'Thành viên GĐ',fam:fam.id,group:document.getElementById('fGroup').value,phone:document.getElementById('fPhone').value,status:document.getElementById('fStatus').value,active:'Đang sinh hoạt',att:SUNDAYS.map(()=>false),bans:[]};
+    if(banMode()==='auto'){m.bans=ageBansFor(m.age);m.banMode='Tự động theo độ tuổi'}
+    else{m.bans=[...document.querySelectorAll('input[name=fBan]:checked')].map(c=>c.value);m.banMode='Thủ công'}
+    m.type=document.getElementById('fType').value;
+    if(m.type==='Thân hữu'){m.status='Thân hữu';m.stage='Mới đến';m.firstVisit=TODAY;m.ref=document.getElementById('fRef').value.trim();m.carer=''}
+    members.unshift(m);fam.members.push(m.id);close();state.view='members';Object.assign(state,{q:'',grp:'',st:'',ban:'',bap:'',bday:'',type:''});render();toast('Đã thêm '+nm+' · mã '+m.id);});
+}
+const CERT_TITLE={bap:'GIẤY CHỨNG NHẬN BÁP-TÊM',ded:'GIẤY CHỨNG NHẬN DÂNG CON',wed:'CHỨNG THƯ THÀNH HÔN',transfer:'THƯ GIỚI THIỆU',member:'GIẤY XÁC NHẬN TÍN HỮU',apply:'ĐƠN XIN CHỊU BÁP-TÊM',visit:'PHIẾU THĂM VIẾNG'};
+function openCert(kind,id){
+  if(kind==='report')return openReport();
+  let pool=kind==='bap'?members.filter(m=>m.baptism):kind==='ded'?members.filter(m=>m.dedication):kind==='apply'?catechumens:kind==='visit'?visits.map(v=>v.m):living().filter(m=>m.age>=16);
+  let sel=id!=null&&kind!=='wed'?byId(id):pool[0];
+  const wi=kind==='wed'?(+id||0):0;
+  const body=()=>{
+    const m=sel;
+    if(kind==='wed'){const w=weddings[wi];return `<div class="who">${esc(w.a)} &amp; ${esc(w.b)}</div><p>đã được kết hợp trong Lễ Thành hôn cử hành tại Hội Thánh Bình An ngày <b>${fmt(w.d)}</b>, sau khi đã rao hôn phối 3 Chúa nhật theo quy định.</p>`}
+    if(kind==='bap')return `<p>Chứng nhận</p><div class="who">${esc(m.name)}</div><p>sinh ngày ${fmt(m.dob)}, đã tin nhận Chúa Cứu Thế Giê-xu và chịu Lễ Báp-têm ngày <b>${fmt(m.baptism)}</b> tại Hội Thánh Bình An.</p><p class="small muted">Ma-thi-ơ 28:19</p>`;
+    if(kind==='ded'){const ps=families.find(f=>f.id===m.fam).members.map(byId).filter(x=>x.role!=='Con');return `<p>Chứng nhận em</p><div class="who">${esc(m.name)}</div><p>sinh ngày ${fmt(m.dob)}, con của ${ps.map(p=>esc(p.name)).join(' và ')}, đã được cha mẹ dâng lên Chúa trong giờ thờ phượng ngày <b>${fmt(m.dedication)}</b>.</p>`}
+    if(kind==='transfer')return `<p>Kính gửi Ban Chấp sự Hội Thánh nơi tín hữu chuyển đến,</p><p>Hội Thánh Bình An trân trọng giới thiệu</p><div class="who">${esc(m.name)}</div><p>tín hữu ${m.baptism?'đã chịu Báp-têm ngày '+fmt(m.baptism):'của Hội Thánh'}, có đời sống đức tin tốt, nay chuyển sinh hoạt về quý Hội Thánh. Xin quý Hội Thánh tiếp nhận và chăm sóc.</p>`;
+    if(kind==='member')return `<p>Hội Thánh Bình An xác nhận</p><div class="who">${esc(m.name)}</div><p>sinh ngày ${fmt(m.dob)}, là tín hữu đang sinh hoạt tại Hội Thánh${m.baptism?', đã chịu Báp-têm ngày '+fmt(m.baptism):''}.</p>`;
+    if(kind==='apply')return `<p>Kính gửi Mục sư Quản nhiệm và Ban Chấp sự,</p><p>Tôi tên</p><div class="who">${esc(m.name)}</div><p>sinh ngày ${fmt(m.dob)}, thuộc ${gName(m.group)}, đã học lớp dự bị Báp-têm khóa 2/2026. Tôi xin được chịu Lễ Báp-têm ngày 13/12/2026.</p><p class="small muted">Lời làm chứng: ………………………………</p>`;
+    return `<div class="who">${esc(m.name)}</div><p>${gName(m.group)} · ${m.phone||'chưa có số'} · Gia đình ${m.fam}</p><p>Ngày thăm: ……/……/2026 · Người thăm: ……………… · Nhu cầu cầu thay: ………………</p>`;
+  };
+  const draw=()=>{document.getElementById('certBody').innerHTML=`<div class="cert"><div class="org">HỘI THÁNH TIN LÀNH VIỆT NAM (MIỀN NAM)<br>HỘI THÁNH BÌNH AN · ĐỊA HẠT KHÁNH HÒA</div><h3>${CERT_TITLE[kind]}</h3>${body()}<div class="sig"><div>Thư ký<b>${esc(SECRETARY.name)}</b></div><div>Ngày ${fmt(TODAY)}<br>Mục sư Quản nhiệm<b>${PASTOR}</b></div></div></div>`};
+  layer.innerHTML=`<div class="scrim" data-close></div><div class="modal" role="dialog" aria-label="${CERT_TITLE[kind]}">
+   <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px"><h3 style="margin:0">Xem trước biểu mẫu</h3>
+   ${kind==='wed'?'':`<select class="select" id="certPick" aria-label="Chọn tín hữu" style="max-width:280px">${pool.slice(0,60).map(m=>`<option value="${m.id}" ${m===sel?'selected':''}>${esc(m.name)} · ${m.id}</option>`).join('')}</select>`}
+   <button class="x" data-close aria-label="Đóng">${ic('x')}</button></div>
+   <div id="certBody"></div>
+   <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:12px"><button class="btn" data-act="exp">Xuất Word</button><button class="btn pri" data-act="exp">Xuất PDF</button></div></div>`;
+  draw();
+  const pk=document.getElementById('certPick');if(pk)pk.addEventListener('change',()=>{sel=byId(pk.value);draw()});
+}
+function openReport(){
+  const L=living();
+  const rows=[['Tín hữu chính thức (đã Báp-têm)',L.filter(m=>m.status==='Thành viên').length],['Tín hữu dự bị',L.filter(m=>m.status==='Dự bị').length],['Thiếu nhi',L.filter(m=>m.status==='Thiếu nhi').length],['Thân hữu đang theo dõi',L.filter(m=>m.type==='Thân hữu').length],['Thân hữu tin Chúa trong năm',members.filter(m=>m.convertedAt&&m.convertedAt.getFullYear()===2026).length],['Số gia đình tín hữu',families.filter(f=>f.members.some(id=>byId(id).type==='Tín hữu')).length],
+   ['Báp-têm trong năm',bap2026.length],['Dâng con trong năm',members.filter(m=>m.dedication&&m.dedication.getFullYear()===2026).length],['Thành hôn trong năm',weddings.filter(w=>w.d<=TODAY).length],['An táng trong năm',funerals.length],
+   ['Hiện diện thờ phượng bình quân (4 CN)',Math.round([8,9,10,11].reduce((s,i)=>s+attCount(i),0)/4)],['Số '+Ul(),GROUPS.length],['Chuyển đi trong năm',members.filter(m=>m.active==='Chuyển đi').length]];
+  layer.innerHTML=`<div class="scrim" data-close></div><div class="modal" role="dialog" aria-label="Báo cáo Tổng Liên Hội">
+   <div style="display:flex;align-items:center;margin-bottom:6px"><h3 style="margin:0">Báo cáo thống kê gửi Tổng Liên Hội</h3><button class="x" data-close aria-label="Đóng">${ic('x')}</button></div>
+   <p class="small muted" style="margin-top:0">Kỳ báo cáo 01/01–21/10/2026 · tự tổng hợp từ sổ tín hữu và sổ lễ nghi · mẫu biểu cần đối chiếu với quy định của Tổng Liên Hội</p>
+   <div class="tbl-wrap"><table style="min-width:420px"><thead><tr><th>Chỉ tiêu</th><th class="right">Số liệu</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${r[0]}</td><td class="right num nm">${nf(r[1])}</td></tr>`).join('')}</tbody></table></div>
+   <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:12px"><button class="btn" data-act="exp">Xuất Excel</button><button class="btn pri" data-act="exp">Xuất PDF</button></div></div>`;
+}
+let tt;function toast(msg){clearTimeout(tt);let el=document.querySelector('.toast');if(!el){el=document.createElement('div');el.className='toast';el.setAttribute('role','status');document.body.appendChild(el)}el.textContent=msg;el.hidden=false;tt=setTimeout(()=>el.hidden=true,2600)}
+
+/* ============ Render & sự kiện ============ */
+const TITLES={overview:'Tổng quan',members:'Thuộc viên',families:'Gia đình',bans:'Ban ngành',attendance:'Điểm danh',rites:'Lễ nghi',worship:'Thờ phượng & Lịch giảng',care:'Chăm sóc & Cầu thay',giving:'Dâng hiến & Quỹ',expense:'Đề xuất chi & Phê duyệt',forms:'Biểu mẫu & Báo cáo',config:'Cấu hình Hội Thánh',roles:'Phân quyền'};
+function render(keepFocus){
+  renderSide();
+  document.getElementById('pageTitle').textContent=state.view==='bans'?'Ban ngành & '+U():TITLES[state.view];
+  const fid=keepFocus&&document.activeElement&&document.activeElement.id,pos=fid&&document.activeElement.selectionStart;
+  document.getElementById('view').innerHTML=V[state.view]();
+  if(fid){const el=document.getElementById(fid);if(el){el.focus();try{el.setSelectionRange(pos,pos)}catch(e){}}}
+}
+function go(v){state.view=v;state.limit=30;document.getElementById('side').classList.remove('open');try{history.replaceState(null,'','#'+v)}catch(e){}render();window.scrollTo(0,0)}
+
+document.addEventListener('click',e=>{
+  const t=e.target.closest('[data-go],[data-act],[data-m],[data-close],[data-tab],[data-cert],[data-att],[data-visit],[data-ban]');if(!t)return;
+  if(t.dataset.close!==undefined)return close();
+  if(t.dataset.go)return go(t.dataset.go);
+  if(t.dataset.tab){state.lnTab=t.dataset.tab;return render()}
+  if(t.dataset.cert)return openCert(t.dataset.cert,t.dataset.id);
+  if(t.dataset.ban){state.ban=t.dataset.ban;state.grp='';state.st='';state.q='';return go('members')}
+  if(t.dataset.visit){const v=visits[+t.dataset.visit];v.done=true;v.last=TODAY;render();return toast('Đã ghi nhận thăm '+v.m.name)}
+  if(t.dataset.att){const k=state.attSess+t.dataset.att;state.attOn.has(k)?state.attOn.delete(k):state.attOn.add(k);return render()}
+  if(t.dataset.m){close();return openMember(t.dataset.m)}
+  const a=t.dataset.act;
+  if(a==='add')return openAdd();
+  if(a==='report')return openReport();
+  if(a==='more'){state.limit+=30;return render()}
+  if(a==='attReset'){[...state.attOn].filter(k=>k.startsWith(state.attSess)).forEach(k=>state.attOn.delete(k));return render()}
+  if(a==='scan'){const s=SESS[state.attSess];const rest=living().filter(m=>s.f(m)&&!state.attOn.has(state.attSess+m.id));if(!rest.length)return toast('Mọi người đã được điểm danh');
+    const m=rest[Math.floor(Math.random()*rest.length)];state.attOn.add(state.attSess+m.id);state.attQ='';render();const el=document.getElementById('a-'+m.id);if(el){el.classList.add('flash');el.scrollIntoView({block:'nearest',behavior:'smooth'})}return toast('Bíp! Đã điểm danh '+m.name)}
+  if(a==='lockAsk'){document.getElementById('lockArea').innerHTML=`<span class="small muted">Sau khi khóa, không sửa được phiếu tháng 10.</span> <button class="btn sm" data-act="lockNo">Hủy</button> <button class="btn sm pri" data-act="lockYes">Xác nhận khóa sổ</button>`;return}
+  if(a==='lockNo')return render();
+  if(a==='lockYes'){state.locked10=true;render();return toast('Đã khóa sổ tháng 10/2026')}
+  if(a==='propose')return openPropose();
+  if(a==='flt'){const k=t.dataset.k,v=t.dataset.v;state[k]=state[k]===v?'':v;state.limit=30;return render()}
+  if(a==='seg'){state.type=t.dataset.v;state.limit=30;return render()}
+  if(a==='clr'){Object.assign(state,{q:'',grp:'',st:'',ban:'',bap:'',bday:'',type:''});state.limit=30;return render()}
+  if(a==='goFlt'){Object.assign(state,{q:'',grp:'',st:'',ban:'',bap:'',bday:'',type:''});state[t.dataset.k]=t.dataset.v;return go('members')}
+  if(a==='stage'){const m=byId(t.dataset.id);m.stage=t.dataset.v;render();openMember(m.id);return toast(m.name+': '+m.stage)}
+  if(a==='convert'){const m=byId(t.dataset.id);m.type='Tín hữu';m.status='Dự bị';m.convertedAt=TODAY;m.stage=null;if(!catechumens.includes(m))catechumens.push(m);render();openMember(m.id);return toast('Đã chuyển '+m.name+' thành tín hữu, ghi vào lớp dự bị Báp-têm')}
+  const dxp=t.dataset.id&&proposals.find(p=>p.id===t.dataset.id);
+  if(a==='dxOk'&&dxp){dxp.st='Đã duyệt';dxp.ad=TODAY;render();return toast('Đã duyệt '+dxp.id+'. Thủ quỹ sẽ lập phiếu chi.')}
+  if(a==='dxNo'&&dxp){dxp.st='Từ chối';dxp.ad=TODAY;dxp.note='Không duyệt';render();return toast('Đã từ chối '+dxp.id)}
+  if(a==='dxPay'&&dxp){if(state.locked10)return toast('Tháng 10 đã khóa sổ. Phiếu chi này sẽ ghi vào tháng 11.');
+    const code='PC-10'+pad(pcN++);OCT_TX.unshift({d:TODAY,code,fund:dxp.fund,type:'Chi',desc:dxp.desc,amt:dxp.amt,by:TREASURER.name,dx:dxp.id});
+    dxp.st='Đã chi';dxp.pc=code;render();return toast('Đã lập '+code+' và ghi vào sổ thu chi tháng 10')}
+  if(a==='svcAdd'){const v=document.getElementById('svcNew').value.trim().replace(/\s+/g,' ');if(!v)return toast('Nhập tên ban phục vụ');
+    if(allBanNames().includes(v))return toast('Ban “'+v+'” đã có');cfg.serviceBans.push(v);render();return toast('Đã thêm '+v)}
+  if(a==='svcDel'){const b=cfg.serviceBans[+t.dataset.id];cfg.serviceBans.splice(+t.dataset.id,1);members.forEach(m=>m.bans=m.bans.filter(x=>x!==b));if(state.ban===b)state.ban='';render();return toast('Đã xóa '+b)}
+  if(a==='fundAdd'){const v=document.getElementById('fundNew').value.trim().replace(/\s+/g,' ');if(!v)return toast('Nhập tên quỹ');
+    FUNDS.push({id:'f'+(FUNDS.length+1)+'_'+Date.now()%10000,name:v,base:0});render();return toast('Đã thêm '+v)}
+  if(a==='fundDel'){const i=FUNDS.findIndex(f=>f.id===t.dataset.id);if(i>=0){const n=FUNDS[i].name;FUNDS.splice(i,1);render();toast('Đã xóa '+n)}return}
+  if(a==='exp')return toast('Bản demo chưa xuất file. Bản chính thức sẽ tải về Word, PDF hoặc Excel.');
+  if(a==='ocr')return toast('Bản chính thức: chụp ảnh trang sổ, AI đọc chữ viết tay và điền vào bảng để Thư ký kiểm tra.');
+});
+document.addEventListener('input',e=>{
+  const id=e.target.id;
+  if(id==='q'){state.q=e.target.value;state.limit=30;render(true)}
+  if(id==='famQ'){state.famQ=e.target.value;render(true)}
+  if(id==='attQ'){state.attQ=e.target.value;render(true)}
+  if(id==='cfgCustom'){cfg.unitCustom=e.target.value;render(true)}
+});
+document.addEventListener('change',e=>{
+  const id=e.target.id;
+  if(id==='fGrp'){state.grp=e.target.value;render()}
+  if(id==='fSt'){state.st=e.target.value;render()}
+  if(id==='fBan'){state.ban=e.target.value;render()}
+  if(id==='fBap'){state.bap=e.target.value;state.limit=30;render()}
+  if(id==='fBd'){state.bday=e.target.value;state.limit=30;render()}
+  if(id==='attSess'){state.attSess=e.target.value;render()}
+  if(e.target.name==='cfgUnit'){cfg.unitType=e.target.value;render();return toast('Đơn vị sinh hoạt: '+U())}
+  if(e.target.name==='cfgBanMode'){cfg.banMode=e.target.value;render();return toast('Mặc định xếp ban: '+(cfg.banMode==='auto'?'Tự động':'Thủ công'))}
+  if(id.startsWith('prop_')){const k=id.slice(5);e.target.checked?cfg.proposers.add(k):cfg.proposers.delete(k);return render()}
+  if(id==='cfgApprover'){cfg.approver=e.target.value;render();return toast('Người phê duyệt: '+ROLES[cfg.approver])}
+  if(id.startsWith('fundName_')){const f=FUNDS.find(x=>x.id===id.slice(9)),v=e.target.value.trim();if(f&&v){f.name=v;toast('Đã đổi tên quỹ')}render();return}
+  if(id==='progBan'){state.progBan=e.target.value;return render()}
+  if(id==='roleSel'){state.role=e.target.value;render();toast('Đang xem với vai trò: '+ROLES[state.role])}
+});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')close()});
+document.getElementById('menuBtn').addEventListener('click',()=>document.getElementById('side').classList.toggle('open'));
+// Trạng thái mở sẵn cho bản demo điểm danh
+living().filter(m=>m.age>=3).slice(0,0);
+const h=(location.hash||'').slice(1);if(V[h])state.view=h;
+render();
+})();
+</script>
+
+</body></html>

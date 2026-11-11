@@ -270,6 +270,8 @@ try {
   await page.getByLabel("Mật khẩu", { exact: true }).fill(secret);
   await page.getByRole("button", { name: "Đăng nhập", exact: true }).click();
   await page.getByRole("heading", { name: "Hội Thánh", exact: true }).waitFor();
+  // The heading renders before the asynchronous church list finishes loading.
+  await page.getByText("Chưa có dữ liệu Hội Thánh để hiển thị.", { exact: true }).waitFor();
   assert(
     await page.getByText("Chưa có dữ liệu Hội Thánh để hiển thị.", { exact: true }).isVisible(),
     "full-login-O01-empty",

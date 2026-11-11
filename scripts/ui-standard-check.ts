@@ -4,7 +4,7 @@ import { join } from "node:path";
 
 // Deliberately small guard for this standard, not a general CSS linter.
 const root = join(import.meta.dir, ".."),
-  sourceRoot = join(root, "../documents");
+  sourceRoot = join(root, "tools/ui-reference");
 const sourceName = readdirSync(sourceRoot).find(
   (name) => name.normalize("NFC") === "Quản lý Hội Thánh Tin Lành(1).html",
 );
