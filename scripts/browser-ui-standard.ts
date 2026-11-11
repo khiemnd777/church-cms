@@ -196,6 +196,23 @@ try {
       (await actual.locator(".side .ui-nav-label").innerText()) === "Bộ UI chung",
     "gallery-shared-navigation-label-visible",
   );
+  for (const width of [1440, 390]) {
+    await actual.setViewportSize({ width, height: 1000 });
+    const gap = await actual.getByLabel("Giao diện", { exact: true }).evaluate((control) => {
+      const field = control.closest(".ui-field");
+      return {
+        standalone: !!field && !field.closest(".form"),
+        gap:
+          control.getBoundingClientRect().top -
+          (field?.firstElementChild?.getBoundingClientRect().bottom ?? Infinity),
+      };
+    });
+    assert(
+      gap.standalone && Math.abs(gap.gap - 5) < 0.5,
+      `${width}-standalone-Field-label-control-source-gap5`,
+    );
+  }
+  await actual.setViewportSize({ width: 1440, height: 1000 });
   const light = await style(actual, "body", ["background-color", "color"]);
   await actual.emulateMedia({ colorScheme: "dark" });
   const dark = await style(actual, "body", ["background-color", "color"]);

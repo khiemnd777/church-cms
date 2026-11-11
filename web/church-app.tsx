@@ -2,6 +2,9 @@ import { type FormEvent, useCallback, useEffect, useRef, useState } from "react"
 import { AccessContextView } from "./access-context";
 import type { Role, Scope } from "./accounts-api";
 import { ApiError, churchAuth, refreshChurchCsrf } from "./api";
+import type { OrganizationIntent } from "./organization-api";
+import { OrganizationManagement } from "./organization-management";
+import { useOrganizationNavigation } from "./organization-navigation";
 import { AppShell, AuthCard, Button, Feedback, Field, Loading, TextInput } from "./ui/components";
 
 interface User {
@@ -33,6 +36,17 @@ export function ChurchApp() {
     [title, setTitle] = useState("Thông tin truy cập"),
     [context, setContext] = useState(""),
     [reload, setReload] = useState(0);
+  const [section, setSection] = useState(
+    location.pathname.endsWith("/config") ? "config" : "access",
+  );
+  const [organizationPending, setOrganizationPending] = useState<OrganizationIntent | null>(null);
+  useOrganizationNavigation(organizationPending);
+  function selectSection(next: string) {
+    if (organizationPending) return;
+    setSection(next);
+    history.pushState(null, "", `/h/${code}${next === "config" ? "/config" : ""}`);
+    if (next === "access") setReload((x) => x + 1);
+  }
   const guard = useRef(false),
     lastActivity = useRef(0),
     heading = useRef<HTMLHeadingElement>(null);
@@ -48,7 +62,7 @@ export function ChurchApp() {
     history.replaceState(
       null,
       "",
-      `/h/${code}${next === "home" || next === "reauth" ? "" : next === "change" ? "/change-password" : next === "support" ? "/support" : "/login"}`,
+      `/h/${code}${next === "home" || next === "reauth" ? (section === "config" ? "/config" : "") : next === "change" ? "/change-password" : next === "support" ? "/support" : "/login"}`,
     );
   }
   function accept(identity: User) {
@@ -225,7 +239,7 @@ export function ChurchApp() {
     }
   }
   async function logout() {
-    if (guard.current) return;
+    if (guard.current || organizationPending) return;
     guard.current = true;
     setBusy(true);
     try {
@@ -274,27 +288,51 @@ export function ChurchApp() {
       <AppShell
         title={title}
         context={context}
-        activeId="access"
+        activeId={section}
         identity={user}
-        busy={busy}
+        busy={busy || !!organizationPending}
         onLogout={() => void logout()}
         items={[
           {
             id: "access",
+            disabled: !!organizationPending,
             label: "Thông tin truy cập",
             icon: "house",
-            onSelect: () => setReload((x) => x + 1),
+            onSelect: () => selectSection("access"),
           },
+          ...(user.role === "pastor" || user.role === "secretary"
+            ? [
+                {
+                  id: "config",
+                  label: "Cấu hình",
+                  icon: "gear" as const,
+                  disabled: !!organizationPending,
+                  onSelect: () => selectSection("config"),
+                },
+              ]
+            : []),
         ]}
       >
         {feedback}
-        <AccessContextView
-          key={`${user.accountId}:${user.churchId}:${user.version}:${reload}`}
-          realm="church"
-          churchId={user.churchId}
-          onTitle={onTitle}
-          onAuthError={fail}
-        />
+        {section === "config" ? (
+          <OrganizationManagement
+            key={`${user.accountId}:${user.churchId}:${user.version}`}
+            realm="church"
+            churchId={user.churchId}
+            pending={organizationPending}
+            onPending={setOrganizationPending}
+            onTitle={onTitle}
+            onAuthError={fail}
+          />
+        ) : (
+          <AccessContextView
+            key={`${user.accountId}:${user.churchId}:${user.version}:${reload}`}
+            realm="church"
+            churchId={user.churchId}
+            onTitle={onTitle}
+            onAuthError={fail}
+          />
+        )}
       </AppShell>
     );
   return (

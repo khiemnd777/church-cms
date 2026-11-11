@@ -100,6 +100,7 @@ export function ChurchManagement({
   onChurch,
   onAccounts,
   onManage,
+  onConfig,
 }: {
   onAuthError: (error: unknown) => void;
   onTitle: (title: string, context?: string) => void;
@@ -107,6 +108,7 @@ export function ChurchManagement({
   onChurch: (church: ChurchSummary | null) => void;
   onAccounts: () => void;
   onManage: () => void;
+  onConfig: () => void;
 }) {
   const initialId = /^\/owner\/churches\/([a-f0-9]{24})$/i.exec(location.pathname)?.[1] ?? null;
   const [selected, setSelected] = useState<string | null>(initialId),
@@ -505,14 +507,10 @@ export function ChurchManagement({
                   Vào quản lý Hội Thánh
                 </Button>
               </div>
-              <div className="locked church-unavailable">
-                <Icon name="lock" />
-                <div>
-                  <span className="small muted">Chưa khả dụng</span>
-                  <div className="church-future-actions">
-                    <Button disabled>Cấu hình</Button>
-                  </div>
-                </div>
+              <div className="church-future-actions">
+                <Button disabled={detail.status !== "active"} onClick={onConfig}>
+                  Cấu hình
+                </Button>
               </div>
               <div className="church-status-action">
                 <Button

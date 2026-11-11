@@ -1,0 +1,140 @@
+{
+  "schema_version": 1,
+  "event_id": "CHURCH-P2/P2.1/implementation/2",
+  "event_type": "phase_handoff",
+  "task_id": "CHURCH-P2",
+  "scope_id": "P2.1",
+  "recorded_at": "2026-11-11T10:23:28.070408+00:00",
+  "reported_by": "delivery_owner",
+  "source_kind": "agent_self_report",
+  "phase": "implementation",
+  "handoff_index": 2,
+  "classification": {
+    "delivery": "roadmap",
+    "complexity": "evidenced_ui_repair_within_approved_package",
+    "ui": true
+  },
+  "authority": {
+    "approval": "Phê duyệt P2.1-plan-r1/P21-01–05 và phản hồi human review1 yêu cầu sửa UI spacing",
+    "scope": "Sửa lỗi hiển thị trong P2.1 local/synthetic; không mở P2.2 hoặc publication/deploy/dữ liệu thật"
+  },
+  "skills": [
+    {
+      "skill_id": "debugging-and-error-recovery",
+      "contribution_summary": "Sửa root cause và xung đột toolbar flex-basis phát hiện khi xem ảnh",
+      "contribution_percent_estimate": 20,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/debugging-and-error-recovery/SKILL.md",
+        "version": null,
+        "sha256": "9f42e9d582ae78e42e1b4e65ef2c4848f4debed2f2a9092037387d572ea5d358",
+        "fingerprint_basis": "Actual repository SKILL.md read/applied in this conversation; fingerprint at recording."
+      }
+    },
+    {
+      "skill_id": "frontend-ui-engineering",
+      "contribution_summary": "Field độc lập form, grouping W12 và spacing theo nguồn/tokens",
+      "contribution_percent_estimate": 50,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/frontend-ui-engineering/SKILL.md",
+        "version": null,
+        "sha256": "b5c47fed383892428172bf0b9c1ed1aeab50066ff9421a87a6c344f746386495",
+        "fingerprint_basis": "Actual repository SKILL.md read/applied in this conversation; fingerprint at recording."
+      }
+    },
+    {
+      "skill_id": "test-driven-development",
+      "contribution_summary": "Đo80mẫu render và1168browser checks; kiểm Field ngoài form/chiều cao",
+      "contribution_percent_estimate": 20,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/test-driven-development/SKILL.md",
+        "version": null,
+        "sha256": "48d85b44f5e6286ba2a7a43550083609f299aa4001391768e9da126d2db86742",
+        "fingerprint_basis": "Actual repository SKILL.md read/applied in this conversation; fingerprint at recording."
+      }
+    },
+    {
+      "skill_id": "code-review-and-quality",
+      "contribution_summary": "Self-review diff và đối chiếu ảnh desktop/mobile",
+      "contribution_percent_estimate": 5,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/code-review-and-quality/SKILL.md",
+        "version": null,
+        "sha256": "045ed6d37f590d7ad3b2ee47c1e66ada4bbff1e9d5d232c20a4eeaa5694e39f6",
+        "fingerprint_basis": "Actual repository SKILL.md read/applied in this conversation; fingerprint at recording."
+      }
+    },
+    {
+      "skill_id": "documentation-and-adrs",
+      "contribution_summary": "Ghi human review, bảo toàn bằng chứng r1 và cập nhật trạng thái/r2",
+      "contribution_percent_estimate": 5,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/documentation-and-adrs/SKILL.md",
+        "version": null,
+        "sha256": "f3199cfec5d6fdfa6533f180b1e6cbee584cd6175d8eb25c0d186c833120609c",
+        "fingerprint_basis": "Actual repository SKILL.md read/applied in this conversation; fingerprint at recording."
+      }
+    }
+  ],
+  "outcome": {
+    "delivery_status": "COMPLETED",
+    "verification_level": "local_browser_geometry_and_visual_review",
+    "human_acceptance": "PENDING_REVIEW",
+    "limitations": [
+      "Self-review; no independent reviewer",
+      "Firefox container and synthetic data; not physical device/Safari/production",
+      "No commit/push/deploy/main DB upgrade/server restart",
+      "P2.2 not opened",
+      "Initial repair image exposed inherited toolbar flex-basis making input tall; corrected before this final evidence; earlier attempts retained"
+    ]
+  },
+  "measurements": {
+    "elapsed_seconds": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có bộ đếm đo được theo scope/phase"
+    },
+    "tool_calls": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có bộ đếm đo được theo scope/phase"
+    },
+    "input_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có bộ đếm đo được theo scope/phase"
+    },
+    "output_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có bộ đếm đo được theo scope/phase"
+    },
+    "cached_input_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có bộ đếm đo được theo scope/phase"
+    },
+    "reasoning_output_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có bộ đếm đo được theo scope/phase"
+    },
+    "client": null,
+    "model": null,
+    "effort": null
+  },
+  "evidence_refs": [
+    "docs/tasks/CHURCH-P2.1.md",
+    "docs/engineering/skill-usage/records/CHURCH-P2/P2.1-human-review-1.json",
+    "output/p2.1-spacing/verification.json"
+  ]
+}

@@ -4,17 +4,7 @@ Ngày tổng hợp: 2026-11-10. Nguồn chi tiết: [hồ sơ P0](tasks/CHURCH-P
 
 ## Phạm vi được phép hiện tại
 
-**P1 đã đóng. P1.1–P1.4 HUMAN ACCEPTED.** Khiêm: “Nghiệm thu P1.4 và Đóng P1. Chưa mở P2.” [Biên bản đóng](tasks/CHURCH-P1.md#đóng-p1), [acceptance P1.4](engineering/skill-usage/records/CHURCH-P1/P1.4-human-acceptance-1.json). **P2 NOT_OPENED**; roadmap P2–P8 chỉ là định hướng, chưa quyền planning/implementation hoặc release. Giữ kết quả trong phạm vi local/synthetic đã bàn giao; không publication/deploy/production/dữ liệu thật.
-
-## CI-REFERENCE-r1 — sửa CI sau publication, bàn giao một lần
-
-Khiêm duyệt kế hoạch trong chat ngày 2026-11-11: “Duyệt.” Phạm vi: snapshot HTML chuẩn trong repo, đồng bộ source check/browser mount, kiểm chứng local và cập nhật tài liệu/journal. Đây là sửa CI ngoài roadmap; không mở lại P1/P2, không commit/push/deploy.
-
-Tiêu chí: `ui:check` chạy khi checkout không có `../documents`; SHA256/CSS drift vẫn bị chặn; browser check dùng đúng snapshot; các gates hiện có được chạy và ghi kết quả thực tế. Lỗi gốc: run `42943023514`, commit `9ebb3df8a1788746b2b150f720c9a8c5dbf16dbf`, thiếu thư mục sibling tại `ui:check`.
-
-Kết quả CI-REFERENCE-r1: hoàn tất source và wiring; local gates PASS gồm checkout độc lập, negative hash test, 76 integration/997 assertions, 658 Firefox checks và qualification/restore/cleanup. Chi tiết hiện hành và giới hạn tại [project-state](project-state.md#ci-reference-r1--2026-11-11). Remote Linux CI NOT_RUN; chờ nghiệm thu, chưa publication.
-
-Publication được Khiêm yêu cầu tiếp theo: “commit and push.” Đã tạo PR #1; trong test phase sửa thêm synchronization của browser assertion `full-login-O01-empty` theo lỗi thực từ Linux, giữ nguyên expected state và app. Chi tiết và giới hạn tại project-state.
+**P1 đã đóng, P1.1–P1.4 HUMAN ACCEPTED.** Khiêm đã duyệt P2-plan-r1 và P2.1-plan-r1, cho triển khai trọn P21-01–05 local/synthetic. P2.1 đã bàn giao kỹ thuật để nghiệm thu; không tự mở P2.2, commit/push/deploy hoặc dùng dữ liệu thật. Danh mục/acceptance: [CHURCH-P2](tasks/CHURCH-P2.md), [CHURCH-P2.1](tasks/CHURCH-P2.1.md). Trạng thái sống duy nhất tại project-state; phê duyệt cũ chưa mở P2 chỉ là lịch sử.
 
 ## P0 — Đặc tả và phê duyệt
 
@@ -81,3 +71,11 @@ Sửa nhãn menu đã được Khiêm duyệt sau khi từ chối UI-STD-r1: N01
 ## Quyền mở P1.3
 
 Khiêm: “Duyệt triển khai P1.3-plan-r1”. P1.3 giữ chính sách owner quản trị account khi church suspended; user login/context bị chặn. P13-01–05 bàn giao cùng lúc, không thêm gate theo file/lớp. Không tự mở P1.4. Hạng mục và tiêu chí nghiệm thu tại CHURCH-P1.3, trạng thái live duy nhất tại project-state.
+
+## P2-plan-r1 và P2.1-plan-r1 — đã duyệt 2026-11-11
+
+Khiêm duyệt danh mục P2.1–P2.6 và mở trọn P21-01–05 local/synthetic theo [CHURCH-P2](tasks/CHURCH-P2.md), [CHURCH-P2.1](tasks/CHURCH-P2.1.md). Phê duyệt mới thay giới hạn P2 NOT_OPENED ở phần lịch sử; không tự mở P2.2 hoặc commit/push/deploy/dữ liệu thật.
+
+### Sửa UI theo nghiệm thu P2.1
+
+Human review1 CHANGES_REQUESTED vì spacing. P2.1-r2 sửa Field/layout và thêm geometry regression trong cùng P21-03/04; bàn giao lại, không thay danh mục/thứ tự gói. Chi tiết outcome ở CHURCH-P2.1; trạng thái hiện hành ở project-state.

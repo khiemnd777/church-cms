@@ -18,7 +18,7 @@ try {
     if (attempt === 29) throw new Error("Replica set primary not ready");
     await Bun.sleep(500);
   }
-  await initialize(db.db);
+  await initialize(db.db, { upgradeOperationsV2: Bun.argv.includes("--upgrade-operations-v2") });
   await db.ready();
   console.info("Local validators/indexes/replica set ready.");
 } finally {

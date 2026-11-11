@@ -2,6 +2,38 @@ import { type ClientSession, ObjectId } from "mongodb";
 import type { Database } from "../infrastructure/database";
 export class Audit {
   constructor(private db: Database) {}
+  async organization(
+    eventType: string,
+    requestId: string,
+    actor: { kind: "owner" | "church_user"; id: ObjectId; churchId: ObjectId | null },
+    churchId: ObjectId,
+    targetType: string,
+    targetId: ObjectId,
+    changedFields: string[],
+    operationId: ObjectId,
+    tx: ClientSession,
+    safeSummary = eventType,
+  ) {
+    await this.db.audits.insertOne(
+      {
+        _id: new ObjectId(),
+        occurredAt: new Date(),
+        actorKind: actor.kind,
+        actorId: actor.id,
+        actorChurchId: actor.churchId,
+        targetChurchId: churchId,
+        eventType,
+        targetType,
+        targetId,
+        changedFields,
+        operationId,
+        requestId,
+        outcome: "success",
+        safeSummary,
+      },
+      { session: tx },
+    );
+  }
   async principal(
     eventType: string,
     requestId: string,
