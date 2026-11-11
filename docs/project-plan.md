@@ -14,6 +14,8 @@ Tiêu chí: `ui:check` chạy khi checkout không có `../documents`; SHA256/CSS
 
 Kết quả CI-REFERENCE-r1: hoàn tất source và wiring; local gates PASS gồm checkout độc lập, negative hash test, 76 integration/997 assertions, 658 Firefox checks và qualification/restore/cleanup. Chi tiết hiện hành và giới hạn tại [project-state](project-state.md#ci-reference-r1--2026-11-11). Remote Linux CI NOT_RUN; chờ nghiệm thu, chưa publication.
 
+Publication được Khiêm yêu cầu tiếp theo: “commit and push.” Đã tạo PR #1; trong test phase sửa thêm synchronization của browser assertion `full-login-O01-empty` theo lỗi thực từ Linux, giữ nguyên expected state và app. Chi tiết và giới hạn tại project-state.
+
 ## P0 — Đặc tả và phê duyệt
 
 Đầu ra: ma trận nguồn → tính năng → quyền/trạng thái → mockup → tiêu chí kiểm chứng; chốt phạm vi bản đầu và các quyết định ảnh hưởng kiến trúc.

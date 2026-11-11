@@ -11,7 +11,9 @@ Cập nhật: 2026-11-11. Đây là bản tóm tắt hiện hành duy nhất. Au
 ## CI-REFERENCE publication — quyền hiện hành
 
 - Khiêm yêu cầu “commit and push.” trong chat ngày 2026-11-11, cấp quyền publication bản sửa CI-REFERENCE-r1 qua task branch và PR vào `main`. Không merge/deploy/P2. Các giới hạn không-publication ở biên bản implementation phía trên ghi phạm vi trước yêu cầu này.
-- Nhánh dự kiến `codex/fix-ci-reference`; local gates đã PASS theo receipt CI-REFERENCE-r1. Kết quả remote cần kiểm tra sau push.
+- Đã push commit `3f80508` trên `codex/fix-ci-reference`, remote SHA khớp local; [PR #1](https://github.com/khiemnd777/church-cms/pull/1) vào `main`, chưa merge/deploy. Các giới hạn “remote NOT_RUN” phía trên là bằng chứng tại bàn giao local trước publication.
+- Hai run đầu của `3f80508` đều vượt lint/typecheck/builds/ui:check/integration/audit trên Linux. Push run `42949303549` vượt browser; PR run `42949331660` fail assertion `full-login-O01-empty`: heading xuất hiện trước khi async list trả về. Sửa test chờ empty state visible trước assertion, không đổi app hoặc assertion. Suite liên quan rerun local PASS119checks; lint/typecheck/diff check PASS.
+- Kết quả cuối của bản sửa bổ sung được kiểm tra tại [Actions của PR #1](https://github.com/khiemnd777/church-cms/pull/1/checks); không dùng PASS local hoặc một run làm bằng chứng mọi run thành công. [Journal publication](engineering/skill-usage/records/CI-REFERENCE/publication-1.json).
 
 ## Git publication — 2026-11-11
 
