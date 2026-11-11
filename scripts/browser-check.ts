@@ -85,19 +85,25 @@ async function checkVisibleNavigation() {
         (await labels.nth(0).isVisible()) &&
           (await labels.nth(0).innerText()) === "Hội Thánh" &&
           (await labels.nth(1).isVisible()) &&
-          (await labels.nth(1).innerText()) === "Tài khoản",
+          (await labels.nth(1).innerText()) === "Tài khoản" &&
+          (await labels.nth(2).isVisible()) &&
+          (await labels.nth(2).innerText()) === "Cấu hình",
         `nav-${theme}-${width}-real-visible-text`,
       );
       assert(
-        (await description.isVisible()) &&
-          (await description.innerText()) === "Chọn Hội Thánh trước",
+        (await description.count()) === 2 &&
+          (await description.nth(0).isVisible()) &&
+          (await description.nth(1).isVisible()) &&
+          (await description.nth(0).innerText()) === "Chọn Hội Thánh trước" &&
+          (await description.nth(1).innerText()) === "Chọn Hội Thánh trước",
         `nav-${theme}-${width}-disabled-description-visible`,
       );
       const buttons = page.locator(".side .nav-a");
       assert(
         (await buttons.nth(0).isEnabled()) &&
           (await buttons.nth(0).getAttribute("aria-current")) === "page" &&
-          (await buttons.nth(1).isDisabled()),
+          (await buttons.nth(1).isDisabled()) &&
+          (await buttons.nth(2).isDisabled()),
         `nav-${theme}-${width}-active-disabled-preserved`,
       );
       assert(

@@ -23,13 +23,33 @@ Cập nhật: 2026-11-11. Đây là bản tóm tắt hiện hành duy nhất. Au
 
 ## Trạng thái hiện hành
 
+- **P2-plan-r1 APPROVED; P2.1-plan-r1 IMPLEMENTATION AUTHORIZED** ngày 2026-11-11 trong chat. P21-01–05 đã bàn giao r1 nhưng Khiêm chưa nghiệm thu vì UI spacing; P21-03/04 đã sửa và bàn giao r2 chờ xem lại, dừng trước P2.2. Không commit/push/deploy/dữ liệu thật. Hồ sơ: [CHURCH-P2](tasks/CHURCH-P2.md), [P2.1](tasks/CHURCH-P2.1.md). Các dòng NOT_OPENED bên dưới là lịch sử trước chỉ dẫn mới, không còn là quyền hiện hành của P2.1.
+
 - **P1 CLOSED — P1.1/P1.2/P1.3/P1.4 HUMAN ACCEPTED** theo Khiêm: “Nghiệm thu P1.4 và Đóng P1. Chưa mở P2.” [Biên bản đóng P1](tasks/CHURCH-P1.md#đóng-p1), [acceptance P1.4](engineering/skill-usage/records/CHURCH-P1/P1.4-human-acceptance-1.json).
-- **P2 NOT_OPENED**. Chưa quyền lập kế hoạch/implementation P2; không publication/deploy/dữ liệu thật. Kết quả local không thay release/production qualification.
+- **P2.1-r2 AWAITING_ACCEPTANCE — r1 CHANGES_REQUESTED** theo phê duyệt mới; P2.2–P2.6 chưa được mở implementation. Kết quả local không thay release/production qualification.
 
 - **P0-FOUNDATION-r2 và P1.1-r1 HUMAN ACCEPTED**. P1-plan-r1/hai mockup đã được duyệt; không suy rằng các gói sau tự được mở.
 - **P1.2 Quản lý Hội Thánh, gồm UI-STD-r1/UI-STD-nav-r2: HUMAN ACCEPTED** theo lời Khiêm “Nghiệm thu P1.2. Tiếp theo, kế hoạch P1.3”. [Acceptance P1.2](engineering/skill-usage/records/CHURCH-P1/P1.2-human-acceptance-2.json), [acceptance UI](engineering/skill-usage/records/CHURCH-P1/UI-STD-r1-human-acceptance-2.json).
 - Các lần CHANGES_REQUESTED vì UI và mất text trước đây giữ nguyên làm lịch sử; không xóa receipt hoặc ghi lại usage.
 - **P1.3-r1: HUMAN ACCEPTED** theo Khiêm “Hiểu rồi, nghiệm thu P1.3. Tiếp theo, kế hoạch P1.4”. Phạm vi [CHURCH-P1.3](tasks/CHURCH-P1.3.md). **P1.4-r1 HUMAN ACCEPTED — P1 đã đóng**. Không Git publication/deploy, production hoặc dữ liệu thật.
+
+## P2.1 — phản hồi nghiệm thu hiện hành
+
+- Khiêm **CHANGES_REQUESTED** ngày2026-11-11: components nằm sát nhau, margin/padding unexpected. [Ảnh phản hồi](../output/p2.1-spacing/reported.jpg), [human review](engineering/skill-usage/records/CHURCH-P2/P2.1-human-review-1.json). Đã sửa layout/Field spacing và thêm kiểm tra khoảng cách thực ở r2; chờ nghiệm thu lại, không mở P2.2 hoặc đổi backend. PASS kỹ thuật r1 phía dưới không chứng minh spacing đạt.
+
+## P2.1-r2 — bàn giao sửa spacing
+
+- Field tự có gap5px ngoài form và input/select không nhận flex-basis từ ancestor toolbar; W12 tách nhóm18px, heading/content12px, toolbar/table18px, tên ban/tuổi10px bằng spacing tokens/nguồn hiện có. Không đổi API/schema/quyền/nghiệp vụ.
+- **PASS1168Firefox checks**:508P2.1 (80mẫu đo geometry)+282UI chung+171accounts+88churches+119owner. Measured label/control5px, group18px, heading12px, toolbar/table18px, age label/value10px, control một dòng36–44px. Đã xem ảnh desktop light/mobile dark; chưa human accepted.
+- PASS lint(10warnings CSS nguồn), typecheck, product/reference builds, ui:check/diff/bundle parity. Readback0DB synthetic browser P2.1 còn lại. Integration92tests/1227assertions r1 được tái sử dụng vì backend không đổi, không chạy lại trong sửa UI này.
+- [Receipt r2](../output/p2.1-spacing/verification.json), [ảnh desktop](../output/p2.1-spacing/final/organization/w12-complete-1440-light.png), [mobile dark](../output/p2.1-spacing/final/organization/w12-complete-390-dark.png), [journal2](engineering/skill-usage/records/CHURCH-P2/P2.1-implementation-2.json). Self-review; NOT_RUN thiết bị thật/Safari/remote CI/production; không commit/push/deploy/main migration/restart server hiện hành. P2.2 chưa mở.
+
+## P2.1-r1 — bằng chứng trước phản hồi
+
+- P21-01–05 source complete/local behavior verified, **chưa human accepted/released**. Module Organization/settings/units,18API method/path mới hai realm, policyVersion2/actor-scoped ledger v2 giữ v1/F22; W12/O02/menu/config deep links. Scope local/synthetic và dừng trước P2.2.
+- **PASS92integration tests/1227assertions** (16P2.1), Mongo replica set/Redis thật; **PASS766Firefox checks** (108P2.1+171accounts+88churches+119owner+280UI), gồm pending → idle → reauth → đối soát tường minh, real-commit fault và revoke/suspend barrier.
+- **PASS** lint(10warnings CSS nguồn), typecheck/product+reference builds/ui:check/shell/audit `{}`/diff check/bundle parity. Explain300units bổ sung synthetic indexed, không SLA. Readback0DB synthetic P2.1 còn lại. Không ghi main DB/index/volume; chưa restart/kiểm chứng instance server hiện hành. Nâng cấp ledger index chỉ test trên DB UUID riêng.
+- [Task/biên bản](tasks/CHURCH-P2.1.md), [contracts/runbook](engineering/P2.1-organization.md), [receipt](../output/p2.1/verification.json), [journal](engineering/skill-usage/records/CHURCH-P2/P2.1-implementation-1.json). NOT_RUN thiết bị thật/Safari/remote CI/production/real-data migration. Self-review, không reviewer độc lập. Các mục P1 bên dưới giữ evidence lịch sử tại lúc bàn giao P1, không thay quyền P2.1 mới.
 
 ## P1.4-r1 — kết quả hiện hành
 
@@ -77,7 +97,7 @@ Cập nhật: 2026-11-11. Đây là bản tóm tắt hiện hành duy nhất. Au
 ## Xem cục bộ và bước tiếp theo
 
 - [Trang mẫu bộ UI](http://127.0.0.1:4173/ui-reference.html) · [Owner](https://localhost:3443/owner/login). Chỉ loopback cục bộ, không public deployment. Runbook: [P1.1](engineering/P1.1-local-runbook.md); chuẩn UI/cách khởi động lại preview: [ui-system](ui-system.md) và biên bản.
-- P1 đã được Khiêm đóng sau nghiệm thu P1.4. Dừng tại đây; P2 chưa mở, không tự lập kế hoạch/triển khai hoặc phát hành.
+- P1 đã đóng. P2.1 đã được phép và bàn giao chờ nghiệm thu; P2.2 chưa mở. Không commit/push/deploy/dữ liệu thật.
 
 ## Agent conventions
 

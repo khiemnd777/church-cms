@@ -343,7 +343,7 @@ describe("P1.4 F23 real MongoDB/Redis", () => {
     expect((await c.call("owner/auth/logout", {})).response.status).toBe(204);
     expect((await c.audit()).response.status).toBe(401);
   });
-  test("HTTP inventory exposes exactly the28 approved IDs; retired/unapproved routes remain404", async () => {
+  test("HTTP inventory preserves the28 P1 IDs; retired/unapproved routes remain404", async () => {
     const id = new ObjectId().toHexString(),
       table: [string, string, string][] = [
         ["F01", "GET", "auth/csrf?realm=owner"],

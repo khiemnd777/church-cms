@@ -2,6 +2,7 @@ import { type ClientSession, type Db, MongoClient, MongoError } from "mongodb";
 import type { Config } from "../config";
 import { AppError } from "../errors";
 import type { AuditEvent, Credential, Owner, Session } from "../identity/models";
+import { organizationSchemas } from "../organization/schema";
 export class Database {
   readonly client: MongoClient;
   readonly db: Db;
@@ -94,6 +95,7 @@ const common = {
   updatedAt: date,
 };
 const definitions = {
+  ...organizationSchemas,
   churches: {
     required: [
       "_id",
@@ -346,7 +348,6 @@ const definitions = {
   idempotency_operations: {
     required: [
       "_id",
-      "ownerId",
       "method",
       "routeKey",
       "keyHash",
@@ -357,9 +358,30 @@ const definitions = {
       "createdAt",
       "expiresAt",
     ],
+    oneOf: [
+      {
+        required: ["ownerId"],
+        not: {
+          anyOf: [
+            { required: ["schemaVersion"] },
+            { required: ["actorKind"] },
+            { required: ["actorId"] },
+            { required: ["churchId"] },
+          ],
+        },
+      },
+      {
+        required: ["schemaVersion", "actorKind", "actorId", "churchId"],
+        not: { required: ["ownerId"] },
+      },
+    ],
     properties: {
       _id: oid,
       ownerId: oid,
+      schemaVersion: { enum: [2] },
+      actorKind: { enum: ["owner", "church_user"] },
+      actorId: oid,
+      churchId: oid,
       method: { bsonType: "string" },
       routeKey: { bsonType: "string" },
       keyHash: { bsonType: "string" },
@@ -380,8 +402,26 @@ const definitions = {
 };
 const indexes: Record<
   string,
-  { key: Record<string, 1 | -1>; name: string; unique?: boolean; expireAfterSeconds?: number }[]
+  {
+    key: Record<string, 1 | -1>;
+    name: string;
+    unique?: boolean;
+    expireAfterSeconds?: number;
+    partialFilterExpression?: Record<string, unknown>;
+  }[]
 > = {
+  church_settings: [],
+  organization_units: [
+    { key: { churchId: 1, namespace: 1, nameKey: 1 }, name: "unit_name_unique", unique: true },
+    {
+      key: { churchId: 1, systemKey: 1 },
+      name: "system_unit_unique",
+      unique: true,
+      partialFilterExpression: { systemKey: { $exists: true } },
+    },
+    { key: { churchId: 1, kind: 1, status: 1, nameKey: 1, _id: 1 }, name: "unit_kind_status_name" },
+    { key: { churchId: 1, nameKey: 1, _id: 1 }, name: "unit_name" },
+  ],
   churches: [
     { key: { code: 1 }, name: "code_unique", unique: true },
     { key: { status: 1, nameKey: 1, _id: 1 }, name: "status_name" },
@@ -411,11 +451,28 @@ const indexes: Record<
       key: { ownerId: 1, method: 1, routeKey: 1, keyHash: 1 },
       name: "operation_unique",
       unique: true,
+      partialFilterExpression: { ownerId: { $exists: true } },
+    },
+    {
+      key: { actorKind: 1, actorId: 1, churchId: 1, method: 1, routeKey: 1, keyHash: 1 },
+      name: "operation_v2_unique",
+      unique: true,
+      partialFilterExpression: { schemaVersion: 2 },
     },
     { key: { expiresAt: 1 }, name: "operation_expiry", expireAfterSeconds: 0 },
   ],
 };
-export async function initialize(db: Db) {
+export async function initialize(db: Db, options: { upgradeOperationsV2?: boolean } = {}) {
+  const exists = await db.listCollections({ name: "idempotency_operations" }).hasNext();
+  const legacy = exists
+    ? (await db.collection("idempotency_operations").listIndexes().toArray()).find(
+        (i) => i.name === "operation_unique",
+      )
+    : null;
+  if (legacy && !legacy.partialFilterExpression && !options.upgradeOperationsV2)
+    throw new Error(
+      "Stop local HTTP writers; rerun db:init --upgrade-operations-v2 after reviewing the local runbook",
+    );
   for (const [name, schema] of Object.entries(definitions)) {
     const validator = { $jsonSchema: { bsonType: "object", ...schema } };
     if (await db.listCollections({ name }).hasNext())
@@ -432,8 +489,14 @@ export async function initialize(db: Db) {
         validationAction: "error",
       });
   }
+  if (legacy && !legacy.partialFilterExpression) {
+    // Explicit maintenance upgrade only: retain all v1 rows and TTL; writers must be stopped.
+    const v2 = indexes.idempotency_operations?.find((i) => i.name === "operation_v2_unique");
+    if (v2) await db.collection("idempotency_operations").createIndexes([v2]);
+    await db.collection("idempotency_operations").dropIndex("operation_unique");
+  }
   for (const [name, specs] of Object.entries(indexes))
-    await db.collection(name).createIndexes(specs);
+    if (specs.length) await db.collection(name).createIndexes(specs);
   await db
     .collection("platform_guard")
     .updateOne(
@@ -451,7 +514,9 @@ async function checkIndexes(db: Db) {
         !found ||
         JSON.stringify(found.key) !== JSON.stringify(spec.key) ||
         !!found.unique !== !!spec.unique ||
-        found.expireAfterSeconds !== spec.expireAfterSeconds
+        found.expireAfterSeconds !== spec.expireAfterSeconds ||
+        JSON.stringify(found.partialFilterExpression ?? null) !==
+          JSON.stringify(spec.partialFilterExpression ?? null)
       )
         throw new Error("required index missing");
     }

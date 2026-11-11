@@ -103,6 +103,9 @@ a {
   font-weight: 700;
 }
 .ui-field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
   min-width: 0;
 }
 .ui-field small {
@@ -110,6 +113,7 @@ a {
 }
 .ui-field .input,
 .ui-field .select {
+  flex: none;
   width: 100%;
 }
 .ui-required,

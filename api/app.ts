@@ -12,11 +12,17 @@ import { ChurchIdentity } from "./identity/church-service";
 import type { Realm } from "./identity/models";
 import { cookie, cookieName, type Identity, type SessionResult } from "./identity/service";
 import { Operations } from "./operations/service";
+import type { OrganizationGrant } from "./organization/grant";
+import { Organization } from "./organization/service";
 import { Tenancy } from "./tenancy/service";
 export interface RequestInfo {
   ip: string;
 }
 const messages: Record<string, string> = {
+  SETTINGS_NOT_CONFIGURED: "Hội Thánh chưa thiết lập cấu hình.",
+  SETTINGS_ALREADY_CONFIGURED: "Hội Thánh đã được thiết lập. Tải bản hiện tại để tiếp tục.",
+  UNIT_NAME_EXISTS: "Tên đã được sử dụng trong nhóm này, kể cả mục đã ngừng sử dụng.",
+  SYSTEM_UNIT_IMMUTABLE: "Danh mục hệ thống không cho sửa hoặc ngừng sử dụng.",
   INVALID_CREDENTIALS: "Email hoặc mật khẩu không đúng.",
   TEMP_PASSWORD_EXPIRED: "Mật khẩu tạm đã hết hạn. Liên hệ Dịch vu chăm sóc và hỗ trợ.",
   ACCOUNT_EXISTS: "Email đã có tài khoản trong Hội Thánh này. Mở tài khoản hiện có để quản lý.",
@@ -92,6 +98,13 @@ export function createApp(
     conf.csrfKey,
     identity.now,
   );
+  const organization = new Organization(
+    identity.db,
+    operations,
+    identity.audit,
+    conf.csrfKey,
+    identity.now,
+  );
   const log = options.log ?? ((row) => console.info(JSON.stringify(row)));
   return async function handle(req: Request, info: RequestInfo): Promise<Response> {
     const started = performance.now(),
@@ -159,6 +172,117 @@ export function createApp(
           actorId = ctx.owner._id;
           const grant = identity.ownerGrant(ctx, "audit:read");
           response = json(await auditReader.list(grant, url.searchParams));
+        } else if (
+          /^\/api\/v1\/(?:owner\/)?churches\/[^/]+\/organization\/(?:settings|units(?:\/[^/]+(?:\/status)?)?|operations\/[^/]+)$/.test(
+            path,
+          )
+        ) {
+          const parts = path.split("/"),
+            isOwner = parts[3] === "owner",
+            offset = isOwner ? 1 : 0,
+            churchId = objectId(parts[4 + offset] as string),
+            section = parts[6 + offset],
+            id = parts[7 + offset],
+            status = parts[8 + offset] === "status";
+          requestRealm = isOwner ? "owner" : "church";
+          targetChurchId = churchId;
+          const methods =
+            section === "operations"
+              ? ["GET"]
+              : section === "settings"
+                ? ["GET", "POST", "PATCH"]
+                : status
+                  ? ["PATCH"]
+                  : id
+                    ? ["GET", "PATCH"]
+                    : ["GET", "POST"];
+          requireCondition(methods.includes(req.method), 405, "METHOD_NOT_ALLOWED");
+          const write = req.method !== "GET";
+          route = `P21.${isOwner ? "owner" : "church"}.${section}.${status ? "status" : id ? "detail" : "root"}.${req.method}`;
+          let grant: OrganizationGrant;
+          if (isOwner) {
+            const ctx = await identity.authorize(ownerToken, "owner", false, true);
+            actorId = ctx.owner._id;
+            const ownerGrant = identity.ownerGrant(
+              ctx,
+              write || section === "operations" ? "organization:manage" : "organization:read",
+            );
+            grant = {
+              actorKind: "owner",
+              actorId,
+              churchId,
+              canWrite: true,
+              policyContext: `${policyVersion}:owner`,
+              fence: async (tx) => {
+                await ownerGrant.fence(tx);
+                await access.fence(churchId, tx, true);
+              },
+            };
+          } else {
+            const ctx = await churchIdentity.authorize(churchToken, false, false);
+            actorId = ctx.account._id;
+            actorChurchId = ctx.account.churchId;
+            requireCondition(churchId.equals(ctx.account.churchId), 403, "FORBIDDEN");
+            const userGrant = churchIdentity.grant(ctx);
+            userGrant.require(
+              write || section === "operations" ? "organization:manage" : "organization:read",
+            );
+            grant = {
+              actorKind: "church_user",
+              actorId,
+              churchId,
+              canWrite: ctx.account.role === "pastor",
+              policyContext: `${policyVersion}:${ctx.account.version}`,
+              fence: (tx) => userGrant.fence(tx),
+            };
+          }
+          const church = await access.byId(churchId);
+          requireCondition(church, 404, "NOT_FOUND");
+          requireCondition(church.status === "active", 403, "CHURCH_SUSPENDED");
+          if (!(section === "units" && !id && req.method === "GET"))
+            requireCondition(!url.search, 400, "INVALID_REQUEST");
+          if (!write) {
+            if (section === "operations")
+              response = json(await operations.getOrganization(grant, id as string));
+            else if (section === "settings") {
+              const data = await organization.getSettings(grant);
+              if (data.settings) headers.set("ETag", `"${data.settings.version}"`);
+              response = json(data);
+            } else if (id) {
+              const unit = await organization.get(grant, id);
+              headers.set("ETag", `"${unit.version}"`);
+              response = json(unit);
+            } else response = json(await organization.list(grant, url.searchParams));
+          } else {
+            const token = isOwner ? ownerToken : churchToken;
+            requireCondition(req.headers.get("origin") === conf.origin, 403, "CSRF_FAILED");
+            await identity.csrfSession(token, requestRealm, req.headers.get("x-csrf-token"));
+            const body = await readJson(req),
+              key = req.headers.get("idempotency-key"),
+              match = req.headers.get("if-match");
+            const result =
+              section === "settings"
+                ? await organization.writeSettings(
+                    grant,
+                    body,
+                    req.method === "POST",
+                    key,
+                    match,
+                    requestId,
+                  )
+                : await organization.writeUnit(
+                    grant,
+                    id ?? null,
+                    status,
+                    body,
+                    key,
+                    match,
+                    requestId,
+                  );
+            const resource = (result.data.settings ?? result.data.unit) as { version: number };
+            headers.set("ETag", `"${resource.version}"`);
+            response = json(result.data, result.status, { replayed: result.replayed });
+          }
         } else if (
           /^\/api\/v1\/owner\/churches\/[^/]+\/accounts(?:\/[^/]+(?:\/(?:permissions|status|temporary-passwords))?)?$/.test(
             path,
@@ -269,7 +393,7 @@ export function createApp(
             principal: identity.me(ctx),
             policyVersion,
             capabilities: ["context:read", ...ownerCapabilities],
-            availability: { business: "not_available" },
+            availability: { business: "not_available", organization: "available" },
           });
         } else if (/^\/api\/v1\/churches\/[^/]+\/context$/.test(path)) {
           requestRealm = "church";
@@ -479,8 +603,8 @@ export function createApp(
               "/owner/change-password",
               "/owner/support",
             ].includes(path) ||
-              /^\/owner\/churches\/[a-f0-9]{24}(?:\/(?:accounts|manage))?$/i.test(path) ||
-              /^\/h\/[a-z0-9-]{1,100}(?:\/(?:login|change-password|support))?$/i.test(path),
+              /^\/owner\/churches\/[a-f0-9]{24}(?:\/(?:accounts|manage|config))?$/i.test(path) ||
+              /^\/h\/[a-z0-9-]{1,100}(?:\/(?:login|change-password|support|config))?$/i.test(path),
             404,
             "NOT_FOUND",
           );

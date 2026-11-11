@@ -111,7 +111,11 @@ export function AccessContextView({
               ]}
             />
           </Card>
-          <Feedback>Chức năng nghiệp vụ chưa khả dụng.</Feedback>
+          <Feedback>
+            {value.capabilities.includes("organization:read")
+              ? "Cấu hình Hội Thánh đã khả dụng trong menu Cấu hình. Các chức năng nghiệp vụ khác chưa khả dụng."
+              : "Chức năng nghiệp vụ chưa khả dụng."}
+          </Feedback>
         </>
       )}
     </>

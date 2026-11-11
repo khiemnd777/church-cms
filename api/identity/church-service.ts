@@ -2,8 +2,8 @@ import type { ClientSession, ObjectId } from "mongodb";
 import { z } from "zod";
 import type { ChurchGrant } from "../authorization/church-grant";
 import {
+  capabilitiesFor,
   capabilityAllowed,
-  churchCapabilities,
   policyVersion,
   roleSchema,
   scopeSchema,
@@ -193,7 +193,8 @@ export class ChurchIdentity {
       role: ctx.account.role,
       scope: ctx.account.scope,
       version: ctx.account.version,
-      require: (capability) => requireCondition(capabilityAllowed(capability), 403, "FORBIDDEN"),
+      require: (capability) =>
+        requireCondition(capabilityAllowed(capability, ctx.account.role), 403, "FORBIDDEN"),
       fence: (tx) => this.fence(ctx, tx),
     };
   }
@@ -336,8 +337,13 @@ export class ChurchIdentity {
       principal: this.me(ctx),
       subjectLinked: !!ctx.account.subjectMemberId,
       policyVersion,
-      capabilities: churchCapabilities,
-      availability: { business: "not_available" },
+      capabilities: capabilitiesFor(ctx.account.role),
+      availability: {
+        business: "not_available",
+        organization: capabilitiesFor(ctx.account.role).includes("organization:read")
+          ? "available"
+          : "not_available",
+      },
     };
   }
   async change(ctx: ChurchAuthContext, body: unknown, requestId: string) {

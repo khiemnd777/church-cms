@@ -6,6 +6,9 @@ import type { ResumeReset } from "./accounts-api";
 import { ApiError, api, refreshCsrf } from "./api";
 import { ChurchApp } from "./church-app";
 import { ChurchManagement } from "./church-management";
+import type { OrganizationIntent } from "./organization-api";
+import { OrganizationManagement } from "./organization-management";
+import { useOrganizationNavigation } from "./organization-navigation";
 import { AppShell, AuthCard, Button, Feedback, Field, Loading, TextInput } from "./ui/components";
 import "@fontsource/be-vietnam-pro/400.css";
 import "@fontsource/be-vietnam-pro/500.css";
@@ -22,9 +25,11 @@ interface Owner {
 }
 type Screen = "loading" | "login" | "change" | "support" | "home" | "reauth";
 function ownerRoute() {
-  const match = /^\/owner\/churches\/([a-f0-9]{24})\/(accounts|manage)$/i.exec(location.pathname);
+  const match = /^\/owner\/churches\/([a-f0-9]{24})\/(accounts|manage|config)$/i.exec(
+    location.pathname,
+  );
   return match
-    ? { kind: match[2] as "accounts" | "manage", churchId: match[1] as string }
+    ? { kind: match[2] as "accounts" | "manage" | "config", churchId: match[1] as string }
     : { kind: "churches" as const, churchId: null };
 }
 function App() {
@@ -32,7 +37,10 @@ function App() {
     [currentChurch, setCurrentChurch] = useState<ChurchRef | null>(null),
     [resumeReset, setResumeReset] = useState<ResumeReset | null>(null);
   const updateChurch = useCallback((church: ChurchRef | null) => setCurrentChurch(church), []);
-  function ownerNavigate(kind: "churches" | "accounts" | "manage", id?: string) {
+  const [organizationPending, setOrganizationPending] = useState<OrganizationIntent | null>(null);
+  useOrganizationNavigation(organizationPending);
+  function ownerNavigate(kind: "churches" | "accounts" | "manage" | "config", id?: string) {
+    if (organizationPending) return;
     history.pushState(
       null,
       "",
@@ -79,7 +87,9 @@ function App() {
         : next === "support"
           ? "/owner/support"
           : next === "home" || next === "reauth"
-            ? /^\/owner\/churches\/[a-f0-9]{24}(?:\/(?:accounts|manage))?$/i.test(location.pathname)
+            ? /^\/owner\/churches\/[a-f0-9]{24}(?:\/(?:accounts|manage|config))?$/i.test(
+                location.pathname,
+              )
               ? location.pathname
               : "/owner"
             : "/owner/login";
@@ -207,7 +217,7 @@ function App() {
     }
   }
   async function logout() {
-    if (busyRef.current) return;
+    if (busyRef.current || organizationPending) return;
     busyRef.current = true;
     setBusy(true);
     try {
@@ -323,15 +333,18 @@ function App() {
     );
   return (
     <AppShell
-      activeId={route.kind === "accounts" ? "accounts" : "churches"}
+      activeId={
+        route.kind === "config" ? "config" : route.kind === "accounts" ? "accounts" : "churches"
+      }
       title={pageTitle}
       context={pageContext}
       identity={{ displayName: owner?.displayName ?? "", email: owner?.email ?? "" }}
-      busy={busy}
+      busy={busy || !!organizationPending}
       onLogout={logout}
       items={[
         {
           id: "churches",
+          disabled: !!organizationPending,
           label: "Hội Thánh",
           icon: "house",
           onSelect: () => {
@@ -344,15 +357,37 @@ function App() {
           label: "Tài khoản",
           description: currentChurch ? currentChurch.name : "Chọn Hội Thánh trước",
           icon: "users",
-          disabled: !currentChurch,
+          disabled: !currentChurch || !!organizationPending,
           onSelect: () => {
             if (currentChurch) ownerNavigate("accounts", currentChurch.id);
+          },
+        },
+        {
+          id: "config",
+          label: "Cấu hình",
+          icon: "gear",
+          description: currentChurch?.name ?? "Chọn Hội Thánh trước",
+          disabled: !currentChurch || currentChurch.status !== "active" || !!organizationPending,
+          onSelect: () => {
+            if (currentChurch) ownerNavigate("config", currentChurch.id);
           },
         },
       ]}
     >
       {feedback}
-      {route.kind === "accounts" && route.churchId ? (
+      {route.kind === "config" && route.churchId ? (
+        <OrganizationManagement
+          key={`${owner?.employeeId}:${route.churchId}`}
+          realm="owner"
+          churchId={route.churchId}
+          pending={organizationPending}
+          onPending={setOrganizationPending}
+          onAuthError={handleError}
+          onTitle={setHeading}
+          onChurch={updateChurch}
+          onBack={() => ownerNavigate("churches", route.churchId as string)}
+        />
+      ) : route.kind === "accounts" && route.churchId ? (
         <AccountManagement
           key={route.churchId}
           churchId={route.churchId}
@@ -385,6 +420,9 @@ function App() {
           onChurch={updateChurch}
           onAccounts={() => {
             if (currentChurch) ownerNavigate("accounts", currentChurch.id);
+          }}
+          onConfig={() => {
+            if (currentChurch) ownerNavigate("config", currentChurch.id);
           }}
           onManage={() => {
             if (currentChurch) ownerNavigate("manage", currentChurch.id);

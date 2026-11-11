@@ -3,9 +3,14 @@ import type { OwnerGrant } from "../authorization/owner-grant";
 import { AppError, requireCondition } from "../errors";
 import { digest } from "../identity/crypto";
 import type { Database } from "../infrastructure/database";
+import type { OrganizationGrant } from "../organization/grant";
 export interface Operation {
   _id: ObjectId;
-  ownerId: ObjectId;
+  ownerId?: ObjectId;
+  schemaVersion?: 2;
+  actorKind?: "owner" | "church_user";
+  actorId?: ObjectId;
+  churchId?: ObjectId;
   method: string;
   routeKey: string;
   keyHash: string;
@@ -82,16 +87,74 @@ export class Operations {
     ) => Promise<{ safeResult: Record<string, unknown>; resourceRefs: Operation["resourceRefs"] }>,
     status = 200,
   ): Promise<OperationResult> {
+    return this.executeScoped(
+      grant,
+      { ownerId: grant.actorId },
+      method,
+      routeKey,
+      key,
+      payload,
+      ifMatch,
+      mutate,
+      status,
+    );
+  }
+  async executeOrganization(
+    grant: OrganizationGrant,
+    method: string,
+    routeKey: string,
+    key: string | null,
+    payload: unknown,
+    ifMatch: number | null,
+    mutate: (
+      tx: ClientSession,
+      operationId: ObjectId,
+    ) => Promise<{ safeResult: Record<string, unknown>; resourceRefs: Operation["resourceRefs"] }>,
+    status = 200,
+  ) {
+    return this.executeScoped(
+      grant,
+      {
+        schemaVersion: 2,
+        actorKind: grant.actorKind,
+        actorId: grant.actorId,
+        churchId: grant.churchId,
+      },
+      method,
+      routeKey,
+      key,
+      payload,
+      ifMatch,
+      mutate,
+      status,
+      true,
+    );
+  }
+  private async executeScoped(
+    grant: OwnerGrant,
+    scope: Pick<Operation, "ownerId" | "schemaVersion" | "actorKind" | "actorId" | "churchId">,
+    method: string,
+    routeKey: string,
+    key: string | null,
+    payload: unknown,
+    ifMatch: number | null,
+    mutate: (
+      tx: ClientSession,
+      operationId: ObjectId,
+    ) => Promise<{ safeResult: Record<string, unknown>; resourceRefs: Operation["resourceRefs"] }>,
+    status: number,
+    fencedReplay = false,
+  ): Promise<OperationResult> {
     requireCondition(
       key && /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(key),
       400,
       "INVALID_REQUEST",
     );
-    const lookup = { ownerId: grant.actorId, method, routeKey, keyHash: digest(key.toLowerCase()) },
+    const lookup = { ...scope, method, routeKey, keyHash: digest(key.toLowerCase()) },
       payloadHash = digest(canonical({ payload, ifMatch }));
-    const previous = await this.collection.findOne(lookup);
+    const previous = fencedReplay ? null : await this.collection.findOne(lookup);
     if (previous) return this.replay(previous, payloadHash);
-    const runningKey = `${grant.actorId}:${method}:${routeKey}:${lookup.keyHash}`;
+    const runningKey = canonical(lookup);
     requireCondition(!this.running.has(runningKey), 409, "OPERATION_IN_PROGRESS");
     this.running.add(runningKey);
     const operationId = new ObjectId();
@@ -127,7 +190,14 @@ export class Operations {
         error.operationId = operationId.toHexString();
       if (error instanceof MongoServerError && error.code === 11000 && error.keyPattern?.keyHash) {
         const existing = await this.collection.findOne(lookup);
-        if (existing) return this.replay(existing, payloadHash);
+        if (existing) {
+          if (fencedReplay)
+            return this.db.transaction(async (tx) => {
+              await grant.fence(tx);
+              return this.replay(existing, payloadHash);
+            });
+          return this.replay(existing, payloadHash);
+        }
         throw new AppError(409, "OPERATION_IN_PROGRESS");
       }
       if (error instanceof MongoError && error.hasErrorLabel("TransientTransactionError"))
@@ -136,6 +206,31 @@ export class Operations {
     } finally {
       this.running.delete(runningKey);
     }
+  }
+  async getOrganization(grant: OrganizationGrant, id: string) {
+    requireCondition(grant.canWrite, 403, "FORBIDDEN");
+    requireCondition(/^[a-f0-9]{24}$/i.test(id), 400, "INVALID_REQUEST");
+    return this.db.transaction(async (tx) => {
+      await grant.fence(tx);
+      const op = await this.collection.findOne(
+        {
+          _id: new ObjectId(id),
+          schemaVersion: 2,
+          actorKind: grant.actorKind,
+          actorId: grant.actorId,
+          churchId: grant.churchId,
+        },
+        { session: tx },
+      );
+      requireCondition(op && op.expiresAt > this.now(), 404, "NOT_FOUND");
+      return {
+        operationId: op._id.toHexString(),
+        status: op.status,
+        safeResult: op.safeResult,
+        createdAt: op.createdAt.toISOString(),
+        expiresAt: op.expiresAt.toISOString(),
+      };
+    });
   }
   async get(grant: OwnerGrant, id: string) {
     requireCondition(/^[a-f0-9]{24}$/i.test(id), 400, "INVALID_REQUEST");

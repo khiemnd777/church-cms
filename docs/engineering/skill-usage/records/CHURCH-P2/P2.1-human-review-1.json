@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "event_id": "CHURCH-P2/P2.1/human-review/1",
+  "event_type": "evaluation",
+  "task_id": "CHURCH-P2",
+  "scope_id": "P2.1",
+  "recorded_at": "2026-11-11T10:18:30.043478+00:00",
+  "reported_by": "delivery_owner",
+  "source_kind": "human_feedback",
+  "subject_event_id": "CHURCH-P2/P2.1/implementation/1",
+  "assessment_source": "human",
+  "review_attempt": 1,
+  "decision": "CHANGES_REQUESTED",
+  "findings": [
+    {
+      "category": "IMPLEMENTATION_DEFECT",
+      "description": "Khiêm chưa nghiệm thu P2.1 vì margin/padding components nằm sát nhau. Field ngoài .form thiếu gap label/control; toolbar và bảng không có khoảng cách; kiểm chứng r1 chưa đo spacing.",
+      "evidence": "output/p2.1-spacing/reported.jpg; web/ui/styles/adapters.css; web/organization-management.tsx",
+      "skill_attribution": null
+    }
+  ],
+  "evidence_refs": [
+    "output/p2.1-spacing/reported.jpg",
+    "docs/tasks/CHURCH-P2.1.md"
+  ]
+}

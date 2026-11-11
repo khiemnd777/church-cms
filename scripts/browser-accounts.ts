@@ -562,8 +562,18 @@ try {
   await page.getByRole("button", { name: "Vào quản lý Hội Thánh", exact: true }).click();
   await page.getByText("Quản trị nhà cung cấp", { exact: true }).waitFor();
   assert(
-    await page.getByText("Chức năng nghiệp vụ chưa khả dụng.", { exact: true }).isVisible(),
-    "F24-real-provider-context-no-P2-dashboard",
+    (await page
+      .getByText(
+        "Cấu hình Hội Thánh đã khả dụng trong menu Cấu hình. Các chức năng nghiệp vụ khác chưa khả dụng.",
+        { exact: true },
+      )
+      .isVisible()) &&
+      (await page.getByRole("navigation").getByText("Cấu hình", { exact: true }).isVisible()) &&
+      (await page
+        .getByRole("navigation")
+        .getByRole("button", { name: "Tổng quan", exact: true })
+        .count()) === 0,
+    "F24-provider-context-config-available-dashboard-unavailable",
   );
   // No user tenant picker: opening a different church URL clears content and requires explicit logout.
   await user.goto(`${conf.origin}/h/${church.code}/login`);

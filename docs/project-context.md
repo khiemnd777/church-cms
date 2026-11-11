@@ -85,4 +85,12 @@ F23 là backend capability audit:read cho owner full; không menu UI mới, DTO 
 
 ## Mốc nghiệm thu và đóng P1
 
-Khiêm đã nghiệm thu P1.4 và đóng P1; P1.1–P1.4 đều HUMAN ACCEPTED trong phạm vi local/synthetic. [Biên bản đóng P1](tasks/CHURCH-P1.md#đóng-p1). Phê duyệt này không là production release hoặc quyền mở giai đoạn mới. P2 chưa mở; các phê duyệt cũ không cấp quyền bắt đầu P2. Trạng thái hiện hành duy nhất vẫn ở project-state.
+Khiêm đã nghiệm thu P1.4 và đóng P1; P1.1–P1.4 đều HUMAN ACCEPTED trong phạm vi local/synthetic. [Biên bản đóng P1](tasks/CHURCH-P1.md#đóng-p1). Phê duyệt đóng P1 không là production release hoặc quyền mở giai đoạn mới. P2 được mở bằng chỉ dẫn mới ngày2026-11-11, ghi ở phần roadmap P2 bên dưới. Trạng thái hiện hành duy nhất vẫn ở project-state.
+
+## Roadmap P2 đã duyệt
+
+P2.1 Cấu hình → P2.2 Hồ sơ → P2.3 Gia đình → P2.4 Tổ chức/quyền → P2.5 Import/export → P2.6 Tổng quan/kiểm chứng. Authority mới ngày 2026-11-11 thay trạng thái P2 chưa mở trong lịch sử. Mỗi gói có điểm dừng nghiệm thu. Chi tiết [CHURCH-P2](tasks/CHURCH-P2.md).
+
+## Ranh giới Organization P2.1
+
+Organization sở hữu church_settings/organization_units; cấp cấu hình và catalogue tenant-scoped qua contracts. Identity/Authorization cấp grant theo role và realm, Tenancy fence church, Operations ledger v2 actor-scoped cùng collection với v1 (không backfill), Audit ghi đúng actor trong transaction. GET không khởi tạo; POST setup tạo đúng6system units. UI W12 dùng chung hai realm/UI-STD-r1; pending intent ở parent qua reauth, không tự replay. Chi tiết ổn định tại engineering/P2.1-organization.md; live status/acceptance chỉ ở project-state/task.

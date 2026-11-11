@@ -87,3 +87,11 @@ HTML chỉ là nguồn đối chiếu cho kiểm tra, không được import và
 - `bun test --timeout 30000 tests`: regression API. Backend phải giữ nguyên trong UI-STD-r1, đối chiếu baseline hash trong output.
 
 Trạng thái thực tế và evidence được ghi trong `docs/project-state.md` và `docs/tasks/UI-STD-r1.md`; tài liệu chuẩn này không tự tuyên bố kiểm tra PASS hoặc human ACCEPTED.
+
+## Caller kế thừa P2.1
+
+P2.1-plan-r1 cho phép W12 Cấu hình dùng cùng renderer cho owner/user; route/context và quyền do caller cung cấp. Hai danh mục ban phục vụ/khu vực dùng Toolbar/TableFrame/Modal/Choice hiện có; CSS feature chỉ grid/gap/flex. Save tường minh và confirmation ngừng/khôi phục là adaptations được duyệt cùng mockup P2.1; không đổi stylesheet/icon nguồn. Browser suite P2.1 kiểm choice label là vùng chạm radio, cả hai theme và1440/901/900/560/390. Contracts tại engineering/P2.1-organization.md.
+
+### Sửa spacing P2.1-r2
+
+Sau human CHANGES_REQUESTED vì components nằm sát nhau, Field phải tự có layout cột và gap5px như `.form label` trong HTML, kể cả khi dùng ngoài `.form`. Input/select bên trong Field không nhận flex sizing từ ancestor toolbar; tránh flex-basis220px trở thành chiều cao. W12 nhóm cấu hình cách nhau18px, tiêu đề/nội dung12px, toolbar/bảng18px, tên ban/độ tuổi10px, dùng spacing tokens hiện có. Không thay source stylesheet/palette/font/breakpoint. Browser phải đo gap và giới hạn chiều cao control một dòng (36–44px thực tế ở ma trận r2), cùng ảnh đối chiếu. Kết quả và giới hạn tại task CHURCH-P2.1.

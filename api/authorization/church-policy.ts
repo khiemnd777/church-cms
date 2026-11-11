@@ -27,8 +27,15 @@ export function validateRoleScope(role: Role, scope: Scope) {
   if (scope.kind === "assigned_units") throw new AppError(422, "SCOPE_TARGET_NOT_AVAILABLE");
 }
 // Only implemented capabilities are advertised; business modules extend this versioned catalogue in P2.
-export const policyVersion = 1;
+export const policyVersion = 2;
 export const churchCapabilities = ["context:read"] as const;
-export function capabilityAllowed(capability: string) {
-  return churchCapabilities.some((c) => c === capability);
+export function capabilitiesFor(role: Role): readonly string[] {
+  return role === "pastor"
+    ? ["context:read", "organization:read", "organization:manage"]
+    : role === "secretary"
+      ? ["context:read", "organization:read"]
+      : churchCapabilities;
+}
+export function capabilityAllowed(capability: string, role: Role) {
+  return capabilitiesFor(role).includes(capability);
 }
