@@ -22,7 +22,7 @@ docker run "$@" --name "$container_name" --init --shm-size=512m -e CHURCH_BROWSE
  --mount "type=bind,source=$project_root/node_modules,target=/work/node_modules,readonly" \
  --mount "type=bind,source=$project_root/dist,target=/work/dist,readonly" \
  --mount "type=bind,source=$project_root/output/ui-reference-dist,target=/work/ui-reference-dist,readonly" \
- --mount "type=bind,source=$project_root/../documents,target=/work/reference,readonly" \
+ --mount "type=bind,source=$project_root/tools/ui-reference,target=/work/reference,readonly" \
  --mount "type=bind,source=$project_root/package.json,target=/work/package.json,readonly" \
  church-cms-browser:p1.1 bun "scripts/$browser_script" || status=$?
 docker cp "$container_name:/work/output/." "$project_root/output/"

@@ -2,6 +2,17 @@
 
 Cập nhật: 2026-11-11. Đây là bản tóm tắt hiện hành duy nhất. Authority/acceptance chi tiết: [CHURCH-P0](tasks/CHURCH-P0.md), [CHURCH-P1](tasks/CHURCH-P1.md), [UI-STD-r1](tasks/UI-STD-r1.md).
 
+## CI-REFERENCE-r1 — 2026-11-11
+
+- Khiêm duyệt kế hoạch sửa local trong chat: “Duyệt.” Gói một lần ngoài roadmap; P1 vẫn CLOSED, P2 NOT_OPENED; không commit/push/deploy.
+- Lỗi xác minh từ run `42943023514` tại revision `9ebb3df8a1788746b2b150f720c9a8c5dbf16dbf`: `ui:check` đọc `../documents` không tồn tại trên runner. Đã đưa snapshot HTML đúng SHA256 vào `tools/ui-reference`, sửa source check và read-only browser mount cùng dùng snapshot.
+- Đã PASS: checkout mô phỏng không có sibling documents, chặn HTML bị sửa, lint (10 warnings CSS có sẵn), typecheck, hai builds, ui:check, shell syntax, 76 integration tests/997 assertions, 658 Firefox checks (171+88+119+280), audit và benchmark. Qualification/restore/cleanup PASS (33 cấu hình/3.300 HTTP samples; 100 churches/10.000 accounts/100.005 audit events). `git diff --check` PASS. Remote Linux CI NOT_RUN với bản sửa, chưa human accepted/released. [Receipt local](../output/ci-reference/verification.json), [journal](engineering/skill-usage/records/CI-REFERENCE/implementation-1.json).
+
+## CI-REFERENCE publication — quyền hiện hành
+
+- Khiêm yêu cầu “commit and push.” trong chat ngày 2026-11-11, cấp quyền publication bản sửa CI-REFERENCE-r1 qua task branch và PR vào `main`. Không merge/deploy/P2. Các giới hạn không-publication ở biên bản implementation phía trên ghi phạm vi trước yêu cầu này.
+- Nhánh dự kiến `codex/fix-ci-reference`; local gates đã PASS theo receipt CI-REFERENCE-r1. Kết quả remote cần kiểm tra sau push.
+
 ## Git publication — 2026-11-11
 
 - Khiêm đã duyệt kế hoạch khởi tạo Git, commit và push repository `khiemnd777/church-cms`. Remote trống đã được kiểm tra; nhánh ban đầu `main`. Publication không mở P2 hoặc cấp quyền deploy.

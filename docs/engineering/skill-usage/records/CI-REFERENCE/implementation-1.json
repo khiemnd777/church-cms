@@ -1,0 +1,105 @@
+{
+  "schema_version": 1,
+  "event_id": "CI-REFERENCE/implementation/1",
+  "event_type": "phase_handoff",
+  "task_id": "CI-REFERENCE",
+  "scope_id": "r1",
+  "recorded_at": "2026-11-11T02:53:35.496055+00:00",
+  "reported_by": "delivery_owner",
+  "source_kind": "agent_self_report",
+  "phase": "implementation",
+  "handoff_index": 1,
+  "classification": {
+    "delivery": "one_time",
+    "complexity": "scoped_ci_dependency_fix",
+    "ui": false
+  },
+  "authority": {
+    "approval": "Khiêm: Duyệt. (chat ngày 2026-11-11, kế hoạch CI reference)",
+    "scope": "Snapshot HTML nguyên byte; source check/browser mount; local gates; docs/journal. Không commit/push/deploy/P2."
+  },
+  "skills": [
+    {
+      "skill_id": "debugging-and-error-recovery",
+      "contribution_summary": "Xác minh ENOENT bằng GitHub job logs, sửa dependency ngoài checkout; giữ SHA256/CSS gates, chạy standalone/negative checks và gates local hiện có.",
+      "contribution_percent_estimate": 100,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/debugging-and-error-recovery/SKILL.md",
+        "version": null,
+        "sha256": "9f42e9d582ae78e42e1b4e65ef2c4848f4debed2f2a9092037387d572ea5d358",
+        "fingerprint_basis": "Skill đã đọc và áp dụng; bytes không bị sửa trong task; fingerprint tại bàn giao."
+      }
+    }
+  ],
+  "outcome": {
+    "delivery_status": "COMPLETED",
+    "verification_level": "Local source/standalone regression/integration/Firefox/qualification/restore; GitHub Linux NOT_RUN",
+    "human_acceptance": "PENDING_REVIEW",
+    "limitations": [
+      "No publication or deploy",
+      "Local macOS with Linux browser containers; not a GitHub runner execution",
+      "Self review, not independent review",
+      "output evidence is ignored by Git"
+    ]
+  },
+  "measurements": {
+    "elapsed_seconds": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có bộ đếm đo được cho toàn phase."
+    },
+    "tool_calls": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có bộ đếm đo được cho toàn phase."
+    },
+    "input_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có bộ đếm đo được cho toàn phase."
+    },
+    "output_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có bộ đếm đo được cho toàn phase."
+    },
+    "cached_input_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có bộ đếm đo được cho toàn phase."
+    },
+    "reasoning_output_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có bộ đếm đo được cho toàn phase."
+    },
+    "client": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không lưu giá trị suy đoán từ cấu hình hoặc self-report."
+    },
+    "model": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không lưu giá trị suy đoán từ cấu hình hoặc self-report."
+    },
+    "effort": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không lưu giá trị suy đoán từ cấu hình hoặc self-report."
+    }
+  },
+  "evidence_refs": [
+    ".github/workflows/ci.yml",
+    "scripts/ui-standard-check.ts",
+    "scripts/browser-check.sh",
+    "tools/ui-reference/Quản lý Hội Thánh Tin Lành(1).html",
+    "output/ci-reference/verification.json",
+    "output/p1.4/qualification.json",
+    "output/p1.4/restore.json",
+    "output/p1.4/cleanup.json",
+    "https://github.com/khiemnd777/church-cms/actions/runs/42943023514"
+  ]
+}
