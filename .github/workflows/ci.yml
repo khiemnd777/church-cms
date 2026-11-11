@@ -18,7 +18,6 @@ jobs:
       - run: bun run db:init
       - run: mkdir -p output
       - run: bun run lint && bun run typecheck && bun run build && bun run build:ui && bun run ui:check && bun test --timeout 30000 tests && bun audit
-      - run: bun run test:browser:p1.4
       - run: bun run qualify:p1.4
       - run: bun run benchmark
       - if: always()

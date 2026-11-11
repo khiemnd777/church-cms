@@ -1,0 +1,85 @@
+{
+  "schema_version": 1,
+  "event_id": "CHURCH-P2/P2.1-ci-browser/implementation/1",
+  "event_type": "phase_handoff",
+  "task_id": "CHURCH-P2",
+  "scope_id": "P2.1-ci-browser",
+  "recorded_at": "2026-11-11T15:15:33.868581+00:00",
+  "reported_by": "delivery_owner",
+  "source_kind": "agent_self_report",
+  "phase": "implementation",
+  "handoff_index": 1,
+  "classification": {
+    "delivery": "roadmap",
+    "complexity": "scoped_ci_workflow_change",
+    "ui": false
+  },
+  "authority": {
+    "approval": "Khiêm chọn bỏ browser tests, giữ các checks khác sau kế hoạch trong chat",
+    "scope": "Bỏ bước browser CI, giữ lệnh local và các checks khác; chưa được phép commit/push thay đổi này"
+  },
+  "skills": [
+    {
+      "skill_id": "planning-and-task-breakdown",
+      "contribution_summary": "Xác định phạm vi, phụ thuộc và kiểm tra thay đổi workflow",
+      "contribution_percent_estimate": 100,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/planning-and-task-breakdown/SKILL.md",
+        "version": null,
+        "sha256": "fb768e0a3d3a77f733eb613c078fb61dde0845a438c65cc095fc6448dc166d4c",
+        "fingerprint_basis": "SHA256 của skill repo đã đọc và áp dụng"
+      }
+    }
+  ],
+  "outcome": {
+    "delivery_status": "COMPLETED",
+    "verification_level": "local_source_yaml_and_diff",
+    "human_acceptance": "PENDING_REVIEW",
+    "limitations": [
+      "Remote CI với workflow mới chưa chạy",
+      "Browser regression không còn được CI tự chạy",
+      "Chưa commit/push thay đổi"
+    ]
+  },
+  "measurements": {
+    "elapsed_seconds": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có bộ đếm đo theo phạm vi pha"
+    },
+    "tool_calls": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có bộ đếm đo theo phạm vi pha"
+    },
+    "input_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có bộ đếm đo theo phạm vi pha"
+    },
+    "output_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có bộ đếm đo theo phạm vi pha"
+    },
+    "cached_input_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có bộ đếm đo theo phạm vi pha"
+    },
+    "reasoning_output_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có bộ đếm đo theo phạm vi pha"
+    },
+    "client": null,
+    "model": null,
+    "effort": null
+  },
+  "evidence_refs": [
+    ".github/workflows/ci.yml",
+    "docs/project-state.md"
+  ]
+}

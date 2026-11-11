@@ -23,7 +23,9 @@ Cập nhật: 2026-11-11. Đây là bản tóm tắt hiện hành duy nhất. Au
 
 ## Trạng thái hiện hành
 
-- **P2-plan-r1 APPROVED; P2.1-plan-r1 IMPLEMENTATION AUTHORIZED** ngày 2026-11-11 trong chat. P21-01–05 đã bàn giao r1 nhưng Khiêm chưa nghiệm thu vì UI spacing; P21-03/04 đã sửa và bàn giao r2 chờ xem lại, dừng trước P2.2. Không commit/push/deploy/dữ liệu thật. Hồ sơ: [CHURCH-P2](tasks/CHURCH-P2.md), [P2.1](tasks/CHURCH-P2.1.md). Các dòng NOT_OPENED bên dưới là lịch sử trước chỉ dẫn mới, không còn là quyền hiện hành của P2.1.
+- **P2-plan-r1 APPROVED; P2.1-plan-r1 IMPLEMENTATION AUTHORIZED** ngày 2026-11-11 trong chat. P21-01–05 đã bàn giao r1 nhưng Khiêm chưa nghiệm thu vì UI spacing; P21-03/04 đã sửa và bàn giao r2 chờ xem lại, dừng trước P2.2. P2.1 đã push tại `668e8db`, [PR #2](https://github.com/khiemnd777/church-cms/pull/2) draft; chưa merge/deploy/dữ liệu thật. Hồ sơ: [CHURCH-P2](tasks/CHURCH-P2.md), [P2.1](tasks/CHURCH-P2.1.md). Các giới hạn publication/NOT_OPENED phía dưới là lịch sử tại thời điểm ghi.
+
+- **CI P2.1:** run `43044929795` fail khi build browser image do không phân giải được Ubuntu repositories; lint/typecheck/builds/ui:check/integration/audit PASS, browser assertions chưa chạy, qualification/benchmark bị skip. Theo chỉ dẫn Khiêm “Bỏ browser tests, giữ các checks khác”, đã bỏ bước browser khỏi workflow local; lệnh browser local còn nguyên, các bước CI khác giữ nguyên. Tại bàn giao local, thay đổi workflow chưa commit/push và CI với cấu hình mới NOT_RUN. Browser regression không còn được CI tự chạy, P2.1-r2 vẫn chờ nghiệm thu.
 
 - **P1 CLOSED — P1.1/P1.2/P1.3/P1.4 HUMAN ACCEPTED** theo Khiêm: “Nghiệm thu P1.4 và Đóng P1. Chưa mở P2.” [Biên bản đóng P1](tasks/CHURCH-P1.md#đóng-p1), [acceptance P1.4](engineering/skill-usage/records/CHURCH-P1/P1.4-human-acceptance-1.json).
 - **P2.1-r2 AWAITING_ACCEPTANCE — r1 CHANGES_REQUESTED** theo phê duyệt mới; P2.2–P2.6 chưa được mở implementation. Kết quả local không thay release/production qualification.
