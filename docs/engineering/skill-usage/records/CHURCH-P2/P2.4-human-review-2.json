@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "event_id": "CHURCH-P2/P2.4/human-review/2",
+  "event_type": "evaluation",
+  "task_id": "CHURCH-P2",
+  "scope_id": "P2.4",
+  "recorded_at": "2026-11-12T01:38:27.250252+00:00",
+  "reported_by": "delivery_owner",
+  "source_kind": "human_feedback",
+  "subject_event_id": "CHURCH-P2/P2.4/implementation/2",
+  "assessment_source": "human",
+  "review_attempt": 2,
+  "decision": "CHANGES_REQUESTED",
+  "findings": [
+    {
+      "summary": "Khiêm chưa nghiệm thu P2.4-r2; bộ switcher phải dùng icon thay text."
+    }
+  ],
+  "evidence_refs": [
+    "docs/tasks/CHURCH-P2.4.md"
+  ],
+  "authority": {
+    "feedback": "chưa nghiệm thu, Bộ switcher phải sử dụng icon thay text.",
+    "scope": "Ghi nhận UI correction P24-04/05; trình mockup icon switcher trước coding theo AGENTS.md. Chưa mở P2.5/commit/push/deploy/dữ liệu thật."
+  }
+}

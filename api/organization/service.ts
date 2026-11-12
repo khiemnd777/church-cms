@@ -1,10 +1,14 @@
 import { type ClientSession, type Filter, MongoServerError, ObjectId } from "mongodb";
 import { z } from "zod";
 import type { Audit } from "../audit/service";
+import type { TenantGrant } from "../authorization/tenant-grant";
 import { AppError, requireCondition } from "../errors";
 import { idempotencyKey, objectId, parse, version } from "../http-validation";
+import type { Scope } from "../identity/accounts-model";
 import { digest, equal, sign } from "../identity/crypto";
 import type { Database } from "../infrastructure/database";
+import { ageOn, businessDay } from "../members/dates";
+import type { Assignment } from "../members/models";
 import type { Operations } from "../operations/service";
 import type { OrganizationGrant } from "./grant";
 import {
@@ -37,6 +41,154 @@ export class Organization {
   }
   private get units() {
     return this.db.db.collection<Unit>("organization_units");
+  }
+  async validateScope(churchId: ObjectId, scope: Scope, tx: ClientSession) {
+    if (scope.kind !== "assigned_units") return;
+    for (const id of scope.unitIds) {
+      const result = await this.units.updateOne(
+        {
+          _id: objectId(id),
+          churchId,
+          status: "active",
+          kind: { $in: ["age_ministry", "service_ministry", "area"] },
+        },
+        { $inc: { writeFence: 1 } },
+        { session: tx },
+      );
+      requireCondition(result.matchedCount, 422, "SCOPE_TARGET_NOT_AVAILABLE");
+    }
+  }
+  async memberOptions(g: TenantGrant, query: URLSearchParams) {
+    const config = await this.getSettings(g);
+    return { ...config, asOfDate: businessDay(this.now()), units: await this.list(g, query) };
+  }
+  async overview(g: TenantGrant, tx: ClientSession, areaIds: string[]) {
+    const settings = await this.settings.findOne({ _id: g.churchId }, { session: tx }),
+      activeAreas = await this.units.countDocuments(
+        { churchId: g.churchId, kind: "area", status: "active" },
+        { session: tx },
+      ),
+      labels = await this.units
+        .find(
+          { churchId: g.churchId, kind: "area", _id: { $in: areaIds.map(objectId) } },
+          { session: tx },
+        )
+        .toArray();
+    const areaLabel =
+      settings?.unitType === "custom"
+        ? (settings.customUnitLabel ?? "Khu vực")
+        : settings?.unitType === "cell_group"
+          ? "Nhóm tế bào"
+          : settings?.unitType === "branch"
+            ? "Chi phái"
+            : "Khu vực";
+    return {
+      configured: !!settings,
+      areaLabel,
+      activeAreas,
+      areaLabels: labels.map((u) => ({ id: u._id.toHexString(), name: u.name, status: u.status })),
+    };
+  }
+  async exchangeReferences(churchId: ObjectId, tx: ClientSession) {
+    const settings = await this.settings.findOne({ _id: churchId }, { session: tx });
+    requireCondition(settings, 422, "SETTINGS_NOT_CONFIGURED");
+    const units = await this.units.find({ churchId }, { session: tx }).limit(5001).toArray();
+    requireCondition(units.length <= 5000, 413, "FILE_LIMIT");
+    return { settings, units };
+  }
+  async labels(churchId: ObjectId, ids: ObjectId[], tx?: ClientSession) {
+    requireCondition(ids.length <= 500, 400, "INVALID_REQUEST");
+    const rows = await this.units.find({ churchId, _id: { $in: ids } }, { session: tx }).toArray();
+    return rows.map((u) => ({
+      id: u._id.toHexString(),
+      name: u.name,
+      kind: u.kind,
+      status: u.status,
+    }));
+  }
+  async fenceArea(churchId: ObjectId, id: ObjectId | null, tx: ClientSession) {
+    if (!id) return;
+    const r = await this.units.updateOne(
+      { _id: id, churchId, kind: "area", status: "active" },
+      { $inc: { writeFence: 1 } },
+      { session: tx },
+    );
+    requireCondition(r.matchedCount, 422, "UNIT_NOT_AVAILABLE");
+  }
+  async assignment(
+    churchId: ObjectId,
+    input: { mode: "auto" | "manual"; unitIds: string[]; serviceUnitIds?: string[] },
+    birthDate: string | null,
+    context: { settingsVersion: number; asOfDate: string },
+    tx: ClientSession,
+    previous?: Assignment,
+  ): Promise<Assignment> {
+    const today = businessDay(this.now());
+    requireCondition(context.asOfDate === today, 412, "ASSIGNMENT_CONTEXT_CHANGED");
+    const root = await this.settings.updateOne(
+      { _id: churchId, version: context.settingsVersion },
+      { $inc: { writeFence: 1 } },
+      { session: tx },
+    );
+    requireCondition(root.matchedCount, 412, "ASSIGNMENT_CONTEXT_CHANGED");
+    let ids = input.unitIds.map(objectId);
+    const oldServices = previous
+      ? await this.units
+          .find(
+            { churchId, _id: { $in: previous.unitIds }, kind: "service_ministry" },
+            { session: tx },
+          )
+          .toArray()
+      : [];
+    if (input.mode === "auto") {
+      const age = ageOn(birthDate, today),
+        band =
+          age === null
+            ? undefined
+            : ageBands.find((b) => age >= b.min && (b.max === null || age <= b.max));
+      if (band) {
+        const unit = await this.units.findOne(
+          { churchId, kind: "age_ministry", systemKey: band.key, status: "active" },
+          { session: tx },
+        );
+        requireCondition(unit, 503, "DEPENDENCY_UNAVAILABLE");
+        ids = [unit._id];
+      } else ids = [];
+      if (!input.serviceUnitIds) ids.push(...oldServices.map((u) => u._id));
+    }
+    if (input.serviceUnitIds) {
+      for (const id of input.serviceUnitIds) {
+        requireCondition(
+          await this.units.findOne(
+            {
+              _id: objectId(id),
+              churchId,
+              kind: "service_ministry",
+              ...(oldServices.some((u) => u._id.equals(objectId(id))) ? {} : { status: "active" }),
+            },
+            { session: tx },
+          ),
+          422,
+          "UNIT_NOT_AVAILABLE",
+        );
+        if (!ids.some((v) => v.equals(objectId(id)))) ids.push(objectId(id));
+      }
+    }
+    requireCondition(ids.length <= 50, 422, "VALIDATION_FAILED");
+    for (const id of ids) {
+      const r = await this.units.updateOne(
+        {
+          _id: id,
+          churchId,
+          kind: { $in: ["age_ministry", "service_ministry"] },
+          ...(oldServices.some((u) => u._id.equals(id)) ? {} : { status: "active" }),
+        },
+        { $inc: { writeFence: 1 } },
+        { session: tx },
+      );
+      requireCondition(r.matchedCount, 422, "UNIT_NOT_AVAILABLE");
+    }
+    return { mode: input.mode, unitIds: ids, asOfDate: today };
   }
   private actor(g: OrganizationGrant) {
     return {

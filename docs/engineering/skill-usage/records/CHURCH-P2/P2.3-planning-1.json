@@ -1,0 +1,110 @@
+{
+  "schema_version": 1,
+  "event_type": "phase_handoff",
+  "task_id": "CHURCH-P2",
+  "scope_id": "P2.3",
+  "recorded_at": "2026-11-11T17:15:06.032891+00:00",
+  "reported_by": "delivery_owner",
+  "source_kind": "agent_self_report",
+  "handoff_index": 1,
+  "classification": {
+    "delivery": "roadmap",
+    "complexity": "cross_layer_family_members_history_concurrency_UI",
+    "ui": true
+  },
+  "authority": {
+    "approval": "Khiêm duyệt P2.3-plan-r1 và triển khai trọn P23-01–05 local/synthetic",
+    "scope": "Bàn giao để nghiệm thu rồi dừng trước P2.4. Chưa commit/push/deploy hoặc dùng dữ liệu thật"
+  },
+  "measurements": {
+    "elapsed_seconds": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có bộ đếm đo được theo scope/phase"
+    },
+    "tool_calls": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có bộ đếm đo được theo scope/phase"
+    },
+    "input_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có bộ đếm đo được theo scope/phase"
+    },
+    "output_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có bộ đếm đo được theo scope/phase"
+    },
+    "cached_input_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có bộ đếm đo được theo scope/phase"
+    },
+    "reasoning_output_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có bộ đếm đo được theo scope/phase"
+    },
+    "client": null,
+    "model": null,
+    "effort": null
+  },
+  "evidence_refs": [
+    "docs/tasks/CHURCH-P2.3.md",
+    "docs/engineering/P2.3-families.md",
+    "output/p2.3/verification.json"
+  ],
+  "event_id": "CHURCH-P2/P2.3/planning/1",
+  "phase": "planning",
+  "skills": [
+    {
+      "skill_id": "planning-and-task-breakdown",
+      "contribution_summary": "Danh mục P23-01–05 và điểm dừng P2.4",
+      "contribution_percent_estimate": 25,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/planning-and-task-breakdown/SKILL.md",
+        "version": null,
+        "sha256": "fb768e0a3d3a77f733eb613c078fb61dde0845a438c65cc095fc6448dc166d4c",
+        "fingerprint_basis": "Actual skill read/applied in conversation; fingerprint at recording; no backdated/native invocation/cost measurement claim"
+      }
+    },
+    {
+      "skill_id": "spec-driven-development",
+      "contribution_summary": "Metadata/head/transfer/split/merge và acceptance/source ASCII mockup",
+      "contribution_percent_estimate": 40,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/spec-driven-development/SKILL.md",
+        "version": null,
+        "sha256": "c6cfb5c766c45243290d4dcfc7eb3857dbfb77556355c7960a4411762764858b",
+        "fingerprint_basis": "Actual skill read/applied in conversation; fingerprint at recording; no backdated/native invocation/cost measurement claim"
+      }
+    },
+    {
+      "skill_id": "api-and-interface-design",
+      "contribution_summary": "Scoped contracts, CAS/preview/retry và tương thích P2.2",
+      "contribution_percent_estimate": 35,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/api-and-interface-design/SKILL.md",
+        "version": null,
+        "sha256": "2550ac99404f1d52566cdd95fd809e0984eb29f1174132a864fb7beb9f688f79",
+        "fingerprint_basis": "Actual skill read/applied in conversation; fingerprint at recording; no backdated/native invocation/cost measurement claim"
+      }
+    }
+  ],
+  "outcome": {
+    "delivery_status": "COMPLETED",
+    "verification_level": "approved_chat_plan_source_review",
+    "human_acceptance": "ACCEPTED",
+    "limitations": [
+      "Planning record saved after actual write approval at real recording time; does not approve implementation acceptance"
+    ]
+  }
+}

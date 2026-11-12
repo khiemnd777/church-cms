@@ -1,13 +1,9 @@
 import type { settingsDto, unitDto } from "../api/organization/models";
-import { churchRequest, type Intent, ownerRequest } from "./api";
+import { churchRequest, ownerRequest } from "./api";
 export type SettingsDto = ReturnType<typeof settingsDto>;
 export type UnitDto = ReturnType<typeof unitDto>;
 export type OrganizationRealm = "owner" | "church";
-export interface OrganizationIntent extends Intent {
-  churchId: string;
-  realm: OrganizationRealm;
-  principalKey: string;
-}
+export type OrganizationIntent = import("./tenant-mutation").TenantIntent;
 export interface SettingsReply {
   configured: boolean;
   settings: SettingsDto | null;
@@ -26,9 +22,3 @@ export const organizationRequest = <T>(
   path: string,
   options?: Parameters<typeof ownerRequest>[1],
 ) => (realm === "owner" ? ownerRequest<T> : churchRequest<T>)(path, options);
-export const sendOrganizationIntent = (i: OrganizationIntent) =>
-  organizationRequest(i.realm, i.path, {
-    method: i.method,
-    body: i.body,
-    headers: { "Idempotency-Key": i.key, ...(i.version ? { "If-Match": `"${i.version}"` } : {}) },
-  });

@@ -23,12 +23,20 @@
     "test:ui": "bash scripts/browser-check.sh browser-ui-standard.ts",
     "test:browser:p1.3": "bash scripts/browser-check.sh browser-accounts.ts",
     "qualify:p1.4": "bun scripts/p1-qualification.ts",
+    "test:browser:p2.3": "CHURCH_EVIDENCE_DIR=output/p2.3 bash scripts/browser-check.sh browser-families.ts",
+    "test:browser:p2.2": "CHURCH_EVIDENCE_DIR=output/p2.2 bash scripts/browser-check.sh browser-members.ts",
     "test:browser:p2.1": "CHURCH_EVIDENCE_DIR=output/p2.1 bash scripts/browser-check.sh browser-organization.ts",
-    "test:browser:p1.4": "CHURCH_EVIDENCE_DIR=output/p1.4 bash scripts/browser-check.sh browser-accounts.ts && CHURCH_EVIDENCE_DIR=output/p1.4 bash scripts/browser-check.sh browser-churches.ts && CHURCH_EVIDENCE_DIR=output/p1.4 bash scripts/browser-check.sh browser-check.ts && CHURCH_EVIDENCE_DIR=output/p1.4 bash scripts/browser-check.sh browser-ui-standard.ts"
+    "test:browser:p1.4": "CHURCH_EVIDENCE_DIR=output/p1.4 bash scripts/browser-check.sh browser-accounts.ts && CHURCH_EVIDENCE_DIR=output/p1.4 bash scripts/browser-check.sh browser-churches.ts && CHURCH_EVIDENCE_DIR=output/p1.4 bash scripts/browser-check.sh browser-check.ts && CHURCH_EVIDENCE_DIR=output/p1.4 bash scripts/browser-check.sh browser-ui-standard.ts",
+    "test:browser:p2.4": "CHURCH_EVIDENCE_DIR=output/p2.4/r3 bash scripts/browser-check.sh browser-organization-runtime.ts",
+    "test:browser:p2.5": "CHURCH_EVIDENCE_DIR=output/p2.5 bash scripts/browser-check.sh browser-data-exchange.ts",
+    "qualify:p2.6": "bun scripts/p2-qualification.ts",
+    "test:browser:p2.6": "CHURCH_EVIDENCE_DIR=output/p2.6 bash scripts/browser-check.sh browser-overview.ts"
   },
   "dependencies": {
     "@fontsource/be-vietnam-pro": "5.2.7",
     "@fontsource/lora": "5.2.8",
+    "exceljs": "4.4.0",
+    "fflate": "0.8.3",
     "mongodb": "6.21.0",
     "react": "19.2.0",
     "react-dom": "19.2.0",
@@ -46,5 +54,8 @@
     "tailwindcss": "4.1.17",
     "typescript": "5.9.3",
     "vite": "7.3.7"
+  },
+  "overrides": {
+    "uuid": "11.1.1"
   }
 }

@@ -75,7 +75,7 @@ HTML `Quản lý Hội Thánh Tin Lành(1).html` là nguồn style, cùng mockup
 
 ## Ranh giới Identity/Authorization P1.3
 
-`Accounts`/`ChurchIdentity` sở hữu account/credential/session, dùng public `Tenancy.access()`/ChurchAccess để resolve và fence church; Operations ledger và Audit qua contracts đã có. User session realm riêng, fixed church, fresh role/scope mỗi request và fence tại transaction. Chỉ capability đã có `context:read`; các module nghiệp vụ chưa khả dụng. Owner có thể quản trị account khi suspended, nhưng F09/F24/user login bị chặn; thao tác account không resume church. Chi tiết contracts/rules/retention/canonical reset bucket tại [P1.3 accounts](engineering/P1.3-accounts.md). Không thay mô hình foundation r2 hoặc tự mở P2.
+`Accounts`/`ChurchIdentity` sở hữu account/credential/session, dùng public `Tenancy.access()`/ChurchAccess để resolve và fence church; Operations ledger và Audit qua contracts đã có. User session realm riêng, fixed church, fresh role/scope mỗi request và fence tại transaction. Ở P1 chỉ có `context:read`; P2.1/P2.2 mở catalogue và hồ sơ theo capability versioned riêng bên dưới. Owner có thể quản trị account khi suspended, nhưng F09/F24/user login bị chặn; thao tác account không resume church. Chi tiết contracts/rules/retention/canonical reset bucket tại [P1.3 accounts](engineering/P1.3-accounts.md). Không thay mô hình foundation r2 hoặc tự mở P2.
 
 
 ## Audit reader và qualification P1.4
@@ -94,3 +94,31 @@ P2.1 Cấu hình → P2.2 Hồ sơ → P2.3 Gia đình → P2.4 Tổ chức/quy�
 ## Ranh giới Organization P2.1
 
 Organization sở hữu church_settings/organization_units; cấp cấu hình và catalogue tenant-scoped qua contracts. Identity/Authorization cấp grant theo role và realm, Tenancy fence church, Operations ledger v2 actor-scoped cùng collection với v1 (không backfill), Audit ghi đúng actor trong transaction. GET không khởi tạo; POST setup tạo đúng6system units. UI W12 dùng chung hai realm/UI-STD-r1; pending intent ở parent qua reauth, không tự replay. Chi tiết ổn định tại engineering/P2.1-organization.md; live status/acceptance chỉ ở project-state/task.
+
+## Chuyển gói P2.1 → P2.2
+
+Khiêm nghiệm thu P2.1-r2 và mở P2.2 ngày2026-11-11. Tiếp tục danh mục P2-plan-r1 đã duyệt, giữ điểm nghiệm thu từng gói; hợp đồng nghiệp vụ/ASCII mockup P2.2 được trình duyệt trước coding. Quyền cho gói mới không bao gồm publication/deploy/dữ liệu thật. Chi tiết authority/acceptance trong task P2 và P2.1; trạng thái sống chỉ tại project-state.
+
+## Ranh giới Members/Families P2.2
+
+Members sở hữu hồ sơ và history; Families cấp hộ tối thiểu/area/read-model scoped, Organization cấp labels/active-link fences và assignment. ID/code bất biến; ba trục type/membership/participation độc lập. Create member+family/history/ledger/audit atomic; ngày nullable, consent versioned, conversion giữ nguồn thân hữu và không liên kết account/lớp. PolicyVersion3 cho pastor/secretary đọc ghi hồ sơ, secretary vẫn readonly catalogue. Shared tenant intent bảo vệ actor/tenant/namespace qua reauth. [Contracts/runbook](engineering/P2.2-members.md). Quản lý hộ đầy đủ/P2.3 và các gói sau giữ điểm dừng nghiệm thu; live state chỉ ở project-state.
+
+## Ranh giới Families P2.3
+
+Families sở hữu metadata/status/lineage và family_history; Members public port sở hữu chuyển familyId/roles/member_history, cùng transaction với Operations/Audit/active-area fences. Family version tăng khi metadata/member links/roles đổi, kể cả callers P2.2. Split tạo mã mới giữ nguồn; merge chuyển toàn bộ historical profiles rồi giữ source merged/link, không xóa/dedup/viết lại quá khứ. Metadata chưa rõ giữ null; upgrade P2.2 tường minh, không tạo năm/lịch sử giả. UI W03 và W14 dùng kit chung; [contracts/runbook](engineering/P2.3-families.md). P2.4 vẫn cần quyền mở riêng, live state chỉ ở project-state.
+
+## P2.4 — tổ chức thực tế và assigned-unit scope
+
+Organization sở hữu term/appointment snapshots, leader/schedule/history; Members public OrganizationMembers port sở hữu roster/eligibility/service changes, Family area vẫn là nguồn có thẩm quyền. Auto age và explicit service cùng tồn tại, DOB recalc giữ services. Identity gọi public UnitScopeValidator khi owner cấp assigned_units1–50active age/service/area cùng church; policyVersion5 cho lead reduced roster riêng, không cấp full Members/Families capability. Scoped reads fence church/account/session và query trong cùng Mongo snapshot; existing writers dùng cùng church fence. Chức vụ tổ chức không tự cấp role account. W04/W13/O03/W15 dùng kit/source hiện có; [contracts/runbook](engineering/P2.4-organization-runtime.md). Trạng thái/nghiệm thu chỉ ở project-state/task.
+
+W04 hỗ trợ Card/Bảng trên cùng DTO/controller, giữ bốn group, selected term/pages/actions/scope. Preference chỉ enum view tại localStorage theo realm/principal/church; lỗi storage không chặn render/switch. Shared TableFrame/grid giữ responsive, compact table actions có aria-label đầy đủ. Chi tiết tại contracts P2.4-r2; không thay API/schema/quyền.
+
+W04 switcher Card/Bảng dùng shared IconButton icon-only grid/table theo P2.4-icon-plan-r1; tooltip/aria-label/pressed/disabled giữ tên/trạng thái. Table là SVG bổ sung trong shared catalogue; không đổi source CSS/glyphgrid hay rule menu AppShell icon + tên.
+
+## P2.5 — ranh giới import/export
+
+Theo P2.5-plan-r1 đã duyệt: DataExchange sở hữu staged imports, protected export artifacts và durable source identities; gọi public transactional Members/Families/Organization contracts, không cross-module writes. CSV/XLSX→mapping/review→preview→batches≤100→reconciliation, create/link/skip không bulk overwrite/lifecycle/move; new family groups atomic trong lô. Policy6 cấp capability riêng owner/pastor/secretary, giữ reduced roster privacy P2.4. File ACL actor/realm/church/fresh fence/expiry; export server filters + allowlisted columns/snapshot. [Thiết kế và contracts](engineering/P2.5-data-exchange.md). Live acceptance chỉ tại project-state; P2.6 cần quyền riêng.
+
+## P2.6 — ranh giới Tổng quan/read snapshot
+
+Theo P2.6-plan-r1 đã duyệt: Overview orchestration gọi public Tenancy/Members/Families/Organization read ports trên một Mongo snapshot với fresh auth/tenant fences; không sở hữu/ghi domain collections. Policy7 overview:read chỉ owner/pastor/secretary, reduced roster giữ riêng. W01 giữ HTML source layout với current P2 metrics, unknown/null/unavailable rõ; future chart/rites/finance/care không có số giả. last30 visitors/explicit birthday year-month dùng chung list/count/cursor/export contracts. Local fenced snapshots được admission theo church/process, bounded queue/retry, không đổi writer/ledger semantics. Qualification/restore chỉ DB synthetic UUID, không là production SLA/PITR. [Contracts/runbook](engineering/P2.6-overview-qualification.md). Quyền P2.6 không đóng P2/mở P3; live acceptance chỉ tại project-state.

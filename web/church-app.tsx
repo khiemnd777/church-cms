@@ -1,10 +1,15 @@
 import { type FormEvent, useCallback, useEffect, useRef, useState } from "react";
+import type { OverviewTarget } from "../api/overview/contracts";
 import { AccessContextView } from "./access-context";
 import type { Role, Scope } from "./accounts-api";
 import { ApiError, churchAuth, refreshChurchCsrf } from "./api";
-import type { OrganizationIntent } from "./organization-api";
+import { FamiliesManagement } from "./families-management";
+import { MembersManagement } from "./members-management";
 import { OrganizationManagement } from "./organization-management";
-import { useOrganizationNavigation } from "./organization-navigation";
+import { OrganizationRuntimeView } from "./organization-runtime";
+import { OverviewView } from "./overview";
+import { usePendingNavigation } from "./pending-navigation";
+import type { TenantIntent } from "./tenant-mutation";
 import { AppShell, AuthCard, Button, Feedback, Field, Loading, TextInput } from "./ui/components";
 
 interface User {
@@ -37,14 +42,52 @@ export function ChurchApp() {
     [context, setContext] = useState(""),
     [reload, setReload] = useState(0);
   const [section, setSection] = useState(
-    location.pathname.endsWith("/config") ? "config" : "access",
+    location.pathname.endsWith("/overview")
+      ? "overview"
+      : location.pathname.endsWith("/bans")
+        ? "bans"
+        : location.pathname.endsWith("/roles")
+          ? "roles"
+          : location.pathname.endsWith("/config")
+            ? "config"
+            : location.pathname.endsWith("/members")
+              ? "members"
+              : location.pathname.endsWith("/families")
+                ? "families"
+                : "access",
   );
-  const [organizationPending, setOrganizationPending] = useState<OrganizationIntent | null>(null);
-  useOrganizationNavigation(organizationPending);
-  function selectSection(next: string) {
-    if (organizationPending) return;
+  useEffect(() => {
+    const back = () =>
+      setSection(
+        location.pathname.endsWith("/overview")
+          ? "overview"
+          : location.pathname.endsWith("/bans")
+            ? "bans"
+            : location.pathname.endsWith("/roles")
+              ? "roles"
+              : location.pathname.endsWith("/config")
+                ? "config"
+                : location.pathname.endsWith("/members")
+                  ? "members"
+                  : location.pathname.endsWith("/families")
+                    ? "families"
+                    : "access",
+      );
+    window.addEventListener("popstate", back);
+    return () => window.removeEventListener("popstate", back);
+  }, []);
+  const [familyToOpen, setFamilyToOpen] = useState<string | null>(null),
+    [memberToOpen, setMemberToOpen] = useState<string | null>(null);
+  const [pendingIntent, setPendingIntent] = useState<TenantIntent | null>(null);
+  usePendingNavigation(pendingIntent);
+  function selectSection(next: string, query?: URLSearchParams) {
+    if (pendingIntent) return;
     setSection(next);
-    history.pushState(null, "", `/h/${code}${next === "config" ? "/config" : ""}`);
+    history.pushState(
+      null,
+      "",
+      `/h/${code}${next === "overview" || next === "access" || next === "config" || next === "members" || next === "families" || next === "bans" || next === "roles" ? `/${next}` : ""}${query?.size ? `?${query}` : ""}`,
+    );
     if (next === "access") setReload((x) => x + 1);
   }
   const guard = useRef(false),
@@ -54,7 +97,7 @@ export function ChurchApp() {
     setTitle(name);
     setContext(ctx);
   }, []);
-  function navigate(next: Screen) {
+  function navigate(next: Screen, selectedSection = section) {
     setPassword("");
     setConfirmation("");
     setFields({});
@@ -62,7 +105,7 @@ export function ChurchApp() {
     history.replaceState(
       null,
       "",
-      `/h/${code}${next === "home" || next === "reauth" ? (section === "config" ? "/config" : "") : next === "change" ? "/change-password" : next === "support" ? "/support" : "/login"}`,
+      `/h/${code}${next === "home" || next === "reauth" ? (selectedSection === "overview" || selectedSection === "access" || selectedSection === "config" || selectedSection === "members" || selectedSection === "families" || selectedSection === "bans" || selectedSection === "roles" ? `/${selectedSection}${location.search}` : "") : next === "change" ? "/change-password" : next === "support" ? "/support" : "/login"}`,
     );
   }
   function accept(identity: User) {
@@ -76,7 +119,13 @@ export function ChurchApp() {
     setUser(identity);
     setEmail(identity.email);
     setError("");
-    navigate(identity.sessionState === "password_change" ? "change" : "home");
+    const entry = /^\/h\/[^/]+(?:\/(?:login|change-password))?$/.test(location.pathname);
+    const nextSection =
+      entry && !pendingIntent && ["pastor", "secretary"].includes(identity.role ?? "")
+        ? "overview"
+        : section;
+    if (nextSection !== section) setSection(nextSection);
+    navigate(identity.sessionState === "password_change" ? "change" : "home", nextSection);
     return true;
   }
   function fail(e: unknown) {
@@ -239,7 +288,7 @@ export function ChurchApp() {
     }
   }
   async function logout() {
-    if (guard.current || organizationPending) return;
+    if (guard.current || pendingIntent) return;
     guard.current = true;
     setBusy(true);
     try {
@@ -277,6 +326,16 @@ export function ChurchApp() {
       setBusy(false);
     }
   }
+  function overviewNavigate(target: OverviewTarget) {
+    if (pendingIntent) return;
+    if (target.kind === "members") {
+      setMemberToOpen(target.memberId ?? null);
+      const q = new URLSearchParams(target.filters);
+      if (target.memberId) q.set("memberId", target.memberId);
+      if (target.create) q.set("action", "create");
+      selectSection("members", q);
+    } else selectSection(target.kind);
+  }
   const feedback = (
     <>
       {error && <Feedback tone="error">{error}</Feedback>}
@@ -290,23 +349,72 @@ export function ChurchApp() {
         context={context}
         activeId={section}
         identity={user}
-        busy={busy || !!organizationPending}
+        busy={busy || !!pendingIntent}
         onLogout={() => void logout()}
         items={[
+          ...(["pastor", "secretary"].includes(user.role ?? "")
+            ? [
+                {
+                  id: "overview",
+                  label: "Tổng quan",
+                  icon: "home" as const,
+                  disabled: !!pendingIntent,
+                  onSelect: () => selectSection("overview"),
+                },
+              ]
+            : []),
           {
             id: "access",
-            disabled: !!organizationPending,
+            disabled: !!pendingIntent,
             label: "Thông tin truy cập",
             icon: "house",
             onSelect: () => selectSection("access"),
           },
+          {
+            id: "roles",
+            label: "Phân quyền",
+            icon: "users",
+            disabled: !!pendingIntent,
+            onSelect: () => selectSection("roles"),
+          },
+          ...(["pastor", "secretary", "ministry_lead"].includes(user.role ?? "")
+            ? [
+                {
+                  id: "bans",
+                  label: "Ban ngành & Khu vực",
+                  icon: "users" as const,
+                  disabled: !!pendingIntent,
+                  onSelect: () => selectSection("bans"),
+                },
+              ]
+            : []),
           ...(user.role === "pastor" || user.role === "secretary"
             ? [
+                {
+                  id: "members",
+                  label: "Thuộc viên",
+                  icon: "users" as const,
+                  disabled: !!pendingIntent,
+                  onSelect: () => {
+                    setMemberToOpen(null);
+                    selectSection("members");
+                  },
+                },
+                {
+                  id: "families",
+                  label: "Gia đình",
+                  icon: "house" as const,
+                  disabled: !!pendingIntent,
+                  onSelect: () => {
+                    setFamilyToOpen(null);
+                    selectSection("families");
+                  },
+                },
                 {
                   id: "config",
                   label: "Cấu hình",
                   icon: "gear" as const,
-                  disabled: !!organizationPending,
+                  disabled: !!pendingIntent,
                   onSelect: () => selectSection("config"),
                 },
               ]
@@ -314,13 +422,74 @@ export function ChurchApp() {
         ]}
       >
         {feedback}
-        {section === "config" ? (
+        {section === "overview" ? (
+          <OverviewView
+            key={`${user.accountId}:${user.churchId}:${user.version}`}
+            realm="church"
+            churchId={user.churchId}
+            pending={!!pendingIntent}
+            onTitle={onTitle}
+            onAuthError={fail}
+            onNavigate={overviewNavigate}
+          />
+        ) : section === "bans" || section === "roles" ? (
+          <OrganizationRuntimeView
+            key={`${user.accountId}:${user.churchId}:${user.version}:${section}`}
+            realm="church"
+            churchId={user.churchId}
+            pending={pendingIntent}
+            onPending={setPendingIntent}
+            onTitle={onTitle}
+            onAuthError={fail}
+            policyOnly={section === "roles"}
+            onConfig={() => selectSection("config")}
+            onMember={(id) => {
+              setMemberToOpen(id);
+              selectSection("members");
+            }}
+          />
+        ) : section === "families" ? (
+          <FamiliesManagement
+            key={`${user.accountId}:${user.churchId}:${user.version}`}
+            realm="church"
+            churchId={user.churchId}
+            pending={pendingIntent}
+            onPending={setPendingIntent}
+            onTitle={onTitle}
+            onAuthError={fail}
+            initialFamilyId={familyToOpen}
+            onMember={(id) => {
+              if (!pendingIntent) {
+                setMemberToOpen(id);
+                selectSection("members");
+              }
+            }}
+          />
+        ) : section === "members" ? (
+          <MembersManagement
+            key={`${user.accountId}:${user.churchId}:${user.version}:${location.search}`}
+            realm="church"
+            churchId={user.churchId}
+            initialMemberId={memberToOpen ?? new URLSearchParams(location.search).get("memberId")}
+            initialCreate={new URLSearchParams(location.search).get("action") === "create"}
+            onFamily={(id) => {
+              if (!pendingIntent) {
+                setFamilyToOpen(id);
+                selectSection("families");
+              }
+            }}
+            pending={pendingIntent}
+            onPending={setPendingIntent}
+            onTitle={onTitle}
+            onAuthError={fail}
+          />
+        ) : section === "config" ? (
           <OrganizationManagement
             key={`${user.accountId}:${user.churchId}:${user.version}`}
             realm="church"
             churchId={user.churchId}
-            pending={organizationPending}
-            onPending={setOrganizationPending}
+            pending={pendingIntent}
+            onPending={setPendingIntent}
             onTitle={onTitle}
             onAuthError={fail}
           />

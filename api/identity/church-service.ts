@@ -340,7 +340,13 @@ export class ChurchIdentity {
       capabilities: capabilitiesFor(ctx.account.role),
       availability: {
         business: "not_available",
-        organization: capabilitiesFor(ctx.account.role).includes("organization:read")
+        organization: capabilitiesFor(ctx.account.role).includes("organization:roster")
+          ? "available"
+          : "not_available",
+        families: capabilitiesFor(ctx.account.role).includes("families:read")
+          ? "available"
+          : "not_available",
+        members: capabilitiesFor(ctx.account.role).includes("members:read")
           ? "available"
           : "not_available",
       },

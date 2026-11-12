@@ -1,7 +1,7 @@
 import { useEffect } from "react";
-import type { OrganizationIntent } from "./organization-api";
+import type { TenantIntent } from "./tenant-mutation";
 // Lives above the auth screens so an unknown intent remains protected during reauthentication.
-export function useOrganizationNavigation(pending: OrganizationIntent | null) {
+export function usePendingNavigation(pending: TenantIntent | null) {
   const locked = !!pending;
   useEffect(() => {
     if (!locked) return;

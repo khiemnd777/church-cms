@@ -81,29 +81,55 @@ async function checkVisibleNavigation() {
       }
       const labels = page.locator(".side .ui-nav-label"),
         description = page.locator(".side .ui-nav-description");
+      const expectedLabels = [
+        "Tổng quan",
+        "Hội Thánh",
+        "Tài khoản",
+        "Thuộc viên",
+        "Gia đình",
+        "Ban ngành & Khu vực",
+        "Phân quyền",
+        "Cấu hình",
+      ];
       assert(
-        (await labels.nth(0).isVisible()) &&
-          (await labels.nth(0).innerText()) === "Hội Thánh" &&
-          (await labels.nth(1).isVisible()) &&
-          (await labels.nth(1).innerText()) === "Tài khoản" &&
-          (await labels.nth(2).isVisible()) &&
-          (await labels.nth(2).innerText()) === "Cấu hình",
+        (await labels.count()) === expectedLabels.length &&
+          (
+            await Promise.all(
+              expectedLabels.map(
+                async (label, i) =>
+                  (await labels.nth(i).isVisible()) && (await labels.nth(i).innerText()) === label,
+              ),
+            )
+          ).every(Boolean),
         `nav-${theme}-${width}-real-visible-text`,
       );
       assert(
-        (await description.count()) === 2 &&
-          (await description.nth(0).isVisible()) &&
-          (await description.nth(1).isVisible()) &&
-          (await description.nth(0).innerText()) === "Chọn Hội Thánh trước" &&
-          (await description.nth(1).innerText()) === "Chọn Hội Thánh trước",
+        (await description.count()) === 7 &&
+          (
+            await Promise.all(
+              Array.from(
+                { length: 7 },
+                async (_, i) =>
+                  (await description.nth(i).isVisible()) &&
+                  (await description.nth(i).innerText()) === "Chọn Hội Thánh trước",
+              ),
+            )
+          ).every(Boolean),
         `nav-${theme}-${width}-disabled-description-visible`,
       );
       const buttons = page.locator(".side .nav-a");
       assert(
-        (await buttons.nth(0).isEnabled()) &&
-          (await buttons.nth(0).getAttribute("aria-current")) === "page" &&
-          (await buttons.nth(1).isDisabled()) &&
-          (await buttons.nth(2).isDisabled()),
+        (await buttons.count()) === 8 &&
+          (
+            await Promise.all(
+              Array.from({ length: 8 }, async (_, i) =>
+                i === 1
+                  ? (await buttons.nth(i).isEnabled()) &&
+                    (await buttons.nth(i).getAttribute("aria-current")) === "page"
+                  : await buttons.nth(i).isDisabled(),
+              ),
+            )
+          ).every(Boolean),
         `nav-${theme}-${width}-active-disabled-preserved`,
       );
       assert(
@@ -163,7 +189,10 @@ async function checkVisibleNavigation() {
       new URL(response.url()).pathname === "/api/v1/owner/churches" &&
       response.request().method() === "GET",
   );
-  await page.locator(".side .nav-a").first().click();
+  await page
+    .getByRole("navigation")
+    .getByRole("button", { name: "Hội Thánh", exact: true })
+    .click();
   assert((await refreshed).ok(), "visible-navigation-keeps-real-O01-caller");
 }
 async function captureScreen(name: string) {

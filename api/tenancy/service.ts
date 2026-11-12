@@ -35,6 +35,19 @@ export class Tenancy {
   private get churches() {
     return this.db.db.collection<Church>("churches");
   }
+  async overview(churchId: ObjectId, tx: ClientSession) {
+    const c = await this.churches.findOne({ _id: churchId, status: "active" }, { session: tx });
+    requireCondition(c, 404, "NOT_FOUND");
+    return {
+      id: c._id.toHexString(),
+      code: c.code,
+      name: c.name,
+      province: c.province,
+      district: c.district ?? null,
+      address: c.address ?? null,
+      status: "active" as const,
+    };
+  }
   access(): ChurchAccess {
     const dto = (c: Church): ChurchAccessInfo => ({
       id: c._id,

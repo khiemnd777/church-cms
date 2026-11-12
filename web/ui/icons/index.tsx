@@ -27,6 +27,12 @@ const paths = {
       <rect x="14" y="14" width="7" height="7" rx="1.5" />
     </>
   ),
+  table: (
+    <>
+      <rect x="3" y="3" width="18" height="18" rx="2" />
+      <path d="M3 9h18M3 15h18M9 3v18" />
+    </>
+  ),
   check: (
     <>
       <path d="m9 11 3 3L22 4" />

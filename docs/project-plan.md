@@ -4,7 +4,7 @@ Ngày tổng hợp: 2026-11-10. Nguồn chi tiết: [hồ sơ P0](tasks/CHURCH-P
 
 ## Phạm vi được phép hiện tại
 
-**P1 đã đóng, P1.1–P1.4 HUMAN ACCEPTED.** Khiêm đã duyệt P2-plan-r1 và P2.1-plan-r1, cho triển khai trọn P21-01–05 local/synthetic. P2.1 đã bàn giao kỹ thuật để nghiệm thu; không tự mở P2.2, commit/push/deploy hoặc dùng dữ liệu thật. Danh mục/acceptance: [CHURCH-P2](tasks/CHURCH-P2.md), [CHURCH-P2.1](tasks/CHURCH-P2.1.md). Trạng thái sống duy nhất tại project-state; phê duyệt cũ chưa mở P2 chỉ là lịch sử.
+**P1 CLOSED; P2 CLOSED; P2.1–P2.6 HUMAN ACCEPTED local/synthetic.** Khiêm: “Nghiệm thu P2.6-r1. Đóng P2. Chưa mở P3.” ngày2026-11-12. P3 NOT_OPENED; không tự lập kế hoạch/implementation P3 hoặc Git publication/deploy/dữ liệu thật. [Closure P2](tasks/CHURCH-P2.md#đóng-p2); live status duy nhất tại project-state.
 
 ## P0 — Đặc tả và phê duyệt
 
@@ -79,3 +79,66 @@ Khiêm duyệt danh mục P2.1–P2.6 và mở trọn P21-01–05 local/syntheti
 ### Sửa UI theo nghiệm thu P2.1
 
 Human review1 CHANGES_REQUESTED vì spacing. P2.1-r2 sửa Field/layout và thêm geometry regression trong cùng P21-03/04; bàn giao lại, không thay danh mục/thứ tự gói. Chi tiết outcome ở CHURCH-P2.1; trạng thái hiện hành ở project-state.
+
+## P2.2-plan-r1 — implementation được duyệt
+
+Khiêm duyệt contracts/quy tắc/mockup P2.2-plan-r1 và mở trọn P22-01–05 local/synthetic ngày2026-11-11. Chi tiết [CHURCH-P2.2](tasks/CHURCH-P2.2.md). Bàn giao rồi dừng trước P2.3; không publication/deploy/dữ liệu thật.
+
+## Nghiệm thu P2.2 và điểm dừng
+
+Khiêm xác nhận “Nghiệm thu P2.2, chưa mở P2.3”. P22-01–05/P2.2-r1 đã human accepted local/synthetic; [biên bản](tasks/CHURCH-P2.2.md#human-review1--accepted). Chưa mở planning/implementation P2.3, không publication/deploy/dữ liệu thật. Trạng thái sống duy nhất tại project-state.
+
+## Mở lập kế hoạch P2.3
+
+Chỉ dẫn mới của Khiêm: “mở P2.3”. Mở lập kế hoạch chi tiết Gia đình và lịch sử tách/gộp, kế thừa P2.2 đã nghiệm thu. P2.3-plan-r1 trình trong chat để duyệt contracts/acceptance/mockup trước implementation; dự thảo chưa duyệt chưa lưu thành đặc tả đã chốt. Chưa mở P2.4 hoặc publication/deploy/dữ liệu thật. [Authority](tasks/CHURCH-P2.md#quyền-mở-lập-kế-hoạch-p23); live state tại project-state.
+
+## P2.3-plan-r1 — implementation được duyệt
+
+Khiêm đã duyệt trọn P23-01–05 local/synthetic; [contracts/acceptance](tasks/CHURCH-P2.3.md). Hoàn tất code/wiring trước tests, bàn giao rồi dừng trước P2.4. Không publication/deploy/dữ liệu thật.
+
+P23-01–05 đã bàn giao P2.3-r1 với local verification; human acceptance PENDING_REVIEW, dừng trước P2.4. [Biên bản](tasks/CHURCH-P2.3.md). Không publication/deploy/dữ liệu thật.
+
+## Mở lập kế hoạch P2.4
+
+Theo chỉ dẫn mới của Khiêm, P2.3 đã nghiệm thu; mở P2.4 Tổ chức thực tế và phạm vi truy cập để trình kế hoạch chi tiết trước coding. P2.4-plan-r1 còn chờ duyệt; đề xuất trong chat không là quyền implementation. [Authority](tasks/CHURCH-P2.md#nghiệm-thu-p23-và-mở-planning-p24).
+
+## P2.4-plan-r1 — đã duyệt triển khai
+
+Khiêm duyệt trọn P24-01–05 local/synthetic, một gói nghiệm thu; [task](tasks/CHURCH-P2.4.md), [contracts](engineering/P2.4-organization-runtime.md). Dừng trước P2.5; không publication/deploy/dữ liệu thật. Bản planning mở phía trên là lịch sử trước approval mới.
+
+P24-01–05 đã bàn giao P2.4-r1 local/synthetic; human acceptance PENDING_REVIEW. [Biên bản](tasks/CHURCH-P2.4.md). Dừng trước P2.5; live state chỉ ở project-state.
+
+## P2.4-view-plan-r1 — sửa P24-04/05
+
+Khiêm duyệt switch Card ↔ Bảng giữ group và scoped data/actions, nhớ preference account/church. Bàn giao P2.4-r2 local/synthetic để nghiệm thu rồi dừng trước P2.5; không publication/deploy/dữ liệu thật. [Task](tasks/CHURCH-P2.4.md).
+
+P24-04/05 đã bàn giao P2.4-r2 Card/Bảng theo view-plan-r1, local verified/chờ nghiệm thu; [task](tasks/CHURCH-P2.4.md). Dừng trước P2.5; live state chỉ ở project-state.
+
+## P2.4-icon-plan-r1 — bàn giao r3
+
+Khiêm duyệt icon-only switcher P24-04/05; r3 local verified/chờ nghiệm thu. [Biên bản](tasks/CHURCH-P2.4.md). Không publication/deploy/dữ liệu thật; dừng trước P2.5. Live state chỉ ở project-state.
+
+## Quyền implementation P2.5 — 2026-11-12
+
+Khiêm duyệt P2.5-plan-r1 và trọn P25-01–05 local/synthetic. [Task](tasks/CHURCH-P2.5.md); bàn giao nghiệm thu rồi dừng trước P2.6. Không commit/push/deploy/dữ liệu thật.
+
+## Bàn giao P2.5-r1
+
+P25-01–05 source complete/local verified: CSV/XLSX import preview/đối chiếu/source identities/batches/partial/resume và protected filtered export. [Task/checklist](tasks/CHURCH-P2.5.md), [contracts](engineering/P2.5-data-exchange.md), [receipt](../output/p2.5/verification.json). Bàn giao để Khiêm nghiệm thu rồi dừng trước P2.6; không publication/deploy/dữ liệu thật. Live status chỉ tại project-state.
+
+## Mở kế hoạch P2.6 — 2026-11-12
+
+Theo chỉ dẫn Khiêm, P2.5-r1 đã nghiệm thu; mở lập kế hoạch gói cuối P2: Tổng quan W01 và qualification xuyên P2. [Authority](tasks/CHURCH-P2.md). P2.6-plan-r1 trình chat, chưa coding. P2 chưa đóng/P3 chưa mở; không publication/deploy/dữ liệu thật.
+
+## Quyền implementation P2.6 — 2026-11-12
+
+Khiêm: “Duyệt P2.6-plan-r1 để triển khai trọn P26-01–05 local/synthetic, bàn giao nghiệm thu rồi dừng trước P3. Chưa đóng P2, commit/push, deploy hoặc dùng dữ liệu thật.” [Task](tasks/CHURCH-P2.6.md). Hoàn tất P26-01–05 local/synthetic, bàn giao nghiệm thu; chưa đóng P2/P3 chưa mở.
+
+## Bàn giao P2.6-r1 — 2026-11-12
+
+P26-01–05 source complete/local-synthetic verified: public metrics/snapshot API/W01+drilldowns/qualification+restore/regression. [Biên bản/checklist](tasks/CHURCH-P2.6.md), [contracts](engineering/P2.6-overview-qualification.md), [receipt](../output/p2.6/verification.json). Bàn giao chờ Khiêm nghiệm thu; không tự đóng P2/mở P3, publication/deploy/dữ liệu thật. Live status chỉ tại project-state.
+
+
+## Đóng P2 — 2026-11-12
+
+Khiêm: “Nghiệm thu P2.6-r1. Đóng P2. Chưa mở P3.” P2.1–P2.6 đã nghiệm thu local/synthetic; P2 CLOSED, P3 NOT_OPENED. [Closure](tasks/CHURCH-P2.md#đóng-p2), [acceptance P2.6](engineering/skill-usage/records/CHURCH-P2/P2.6-human-acceptance-1.json). Không tự mở planning/implementation P3 hoặc publication/deploy/dữ liệu thật; bằng chứng và giới hạn kỹ thuật giữ nguyên từ bàn giao, không chạy tests mới.

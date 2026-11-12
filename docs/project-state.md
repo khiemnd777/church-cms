@@ -1,6 +1,6 @@
 # Hiện trạng Church CMS
 
-Cập nhật: 2026-11-11. Đây là bản tóm tắt hiện hành duy nhất. Authority/acceptance chi tiết: [CHURCH-P0](tasks/CHURCH-P0.md), [CHURCH-P1](tasks/CHURCH-P1.md), [UI-STD-r1](tasks/UI-STD-r1.md).
+Cập nhật: Khiêm đã nghiệm thu P2.6-r1 và đóng P2 ngày2026-11-12. **P2 CLOSED; P2.1–P2.6 HUMAN ACCEPTED local/synthetic; P3 NOT_OPENED.** Đây là bản tóm tắt hiện hành duy nhất. Authority/acceptance chi tiết: [CHURCH-P0](tasks/CHURCH-P0.md), [CHURCH-P1](tasks/CHURCH-P1.md), [UI-STD-r1](tasks/UI-STD-r1.md).
 
 ## CI-REFERENCE-r1 — 2026-11-11
 
@@ -23,26 +23,28 @@ Cập nhật: 2026-11-11. Đây là bản tóm tắt hiện hành duy nhất. Au
 
 ## Trạng thái hiện hành
 
-- **P2-plan-r1 APPROVED; P2.1-plan-r1 IMPLEMENTATION AUTHORIZED** ngày 2026-11-11 trong chat. P21-01–05 đã bàn giao r1 nhưng Khiêm chưa nghiệm thu vì UI spacing; P21-03/04 đã sửa và bàn giao r2 chờ xem lại, dừng trước P2.2. P2.1 đã push tại `668e8db`, [PR #2](https://github.com/khiemnd777/church-cms/pull/2) draft; chưa merge/deploy/dữ liệu thật. Hồ sơ: [CHURCH-P2](tasks/CHURCH-P2.md), [P2.1](tasks/CHURCH-P2.1.md). Các giới hạn publication/NOT_OPENED phía dưới là lịch sử tại thời điểm ghi.
+- **P2 CLOSED; P2.1-r2/P2.2-r1/P2.3-r1/P2.4-r3/P2.5-r1/P2.6-r1 HUMAN ACCEPTED.** P26-01–05 source complete/local-synthetic verified:183tests/2560assertions,4838Firefoxchecks;24configs/720measuredHTTP0errors,21cross-P2workflowchecks,restore19collections/fingerprints/sessions/artifact/registry PASS. [Task/checklist](tasks/CHURCH-P2.6.md), [receipt](../output/p2.6/verification.json), [journal](engineering/skill-usage/records/CHURCH-P2/P2.6-implementation-1.json). Readback0DB/privateP26directories/browsercontainers còn lại. Self-review; Safari/physical/remoteCI/production/multi-replica/real-data NOT_RUN. Không init main DB/restart3443; environment test đã dọn, instance hiện hành chưa kiểm source mới. **P2 CLOSED/P3 NOT_OPENED; không commit/push/deploy/dữ liệu thật; chưa released.** [Human acceptance/closure](engineering/skill-usage/records/CHURCH-P2/P2.6-human-acceptance-1.json). Các số đo phía trên là bằng chứng bàn giao trước acceptance, không chạy lại ở bước đóng P2.
 
-- **CI P2.1:** run `43044929795` fail khi build browser image do không phân giải được Ubuntu repositories; lint/typecheck/builds/ui:check/integration/audit PASS, browser assertions chưa chạy, qualification/benchmark bị skip. Theo chỉ dẫn Khiêm “Bỏ browser tests, giữ các checks khác”, đã bỏ bước browser khỏi workflow local; lệnh browser local còn nguyên, các bước CI khác giữ nguyên. Tại bàn giao local, thay đổi workflow chưa commit/push và CI với cấu hình mới NOT_RUN. Browser regression không còn được CI tự chạy, P2.1-r2 vẫn chờ nghiệm thu.
+- **P2-plan-r1 APPROVED; P2.1-plan-r1 IMPLEMENTATION AUTHORIZED** ngày 2026-11-11 trong chat. P21-01–05 đã bàn giao r1 nhưng Khiêm chưa nghiệm thu vì UI spacing; P21-03/04 đã sửa và bàn giao r2, nay đã được nghiệm thu; P2.2 đã được duyệt triển khai theo chỉ dẫn mới. P2.1 đã push tại `668e8db`, [PR #2](https://github.com/khiemnd777/church-cms/pull/2) draft; chưa merge/deploy/dữ liệu thật. Hồ sơ: [CHURCH-P2](tasks/CHURCH-P2.md), [P2.1](tasks/CHURCH-P2.1.md). Các giới hạn publication/NOT_OPENED phía dưới là lịch sử tại thời điểm ghi.
+
+- **CI P2.1:** run `43044929795` fail khi build browser image do không phân giải được Ubuntu repositories; lint/typecheck/builds/ui:check/integration/audit PASS, browser assertions chưa chạy, qualification/benchmark bị skip. Theo chỉ dẫn Khiêm “Bỏ browser tests, giữ các checks khác”, đã bỏ bước browser khỏi workflow local; lệnh browser local còn nguyên, các bước CI khác giữ nguyên. Tại bàn giao local, thay đổi workflow chưa commit/push và CI với cấu hình mới NOT_RUN. Browser regression không còn được CI tự chạy, P2.1-r2 đã được nghiệm thu bằng chỉ dẫn mới; thông tin CI không thay acceptance.
 
 - **P1 CLOSED — P1.1/P1.2/P1.3/P1.4 HUMAN ACCEPTED** theo Khiêm: “Nghiệm thu P1.4 và Đóng P1. Chưa mở P2.” [Biên bản đóng P1](tasks/CHURCH-P1.md#đóng-p1), [acceptance P1.4](engineering/skill-usage/records/CHURCH-P1/P1.4-human-acceptance-1.json).
-- **P2.1-r2 AWAITING_ACCEPTANCE — r1 CHANGES_REQUESTED** theo phê duyệt mới; P2.2–P2.6 chưa được mở implementation. Kết quả local không thay release/production qualification.
+- **P2.1-r2 HUMAN ACCEPTED — r1 CHANGES_REQUESTED giữ làm lịch sử**; P2.2-r1 đã nghiệm thu; P2.3-r1 đã nghiệm thu; P2.4-r3 đã nghiệm thu, P2.5-r1 đã nghiệm thu local/synthetic; P2.6-r1 đã nghiệm thu; P2 CLOSED/P3 NOT_OPENED. Kết quả local không thay release/production qualification.
 
 - **P0-FOUNDATION-r2 và P1.1-r1 HUMAN ACCEPTED**. P1-plan-r1/hai mockup đã được duyệt; không suy rằng các gói sau tự được mở.
 - **P1.2 Quản lý Hội Thánh, gồm UI-STD-r1/UI-STD-nav-r2: HUMAN ACCEPTED** theo lời Khiêm “Nghiệm thu P1.2. Tiếp theo, kế hoạch P1.3”. [Acceptance P1.2](engineering/skill-usage/records/CHURCH-P1/P1.2-human-acceptance-2.json), [acceptance UI](engineering/skill-usage/records/CHURCH-P1/UI-STD-r1-human-acceptance-2.json).
 - Các lần CHANGES_REQUESTED vì UI và mất text trước đây giữ nguyên làm lịch sử; không xóa receipt hoặc ghi lại usage.
 - **P1.3-r1: HUMAN ACCEPTED** theo Khiêm “Hiểu rồi, nghiệm thu P1.3. Tiếp theo, kế hoạch P1.4”. Phạm vi [CHURCH-P1.3](tasks/CHURCH-P1.3.md). **P1.4-r1 HUMAN ACCEPTED — P1 đã đóng**. Không Git publication/deploy, production hoặc dữ liệu thật.
 
-## P2.1 — phản hồi nghiệm thu hiện hành
+## P2.1 — lịch sử phản hồi nghiệm thu
 
-- Khiêm **CHANGES_REQUESTED** ngày2026-11-11: components nằm sát nhau, margin/padding unexpected. [Ảnh phản hồi](../output/p2.1-spacing/reported.jpg), [human review](engineering/skill-usage/records/CHURCH-P2/P2.1-human-review-1.json). Đã sửa layout/Field spacing và thêm kiểm tra khoảng cách thực ở r2; chờ nghiệm thu lại, không mở P2.2 hoặc đổi backend. PASS kỹ thuật r1 phía dưới không chứng minh spacing đạt.
+- Khiêm **CHANGES_REQUESTED** ngày2026-11-11: components nằm sát nhau, margin/padding unexpected. [Ảnh phản hồi](../output/p2.1-spacing/reported.jpg), [human review](engineering/skill-usage/records/CHURCH-P2/P2.1-human-review-1.json). Đã sửa layout/Field spacing và thêm kiểm tra khoảng cách thực ở r2; nay đã được nghiệm thu ở review2. Review1 giữ làm lịch sử, không ghi đè bằng chứng. PASS kỹ thuật r1 phía dưới không chứng minh spacing đạt.
 
-## P2.1-r2 — bàn giao sửa spacing
+## P2.1-r2 — bằng chứng gói đã nghiệm thu
 
 - Field tự có gap5px ngoài form và input/select không nhận flex-basis từ ancestor toolbar; W12 tách nhóm18px, heading/content12px, toolbar/table18px, tên ban/tuổi10px bằng spacing tokens/nguồn hiện có. Không đổi API/schema/quyền/nghiệp vụ.
-- **PASS1168Firefox checks**:508P2.1 (80mẫu đo geometry)+282UI chung+171accounts+88churches+119owner. Measured label/control5px, group18px, heading12px, toolbar/table18px, age label/value10px, control một dòng36–44px. Đã xem ảnh desktop light/mobile dark; chưa human accepted.
+- **PASS1168Firefox checks**:508P2.1 (80mẫu đo geometry)+282UI chung+171accounts+88churches+119owner. Measured label/control5px, group18px, heading12px, toolbar/table18px, age label/value10px, control một dòng36–44px. Đã xem ảnh desktop light/mobile dark; nay HUMAN ACCEPTED theo acceptance2 phía trên.
 - PASS lint(10warnings CSS nguồn), typecheck, product/reference builds, ui:check/diff/bundle parity. Readback0DB synthetic browser P2.1 còn lại. Integration92tests/1227assertions r1 được tái sử dụng vì backend không đổi, không chạy lại trong sửa UI này.
 - [Receipt r2](../output/p2.1-spacing/verification.json), [ảnh desktop](../output/p2.1-spacing/final/organization/w12-complete-1440-light.png), [mobile dark](../output/p2.1-spacing/final/organization/w12-complete-390-dark.png), [journal2](engineering/skill-usage/records/CHURCH-P2/P2.1-implementation-2.json). Self-review; NOT_RUN thiết bị thật/Safari/remote CI/production; không commit/push/deploy/main migration/restart server hiện hành. P2.2 chưa mở.
 
@@ -99,8 +101,21 @@ Cập nhật: 2026-11-11. Đây là bản tóm tắt hiện hành duy nhất. Au
 ## Xem cục bộ và bước tiếp theo
 
 - [Trang mẫu bộ UI](http://127.0.0.1:4173/ui-reference.html) · [Owner](https://localhost:3443/owner/login). Chỉ loopback cục bộ, không public deployment. Runbook: [P1.1](engineering/P1.1-local-runbook.md); chuẩn UI/cách khởi động lại preview: [ui-system](ui-system.md) và biên bản.
-- P1 đã đóng. P2.1 đã được phép và bàn giao chờ nghiệm thu; P2.2 chưa mở. Không commit/push/deploy/dữ liệu thật.
+- P1 đã đóng, P2.1-r2 đã nghiệm thu. P2.2-r1 đã HUMAN ACCEPTED theo Khiêm; P2.3-r1 đã nghiệm thu local/synthetic; P2.4-r3 icon switcher đã HUMAN ACCEPTED; P2.5-r1 CSV UTF-8 và Excel .xlsx đã nghiệm thu local/synthetic; P2.6-r1 đã HUMAN ACCEPTED, P2 CLOSED/P3 NOT_OPENED. Không publication/deploy/dữ liệu thật. Không init main DB/restart3443; ảnh/receipts P2.6-r1 tại output/p2.6 từ môi trường test riêng đã dọn.
 
 ## Agent conventions
 
 [Agent Kit installation](agent-kit-installation.md); upstream history không là quyền/kết quả Church CMS. [Implementation journal UI-STD-r1](engineering/skill-usage/records/CHURCH-P1/UI-STD-r1-implementation-1.json) và [correction sau rà cuối](engineering/skill-usage/records/CHURCH-P1/UI-STD-r1-implementation-1-correction-1.json) chỉ ghi gói này; không ghi lại lịch sử P1.1/P1.2 cũ thành usage mới.
+
+## Quyền implementation P2.5 — 2026-11-12
+
+Khiêm duyệt P2.5-plan-r1 và trọn P25-01–05 local/synthetic. [Task](tasks/CHURCH-P2.5.md); bàn giao nghiệm thu rồi dừng trước P2.6. Không commit/push/deploy/dữ liệu thật.
+
+## Quyền implementation P2.6 — 2026-11-12
+
+Khiêm: “Duyệt P2.6-plan-r1 để triển khai trọn P26-01–05 local/synthetic, bàn giao nghiệm thu rồi dừng trước P3. Chưa đóng P2, commit/push, deploy hoặc dùng dữ liệu thật.” [Task](tasks/CHURCH-P2.6.md). Hoàn tất P26-01–05 local/synthetic, bàn giao nghiệm thu; chưa đóng P2/P3 chưa mở.
+
+
+## Nghiệm thu P2.6-r1 và đóng P2 — 2026-11-12
+
+Khiêm: “Nghiệm thu P2.6-r1. Đóng P2. Chưa mở P3.” [Closure P2](tasks/CHURCH-P2.md#đóng-p2), [acceptance](engineering/skill-usage/records/CHURCH-P2/P2.6-human-acceptance-1.json). **P2 CLOSED; P3 NOT_OPENED.** Chỉ cập nhật hồ sơ, không chạy lại tests/sửa ứng dụng hoặc điều khiển dịch vụ. Không tự mở planning/implementation P3, Git publication/deploy/dữ liệu thật; các quyền implementation trước đó là lịch sử đã hoàn tất.

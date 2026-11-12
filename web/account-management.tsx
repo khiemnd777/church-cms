@@ -15,6 +15,7 @@ import {
   sendAccountIntent,
 } from "./accounts-api";
 import { ApiError, type Intent } from "./api";
+import { ScopePicker } from "./organization-scope-picker";
 import { type ChurchSummary, church } from "./tenancy-api";
 import {
   Badge,
@@ -79,6 +80,7 @@ export function AccountManagement({
     [selected, setSelected] = useState<AccountDto | null>(null),
     [email, setEmail] = useState(""),
     [displayName, setDisplayName] = useState(""),
+    [unitIds, setUnitIds] = useState<string[]>([]),
     [role, setRole] = useState<Role>("secretary"),
     [reason, setReason] = useState(""),
     [supportReference, setSupportReference] = useState(""),
@@ -180,6 +182,7 @@ export function AccountManagement({
       if (!alive.current) return;
       setSelected(r.data);
       setRole(r.data.role);
+      setUnitIds(r.data.scope.kind === "assigned_units" ? r.data.scope.unitIds : []);
       setMode(next);
       setReason("");
     } catch (e) {
@@ -215,6 +218,7 @@ export function AccountManagement({
     setFields({});
     setConflict(false);
     setExisting(null);
+    setUnitIds([]);
     setMode("create");
   }
   async function loadMore() {
@@ -246,6 +250,7 @@ export function AccountManagement({
     setPending(null);
     setSelected(data.account);
     setRole(data.account.role);
+    setUnitIds(data.account.scope.kind === "assigned_units" ? data.account.scope.unitIds : []);
     setRefresh((x) => x + 1);
     setNotice("Đã lưu thông tin tài khoản.");
     setConflict(false);
@@ -306,7 +311,12 @@ export function AccountManagement({
     e.preventDefault();
     if (frozen || !mode) return;
     const prefix = `owner/churches/${churchId}/accounts`,
-      scope = role === "member" ? { kind: "self" } : { kind: "church" };
+      scope =
+        role === "member"
+          ? { kind: "self" }
+          : role === "ministry_lead"
+            ? { kind: "assigned_units", unitIds }
+            : { kind: "church" };
     let path = prefix,
       method: "POST" | "PATCH" = "POST",
       body: object;
@@ -621,9 +631,8 @@ export function AccountManagement({
                     disabled={frozen}
                   >
                     {Object.entries(roleLabels).map(([key, label]) => (
-                      <option key={key} value={key} disabled={key === "ministry_lead"}>
+                      <option key={key} value={key}>
                         {label}
-                        {key === "ministry_lead" ? " — chưa có đơn vị hợp lệ" : ""}
                       </option>
                     ))}
                   </Select>
@@ -661,6 +670,14 @@ export function AccountManagement({
                   </Select>
                 </Field>
               </div>
+            )}
+            {(mode === "create" || mode === "permissions") && role === "ministry_lead" && (
+              <ScopePicker
+                churchId={churchId}
+                ids={unitIds}
+                onChange={setUnitIds}
+                locked={frozen}
+              />
             )}
             {mode === "status" && (
               <>

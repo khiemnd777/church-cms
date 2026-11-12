@@ -1,7 +1,10 @@
 import { type ClientSession, type Db, MongoClient, MongoError } from "mongodb";
 import type { Config } from "../config";
+import { exchangeIndexes, exchangeSchemas } from "../data-exchange/schema";
 import { AppError } from "../errors";
+import { familyHistorySchema, familyIndexes, familySchema } from "../families/schema";
 import type { AuditEvent, Credential, Owner, Session } from "../identity/models";
+import { memberIndexes, memberSchemas } from "../members/schema";
 import { organizationSchemas } from "../organization/schema";
 export class Database {
   readonly client: MongoClient;
@@ -27,10 +30,52 @@ export class Database {
   get audits() {
     return this.db.collection<AuditEvent>("audit_events");
   }
-  async transaction<T>(body: (session: ClientSession) => Promise<T>): Promise<T> {
-    const session = this.client.startSession();
+  readSnapshotRetries = 0;
+  private readonly snapshotQueues = new Map<string, { tail: Promise<void>; size: number }>();
+  // Serialize local readers sharing a church fence to avoid repeatedly computing
+  // expensive snapshots that cannot commit. Mongo fences still arbitrate other
+  // processes and writers; authorization runs after admission, inside each attempt.
+  async readSnapshot<T>(scope: string, body: (session: ClientSession) => Promise<T>): Promise<T> {
+    const queue = this.snapshotQueues.get(scope) ?? { tail: Promise.resolve(), size: 0 };
+    if (queue.size >= 32) throw new AppError(503, "DEPENDENCY_UNAVAILABLE");
+    this.snapshotQueues.set(scope, queue);
+    queue.size++;
+    const previous = queue.tail;
+    let release!: () => void;
+    const slot = new Promise<void>((resolve) => {
+      release = resolve;
+    });
+    queue.tail = previous.then(() => slot);
+    let timer: ReturnType<typeof setTimeout> | undefined;
     try {
-      for (let attempt = 0; attempt < 3; attempt++) {
+      await Promise.race([
+        previous,
+        new Promise<never>((_, reject) => {
+          timer = setTimeout(() => reject(new AppError(503, "DEPENDENCY_UNAVAILABLE")), 10000);
+        }),
+      ]);
+      if (timer) clearTimeout(timer);
+      return await this.transaction(body, { snapshotRead: true });
+    } finally {
+      if (timer) clearTimeout(timer);
+      // An expired waiting slot must not release its successor before the prior
+      // reader finishes. Gates never reject, including on auth/query failures.
+      void previous.then(() => {
+        release();
+        queue.size--;
+        if (!queue.size) this.snapshotQueues.delete(scope);
+      });
+    }
+  }
+  async transaction<T>(
+    body: (session: ClientSession) => Promise<T>,
+    options: { snapshotRead?: boolean } = {},
+  ): Promise<T> {
+    const session = this.client.startSession(),
+      started = performance.now(),
+      attempts = options.snapshotRead ? 40 : 3;
+    try {
+      for (let attempt = 0; attempt < attempts; attempt++) {
         session.startTransaction({
           readConcern: { level: "snapshot" },
           writeConcern: { w: "majority", wtimeoutMS: 5000 },
@@ -59,9 +104,15 @@ export class Database {
           if (
             error instanceof MongoError &&
             error.hasErrorLabel("TransientTransactionError") &&
-            attempt < 2
+            attempt < attempts - 1 &&
+            (!options.snapshotRead || performance.now() - started < 10000)
           ) {
-            await Bun.sleep(10 + Math.random() * 30);
+            if (options.snapshotRead) this.readSnapshotRetries++;
+            await Bun.sleep(
+              options.snapshotRead
+                ? Math.min(200, 20 * 2 ** Math.min(attempt, 4)) * (0.5 + Math.random())
+                : 10 + Math.random() * 30,
+            );
             continue;
           }
           throw error;
@@ -95,7 +146,11 @@ const common = {
   updatedAt: date,
 };
 const definitions = {
+  ...exchangeSchemas,
   ...organizationSchemas,
+  ...memberSchemas,
+  families: familySchema,
+  family_history: familyHistorySchema,
   churches: {
     required: [
       "_id",
@@ -410,7 +465,17 @@ const indexes: Record<
     partialFilterExpression?: Record<string, unknown>;
   }[]
 > = {
+  ...memberIndexes,
+  ...exchangeIndexes,
+  ...familyIndexes,
   church_settings: [],
+  organization_terms: [{ key: { churchId: 1, startOn: 1, _id: 1 }, name: "term_period" }],
+  organization_history: [
+    {
+      key: { churchId: 1, targetId: 1, occurredAt: -1, _id: -1 },
+      name: "organization_history_page",
+    },
+  ],
   organization_units: [
     { key: { churchId: 1, namespace: 1, nameKey: 1 }, name: "unit_name_unique", unique: true },
     {
@@ -462,7 +527,10 @@ const indexes: Record<
     { key: { expiresAt: 1 }, name: "operation_expiry", expireAfterSeconds: 0 },
   ],
 };
-export async function initialize(db: Db, options: { upgradeOperationsV2?: boolean } = {}) {
+export async function initialize(
+  db: Db,
+  options: { upgradeOperationsV2?: boolean; upgradeFamiliesP23?: boolean } = {},
+) {
   const exists = await db.listCollections({ name: "idempotency_operations" }).hasNext();
   const legacy = exists
     ? (await db.collection("idempotency_operations").listIndexes().toArray()).find(
@@ -473,6 +541,42 @@ export async function initialize(db: Db, options: { upgradeOperationsV2?: boolea
     throw new Error(
       "Stop local HTTP writers; rerun db:init --upgrade-operations-v2 after reviewing the local runbook",
     );
+  const familyExists = await db.listCollections({ name: "families" }).hasNext();
+  const legacyFamilies =
+    familyExists &&
+    (await db.collection("families").countDocuments({ status: { $exists: false } }, { limit: 1 }));
+  if (legacyFamilies) {
+    if (!options.upgradeFamiliesP23)
+      throw new Error("Stop local writers; review runbook then db:init --upgrade-families-p23");
+    // Transitional validator permits old records only during explicit, resumable maintenance.
+    await db.command({
+      collMod: "families",
+      validator: {
+        $jsonSchema: {
+          bsonType: "object",
+          ...familySchema,
+          required: familySchema.required.filter(
+            (k) => !["name", "address", "notes", "sinceYear", "status", "mergedIntoId"].includes(k),
+          ),
+        },
+      },
+      validationLevel: "strict",
+      validationAction: "error",
+    });
+    await db.collection("families").updateMany(
+      { status: { $exists: false } },
+      {
+        $set: {
+          name: null,
+          address: null,
+          notes: null,
+          sinceYear: null,
+          status: "active",
+          mergedIntoId: null,
+        },
+      },
+    );
+  }
   for (const [name, schema] of Object.entries(definitions)) {
     const validator = { $jsonSchema: { bsonType: "object", ...schema } };
     if (await db.listCollections({ name }).hasNext())

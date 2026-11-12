@@ -100,7 +100,10 @@ export function ChurchManagement({
   onChurch,
   onAccounts,
   onManage,
+  onOverview,
   onConfig,
+  onMembers,
+  onFamilies,
 }: {
   onAuthError: (error: unknown) => void;
   onTitle: (title: string, context?: string) => void;
@@ -108,7 +111,10 @@ export function ChurchManagement({
   onChurch: (church: ChurchSummary | null) => void;
   onAccounts: () => void;
   onManage: () => void;
+  onOverview: () => void;
   onConfig: () => void;
+  onMembers: () => void;
+  onFamilies: () => void;
 }) {
   const initialId = /^\/owner\/churches\/([a-f0-9]{24})$/i.exec(location.pathname)?.[1] ?? null;
   const [selected, setSelected] = useState<string | null>(initialId),
@@ -502,12 +508,21 @@ export function ChurchManagement({
                 </Stats>
               </Card>
               <div className="church-future-actions">
+                <Button onClick={onOverview} disabled={detail.status !== "active"}>
+                  Tổng quan
+                </Button>
                 <Button onClick={onAccounts}>Tài khoản</Button>
                 <Button onClick={onManage} disabled={detail.status !== "active"}>
                   Vào quản lý Hội Thánh
                 </Button>
               </div>
               <div className="church-future-actions">
+                <Button disabled={detail.status !== "active"} onClick={onFamilies}>
+                  Gia đình
+                </Button>
+                <Button disabled={detail.status !== "active"} onClick={onMembers}>
+                  Thuộc viên
+                </Button>
                 <Button disabled={detail.status !== "active"} onClick={onConfig}>
                   Cấu hình
                 </Button>

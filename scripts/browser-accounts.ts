@@ -197,9 +197,25 @@ try {
     await page
       .getByLabel("Vai trò", { exact: true })
       .locator('option[value="ministry_lead"]')
-      .evaluate((el) => (el as HTMLOptionElement).disabled),
-    "no-fake-P2-unit-role",
+      .evaluate((el) => !(el as HTMLOptionElement).disabled),
+    "P24-assigned-unit-role-enabled",
   );
+  // P2.4 opens this role, but an empty/nonexistent scope still cannot create an account.
+  await page.getByLabel("Vai trò", { exact: true }).selectOption("ministry_lead");
+  await page.getByLabel("Tìm đơn vị được giao", { exact: true }).waitFor();
+  const deniedScope = page.waitForResponse(
+    (r) =>
+      r.request().method() === "POST" && r.url().endsWith(`owner/churches/${church.id}/accounts`),
+  );
+  await page.getByRole("button", { name: "Lưu tài khoản", exact: true }).click();
+  assert((await deniedScope).status() === 422, "P24-empty-assigned-scope-denied");
+  assert(
+    (await db.db
+      .collection("accounts")
+      .countDocuments({ churchId: new ObjectId(church.id), emailKey: email })) === 0,
+    "P24-invalid-scope-no-account",
+  );
+  await page.getByLabel("Vai trò", { exact: true }).selectOption("secretary");
   await capture("account-create");
   await page.getByRole("button", { name: "Lưu tài khoản", exact: true }).click();
   const temp = await page.getByLabel("Mật khẩu tạm", { exact: true }).inputValue();
@@ -301,6 +317,11 @@ try {
   );
   await user.getByLabel("Mật khẩu", { exact: true }).fill(password);
   await user.getByRole("button", { name: "Đăng nhập", exact: true }).click();
+  await user.getByRole("heading", { name: "Tổng quan", exact: true, level: 1 }).waitFor();
+  await user
+    .getByRole("navigation")
+    .getByRole("button", { name: "Thông tin truy cập", exact: true })
+    .click();
   await user.getByText("Thư ký Ban Chấp sự", { exact: true }).waitFor();
   assert((await api("owner/auth/me")).status === 200, "user-login-keeps-owner-cookie");
   await manage(name);
@@ -564,7 +585,7 @@ try {
   assert(
     (await page
       .getByText(
-        "Cấu hình Hội Thánh đã khả dụng trong menu Cấu hình. Các chức năng nghiệp vụ khác chưa khả dụng.",
+        "Cấu hình và hồ sơ thuộc viên Hội Thánh đã khả dụng trong menu. Các chức năng nghiệp vụ khác chưa khả dụng.",
         { exact: true },
       )
       .isVisible()) &&

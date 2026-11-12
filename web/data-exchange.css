@@ -1,0 +1,40 @@
+.exchange-section,
+.exchange-cell {
+  display: grid;
+  min-width: 0;
+  gap: var(--space-5);
+}
+.exchange-cell {
+  gap: var(--space-2);
+  overflow-wrap: anywhere;
+}
+.exchange-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-5);
+}
+.exchange-job {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+.exchange-table {
+  min-width: 1000px;
+}
+.exchange-table td {
+  vertical-align: top;
+}
+.exchange-hash {
+  overflow-wrap: anywhere;
+}
+@media (max-width: 560px) {
+  .exchange-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.exchange-section fieldset {
+  min-width: 0;
+}

@@ -1,0 +1,83 @@
+{
+  "schema_version": 1,
+  "event_type": "phase_handoff",
+  "task_id": "CHURCH-P2",
+  "scope_id": "P2.4",
+  "recorded_at": "2026-11-12T01:22:48.876709+00:00",
+  "reported_by": "delivery_owner",
+  "source_kind": "agent_self_report",
+  "handoff_index": 2,
+  "classification": {
+    "delivery": "roadmap",
+    "complexity": "grouped_view_switch_UI_state_permissions",
+    "ui": true
+  },
+  "authority": {
+    "approval": "Khiêm: Duyệt P2.4-view-plan-r1 để sửa P24-04/05 và bàn giao P2.4-r2. Hoàn thành code,bàn giao nghiệm thu rồi dừng trước P2.5",
+    "scope": "Local/synthetic; P24-04/05 view correction; không commit/push/deploy/dữ liệu thật hoặc mở P2.5"
+  },
+  "measurements": {
+    "elapsed_seconds": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có bộ đếm đo được theo scope/phase"
+    },
+    "tool_calls": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có bộ đếm đo được theo scope/phase"
+    },
+    "input_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có bộ đếm đo được theo scope/phase"
+    },
+    "output_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có bộ đếm đo được theo scope/phase"
+    },
+    "cached_input_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có bộ đếm đo được theo scope/phase"
+    },
+    "reasoning_output_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có bộ đếm đo được theo scope/phase"
+    },
+    "client": null,
+    "model": null,
+    "effort": null
+  },
+  "evidence_refs": [
+    "docs/tasks/CHURCH-P2.4.md",
+    "docs/engineering/skill-usage/records/CHURCH-P2/P2.4-human-review-1.json"
+  ],
+  "event_id": "CHURCH-P2/P2.4/planning/2",
+  "phase": "planning",
+  "skills": [
+    {
+      "skill_id": "frontend-ui-engineering",
+      "contribution_summary": "Đối chiếu W04 và mockup Card ↔ Bảng giữ group, dữ liệu, quyền, responsive/state continuity",
+      "contribution_percent_estimate": 100,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/frontend-ui-engineering/SKILL.md",
+        "version": null,
+        "sha256": "b5c47fed383892428172bf0b9c1ed1aeab50066ff9421a87a6c344f746386495",
+        "fingerprint_basis": "Actual skill read/applied; recorded after approval at current time"
+      }
+    }
+  ],
+  "outcome": {
+    "delivery_status": "COMPLETED",
+    "verification_level": "approved_chat_UI_plan_source_review",
+    "human_acceptance": "ACCEPTED",
+    "limitations": [
+      "Acceptance of view plan only; implementation r2 still requires human acceptance"
+    ]
+  }
+}

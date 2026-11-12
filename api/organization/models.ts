@@ -30,6 +30,8 @@ export interface Unit
   systemKey?: string;
   name: string;
   nameKey: string;
+  leaderMemberId?: ObjectId | null;
+  scheduleText?: string | null;
   status: "active" | "inactive";
 }
 export const normalizeName = (value: string) => value.normalize("NFC").trim().replace(/\s+/gu, " ");
@@ -53,6 +55,8 @@ export function unitDto(u: Unit) {
     status: u.status,
     version: u.version,
     system: !!u.systemKey,
+    leaderMemberId: u.leaderMemberId?.toHexString() ?? null,
+    scheduleText: u.scheduleText ?? null,
     memberCount: { value: null, availability: "not_available" as const },
     createdAt: u.createdAt.toISOString(),
     updatedAt: u.updatedAt.toISOString(),

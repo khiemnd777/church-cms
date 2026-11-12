@@ -97,3 +97,7 @@ P2.1-r2 · working tree từ07f9d8b · Firefox/container synthetic; đã tự xe
 - [ ] Đối chiếu desktop/mobile/light/dark và các dialog trước nghiệm thu.
 
 Journal:[planning2](../engineering/skill-usage/records/CHURCH-P2/P2.1-planning-2.json),[implementation2](../engineering/skill-usage/records/CHURCH-P2/P2.1-implementation-2.json). Đề nghị Khiêm nghiệm thu lại hoặc yêu cầu sửa P2.1; không tự mở P2.2.
+
+## Human review2 — ACCEPTED
+
+Ngày2026-11-11, Khiêm: **“nghiệm thu P2.1, mở P2.2”**. P2.1-r2 HUMAN ACCEPTED, giữ nguyên human review1 CHANGES_REQUESTED và toàn bộ bằng chứng lịch sử. [Acceptance2](../engineering/skill-usage/records/CHURCH-P2/P2.1-human-acceptance-2.json) liên kết implementation2, không ghi lại skill usage như task mới. Mở chuẩn bị P2.2 theo roadmap; contracts/acceptance/mockup chi tiết phải trình duyệt trước coding. Human acceptance không tự là production release hoặc quyền Git publication/deploy/dữ liệu thật cho gói mới.

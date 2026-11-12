@@ -8,6 +8,7 @@ import { idempotencyKey, objectId, parse, version } from "../http-validation";
 import type { Database } from "../infrastructure/database";
 import type { RateLimit } from "../infrastructure/rate-limit";
 import type { Operations } from "../operations/service";
+import type { UnitScopeValidator } from "../organization/scope";
 import type { ChurchAccess } from "../tenancy/access";
 import { AccountCursors } from "./accounts-cursor";
 import { type Account, accountDto, roles } from "./accounts-model";
@@ -61,6 +62,7 @@ export class Accounts {
     private rate: RateLimit,
     key: string,
     private now: () => Date,
+    private units?: UnitScopeValidator,
   ) {
     this.cursors = new AccountCursors(key, now);
   }
@@ -214,6 +216,10 @@ export class Accounts {
         null,
         async (tx, op) => {
           await this.access.fence(church.id, tx, false);
+          if (data.scope.kind === "assigned_units") {
+            requireCondition(this.units, 503, "DEPENDENCY_UNAVAILABLE");
+            await this.units.validateScope(church.id, data.scope, tx);
+          }
           const exists = await this.collection.findOne(
             { churchId: church.id, emailKey: data.email.toLowerCase() },
             { session: tx },
@@ -331,6 +337,10 @@ export class Accounts {
       expected,
       async (tx, op) => {
         await this.access.fence(church.id, tx, false);
+        if (data.scope.kind === "assigned_units") {
+          requireCondition(this.units, 503, "DEPENDENCY_UNAVAILABLE");
+          await this.units.validateScope(church.id, data.scope, tx);
+        }
         await this.load(church.id, accountId, expected, tx);
         const a = await this.collection.findOneAndUpdate(
           { _id: accountId, churchId: church.id, version: expected },

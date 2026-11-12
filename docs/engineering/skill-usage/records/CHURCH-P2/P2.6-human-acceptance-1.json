@@ -1,0 +1,66 @@
+{
+  "schema_version": 1,
+  "event_id": "CHURCH-P2/P2.6/human-review/1",
+  "event_type": "evaluation",
+  "task_id": "CHURCH-P2",
+  "scope_id": "P2.6",
+  "recorded_at": "2026-11-12T03:56:15.504514+00:00",
+  "reported_by": "delivery_owner",
+  "source_kind": "human_feedback",
+  "subject_event_id": "CHURCH-P2/P2.6/implementation/1",
+  "assessment_source": "human",
+  "review_attempt": 1,
+  "decision": "ACCEPTED",
+  "findings": [],
+  "milestone_closure": {
+    "milestone": "P2",
+    "status": "CLOSED",
+    "accepted_packages": [
+      "P2.1-r2",
+      "P2.2-r1",
+      "P2.3-r1",
+      "P2.4-r3",
+      "P2.5-r1",
+      "P2.6-r1"
+    ],
+    "next_milestone": "P3",
+    "next_milestone_status": "NOT_OPENED",
+    "authority": "Khiêm: Nghiệm thu P2.6-r1. Đóng P2. Chưa mở P3."
+  },
+  "record_maintenance": {
+    "skill_id": "documentation-and-adrs",
+    "source": "Repo",
+    "contribution_summary": "Ghi nhận nghiệm thu P2.6-r1/đóng P2; cập nhật task/state/plan và liên kết evaluation, giữ receipts kỹ thuật lịch sử.",
+    "contribution_percent_estimate": 100,
+    "estimate_source": "agent_self_report",
+    "source_identity": {
+      "kind": "repository",
+      "path": ".agents/skills/documentation-and-adrs/SKILL.md",
+      "version": null,
+      "sha256": "f3199cfec5d6fdfa6533f180b1e6cbee584cd6175d8eb25c0d186c833120609c",
+      "fingerprint_basis": "Skill đọc và áp dụng cho cập nhật hồ sơ; evaluation không tính lại usage implementation P2."
+    }
+  },
+  "authority": {
+    "approval": "Khiêm: Nghiệm thu P2.6-r1. Đóng P2. Chưa mở P3.",
+    "scope": "P2.6-r1/P26-01–05 HUMAN ACCEPTED local/synthetic; đóng P2, P3 NOT_OPENED. Không Git publication/deploy/dữ liệu thật."
+  },
+  "evidence_refs": [
+    "current_chat:Nghiệm thu P2.6-r1. Đóng P2. Chưa mở P3.",
+    "docs/tasks/CHURCH-P2.md",
+    "docs/tasks/CHURCH-P2.6.md",
+    "output/p2.6/verification.json",
+    "docs/engineering/skill-usage/records/CHURCH-P2/P2.1-human-acceptance-2.json",
+    "docs/engineering/skill-usage/records/CHURCH-P2/P2.2-human-acceptance-1.json",
+    "docs/engineering/skill-usage/records/CHURCH-P2/P2.3-human-acceptance-1.json",
+    "docs/engineering/skill-usage/records/CHURCH-P2/P2.4-human-acceptance-3.json",
+    "docs/engineering/skill-usage/records/CHURCH-P2/P2.5-human-acceptance-1.json"
+  ],
+  "limits": [
+    "Nghiệm thu phạm vi P2 local/synthetic đã bàn giao; không suy production-ready/released.",
+    "P3 chưa mở: không planning/implementation P3 hoặc mở giai đoạn khác.",
+    "Chỉ cập nhật tài liệu; không sửa ứng dụng, init DB, restart dịch vụ hoặc chạy lại runtime/tests.",
+    "Giữ nguyên implementation journal, source manifest và technical receipt P2.6-r1 tại lúc bàn giao; không ghi lại usage implementation.",
+    "Các NOT_RUN và giới hạn Safari/physical/remoteCI/production/multi-replica/real-data/restore/SLA đã bàn giao giữ nguyên."
+  ]
+}

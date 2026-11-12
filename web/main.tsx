@@ -1,14 +1,19 @@
 import { type FormEvent, type ReactNode, useCallback, useEffect, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
+import type { OverviewTarget } from "../api/overview/contracts";
 import { AccessContextView, type ChurchRef } from "./access-context";
 import { AccountManagement } from "./account-management";
 import type { ResumeReset } from "./accounts-api";
 import { ApiError, api, refreshCsrf } from "./api";
 import { ChurchApp } from "./church-app";
 import { ChurchManagement } from "./church-management";
-import type { OrganizationIntent } from "./organization-api";
+import { FamiliesManagement } from "./families-management";
+import { MembersManagement } from "./members-management";
 import { OrganizationManagement } from "./organization-management";
-import { useOrganizationNavigation } from "./organization-navigation";
+import { OrganizationRuntimeView } from "./organization-runtime";
+import { OverviewView } from "./overview";
+import { usePendingNavigation } from "./pending-navigation";
+import type { TenantIntent } from "./tenant-mutation";
 import { AppShell, AuthCard, Button, Feedback, Field, Loading, TextInput } from "./ui/components";
 import "@fontsource/be-vietnam-pro/400.css";
 import "@fontsource/be-vietnam-pro/500.css";
@@ -25,11 +30,23 @@ interface Owner {
 }
 type Screen = "loading" | "login" | "change" | "support" | "home" | "reauth";
 function ownerRoute() {
-  const match = /^\/owner\/churches\/([a-f0-9]{24})\/(accounts|manage|config)$/i.exec(
-    location.pathname,
-  );
+  const match =
+    /^\/owner\/churches\/([a-f0-9]{24})\/(accounts|manage|config|members|families|bans|roles|overview)$/i.exec(
+      location.pathname,
+    );
   return match
-    ? { kind: match[2] as "accounts" | "manage" | "config", churchId: match[1] as string }
+    ? {
+        kind: match[2] as
+          | "overview"
+          | "accounts"
+          | "manage"
+          | "config"
+          | "members"
+          | "families"
+          | "bans"
+          | "roles",
+        churchId: match[1] as string,
+      }
     : { kind: "churches" as const, churchId: null };
 }
 function App() {
@@ -37,10 +54,25 @@ function App() {
     [currentChurch, setCurrentChurch] = useState<ChurchRef | null>(null),
     [resumeReset, setResumeReset] = useState<ResumeReset | null>(null);
   const updateChurch = useCallback((church: ChurchRef | null) => setCurrentChurch(church), []);
-  const [organizationPending, setOrganizationPending] = useState<OrganizationIntent | null>(null);
-  useOrganizationNavigation(organizationPending);
-  function ownerNavigate(kind: "churches" | "accounts" | "manage" | "config", id?: string) {
-    if (organizationPending) return;
+  const [familyToOpen, setFamilyToOpen] = useState<string | null>(null),
+    [memberToOpen, setMemberToOpen] = useState<string | null>(null);
+  const [pendingIntent, setPendingIntent] = useState<TenantIntent | null>(null);
+  usePendingNavigation(pendingIntent);
+  function ownerNavigate(
+    kind:
+      | "overview"
+      | "churches"
+      | "accounts"
+      | "manage"
+      | "config"
+      | "members"
+      | "families"
+      | "bans"
+      | "roles",
+    id?: string,
+    query?: URLSearchParams,
+  ) {
+    if (pendingIntent) return;
     history.pushState(
       null,
       "",
@@ -48,7 +80,7 @@ function App() {
         ? id
           ? `/owner/churches/${id}`
           : "/owner"
-        : `/owner/churches/${id}/${kind}`,
+        : `/owner/churches/${id}/${kind}${query?.size ? `?${query}` : ""}`,
     );
     setRoute(ownerRoute());
   }
@@ -57,6 +89,16 @@ function App() {
     window.addEventListener("popstate", back);
     return () => window.removeEventListener("popstate", back);
   }, []);
+  function overviewNavigate(target: OverviewTarget) {
+    if (pendingIntent || !route.churchId) return;
+    if (target.kind === "members") {
+      setMemberToOpen(target.memberId ?? null);
+      const q = new URLSearchParams(target.filters);
+      if (target.memberId) q.set("memberId", target.memberId);
+      if (target.create) q.set("action", "create");
+      ownerNavigate("members", route.churchId, q);
+    } else ownerNavigate(target.kind, route.churchId);
+  }
   const [screen, setScreen] = useState<Screen>("loading"),
     [owner, setOwner] = useState<Owner | null>(null),
     [email, setEmail] = useState(""),
@@ -87,10 +129,10 @@ function App() {
         : next === "support"
           ? "/owner/support"
           : next === "home" || next === "reauth"
-            ? /^\/owner\/churches\/[a-f0-9]{24}(?:\/(?:accounts|manage|config))?$/i.test(
+            ? /^\/owner\/churches\/[a-f0-9]{24}(?:\/(?:accounts|manage|config|members|families|bans|roles|overview))?$/i.test(
                 location.pathname,
               )
-              ? location.pathname
+              ? `${location.pathname}${location.search}`
               : "/owner"
             : "/owner/login";
     history.replaceState(null, "", path);
@@ -217,7 +259,7 @@ function App() {
     }
   }
   async function logout() {
-    if (busyRef.current || organizationPending) return;
+    if (busyRef.current || pendingIntent) return;
     busyRef.current = true;
     setBusy(true);
     try {
@@ -334,17 +376,37 @@ function App() {
   return (
     <AppShell
       activeId={
-        route.kind === "config" ? "config" : route.kind === "accounts" ? "accounts" : "churches"
+        route.kind === "overview" || route.kind === "bans" || route.kind === "roles"
+          ? route.kind
+          : route.kind === "config"
+            ? "config"
+            : route.kind === "accounts"
+              ? "accounts"
+              : route.kind === "members"
+                ? "members"
+                : route.kind === "families"
+                  ? "families"
+                  : "churches"
       }
       title={pageTitle}
       context={pageContext}
       identity={{ displayName: owner?.displayName ?? "", email: owner?.email ?? "" }}
-      busy={busy || !!organizationPending}
+      busy={busy || !!pendingIntent}
       onLogout={logout}
       items={[
         {
+          id: "overview",
+          label: "Tổng quan",
+          icon: "home",
+          description: currentChurch?.name ?? "Chọn Hội Thánh trước",
+          disabled: !currentChurch || currentChurch.status !== "active" || !!pendingIntent,
+          onSelect: () => {
+            if (currentChurch) ownerNavigate("overview", currentChurch.id);
+          },
+        },
+        {
           id: "churches",
-          disabled: !!organizationPending,
+          disabled: !!pendingIntent,
           label: "Hội Thánh",
           icon: "house",
           onSelect: () => {
@@ -357,17 +419,57 @@ function App() {
           label: "Tài khoản",
           description: currentChurch ? currentChurch.name : "Chọn Hội Thánh trước",
           icon: "users",
-          disabled: !currentChurch || !!organizationPending,
+          disabled: !currentChurch || !!pendingIntent,
           onSelect: () => {
             if (currentChurch) ownerNavigate("accounts", currentChurch.id);
           },
         },
         {
+          id: "members",
+          label: "Thuộc viên",
+          icon: "users",
+          description: currentChurch?.name ?? "Chọn Hội Thánh trước",
+          disabled: !currentChurch || currentChurch.status !== "active" || !!pendingIntent,
+          onSelect: () => {
+            if (currentChurch) {
+              setMemberToOpen(null);
+              ownerNavigate("members", currentChurch.id);
+            }
+          },
+        },
+        {
+          id: "families",
+          label: "Gia đình",
+          icon: "house",
+          description: currentChurch?.name ?? "Chọn Hội Thánh trước",
+          disabled: !currentChurch || currentChurch.status !== "active" || !!pendingIntent,
+          onSelect: () => {
+            if (currentChurch) {
+              setFamilyToOpen(null);
+              ownerNavigate("families", currentChurch.id);
+            }
+          },
+        },
+        ...(
+          [
+            { id: "bans", label: "Ban ngành & Khu vực" },
+            { id: "roles", label: "Phân quyền" },
+          ] as const
+        ).map((item) => ({
+          ...item,
+          icon: "users" as const,
+          description: currentChurch?.name ?? "Chọn Hội Thánh trước",
+          disabled: !currentChurch || currentChurch.status !== "active" || !!pendingIntent,
+          onSelect: () => {
+            if (currentChurch) ownerNavigate(item.id, currentChurch.id);
+          },
+        })),
+        {
           id: "config",
           label: "Cấu hình",
           icon: "gear",
           description: currentChurch?.name ?? "Chọn Hội Thánh trước",
-          disabled: !currentChurch || currentChurch.status !== "active" || !!organizationPending,
+          disabled: !currentChurch || currentChurch.status !== "active" || !!pendingIntent,
           onSelect: () => {
             if (currentChurch) ownerNavigate("config", currentChurch.id);
           },
@@ -375,13 +477,81 @@ function App() {
       ]}
     >
       {feedback}
-      {route.kind === "config" && route.churchId ? (
+      {route.kind === "overview" && route.churchId ? (
+        <OverviewView
+          key={`${owner?.employeeId}:${route.churchId}`}
+          realm="owner"
+          churchId={route.churchId}
+          pending={!!pendingIntent}
+          onAuthError={handleError}
+          onTitle={setHeading}
+          onChurch={updateChurch}
+          onBack={() => ownerNavigate("churches", route.churchId as string)}
+          onNavigate={overviewNavigate}
+        />
+      ) : (route.kind === "bans" || route.kind === "roles") && route.churchId ? (
+        <OrganizationRuntimeView
+          key={`${owner?.employeeId}:${route.churchId}:${route.kind}`}
+          realm="owner"
+          churchId={route.churchId}
+          pending={pendingIntent}
+          onPending={setPendingIntent}
+          onTitle={setHeading}
+          onChurch={updateChurch}
+          onAuthError={handleError}
+          policyOnly={route.kind === "roles"}
+          onConfig={() => ownerNavigate("config", route.churchId as string)}
+          onMember={(id) => {
+            setMemberToOpen(id);
+            ownerNavigate("members", route.churchId as string);
+          }}
+        />
+      ) : route.kind === "families" && route.churchId ? (
+        <FamiliesManagement
+          key={`${owner?.employeeId}:${route.churchId}`}
+          realm="owner"
+          churchId={route.churchId}
+          pending={pendingIntent}
+          onPending={setPendingIntent}
+          onAuthError={handleError}
+          onTitle={setHeading}
+          onChurch={updateChurch}
+          onBack={() => ownerNavigate("churches", route.churchId as string)}
+          initialFamilyId={familyToOpen}
+          onMember={(id) => {
+            if (!pendingIntent) {
+              setMemberToOpen(id);
+              ownerNavigate("members", route.churchId as string);
+            }
+          }}
+        />
+      ) : route.kind === "members" && route.churchId ? (
+        <MembersManagement
+          key={`${owner?.employeeId}:${route.churchId}:${location.search}`}
+          realm="owner"
+          churchId={route.churchId}
+          initialMemberId={memberToOpen ?? new URLSearchParams(location.search).get("memberId")}
+          initialCreate={new URLSearchParams(location.search).get("action") === "create"}
+          onFamily={(id) => {
+            if (!pendingIntent) {
+              setFamilyToOpen(id);
+              ownerNavigate("families", route.churchId as string);
+            }
+          }}
+          pending={pendingIntent}
+          onPending={setPendingIntent}
+          onAuthError={handleError}
+          onTitle={setHeading}
+          onChurch={updateChurch}
+          onBack={() => ownerNavigate("churches", route.churchId as string)}
+        />
+      ) : route.kind === "config" && route.churchId ? (
         <OrganizationManagement
           key={`${owner?.employeeId}:${route.churchId}`}
           realm="owner"
           churchId={route.churchId}
-          pending={organizationPending}
-          onPending={setOrganizationPending}
+          pending={pendingIntent}
+          onPending={setPendingIntent}
           onAuthError={handleError}
           onTitle={setHeading}
           onChurch={updateChurch}
@@ -421,8 +591,23 @@ function App() {
           onAccounts={() => {
             if (currentChurch) ownerNavigate("accounts", currentChurch.id);
           }}
+          onFamilies={() => {
+            if (currentChurch) {
+              setFamilyToOpen(null);
+              ownerNavigate("families", currentChurch.id);
+            }
+          }}
+          onMembers={() => {
+            if (currentChurch) {
+              setMemberToOpen(null);
+              ownerNavigate("members", currentChurch.id);
+            }
+          }}
           onConfig={() => {
             if (currentChurch) ownerNavigate("config", currentChurch.id);
+          }}
+          onOverview={() => {
+            if (currentChurch) ownerNavigate("overview", currentChurch.id);
           }}
           onManage={() => {
             if (currentChurch) ownerNavigate("manage", currentChurch.id);
