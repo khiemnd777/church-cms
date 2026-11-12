@@ -1,0 +1,41 @@
+.members-section,
+.member-form-group,
+.member-drawer-content,
+.member-history,
+.member-pending {
+  display: grid;
+  gap: var(--space-5);
+  min-width: 0;
+}
+.member-form {
+  display: grid;
+  gap: var(--space-5);
+}
+.members-search,
+.member-picker,
+.members-actions {
+  display: flex;
+  align-items: end;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+.members-search {
+  flex: 1 1 300px;
+  min-width: 0;
+}
+.members-table {
+  min-width: 1040px;
+}
+.member-name {
+  text-align: left;
+  overflow-wrap: anywhere;
+}
+.member-history > div {
+  display: grid;
+  gap: var(--space-1);
+}
+@media (max-width: 560px) {
+  .members-search {
+    flex-basis: 100%;
+  }
+}

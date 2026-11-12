@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "event_id": "CHURCH-P2/P2.3/human-review/1",
+  "event_type": "evaluation",
+  "task_id": "CHURCH-P2",
+  "scope_id": "P2.3",
+  "recorded_at": "2026-11-11T23:23:14.399903+00:00",
+  "reported_by": "delivery_owner",
+  "source_kind": "human_feedback",
+  "subject_event_id": "CHURCH-P2/P2.3/implementation/1",
+  "assessment_source": "human",
+  "review_attempt": 1,
+  "decision": "ACCEPTED",
+  "findings": [],
+  "evidence_refs": [
+    "docs/tasks/CHURCH-P2.3.md",
+    "output/p2.3/verification.json"
+  ],
+  "authority": {
+    "approval": "Khiêm: Nghiệm thu P2.3, mở 2.4",
+    "scope": "P2.3-r1/P23-01–05 HUMAN ACCEPTED local/synthetic. Mở lập kế hoạch P2.4 Tổ chức thực tế và phạm vi truy cập; contracts/acceptance/mockup chờ duyệt trước coding. Không commit/push/deploy/dữ liệu thật hoặc mở P2.5."
+  }
+}

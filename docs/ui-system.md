@@ -95,3 +95,12 @@ P2.1-plan-r1 cho phép W12 Cấu hình dùng cùng renderer cho owner/user; rout
 ### Sửa spacing P2.1-r2
 
 Sau human CHANGES_REQUESTED vì components nằm sát nhau, Field phải tự có layout cột và gap5px như `.form label` trong HTML, kể cả khi dùng ngoài `.form`. Input/select bên trong Field không nhận flex sizing từ ancestor toolbar; tránh flex-basis220px trở thành chiều cao. W12 nhóm cấu hình cách nhau18px, tiêu đề/nội dung12px, toolbar/bảng18px, tên ban/độ tuổi10px, dùng spacing tokens hiện có. Không thay source stylesheet/palette/font/breakpoint. Browser phải đo gap và giới hạn chiều cao control một dòng (36–44px thực tế ở ma trận r2), cùng ảnh đối chiếu. Kết quả và giới hạn tại task CHURCH-P2.1.
+
+
+### P2.4-icon-plan-r1 — switcher dạng icon
+
+Theo kế hoạch Khiêm duyệt, W04 dùng IconButton grid/Card và table/Bảng; table là glyph bổ sung vào shared catalog theo cùng SVG outline24/currentColor renderer. Giữ glyph grid/source CSS/hash, không palette/font/breakpoint mới. Tooltip/aria-label/pressed/disabled theo contracts hiện có; icon-only áp dụng hai nút đổi view, không thay rule menu AppShell icon + tên. Chi tiết và evidence tại task/engineering P2.4.
+
+## W01 — P2.6 Tổng quan
+
+P2.6 dùng hero/4KPI/visitors+birthdays/8quick icons/attendance+care/areas+rites theo HTML chuẩn; `web/ui/components/overview.tsx` là shared adapters, `web/overview.css` chỉ layout. [Contracts và khác biệt đã duyệt](engineering/P2.6-overview-qualification.md#w01-và-nguồn-ui). Tên hồ sơ dùng markup `.li .t b` block rồi detail, tránh tên/ngày dính cùng dòng. Menu Tổng quan active và icon+tên; hai quick actions nối W02/W15, sáu action tương lai disabled. Không chart/count giả, không suy mục sư từ account role. Rendered comparison cùng viewport/theme/local fonts với HTML nguồn; nội dung real synthetic và unavailable sections không phải pixel-identical bản demo.

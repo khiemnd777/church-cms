@@ -537,9 +537,7 @@ try {
     await user.getByRole("heading", { name: "Đăng nhập", exact: true }).waitFor();
     await user.getByLabel("Mật khẩu", { exact: true }).fill(password);
     await user.getByRole("button", { name: "Đăng nhập", exact: true }).click();
-    await user
-      .getByRole("heading", { name: "Thông tin truy cập", exact: true, level: 1 })
-      .waitFor();
+    await user.getByRole("heading", { name: "Tổng quan", exact: true, level: 1 }).waitFor();
     await user.getByRole("button", { name: "Cấu hình", exact: true }).click();
     await user.getByRole("heading", { name: "Ban phục vụ", exact: true }).waitFor();
   }

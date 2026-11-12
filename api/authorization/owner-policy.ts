@@ -6,6 +6,13 @@ export const ownerCapabilities = [
   "audit:read",
   "organization:read",
   "organization:manage",
+  "overview:read",
+  "members:read",
+  "members:manage",
+  "data:import",
+  "data:export",
+  "families:read",
+  "families:manage",
 ] as const;
 export function requireFull(session: Session) {
   if (session.kind !== "full") throw new AppError(403, "PASSWORD_CHANGE_REQUIRED");

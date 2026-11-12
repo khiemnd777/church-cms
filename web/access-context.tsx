@@ -113,7 +113,7 @@ export function AccessContextView({
           </Card>
           <Feedback>
             {value.capabilities.includes("organization:read")
-              ? "Cấu hình Hội Thánh đã khả dụng trong menu Cấu hình. Các chức năng nghiệp vụ khác chưa khả dụng."
+              ? "Cấu hình và hồ sơ thuộc viên Hội Thánh đã khả dụng trong menu. Các chức năng nghiệp vụ khác chưa khả dụng."
               : "Chức năng nghiệp vụ chưa khả dụng."}
           </Feedback>
         </>

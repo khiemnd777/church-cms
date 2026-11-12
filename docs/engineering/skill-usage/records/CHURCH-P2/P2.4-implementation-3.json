@@ -1,0 +1,99 @@
+{
+  "schema_version": 1,
+  "event_type": "phase_handoff",
+  "task_id": "CHURCH-P2",
+  "scope_id": "P2.4",
+  "recorded_at": "2026-11-12T01:44:22.008552+00:00",
+  "reported_by": "delivery_owner",
+  "source_kind": "agent_self_report",
+  "handoff_index": 3,
+  "classification": {
+    "delivery": "roadmap",
+    "complexity": "icon_switcher_UI_accessibility_correction",
+    "ui": true
+  },
+  "authority": {
+    "approval": "Khiêm: Duyệt — ngay sau P2.4-icon-plan-r1",
+    "scope": "Sửa P24-04/05 icon-only switcher, bàn giao P2.4-r3 local/synthetic để nghiệm thu, dừng trước P2.5; không commit/push/deploy/dữ liệu thật"
+  },
+  "measurements": {
+    "elapsed_seconds": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có bộ đếm đo được theo scope/phase"
+    },
+    "tool_calls": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có bộ đếm đo được theo scope/phase"
+    },
+    "input_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có bộ đếm đo được theo scope/phase"
+    },
+    "output_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có bộ đếm đo được theo scope/phase"
+    },
+    "cached_input_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có bộ đếm đo được theo scope/phase"
+    },
+    "reasoning_output_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có bộ đếm đo được theo scope/phase"
+    },
+    "client": null,
+    "model": null,
+    "effort": null
+  },
+  "evidence_refs": [
+    "docs/tasks/CHURCH-P2.4.md",
+    "output/p2.4/r3/verification.json"
+  ],
+  "event_id": "CHURCH-P2/P2.4/implementation/3",
+  "phase": "implementation",
+  "skills": [
+    {
+      "skill_id": "frontend-ui-engineering",
+      "contribution_summary": "Shared table SVG, IconButton switcher, tooltip/pressed/disabled và self-review ảnh/source",
+      "contribution_percent_estimate": 60,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/frontend-ui-engineering/SKILL.md",
+        "version": null,
+        "sha256": "b5c47fed383892428172bf0b9c1ed1aeab50066ff9421a87a6c344f746386495",
+        "fingerprint_basis": "Actual skill read/applied; current recording fingerprint, no measured time/token/effectiveness claim"
+      }
+    },
+    {
+      "skill_id": "test-driven-development",
+      "contribution_summary": "1407P24 +282sharedUI checks,150icon samples, keyboard/mobile/state/scope/pending và unchanged API proof",
+      "contribution_percent_estimate": 40,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/test-driven-development/SKILL.md",
+        "version": null,
+        "sha256": "48d85b44f5e6286ba2a7a43550083609f299aa4001391768e9da126d2db86742",
+        "fingerprint_basis": "Actual skill read/applied; current recording fingerprint, no measured time/token/effectiveness claim"
+      }
+    }
+  ],
+  "outcome": {
+    "delivery_status": "COMPLETED",
+    "verification_level": "real_local_HTTP_TLS_Firefox_synthetic_UI",
+    "human_acceptance": "PENDING_REVIEW",
+    "limitations": [
+      "Local synthetic/private CA/Firefox viewport emulation only",
+      "Physical devices/Safari/remote CI/production NOT_RUN",
+      "No human acceptance/release; r2 CHANGES_REQUESTED retained historically",
+      "No main DB init/restart3443/commit/push/deploy/real data/P2.5"
+    ]
+  }
+}

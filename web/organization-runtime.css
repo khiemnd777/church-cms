@@ -1,0 +1,32 @@
+.organization-runtime,
+.organization-runtime-group,
+.organization-runtime-form {
+  display: grid;
+  gap: var(--space-5);
+  min-width: 0;
+}
+.organization-runtime-cards {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-5);
+}
+.organization-runtime-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: var(--space-2);
+}
+.organization-runtime-table {
+  min-width: 700px;
+}
+.organization-units-table {
+  min-width: 1040px;
+}
+.organization-units-table .organization-runtime-actions {
+  min-width: 280px;
+}
+@media (max-width: 560px) {
+  .organization-runtime-cards {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

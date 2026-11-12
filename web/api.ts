@@ -18,6 +18,7 @@ export interface ApiReply<T> {
 export interface RequestOptions {
   method?: "GET" | "POST" | "PATCH";
   body?: object;
+  rawBody?: Blob;
   headers?: Record<string, string>;
   signal?: AbortSignal;
 }
@@ -48,11 +49,18 @@ async function request<T>(
       signal: options.signal,
       headers: {
         ...(method !== "GET"
-          ? { "Content-Type": "application/json", "X-CSRF-Token": tokens[realm] as string }
+          ? {
+              "Content-Type": options.rawBody ? "application/octet-stream" : "application/json",
+              "X-CSRF-Token": tokens[realm] as string,
+            }
           : {}),
         ...options.headers,
       },
-      ...(options.body === undefined ? {} : { body: JSON.stringify(options.body) }),
+      ...(options.rawBody
+        ? { body: options.rawBody }
+        : options.body === undefined
+          ? {}
+          : { body: JSON.stringify(options.body) }),
     });
   } catch {
     throw new ApiError(
@@ -114,3 +122,30 @@ export const refreshCsrf = () => refreshRealmCsrf("owner");
 export const refreshChurchCsrf = () => refreshRealmCsrf("church");
 export const api = <T>(path: string, body?: object) => auth<T>("owner", path, body);
 export const churchAuth = <T>(path: string, body?: object) => auth<T>("church", path, body);
+
+export async function downloadFile(path: string) {
+  let response: Response;
+  try {
+    response = await fetch(`/api/v1/${path}`, { credentials: "same-origin", cache: "no-store" });
+  } catch {
+    throw new ApiError("NETWORK_ERROR", "Không tải được file. Thử tải lại.");
+  }
+  if (!response.ok) {
+    const result = await response.json();
+    throw new ApiError(
+      result.error?.code ?? "DEPENDENCY_UNAVAILABLE",
+      result.error?.message ?? "Không tải được file.",
+    );
+  }
+  const blob = await response.blob(),
+    url = URL.createObjectURL(blob),
+    anchor = document.createElement("a");
+  const name =
+    response.headers.get("content-disposition")?.match(/filename="([^"/]+)"/)?.[1] ?? "church-data";
+  anchor.href = url;
+  anchor.download = name;
+  document.body.append(anchor);
+  anchor.click();
+  anchor.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 30_000);
+}

@@ -1,0 +1,136 @@
+{
+  "schema_version": 1,
+  "event_type": "phase_handoff",
+  "task_id": "CHURCH-P2",
+  "scope_id": "P2.6",
+  "recorded_at": "2026-11-12T03:40:14.817878+00:00",
+  "reported_by": "delivery_owner",
+  "source_kind": "agent_self_report",
+  "handoff_index": 1,
+  "classification": {
+    "delivery": "roadmap",
+    "complexity": "snapshot_dashboard_filters_security_qualification_restore",
+    "ui": true
+  },
+  "authority": {
+    "approval": "Khiêm duyệt P2.6-plan-r1 và trọn P26-01–05 local/synthetic",
+    "scope": "Bàn giao nghiệm thu rồi dừng trước P3; chưa đóng P2, commit/push/deploy/dữ liệu thật"
+  },
+  "measurements": {
+    "elapsed_seconds": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có bộ đếm đo được theo scope/phase"
+    },
+    "tool_calls": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có bộ đếm đo được theo scope/phase"
+    },
+    "input_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có bộ đếm đo được theo scope/phase"
+    },
+    "output_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có bộ đếm đo được theo scope/phase"
+    },
+    "cached_input_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có bộ đếm đo được theo scope/phase"
+    },
+    "reasoning_output_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có bộ đếm đo được theo scope/phase"
+    },
+    "client": null,
+    "model": null,
+    "effort": null
+  },
+  "evidence_refs": [
+    "docs/tasks/CHURCH-P2.6.md",
+    "docs/engineering/P2.6-overview-qualification.md",
+    "docs/engineering/P2.6-acceptance-matrix.md",
+    "output/p2.6/verification.json",
+    "output/p2.6/browser-results.json",
+    "output/p2.6/qualification.json",
+    "output/p2.6/restore.json"
+  ],
+  "event_id": "CHURCH-P2/P2.6/implementation/1",
+  "phase": "implementation",
+  "skills": [
+    {
+      "skill_id": "incremental-implementation",
+      "contribution_summary": "Public read ports/snapshot orchestration/filters/API và actual cross-P2 workflow",
+      "contribution_percent_estimate": 35,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/incremental-implementation/SKILL.md",
+        "version": null,
+        "sha256": "4663b276ac0d2f38be6f14a23d792783a255efe714710726af21c0f52c873359",
+        "fingerprint_basis": "Actual skill read and applied in this implementation"
+      }
+    },
+    {
+      "skill_id": "frontend-ui-engineering",
+      "contribution_summary": "W01/owner+staff navigation/drilldown/refresh/reauth;80geometry+50retained-style comparisons",
+      "contribution_percent_estimate": 25,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/frontend-ui-engineering/SKILL.md",
+        "version": null,
+        "sha256": "b5c47fed383892428172bf0b9c1ed1aeab50066ff9421a87a6c344f746386495",
+        "fingerprint_basis": "Actual skill read and applied in this implementation"
+      }
+    },
+    {
+      "skill_id": "test-driven-development",
+      "contribution_summary": "Sau full code:183tests/2560assertions,4838Firefoxchecks,720measuredHTTP0errors và restore19collections",
+      "contribution_percent_estimate": 30,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/test-driven-development/SKILL.md",
+        "version": null,
+        "sha256": "48d85b44f5e6286ba2a7a43550083609f299aa4001391768e9da126d2db86742",
+        "fingerprint_basis": "Actual skill read and applied in this implementation"
+      }
+    },
+    {
+      "skill_id": "code-review-and-quality",
+      "contribution_summary": "Self-review auth/scope/history/retry-admission/restore/source fidelity; bounded fixes và diagnostics retained",
+      "contribution_percent_estimate": 10,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/code-review-and-quality/SKILL.md",
+        "version": null,
+        "sha256": "045ed6d37f590d7ad3b2ee47c1e66ada4bbff1e9d5d232c20a4eeaa5694e39f6",
+        "fingerprint_basis": "Actual skill read and applied in this implementation"
+      }
+    }
+  ],
+  "outcome": {
+    "delivery_status": "COMPLETED",
+    "verification_level": "local_synthetic_API_Mongo_Redis_Firefox_qualification_restore",
+    "human_acceptance": "PENDING_REVIEW",
+    "released": false,
+    "limitations": [
+      "Local synthetic only; no real-data operation or production SLA/capacity/PITR/RPO/RTO",
+      "Firefox viewport emulation; Safari/physical devices NOT_RUN",
+      "Remote CI/deploy/production/failover/multi-replica load NOT_RUN",
+      "No main DB initializer/server3443 restart; current instance not qualified against this source",
+      "Read admission32/tenant/process,10s wait; transient retry40attempts/10s check before retry, active queries not hard-deadlined",
+      "Qualification source-identity explain is an indexed miss probe, not populated-registry capacity proof",
+      "Backup archive/TLS removed after checks; fingerprint evidence cannot restore data by itself",
+      "P2 remains OPEN; P3 NOT_OPENED; human acceptance PENDING_REVIEW; no commit/push/deploy/real data",
+      "Self-review, no independent reviewer; inherited P2.2–P2.5 uncommitted work preserved"
+    ]
+  }
+}

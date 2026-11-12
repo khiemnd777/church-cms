@@ -1,0 +1,108 @@
+{
+  "schema_version": 1,
+  "event_type": "phase_handoff",
+  "task_id": "CHURCH-P2",
+  "scope_id": "P2.6",
+  "recorded_at": "2026-11-12T03:02:10.944881+00:00",
+  "reported_by": "delivery_owner",
+  "source_kind": "agent_self_report",
+  "handoff_index": 1,
+  "classification": {
+    "delivery": "roadmap",
+    "complexity": "snapshot_dashboard_filters_security_qualification_restore",
+    "ui": true
+  },
+  "authority": {
+    "approval": "Duyệt P2.6-plan-r1 để triển khai trọn P26-01–05 local/synthetic, bàn giao nghiệm thu rồi dừng trước P3. Chưa đóng P2, commit/push, deploy hoặc dùng dữ liệu thật.",
+    "scope": "P26-01–05 local/synthetic; chưa đóng P2/mở P3/publication/deploy/dữ liệu thật"
+  },
+  "measurements": {
+    "elapsed_seconds": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có bộ đếm đo được theo scope/phase"
+    },
+    "tool_calls": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có bộ đếm đo được theo scope/phase"
+    },
+    "input_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có bộ đếm đo được theo scope/phase"
+    },
+    "output_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có bộ đếm đo được theo scope/phase"
+    },
+    "cached_input_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có bộ đếm đo được theo scope/phase"
+    },
+    "reasoning_output_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có bộ đếm đo được theo scope/phase"
+    },
+    "client": null,
+    "model": null,
+    "effort": null
+  },
+  "evidence_refs": [
+    "docs/tasks/CHURCH-P2.6.md"
+  ],
+  "event_id": "CHURCH-P2/P2.6/planning/1",
+  "phase": "planning",
+  "skills": [
+    {
+      "skill_id": "planning-and-task-breakdown",
+      "contribution_summary": "Gói P26-01–05 và điểm dừng P2/P3",
+      "contribution_percent_estimate": 25,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/planning-and-task-breakdown/SKILL.md",
+        "version": null,
+        "sha256": "fb768e0a3d3a77f733eb613c078fb61dde0845a438c65cc095fc6448dc166d4c",
+        "fingerprint_basis": "Actual read/applied plan; recorded after approval"
+      }
+    },
+    {
+      "skill_id": "spec-driven-development",
+      "contribution_summary": "Metrics/source/mockup/acceptance/qualification",
+      "contribution_percent_estimate": 40,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/spec-driven-development/SKILL.md",
+        "version": null,
+        "sha256": "c6cfb5c766c45243290d4dcfc7eb3857dbfb77556355c7960a4411762764858b",
+        "fingerprint_basis": "Actual read/applied plan; recorded after approval"
+      }
+    },
+    {
+      "skill_id": "api-and-interface-design",
+      "contribution_summary": "Snapshot read contracts/auth/filter compatibility",
+      "contribution_percent_estimate": 35,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/api-and-interface-design/SKILL.md",
+        "version": null,
+        "sha256": "2550ac99404f1d52566cdd95fd809e0984eb29f1174132a864fb7beb9f688f79",
+        "fingerprint_basis": "Actual read/applied plan; recorded after approval"
+      }
+    }
+  ],
+  "outcome": {
+    "delivery_status": "COMPLETED",
+    "verification_level": "approved_chat_plan_source_review",
+    "human_acceptance": "ACCEPTED",
+    "limitations": [
+      "Plan accepted; implementation requires separate acceptance"
+    ]
+  }
+}

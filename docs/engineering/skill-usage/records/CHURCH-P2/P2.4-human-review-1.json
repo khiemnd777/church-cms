@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "event_id": "CHURCH-P2/P2.4/human-review/1",
+  "event_type": "evaluation",
+  "task_id": "CHURCH-P2",
+  "scope_id": "P2.4",
+  "recorded_at": "2026-11-12T01:16:13.795897+00:00",
+  "reported_by": "delivery_owner",
+  "source_kind": "human_feedback",
+  "subject_event_id": "CHURCH-P2/P2.4/implementation/1",
+  "assessment_source": "human",
+  "review_attempt": 1,
+  "decision": "CHANGES_REQUESTED",
+  "findings": [
+    {
+      "summary": "Khiêm chưa nghiệm thu P2.4; yêu cầu giữ group và bổ sung switch card ↔ table/grid."
+    }
+  ],
+  "evidence_refs": [
+    "docs/tasks/CHURCH-P2.4.md"
+  ],
+  "authority": {
+    "feedback": "Chưa nghiệm thu P2.4, tôi muốn thêm cơ chế display theo dạng table/grid: 1. Giữ group. 2. Cơ chế switch card <-> table/grid",
+    "scope": "Ghi nhận yêu cầu bổ sung UI P2.4; trình mockup/kế hoạch sửa đổi trước coding theo AGENTS.md. Chưa mở P2.5/publication/deploy/real data."
+  }
+}

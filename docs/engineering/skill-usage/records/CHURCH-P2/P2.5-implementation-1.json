@@ -1,0 +1,130 @@
+{
+  "schema_version": 1,
+  "event_type": "phase_handoff",
+  "task_id": "CHURCH-P2",
+  "scope_id": "P2.5",
+  "recorded_at": "2026-11-12T02:48:08.060666+00:00",
+  "reported_by": "delivery_owner",
+  "source_kind": "agent_self_report",
+  "handoff_index": 1,
+  "classification": {
+    "delivery": "roadmap",
+    "complexity": "import_export_transactional_security_UI",
+    "ui": true
+  },
+  "authority": {
+    "approval": "Khiêm duyệt P2.5-plan-r1 và trọn P25-01–05 local/synthetic",
+    "scope": "Bàn giao nghiệm thu rồi dừng trước P2.6; không commit/push/deploy/dữ liệu thật"
+  },
+  "measurements": {
+    "elapsed_seconds": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có bộ đếm đo được theo scope/phase"
+    },
+    "tool_calls": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có bộ đếm đo được theo scope/phase"
+    },
+    "input_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có bộ đếm đo được theo scope/phase"
+    },
+    "output_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có bộ đếm đo được theo scope/phase"
+    },
+    "cached_input_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có bộ đếm đo được theo scope/phase"
+    },
+    "reasoning_output_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có bộ đếm đo được theo scope/phase"
+    },
+    "client": null,
+    "model": null,
+    "effort": null
+  },
+  "evidence_refs": [
+    "docs/tasks/CHURCH-P2.5.md",
+    "docs/engineering/P2.5-data-exchange.md",
+    "output/p2.5/verification.json",
+    "output/p2.5/browser-results.json"
+  ],
+  "event_id": "CHURCH-P2/P2.5/implementation/1",
+  "phase": "implementation",
+  "skills": [
+    {
+      "skill_id": "incremental-implementation",
+      "contribution_summary": "Hoàn tất import/export qua UI/API/domain ports/transactions và registry",
+      "contribution_percent_estimate": 35,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/incremental-implementation/SKILL.md",
+        "version": null,
+        "sha256": "4663b276ac0d2f38be6f14a23d792783a255efe714710726af21c0f52c873359",
+        "fingerprint_basis": "Actual skill read and applied in this implementation"
+      }
+    },
+    {
+      "skill_id": "frontend-ui-engineering",
+      "contribution_summary": "W02 import/export/resume/pending/reauth, shared Choice/layout/responsive",
+      "contribution_percent_estimate": 25,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/frontend-ui-engineering/SKILL.md",
+        "version": null,
+        "sha256": "b5c47fed383892428172bf0b9c1ed1aeab50066ff9421a87a6c344f746386495",
+        "fingerprint_basis": "Actual skill read and applied in this implementation"
+      }
+    },
+    {
+      "skill_id": "test-driven-development",
+      "contribution_summary": "169tests/2450assertions,2646Firefoxchecks, file bounds/races/rollback/replay sau full code",
+      "contribution_percent_estimate": 30,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/test-driven-development/SKILL.md",
+        "version": null,
+        "sha256": "48d85b44f5e6286ba2a7a43550083609f299aa4001391768e9da126d2db86742",
+        "fingerprint_basis": "Actual skill read and applied in this implementation"
+      }
+    },
+    {
+      "skill_id": "code-review-and-quality",
+      "contribution_summary": "Self-review scope/security/history/hash/dependency defects và qualification limits",
+      "contribution_percent_estimate": 10,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/code-review-and-quality/SKILL.md",
+        "version": null,
+        "sha256": "045ed6d37f590d7ad3b2ee47c1e66ada4bbff1e9d5d232c20a4eeaa5694e39f6",
+        "fingerprint_basis": "Actual skill read and applied in this implementation"
+      }
+    }
+  ],
+  "outcome": {
+    "delivery_status": "COMPLETED",
+    "verification_level": "local_synthetic_API_Mongo_Redis_Firefox",
+    "human_acceptance": "PENDING_REVIEW",
+    "limitations": [
+      "Local synthetic only; no accepted real/anonymized migration input",
+      "Firefox viewport emulation; Safari/physical devices NOT_RUN",
+      "Remote CI/deployment/production NOT_RUN",
+      "No main DB initializer or server3443 restart",
+      "CSV prefix protection may alter data and is not universal spreadsheet roundtrip assurance",
+      "Import1000rows/5MiB; export5000rows/5MiB; not an entire-file transaction",
+      "Historical browser diagnostics retained in output/p2.5/diagnostics; final PASS evidence selected explicitly"
+    ]
+  }
+}

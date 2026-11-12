@@ -8,10 +8,10 @@ import {
   organizationRequest,
   type SettingsDto,
   type SettingsReply,
-  sendOrganizationIntent,
   type UnitDto,
   type UnitPage,
 } from "./organization-api";
+import { useTenantMutation } from "./tenant-mutation";
 import {
   Badge,
   Button,
@@ -48,12 +48,6 @@ interface Props {
   onChurch?: (church: ChurchRef) => void;
   onBack?: () => void;
 }
-const uncertainCodes = [
-  "NETWORK_ERROR",
-  "OUTCOME_UNKNOWN",
-  "DEPENDENCY_UNAVAILABLE",
-  "OPERATION_IN_PROGRESS",
-];
 const authCodes = [
   "REAUTH_REQUIRED",
   "SESSION_EXPIRED",
@@ -76,10 +70,6 @@ export function OrganizationManagement({
     [unitType, setUnitType] = useState<SettingsDto["unitType"]>("area"),
     [custom, setCustom] = useState(""),
     [assignment, setAssignment] = useState<"auto" | "manual">("auto"),
-    [busy, setBusy] = useState(false),
-    [error, setError] = useState(""),
-    [notice, setNotice] = useState(""),
-    [fields, setFields] = useState<Record<string, string>>({}),
     [refresh, setRefresh] = useState(0),
     [form, setForm] = useState<{
       kind: "service_ministry" | "area";
@@ -89,30 +79,40 @@ export function OrganizationManagement({
     [name, setName] = useState(""),
     [reason, setReason] = useState(""),
     [reconcile, setReconcile] = useState(false);
-  const guard = useRef(false),
-    mounted = useRef(true);
   const canWrite = !!ctx?.capabilities.includes("organization:manage"),
     principalKey = ctx
       ? `${ctx.principal.principalKind}:${ctx.principal.employeeId ?? ctx.principal.accountId}`
       : "";
+  const {
+    busy,
+    setBusy,
+    error,
+    setError,
+    notice,
+    setNotice,
+    fields,
+    setFields,
+    fail,
+    execute,
+    send: sendIntent,
+  } = useTenantMutation({
+    realm,
+    churchId,
+    principalKey,
+    canWrite,
+    pending,
+    onPending,
+    onAuthError,
+    operationPath: `${base}/operations`,
+    prefix: base,
+    onSuccess: () => {
+      setForm(null);
+      setReconcile(false);
+      setRefresh((v) => v + 1);
+    },
+  });
   const currentPending = pending?.churchId === churchId && pending.realm === realm ? pending : null;
   const locked = busy || !!pending;
-  useEffect(() => {
-    mounted.current = true;
-    return () => {
-      mounted.current = false;
-    };
-  }, []);
-  function fail(e: unknown) {
-    if (e instanceof ApiError) {
-      if (authCodes.includes(e.code)) {
-        onAuthError(e);
-        return;
-      }
-      setFields(e.fieldErrors ?? {});
-      setError(e.message);
-    } else setError("Không thể kết nối. Vui lòng thử tải lại.");
-  }
   useEffect(() => {
     const controller = new AbortController();
     setValue(null);
@@ -147,65 +147,8 @@ export function OrganizationManagement({
     void load();
     return () => controller.abort();
   }, [realm, churchId, refresh]);
-  function finish() {
-    onPending(null);
-    setForm(null);
-    setReconcile(false);
-    setFields({});
-    setNotice("Đã lưu.");
-    setRefresh((v) => v + 1);
-  }
-  async function execute(intent: OrganizationIntent, checking = false) {
-    if (guard.current) return;
-    guard.current = true;
-    setBusy(true);
-    setError("");
-    setFields({});
-    setNotice("");
-    onPending(intent);
-    try {
-      if (Date.now() - intent.createdAt >= 24 * 60 * 60_000)
-        throw new ApiError(
-          "IDEMPOTENCY_EXPIRED",
-          "Đã quá thời hạn thử lại. Đối soát danh sách trước thao tác mới.",
-        );
-      if (checking && intent.operationId) {
-        try {
-          await organizationRequest(realm, `${base}/operations/${intent.operationId}`);
-          if (mounted.current) finish();
-          return;
-        } catch (e) {
-          if (!(e instanceof ApiError && e.code === "NOT_FOUND")) throw e;
-        }
-      }
-      await sendOrganizationIntent(intent);
-      if (mounted.current) finish();
-    } catch (e) {
-      if (
-        e instanceof ApiError &&
-        (checking || uncertainCodes.includes(e.code) || authCodes.includes(e.code))
-      ) {
-        onPending({ ...intent, ...(e.operationId ? { operationId: e.operationId } : {}) });
-      } else onPending(null);
-      if (mounted.current) fail(e);
-    } finally {
-      guard.current = false;
-      if (mounted.current) setBusy(false);
-    }
-  }
   function send(path: string, method: "POST" | "PATCH", body: object, version?: number) {
-    if (!canWrite || pending || guard.current) return;
-    void execute({
-      realm,
-      churchId,
-      principalKey,
-      path: `${base}/${path}`,
-      method,
-      body,
-      version,
-      key: crypto.randomUUID(),
-      createdAt: Date.now(),
-    });
+    sendIntent(`${base}/${path}`, method, body, version);
   }
   function saveSettings(e: FormEvent) {
     e.preventDefault();

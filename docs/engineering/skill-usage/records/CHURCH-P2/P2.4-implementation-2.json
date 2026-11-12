@@ -1,0 +1,101 @@
+{
+  "schema_version": 1,
+  "event_type": "phase_handoff",
+  "task_id": "CHURCH-P2",
+  "scope_id": "P2.4",
+  "recorded_at": "2026-11-12T01:34:18.282421+00:00",
+  "reported_by": "delivery_owner",
+  "source_kind": "agent_self_report",
+  "handoff_index": 2,
+  "classification": {
+    "delivery": "roadmap",
+    "complexity": "grouped_view_switch_UI_state_permissions",
+    "ui": true
+  },
+  "authority": {
+    "approval": "Khiêm: Duyệt P2.4-view-plan-r1 để sửa P24-04/05 và bàn giao P2.4-r2. Hoàn thành code,bàn giao nghiệm thu rồi dừng trước P2.5",
+    "scope": "Local/synthetic; P24-04/05 view correction; không commit/push/deploy/dữ liệu thật hoặc mở P2.5"
+  },
+  "measurements": {
+    "elapsed_seconds": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có bộ đếm đo được theo scope/phase"
+    },
+    "tool_calls": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có bộ đếm đo được theo scope/phase"
+    },
+    "input_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có bộ đếm đo được theo scope/phase"
+    },
+    "output_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có bộ đếm đo được theo scope/phase"
+    },
+    "cached_input_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có bộ đếm đo được theo scope/phase"
+    },
+    "reasoning_output_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có bộ đếm đo được theo scope/phase"
+    },
+    "client": null,
+    "model": null,
+    "effort": null
+  },
+  "evidence_refs": [
+    "docs/tasks/CHURCH-P2.4.md",
+    "docs/engineering/P2.4-organization-runtime.md",
+    "output/p2.4/r2/verification.json"
+  ],
+  "event_id": "CHURCH-P2/P2.4/implementation/2",
+  "phase": "implementation",
+  "skills": [
+    {
+      "skill_id": "frontend-ui-engineering",
+      "contribution_summary": "Hoàn tất renderer Card/Bảng, controller preference/state continuity và mobile/scoped actions; self-review source/ảnh",
+      "contribution_percent_estimate": 60,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/frontend-ui-engineering/SKILL.md",
+        "version": null,
+        "sha256": "b5c47fed383892428172bf0b9c1ed1aeab50066ff9421a87a6c344f746386495",
+        "fingerprint_basis": "Actual skill read/applied; current recording fingerprint; no measured time/token/effectiveness claim"
+      }
+    },
+    {
+      "skill_id": "test-driven-development",
+      "contribution_summary": "1254Firefox checks/170geometry samples, pagination/preference/pending/permissions và qualified reuse r1 backend evidence",
+      "contribution_percent_estimate": 40,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/test-driven-development/SKILL.md",
+        "version": null,
+        "sha256": "48d85b44f5e6286ba2a7a43550083609f299aa4001391768e9da126d2db86742",
+        "fingerprint_basis": "Actual skill read/applied; current recording fingerprint; no measured time/token/effectiveness claim"
+      }
+    }
+  ],
+  "outcome": {
+    "delivery_status": "COMPLETED",
+    "verification_level": "real_local_HTTP_TLS_Firefox_synthetic_UI",
+    "human_acceptance": "PENDING_REVIEW",
+    "limitations": [
+      "Local synthetic only, Firefox viewport emulation",
+      "Physical devices/Safari/remote CI/production NOT_RUN",
+      "No API/schema changes; r1 receipt remains historical evidence",
+      "No human acceptance or release",
+      "Dừng trước P2.5; không commit/push/deploy/dữ liệu thật; main DB/server3443 untouched"
+    ]
+  }
+}

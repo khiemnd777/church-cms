@@ -1,0 +1,141 @@
+{
+  "schema_version": 1,
+  "event_type": "phase_handoff",
+  "task_id": "CHURCH-P2",
+  "scope_id": "P2.4",
+  "recorded_at": "2026-11-11T23:49:30.129818+00:00",
+  "reported_by": "delivery_owner",
+  "source_kind": "agent_self_report",
+  "handoff_index": 1,
+  "classification": {
+    "delivery": "roadmap",
+    "complexity": "organization_roster_terms_assigned_scope_cross_layer_UI",
+    "ui": true
+  },
+  "authority": {
+    "approval": "Khiêm: Duyệt P2.4-plan-r1 để triển khai trọn P24-01–05 local/synthetic, bàn giao nghiệm thu rồi dừng trước P2.5",
+    "scope": "Không commit/push/deploy/dữ liệu thật; dừng trước P2.5"
+  },
+  "measurements": {
+    "elapsed_seconds": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có bộ đếm đo được theo scope/phase"
+    },
+    "tool_calls": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có bộ đếm đo được theo scope/phase"
+    },
+    "input_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có bộ đếm đo được theo scope/phase"
+    },
+    "output_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có bộ đếm đo được theo scope/phase"
+    },
+    "cached_input_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có bộ đếm đo được theo scope/phase"
+    },
+    "reasoning_output_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có bộ đếm đo được theo scope/phase"
+    },
+    "client": null,
+    "model": null,
+    "effort": null
+  },
+  "evidence_refs": [
+    "docs/tasks/CHURCH-P2.4.md",
+    "docs/engineering/P2.4-organization-runtime.md",
+    "output/p2.4/verification.json"
+  ],
+  "event_id": "CHURCH-P2/P2.4/implementation/1",
+  "phase": "implementation",
+  "skills": [
+    {
+      "skill_id": "incremental-implementation",
+      "contribution_summary": "Hoàn tất Organization/Members/Identity/Accounts/API/UI wiring trước tests",
+      "contribution_percent_estimate": 25,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/incremental-implementation/SKILL.md",
+        "version": null,
+        "sha256": "4663b276ac0d2f38be6f14a23d792783a255efe714710726af21c0f52c873359",
+        "fingerprint_basis": "Actual skill read/applied in conversation; fingerprint at recording, no measured time/token/effectiveness claim"
+      }
+    },
+    {
+      "skill_id": "frontend-ui-engineering",
+      "contribution_summary": "W04/W13/O03/W15 theo UI source; scoped/pending/reauth/light-dark-responsive",
+      "contribution_percent_estimate": 25,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/frontend-ui-engineering/SKILL.md",
+        "version": null,
+        "sha256": "b5c47fed383892428172bf0b9c1ed1aeab50066ff9421a87a6c344f746386495",
+        "fingerprint_basis": "Actual skill read/applied in conversation; fingerprint at recording, no measured time/token/effectiveness claim"
+      }
+    },
+    {
+      "skill_id": "api-and-interface-design",
+      "contribution_summary": "Public OrganizationMembers/UnitScopeValidator, scoped DTO/CAS/receipt contracts",
+      "contribution_percent_estimate": 15,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/api-and-interface-design/SKILL.md",
+        "version": null,
+        "sha256": "2550ac99404f1d52566cdd95fd809e0984eb29f1174132a864fb7beb9f688f79",
+        "fingerprint_basis": "Actual skill read/applied in conversation; fingerprint at recording, no measured time/token/effectiveness claim"
+      }
+    },
+    {
+      "skill_id": "test-driven-development",
+      "contribution_summary": "Mongo/HTTP races/rollback/replay và Firefox/regression evidence",
+      "contribution_percent_estimate": 25,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/test-driven-development/SKILL.md",
+        "version": null,
+        "sha256": "48d85b44f5e6286ba2a7a43550083609f299aa4001391768e9da126d2db86742",
+        "fingerprint_basis": "Actual skill read/applied in conversation; fingerprint at recording, no measured time/token/effectiveness claim"
+      }
+    },
+    {
+      "skill_id": "code-review-and-quality",
+      "contribution_summary": "Self-review quyền, ownership, retry/read barriers và sửa receipt escalation",
+      "contribution_percent_estimate": 10,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/code-review-and-quality/SKILL.md",
+        "version": null,
+        "sha256": "045ed6d37f590d7ad3b2ee47c1e66ada4bbff1e9d5d232c20a4eeaa5694e39f6",
+        "fingerprint_basis": "Actual skill read/applied in conversation; fingerprint at recording, no measured time/token/effectiveness claim"
+      }
+    }
+  ],
+  "outcome": {
+    "delivery_status": "COMPLETED",
+    "verification_level": "real_local_Mongo_HTTP_TLS_Firefox_synthetic",
+    "human_acceptance": "PENDING_REVIEW",
+    "limitations": [
+      "Local synthetic only; physical devices/Safari/remote CI/production NOT_RUN",
+      "No production or real-data migration/latency SLA proof",
+      "Read linearization uses existing church fence, no realtime pixel revocation or cross-page snapshot",
+      "No self portal/account binding/import/export/global dashboard/attendance opened",
+      "No commit/push/deploy/real data/P2.5; main database and server3443 untouched",
+      "Self-review; no independent reviewer"
+    ]
+  }
+}

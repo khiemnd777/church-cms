@@ -1,5 +1,6 @@
 import { type ClientSession, MongoError, MongoServerError, ObjectId } from "mongodb";
 import type { OwnerGrant } from "../authorization/owner-grant";
+import type { TenantGrant } from "../authorization/tenant-grant";
 import { AppError, requireCondition } from "../errors";
 import { digest } from "../identity/crypto";
 import type { Database } from "../infrastructure/database";
@@ -112,6 +113,22 @@ export class Operations {
     ) => Promise<{ safeResult: Record<string, unknown>; resourceRefs: Operation["resourceRefs"] }>,
     status = 200,
   ) {
+    return this.executeTenant(grant, method, routeKey, key, payload, ifMatch, mutate, status);
+  }
+  async executeTenant(
+    grant: TenantGrant,
+    method: string,
+    routeKey: string,
+    key: string | null,
+    payload: unknown,
+    ifMatch: number | null,
+    mutate: (
+      tx: ClientSession,
+      operationId: ObjectId,
+    ) => Promise<{ safeResult: Record<string, unknown>; resourceRefs: Operation["resourceRefs"] }>,
+    status = 200,
+  ) {
+    requireCondition(grant.canWrite, 403, "FORBIDDEN");
     return this.executeScoped(
       grant,
       {
@@ -208,6 +225,13 @@ export class Operations {
     }
   }
   async getOrganization(grant: OrganizationGrant, id: string) {
+    return this.getTenant(grant, id, "organization");
+  }
+  async getTenant(
+    grant: TenantGrant,
+    id: string,
+    namespace: "organization" | "members" | "families" | "exchange",
+  ) {
     requireCondition(grant.canWrite, 403, "FORBIDDEN");
     requireCondition(/^[a-f0-9]{24}$/i.test(id), 400, "INVALID_REQUEST");
     return this.db.transaction(async (tx) => {
@@ -219,10 +243,17 @@ export class Operations {
           actorKind: grant.actorKind,
           actorId: grant.actorId,
           churchId: grant.churchId,
+          routeKey: { $regex: `^${namespace}/${grant.churchId}/` },
         },
         { session: tx },
       );
       requireCondition(op && op.expiresAt > this.now(), 404, "NOT_FOUND");
+      requireCondition(
+        grant.receiptScope !== "memberships" ||
+          /^organization\/[a-f0-9]{24}\/units\/[a-f0-9]{24}\/memberships$/i.test(op.routeKey),
+        403,
+        "FORBIDDEN",
+      );
       return {
         operationId: op._id.toHexString(),
         status: op.status,

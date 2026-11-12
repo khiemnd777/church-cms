@@ -27,3 +27,26 @@ export async function readJson(req: Request): Promise<unknown> {
     throw new AppError(400, "INVALID_REQUEST");
   }
 }
+
+// File endpoint only. Keep the ordinary JSON limit at 16KiB.
+export async function readFileBody(req: Request, max: number): Promise<Uint8Array> {
+  requireCondition(Number(req.headers.get("content-length") ?? 0) <= max, 413, "FILE_LIMIT");
+  const reader = req.body?.getReader(),
+    chunks: Uint8Array[] = [];
+  let size = 0;
+  requireCondition(reader, 422, "FILE_INVALID");
+  try {
+    for (;;) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      size += value.byteLength;
+      requireCondition(size <= max, 413, "FILE_LIMIT");
+      chunks.push(value);
+    }
+  } catch (e) {
+    await reader.cancel();
+    throw e;
+  }
+  requireCondition(size > 0, 422, "FILE_INVALID");
+  return Buffer.concat(chunks);
+}

@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { AppError, requireCondition } from "../errors";
+import { requireCondition } from "../errors";
 import { type Role, roles, type Scope } from "../identity/accounts-model";
 export const roleSchema = z.enum(roles);
 export const scopeSchema = z.discriminatedUnion("kind", [
@@ -23,19 +23,81 @@ export function validateRoleScope(role: Role, scope: Scope) {
     422,
     "VALIDATION_FAILED",
   );
-  // P2 has no unit catalogue yet. Never authorize arbitrary IDs or silently widen the scope.
-  if (scope.kind === "assigned_units") throw new AppError(422, "SCOPE_TARGET_NOT_AVAILABLE");
+  if (scope.kind === "assigned_units")
+    requireCondition(
+      new Set(scope.unitIds.map((id) => id.toLowerCase())).size === scope.unitIds.length,
+      422,
+      "VALIDATION_FAILED",
+    );
 }
 // Only implemented capabilities are advertised; business modules extend this versioned catalogue in P2.
-export const policyVersion = 2;
-export const churchCapabilities = ["context:read"] as const;
+export const policyVersion = 7;
+export const churchCapabilities = ["context:read", "policy:read"] as const;
 export function capabilitiesFor(role: Role): readonly string[] {
   return role === "pastor"
-    ? ["context:read", "organization:read", "organization:manage"]
+    ? [
+        "context:read",
+        "policy:read",
+        "organization:roster",
+        "organization:read",
+        "organization:manage",
+        "overview:read",
+        "members:read",
+        "members:manage",
+        "data:import",
+        "data:export",
+        "families:read",
+        "families:manage",
+      ]
     : role === "secretary"
-      ? ["context:read", "organization:read"]
-      : churchCapabilities;
+      ? [
+          "context:read",
+          "policy:read",
+          "organization:roster",
+          "organization:read",
+          "overview:read",
+          "members:read",
+          "members:manage",
+          "data:import",
+          "data:export",
+          "families:read",
+          "families:manage",
+        ]
+      : role === "ministry_lead"
+        ? [...churchCapabilities, "organization:roster"]
+        : churchCapabilities;
 }
 export function capabilityAllowed(capability: string, role: Role) {
   return capabilitiesFor(role).includes(capability);
+}
+
+export function policyMatrix() {
+  return {
+    policyVersion,
+    rows: roles.map((role) => ({
+      role,
+      overview: role === "pastor" || role === "secretary" ? "Toàn bộ: xem" : "Không",
+      profiles:
+        role === "pastor" || role === "secretary"
+          ? "Toàn bộ: xem/sửa"
+          : role === "ministry_lead"
+            ? "Ban mình: danh sách rút gọn"
+            : "Chưa mở",
+      families: role === "pastor" || role === "secretary" ? "Toàn bộ: xem/sửa" : "Không",
+      organization:
+        role === "pastor"
+          ? "Toàn bộ: quản lý"
+          : role === "secretary"
+            ? "Toàn bộ: xem"
+            : role === "ministry_lead"
+              ? "Ban mình: xem"
+              : "Không",
+      dataExchange: role === "pastor" || role === "secretary" ? "Nhập/xuất có đối soát" : "Không",
+      rites: "Chưa mở",
+      attendance: "Chưa mở",
+      giving: "Chưa mở",
+      expense: "Chưa mở",
+      prayer: "Chưa mở",
+    })),
+  };
 }

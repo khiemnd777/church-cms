@@ -1,0 +1,191 @@
+const oid = { bsonType: "objectId" },
+  date = { bsonType: "date" },
+  integer = { bsonType: ["int", "long", "double"], minimum: 0, multipleOf: 1 },
+  nullableId = { bsonType: ["objectId", "null"] },
+  nullableText = { bsonType: ["string", "null"] };
+const day = { bsonType: "string", pattern: "^[0-9]{4}-[0-9]{2}-[0-9]{2}$" },
+  nullableDay = { ...day, bsonType: ["string", "null"] };
+const actor = { enum: ["owner", "church_user"] };
+export const memberSchemas = {
+  members: {
+    required: [
+      "_id",
+      "churchId",
+      "code",
+      "fullName",
+      "nameKey",
+      "nameTokens",
+      "gender",
+      "birthDate",
+      "phone",
+      "phoneKey",
+      "type",
+      "membership",
+      "participation",
+      "familyId",
+      "householdRole",
+      "assignment",
+      "baptism",
+      "visitor",
+      "consent",
+      "version",
+      "writeFence",
+      "createdAt",
+      "updatedAt",
+      "createdBy",
+      "updatedBy",
+    ],
+    additionalProperties: false,
+    properties: {
+      _id: oid,
+      churchId: oid,
+      code: { bsonType: "string" },
+      fullName: { bsonType: "string", minLength: 1, maxLength: 200 },
+      nameKey: { bsonType: "string" },
+      nameTokens: { bsonType: "array", maxItems: 100, items: { bsonType: "string" } },
+      gender: { enum: ["male", "female", "unknown"] },
+      birthDate: nullableDay,
+      phone: nullableText,
+      phoneKey: nullableText,
+      type: { enum: ["believer", "visitor"] },
+      membership: { enum: ["preparatory", "member", "child", null] },
+      participation: { enum: ["active", "long_absent", "transferred", "deceased"] },
+      familyId: oid,
+      householdRole: { enum: ["head", "spouse", "child", "relative", "other"] },
+      convertedOn: day,
+      assignment: {
+        bsonType: "object",
+        additionalProperties: false,
+        required: ["mode", "unitIds", "asOfDate"],
+        properties: {
+          mode: { enum: ["auto", "manual"] },
+          unitIds: { bsonType: "array", maxItems: 50, uniqueItems: true, items: oid },
+          asOfDate: day,
+        },
+      },
+      baptism: {
+        bsonType: "object",
+        additionalProperties: false,
+        required: ["status", "date", "place"],
+        properties: {
+          status: { enum: ["unknown", "not_baptized", "baptized"] },
+          date: nullableDay,
+          place: nullableText,
+        },
+      },
+      visitor: {
+        bsonType: ["object", "null"],
+        additionalProperties: false,
+        required: ["stage", "firstVisit", "believedOn", "referrer", "caregiverId"],
+        properties: {
+          stage: { enum: ["new", "exploring", "believed"] },
+          firstVisit: nullableDay,
+          believedOn: nullableDay,
+          referrer: nullableText,
+          caregiverId: nullableId,
+        },
+      },
+      consent: {
+        bsonType: "object",
+        additionalProperties: false,
+        required: ["confirmed", "wordingVersion", "recordedAt", "actorId", "actorKind"],
+        properties: {
+          confirmed: { enum: [true] },
+          wordingVersion: { enum: ["member-consent-r1"] },
+          recordedAt: date,
+          actorId: oid,
+          actorKind: actor,
+        },
+      },
+      version: { ...integer, minimum: 1 },
+      writeFence: integer,
+      createdAt: date,
+      updatedAt: date,
+      createdBy: oid,
+      updatedBy: oid,
+    },
+    oneOf: [
+      {
+        properties: {
+          type: { enum: ["visitor"] },
+          membership: { enum: [null] },
+          visitor: { bsonType: "object" },
+        },
+      },
+      {
+        properties: {
+          type: { enum: ["believer"] },
+          membership: { enum: ["preparatory", "member", "child"] },
+        },
+      },
+    ],
+  },
+  member_history: {
+    required: [
+      "_id",
+      "churchId",
+      "memberId",
+      "event",
+      "effectiveOn",
+      "eventDate",
+      "reason",
+      "actorKind",
+      "actorId",
+      "occurredAt",
+      "version",
+      "before",
+      "after",
+      "changedFields",
+    ],
+    additionalProperties: false,
+    properties: {
+      _id: oid,
+      churchId: oid,
+      memberId: oid,
+      event: { bsonType: "string" },
+      effectiveOn: day,
+      eventDate: nullableDay,
+      reason: nullableText,
+      actorKind: actor,
+      actorId: oid,
+      occurredAt: date,
+      version: { ...integer, minimum: 1 },
+      before: { bsonType: ["object", "null"] },
+      after: { bsonType: "object" },
+      changedFields: { bsonType: "array", items: { bsonType: "string" } },
+    },
+  },
+};
+export const memberIndexes: Record<
+  string,
+  {
+    key: Record<string, 1 | -1>;
+    name: string;
+    unique?: boolean;
+    partialFilterExpression?: Record<string, unknown>;
+  }[]
+> = {
+  members: [
+    { key: { churchId: 1, code: 1 }, name: "member_code_unique", unique: true },
+    {
+      key: { churchId: 1, familyId: 1, householdRole: 1 },
+      name: "family_head_unique",
+      unique: true,
+      partialFilterExpression: { householdRole: "head" },
+    },
+    { key: { churchId: 1, nameKey: 1, _id: 1 }, name: "member_name" },
+    {
+      key: { churchId: 1, participation: 1, type: 1, nameKey: 1, _id: 1 },
+      name: "member_state_type_name",
+    },
+    { key: { churchId: 1, nameTokens: 1 }, name: "member_search_tokens" },
+    { key: { churchId: 1, phoneKey: 1 }, name: "member_phone" },
+    { key: { churchId: 1, familyId: 1, nameKey: 1, _id: 1 }, name: "member_family" },
+    { key: { churchId: 1, "assignment.unitIds": 1, nameKey: 1, _id: 1 }, name: "member_units" },
+    { key: { churchId: 1, birthDate: 1 }, name: "member_birthdate" },
+  ],
+  member_history: [
+    { key: { churchId: 1, memberId: 1, occurredAt: -1, _id: -1 }, name: "member_history_time" },
+    { key: { churchId: 1, memberId: 1, version: 1 }, name: "member_history_version", unique: true },
+  ],
+};
