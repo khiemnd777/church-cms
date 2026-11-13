@@ -383,3 +383,322 @@ a {
 .ui-text-danger {
   color: var(--bad);
 }
+
+/* W05: promote the approved source inline progress styles into a shared adapter. */
+.ui-attendance-track {
+  height: 8px;
+  background: var(--surface-2);
+  border-radius: 5px;
+  overflow: hidden;
+  margin-top: 14px;
+}
+.ui-attendance-track > div {
+  height: 100%;
+  background: var(--good);
+}
+.ui-attendance-status {
+  display: block;
+}
+
+.ui-attendance-item {
+  width: 100%;
+}
+
+/* P3.2 uses source typography, surfaces and controls for capture and card printing. */
+.ui-qr-video {
+  width: 100%;
+  max-height: 45vh;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+}
+.ui-member-card {
+  box-sizing: border-box;
+  width: 86mm;
+  max-width: 100%;
+  height: 54mm;
+  padding: 4mm;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface);
+  color: var(--fg);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.ui-member-card header {
+  display: flex;
+  flex-direction: column;
+  font-size: 10pt;
+  line-height: 1.3;
+}
+.ui-member-card-body {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2mm;
+  flex: 1;
+  min-height: 0;
+}
+.ui-member-card-body > div {
+  display: flex;
+  flex-direction: column;
+  gap: 1mm;
+  min-width: 0;
+}
+.ui-member-card-body strong {
+  font-size: 11pt;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+}
+.ui-member-card-body span,
+.ui-member-card-body small {
+  font-size: 8pt;
+}
+.ui-member-card header strong {
+  max-height: 12mm;
+  overflow-wrap: anywhere;
+}
+.ui-member-card header span {
+  font-size: 8pt;
+}
+.ui-member-card-body img {
+  width: 27mm;
+  height: 27mm;
+  flex: none;
+}
+.ui-member-card-long header strong {
+  font-size: 7pt;
+  line-height: 1.15;
+}
+.ui-member-card-long .ui-member-card-body strong {
+  font-size: 8pt;
+  line-height: 1.15;
+}
+.ui-card-print-page {
+  margin: 16px;
+}
+.ui-card-print-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+}
+.ui-card-print-page main {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+@media print {
+  @page {
+    size: 86mm 54mm;
+    margin: 0;
+  }
+  .ui-card-print-page {
+    margin: 0;
+    background: white;
+  }
+  .ui-card-print-controls {
+    display: none;
+  }
+  .ui-card-print-page .ui-member-card {
+    width: 86mm;
+    height: 54mm;
+    max-width: none;
+    border-radius: 0;
+    border: 0;
+    color: black;
+    background: white;
+    break-inside: avoid;
+    print-color-adjust: exact;
+  }
+}
+
+/* P3.5: A4 document geometry. Paper uses the approved light certificate palette
+   in both app themes; app controls keep their normal theme and tokens. */
+.ui-certificate-scroll {
+  overflow: auto;
+  max-height: 65vh;
+  max-width: 100%;
+}
+.ui-certificate-page {
+  position: relative;
+  width: 595.28pt;
+  height: 841.89pt;
+  padding: 36pt;
+  background: #fff;
+  color: #14222a;
+}
+.cert.ui-certificate-frame {
+  margin: 0;
+  padding: 17pt;
+  height: 769.89pt;
+  width: 523.28pt;
+  border: 1pt solid #a86c12;
+  outline-color: #a86c12;
+  background: #fff;
+  color: #14222a;
+}
+.ui-certificate-line {
+  margin: 0;
+  text-align: center;
+  white-space: pre;
+  font-family: var(--f-ui);
+  font-size: 11pt;
+  line-height: 18pt;
+  font-weight: 400;
+}
+.ui-certificate-header {
+  font-size: 10pt;
+  line-height: 15pt;
+  font-weight: 700;
+}
+.ui-certificate-title {
+  font-family: var(--f-display);
+  font-size: 22pt;
+  line-height: 29pt;
+  font-weight: 600;
+  color: #a86c12;
+}
+.ui-certificate-name {
+  font-family: var(--f-display);
+  font-size: 18pt;
+  line-height: 24pt;
+  font-weight: 600;
+  font-style: italic;
+}
+.ui-certificate-small {
+  font-size: 9pt;
+  line-height: 14pt;
+}
+.ui-certificate-gap-4 {
+  margin-bottom: 4pt;
+}
+.ui-certificate-gap-8 {
+  margin-bottom: 8pt;
+}
+.ui-certificate-gap-12 {
+  margin-bottom: 12pt;
+}
+.ui-certificate-gap-16 {
+  margin-bottom: 16pt;
+}
+.ui-certificate-date {
+  text-align: right;
+  margin-top: 8pt;
+  font-size: 10pt;
+  line-height: 14pt;
+}
+.ui-certificate-signatures {
+  display: flex;
+  justify-content: space-around;
+  gap: 12pt;
+  margin-top: 6pt;
+  font-size: 10pt;
+  line-height: 15pt;
+}
+.ui-certificate-signatures > div {
+  flex: 1;
+  min-width: 0;
+  text-align: center;
+}
+.ui-certificate-signatures b {
+  display: block;
+  margin-top: 34pt;
+  overflow-wrap: anywhere;
+}
+.ui-certificate-page > footer {
+  position: absolute;
+  bottom: 42pt;
+  left: 54pt;
+  right: 54pt;
+  text-align: center;
+  font-size: 8pt;
+}
+.ui-certificate-print {
+  margin: 0;
+  background: #fff;
+}
+@media print {
+  .ui-certificate-page {
+    break-after: page;
+  }
+  .ui-certificate-page:last-of-type {
+    break-after: auto;
+  }
+  .ui-certificate-print .ui-card-print-controls {
+    display: none;
+  }
+}
+.ui-certificate-tile {
+  text-align: left;
+  cursor: pointer;
+}
+.ui-certificate-tile:disabled {
+  cursor: default;
+}
+
+/* P3.6: retained dots/chart patterns with explicit missing-data states. */
+.ui-presence-dots {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  gap: 3px;
+  flex-wrap: wrap;
+  color: var(--muted);
+}
+.ui-presence-present {
+  color: var(--good);
+}
+.ui-presence-absent {
+  color: var(--fg);
+}
+.ui-presence-pending {
+  color: var(--warn);
+}
+.ui-presence-dots span {
+  display: inline-block;
+  min-width: 10px;
+  text-align: center;
+}
+.ui-presence {
+  min-width: 0;
+}
+.ui-report-chart-scroll {
+  max-width: 100%;
+  overflow: auto;
+}
+.ui-report-chart {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(12, minmax(44px, 1fr));
+  gap: 5px;
+  min-width: 0;
+  align-items: end;
+}
+.ui-report-chart > div {
+  text-align: center;
+  min-width: 0;
+}
+.ui-report-chart button {
+  width: 100%;
+  min-width: 0;
+  padding: 4px 0;
+}
+.ui-report-chart .ui-report-column {
+  display: block;
+  height: var(--report-height);
+  background: var(--primary);
+  border-radius: 4px 4px 0 0;
+}
+.ui-report-chart .ui-report-communion {
+  background: var(--gold);
+}
+.ui-report-chart small {
+  font-size: 10px;
+}

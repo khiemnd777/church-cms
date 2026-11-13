@@ -1,0 +1,39 @@
+.attendance-section,
+.attendance-form,
+.attendance-dialog-content {
+  display: grid;
+  gap: 18px;
+  min-width: 0;
+}
+.attendance-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+.attendance-row {
+  display: flex;
+  gap: 8px;
+  min-width: 0;
+  align-items: center;
+}
+.attendance-person {
+  flex: 1;
+  min-width: 0;
+}
+.attendance-pagination {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: flex-end;
+}
+@media (max-width: 560px) {
+  .attendance-form-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.attendance-card-actions {
+  display: grid;
+  gap: 12px;
+  padding-top: 12px;
+}

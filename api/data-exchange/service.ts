@@ -606,13 +606,21 @@ export class DataExchange {
     return this.db.readSnapshot(g.churchId.toHexString(), async (tx) => {
       await g.fence(tx);
       this.acl(g);
-      const rows = await this.members.snapshot(g, body.filters, body.columns, tx);
+      const snapshot = await this.members.snapshot(g, body.filters, body.columns, tx),
+        rows = snapshot.data;
       return {
         count: rows.length,
         columns: body.columns,
         format: body.format,
         asOf: this.now().toISOString(),
-        previewToken: digest(canonical({ ...body, rows, policy: g.policyContext })),
+        previewToken: digest(
+          canonical({
+            ...body,
+            rows,
+            sourceContext: snapshot.sourceContext,
+            policy: g.policyContext,
+          }),
+        ),
       };
     });
   }
@@ -631,9 +639,17 @@ export class DataExchange {
       null,
       async (tx, op) => {
         this.acl(g);
-        const rows = await this.members.snapshot(g, request.filters, request.columns, tx);
+        const snapshot = await this.members.snapshot(g, request.filters, request.columns, tx),
+          rows = snapshot.data;
         requireCondition(
-          digest(canonical({ ...request, rows, policy: g.policyContext })) === previewToken,
+          digest(
+            canonical({
+              ...request,
+              rows,
+              sourceContext: snapshot.sourceContext,
+              policy: g.policyContext,
+            }),
+          ) === previewToken,
           412,
           "IMPORT_PREVIEW_STALE",
         );

@@ -3,7 +3,7 @@ set -euo pipefail
 project_root="$(cd -- "$(dirname -- "$0")/.." && pwd)"
 cd "$project_root"
 browser_script="${1:-browser-check.ts}"
-case "$browser_script" in browser-check.ts|browser-churches.ts|browser-ui-standard.ts|browser-accounts.ts|browser-organization.ts|browser-members.ts|browser-families.ts|browser-organization-runtime.ts|browser-data-exchange.ts|browser-overview.ts) ;; *) exit 2 ;; esac
+case "$browser_script" in browser-check.ts|browser-churches.ts|browser-ui-standard.ts|browser-accounts.ts|browser-organization.ts|browser-members.ts|browser-families.ts|browser-organization-runtime.ts|browser-data-exchange.ts|browser-overview.ts|browser-attendance.ts|browser-qr.ts|browser-prep-classes.ts|browser-rites.ts|browser-certificates.ts|browser-p3-reporting.ts) ;; *) exit 2 ;; esac
 container_name="church-cms-p1-verify-$(date +%s)-$$"
 cleanup() { docker rm "$container_name" >/dev/null 2>&1 || true; }
 trap cleanup EXIT

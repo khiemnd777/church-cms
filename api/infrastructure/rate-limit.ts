@@ -54,6 +54,20 @@ export class RateLimit {
       throw new AppError(503, "DEPENDENCY_UNAVAILABLE");
     }
   }
+  async qrResolution(churchId: string, actorKind: string, actorId: string) {
+    const bucket = `qlht:qr-resolution:${sign(this.key, `${actorKind}:${churchId}:${actorId}`)}`;
+    try {
+      const r = (await this.client.eval(
+        "local n=redis.call('INCR',KEYS[1]); if n==1 then redis.call('EXPIRE',KEYS[1],60) end; return {n,redis.call('TTL',KEYS[1])}",
+        { keys: [bucket], arguments: [] },
+      )) as number[];
+      if ((r[0] ?? 0) > 120)
+        throw new AppError(429, "RATE_LIMITED", undefined, Math.max(1, r[1] ?? 60));
+    } catch (e) {
+      if (e instanceof AppError) throw e;
+      throw new AppError(503, "DEPENDENCY_UNAVAILABLE");
+    }
+  }
   async reset(churchId: string, accountId: string, intent: string) {
     const bucket = `qlht:reset:${sign(this.key, `${churchId}:${accountId}`)}`,
       seen = `${bucket}:${sign(this.key, intent)}`;

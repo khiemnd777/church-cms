@@ -1,4 +1,5 @@
 import type { ClientSession, Document } from "mongodb";
+import type { AttendanceReporting, ReportingWindow } from "../attendance/reporting";
 import type { TenantGrant } from "../authorization/tenant-grant";
 import type { Families } from "../families/service";
 import type { Database } from "../infrastructure/database";
@@ -18,6 +19,24 @@ export class OverviewMembers {
   ) {}
   private get rows() {
     return this.db.db.collection("members");
+  }
+  async absent3(
+    g: TenantGrant,
+    tx: ClientSession,
+    w: ReportingWindow,
+    reports: AttendanceReporting,
+  ) {
+    const r = await this.rows
+      .aggregate<{ n: number }>(
+        [
+          { $match: { churchId: g.churchId, participation: { $in: ["active", "long_absent"] } } },
+          ...reports.absentStages(g, w),
+          { $count: "n" },
+        ],
+        { session: tx, maxTimeMS: 10000 },
+      )
+      .next();
+    return r?.n ?? 0;
   }
   async read(g: TenantGrant, tx: ClientSession, day: string) {
     const aggregates = await this.rows

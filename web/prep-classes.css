@@ -1,0 +1,36 @@
+.prep-section,
+.prep-form,
+.prep-dialog-list {
+  display: grid;
+  gap: 18px;
+}
+.prep-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+.prep-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+.prep-dialog-list {
+  max-height: 40vh;
+  overflow: auto;
+}
+.prep-detail-list {
+  display: grid;
+  gap: 12px;
+  margin-top: 12px;
+}
+@media (max-width: 560px) {
+  .prep-form-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.prep-card-content {
+  display: grid;
+  gap: 18px;
+}

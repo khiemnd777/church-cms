@@ -1,0 +1,224 @@
+{
+  "schema_version": 1,
+  "event_type": "phase_handoff",
+  "event_id": "CHURCH-P3/P3.5/implementation/1",
+  "task_id": "CHURCH-P3",
+  "scope_id": "P3.5",
+  "phase": "implementation",
+  "reported_by": "delivery_owner",
+  "source_kind": "agent_self_report",
+  "handoff_index": 1,
+  "recorded_at": "2026-11-13T08:13:58.160633+00:00",
+  "classification": {
+    "delivery": "roadmap",
+    "complexity": "four_templates_immutable_artifacts_source_fences_two_realms",
+    "ui": true
+  },
+  "authority": {
+    "approval": "duyệt P3.5-plan-r1, C35-01–03 và ASCII, cho triển khai trọn P35-01–05 local/synthetic rồi bàn giao, dừng trước P3.6.",
+    "scope": "P35-01–05 local/synthetic; không commit/push/deploy/real data/main DB init/restart3443; dừng trước P3.6"
+  },
+  "measurements": {
+    "elapsed_seconds": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có counters đo theo phase/skill; estimate% không là time/token/call measurement"
+    },
+    "tool_calls": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có counters đo theo phase/skill; estimate% không là time/token/call measurement"
+    },
+    "input_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có counters đo theo phase/skill; estimate% không là time/token/call measurement"
+    },
+    "output_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có counters đo theo phase/skill; estimate% không là time/token/call measurement"
+    },
+    "cached_input_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có counters đo theo phase/skill; estimate% không là time/token/call measurement"
+    },
+    "reasoning_output_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có counters đo theo phase/skill; estimate% không là time/token/call measurement"
+    },
+    "client": null,
+    "model": null,
+    "effort": null
+  },
+  "skills": [
+    {
+      "skill_id": "incremental-implementation",
+      "contribution_summary": "Hoàn thiện toàn bộ domain/API/UI/data/caller wiring trong gói trước tests",
+      "contribution_percent_estimate": 20,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/incremental-implementation/SKILL.md",
+        "version": null,
+        "sha256": "4663b276ac0d2f38be6f14a23d792783a255efe714710726af21c0f52c873359",
+        "fingerprint_basis": "Đã đọc và áp dụng trong scope P3.5; không suy từ skill catalog"
+      }
+    },
+    {
+      "skill_id": "api-and-interface-design",
+      "contribution_summary": "Public source ports, strict requests/DTO, draft-preview-edition/history/download/receipt contracts",
+      "contribution_percent_estimate": 10,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/api-and-interface-design/SKILL.md",
+        "version": null,
+        "sha256": "2550ac99404f1d52566cdd95fd809e0984eb29f1174132a864fb7beb9f688f79",
+        "fingerprint_basis": "Đã đọc và áp dụng trong scope P3.5; không suy từ skill catalog"
+      }
+    },
+    {
+      "skill_id": "frontend-ui-engineering",
+      "contribution_summary": "W11/W17, W06/W14 và hai realm, shared UI-STD-r1, keyboard/focus/reauth/pending intent",
+      "contribution_percent_estimate": 15,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/frontend-ui-engineering/SKILL.md",
+        "version": null,
+        "sha256": "b5c47fed383892428172bf0b9c1ed1aeab50066ff9421a87a6c344f746386495",
+        "fingerprint_basis": "Đã đọc và áp dụng trong scope P3.5; không suy từ skill catalog"
+      }
+    },
+    {
+      "skill_id": "security-and-hardening",
+      "contribution_summary": "Fresh tenant/resource/role/source fences, CSRF/CAS/idempotency, binary ACL và bounded render",
+      "contribution_percent_estimate": 10,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/security-and-hardening/SKILL.md",
+        "version": null,
+        "sha256": "4549688254258d5d6836a0f2d8cf606460a9baf426e9c644d3244a9973778ad3",
+        "fingerprint_basis": "Đã đọc và áp dụng trong scope P3.5; không suy từ skill catalog"
+      }
+    },
+    {
+      "skill_id": "source-driven-development",
+      "contribution_summary": "Kiểm registry/dependency metadata và nguồn fonts/thư viện chính thức; pin, license và hashes",
+      "contribution_percent_estimate": 5,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/source-driven-development/SKILL.md",
+        "version": null,
+        "sha256": "ea9d93de7dbddafa9c79afe456400c46145e0c6b2361f83aad79137c0a717008",
+        "fingerprint_basis": "Đã đọc và áp dụng trong scope P3.5; không suy từ skill catalog"
+      }
+    },
+    {
+      "skill_id": "test-driven-development",
+      "contribution_summary": "Sau code/wiring: real Mongo/Redis/file integration, browser/regression/workload và test lỗi đã có bằng chứng",
+      "contribution_percent_estimate": 15,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/test-driven-development/SKILL.md",
+        "version": null,
+        "sha256": "48d85b44f5e6286ba2a7a43550083609f299aa4001391768e9da126d2db86742",
+        "fingerprint_basis": "Đã đọc và áp dụng trong scope P3.5; không suy từ skill catalog"
+      }
+    },
+    {
+      "skill_id": "code-review-and-quality",
+      "contribution_summary": "Self-review source/callers/contracts/guards và đối chiếu evidence; không reviewer độc lập",
+      "contribution_percent_estimate": 5,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/code-review-and-quality/SKILL.md",
+        "version": null,
+        "sha256": "045ed6d37f590d7ad3b2ee47c1e66ada4bbff1e9d5d232c20a4eeaa5694e39f6",
+        "fingerprint_basis": "Đã đọc và áp dụng trong scope P3.5; không suy từ skill catalog"
+      }
+    },
+    {
+      "skill_id": "documentation-and-adrs",
+      "contribution_summary": "Authority/contracts/runbook/task/state/evidence/journal và giới hạn physical/native Word",
+      "contribution_percent_estimate": 5,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/documentation-and-adrs/SKILL.md",
+        "version": null,
+        "sha256": "f3199cfec5d6fdfa6533f180b1e6cbee584cd6175d8eb25c0d186c833120609c",
+        "fingerprint_basis": "Đã đọc và áp dụng trong scope P3.5; không suy từ skill catalog"
+      }
+    },
+    {
+      "skill_id": "debugging-and-error-recovery",
+      "contribution_summary": "Sửa PDF footer extra page, repeated Worker crash bằng process isolation, modal focus và XML-invalid source",
+      "contribution_percent_estimate": 5,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/debugging-and-error-recovery/SKILL.md",
+        "version": null,
+        "sha256": "9f42e9d582ae78e42e1b4e65ef2c4848f4debed2f2a9092037387d572ea5d358",
+        "fingerprint_basis": "Đã đọc và áp dụng trong scope P3.5; không suy từ skill catalog"
+      }
+    },
+    {
+      "skill_id": "pdf",
+      "contribution_summary": "Render PDF bằng Poppler, kiểm A4/pages/text và xem từng PNG",
+      "contribution_percent_estimate": 5,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "personal",
+        "path": "/Users/khiemnguyen/.codex/skills/pdf/SKILL.md",
+        "version": null,
+        "sha256": "d108cf2b36355ab37eb5962933f4d09785ec002f3105c506129320209306b9d2",
+        "fingerprint_basis": "Đã đọc và áp dụng trong scope P3.5; không suy từ skill catalog"
+      }
+    },
+    {
+      "skill_id": "documents",
+      "contribution_summary": "Render DOCX bằng bundled helper/LibreOfficeDev, đối chiếu text/font/page/signature và xem từng PNG",
+      "contribution_percent_estimate": 5,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "personal",
+        "path": "/Users/khiemnguyen/.codex/plugins/cache/openai-primary-runtime/documents/26.1110.11258/skills/documents/SKILL.md",
+        "version": null,
+        "sha256": "c9b9ba61ac15f20a600220bc10a380c7753992bbd3c323bfe33fae864adefc21",
+        "fingerprint_basis": "Đã đọc và áp dụng trong scope P3.5; không suy từ skill catalog"
+      }
+    }
+  ],
+  "evidence_refs": [
+    "docs/tasks/CHURCH-P3.5.md",
+    "docs/engineering/P3.5-certificates.md",
+    "output/p3.5/verification.json",
+    "output/p3.5/source-manifest.json",
+    "output/p3.5/documents-check.json",
+    "output/p3.5/review.json",
+    "output/p3.5/cleanup-readback.json"
+  ],
+  "outcome": {
+    "delivery_status": "VERIFICATION_IN_PROGRESS",
+    "verification_level": "LOCAL_SYNTHETIC",
+    "human_acceptance": "PENDING_REVIEW",
+    "released": false,
+    "limitations": [
+      "Physical camera/paper P3-PHYSICAL-01 NOT_RUN",
+      "Native Microsoft Word/Safari/UAT/production/multi-replica/remoteCI NOT_RUN",
+      "Main runtime/DB init/restart3443 NOT_RUN; no commit/push/deploy/real data",
+      "No independent reviewer; self-review only",
+      "15s/5MiB exact saturation NOT_RUN; configured guards source-reviewed",
+      "P3.6 NOT_OPENED"
+    ]
+  }
+}

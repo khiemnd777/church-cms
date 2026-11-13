@@ -1,0 +1,183 @@
+{
+  "schema_version": 1,
+  "event_id": "CHURCH-P3/P3.3/implementation/correction/1",
+  "event_type": "correction",
+  "task_id": "CHURCH-P3",
+  "scope_id": "P3.3",
+  "recorded_at": "2026-11-13T01:00:14.110252+00:00",
+  "reported_by": "delivery_owner",
+  "source_kind": "agent_self_report",
+  "supersedes_event_id": "CHURCH-P3/P3.3/implementation/1",
+  "reason": "Rà C33-03 trước báo cáo: bỏ hai guards không có trong kế hoạch (ngày trước khai giảng/trạng thái ngừng học), thêm regression API/UI, cập nhật proof cuối. Giữ original phase event và snapshot trước sửa.",
+  "replacement": {
+    "schema_version": 1,
+    "event_id": "CHURCH-P3/P3.3/implementation/1",
+    "event_type": "phase_handoff",
+    "task_id": "CHURCH-P3",
+    "scope_id": "P3.3",
+    "recorded_at": "2026-11-13T01:00:14.110252+00:00",
+    "reported_by": "delivery_owner",
+    "source_kind": "agent_self_report",
+    "phase": "implementation",
+    "handoff_index": 1,
+    "classification": {
+      "delivery": "roadmap",
+      "complexity": "prep_classes_enrollment_attendance_makeup_interview_ui",
+      "ui": true
+    },
+    "authority": {
+      "approval": "duyệt P3.3-plan-r1, gồm C33-01–03, để triển khai trọn P33-01–05 local/synthetic rồi bàn giao nghiệm thu.",
+      "scope": "Local/synthetic P33-01–05; dừng trước P3.4; chưa commit/push/deploy/real data/main DB init/restart3443"
+    },
+    "skills": [
+      {
+        "skill_id": "incremental-implementation",
+        "contribution_summary": "Trọn P33-01–05, domain/schema/public ports/HTTP/UI wiring trước tests",
+        "contribution_percent_estimate": 25,
+        "estimate_source": "agent_self_report",
+        "source_identity": {
+          "kind": "repository",
+          "path": ".agents/skills/incremental-implementation/SKILL.md",
+          "version": null,
+          "sha256": "4663b276ac0d2f38be6f14a23d792783a255efe714710726af21c0f52c873359",
+          "fingerprint_basis": "Đã đọc và áp dụng trong scope P3.3 hiện hành"
+        }
+      },
+      {
+        "skill_id": "frontend-ui-engineering",
+        "contribution_summary": "W06/W14/W05, shared UI/source parity, layout18px, hai realm/reauth/pending/navigation/keyboard",
+        "contribution_percent_estimate": 25,
+        "estimate_source": "agent_self_report",
+        "source_identity": {
+          "kind": "repository",
+          "path": ".agents/skills/frontend-ui-engineering/SKILL.md",
+          "version": null,
+          "sha256": "b5c47fed383892428172bf0b9c1ed1aeab50066ff9421a87a6c344f746386495",
+          "fingerprint_basis": "Đã đọc và áp dụng trong scope P3.3 hiện hành"
+        }
+      },
+      {
+        "skill_id": "api-and-interface-design",
+        "contribution_summary": "PrepClasses/Attendance/Members ownership, typed ports/DTO/strict body/192KiB cap/receipt ACL",
+        "contribution_percent_estimate": 15,
+        "estimate_source": "agent_self_report",
+        "source_identity": {
+          "kind": "repository",
+          "path": ".agents/skills/api-and-interface-design/SKILL.md",
+          "version": null,
+          "sha256": "2550ac99404f1d52566cdd95fd809e0984eb29f1174132a864fb7beb9f688f79",
+          "fingerprint_basis": "Đã đọc và áp dụng trong scope P3.3 hiện hành"
+        }
+      },
+      {
+        "skill_id": "test-driven-development",
+        "contribution_summary": "13 tests P33 + regression221 tests/3166assertions, browser2773checks và HTTPS9configs; real DB/fault/revoke/2000roster/200lesson contract/historical interview",
+        "contribution_percent_estimate": 20,
+        "estimate_source": "agent_self_report",
+        "source_identity": {
+          "kind": "repository",
+          "path": ".agents/skills/test-driven-development/SKILL.md",
+          "version": null,
+          "sha256": "48d85b44f5e6286ba2a7a43550083609f299aa4001391768e9da126d2db86742",
+          "fingerprint_basis": "Đã đọc và áp dụng trong scope P3.3 hiện hành"
+        }
+      },
+      {
+        "skill_id": "security-and-hardening",
+        "contribution_summary": "Fresh actor/tenant/action fences, no source injection, role interview/replay, CSRF/privacy/atomic writes",
+        "contribution_percent_estimate": 7,
+        "estimate_source": "agent_self_report",
+        "source_identity": {
+          "kind": "repository",
+          "path": ".agents/skills/security-and-hardening/SKILL.md",
+          "version": null,
+          "sha256": "4549688254258d5d6836a0f2d8cf606460a9baf426e9c644d3244a9973778ad3",
+          "fingerprint_basis": "Đã đọc và áp dụng trong scope P3.3 hiện hành"
+        }
+      },
+      {
+        "skill_id": "code-review-and-quality",
+        "contribution_summary": "Self-review invariant/contracts/callers/replay/rollback, sửa route continuity và nhãn scope lớp",
+        "contribution_percent_estimate": 5,
+        "estimate_source": "agent_self_report",
+        "source_identity": {
+          "kind": "repository",
+          "path": ".agents/skills/code-review-and-quality/SKILL.md",
+          "version": null,
+          "sha256": "045ed6d37f590d7ad3b2ee47c1e66ada4bbff1e9d5d232c20a4eeaa5694e39f6",
+          "fingerprint_basis": "Đã đọc và áp dụng trong scope P3.3 hiện hành"
+        }
+      },
+      {
+        "skill_id": "documentation-and-adrs",
+        "contribution_summary": "Contracts/runbook/authority/evidence/journal/current state/checklist, giữ physical note NOT_RUN",
+        "contribution_percent_estimate": 3,
+        "estimate_source": "agent_self_report",
+        "source_identity": {
+          "kind": "repository",
+          "path": ".agents/skills/documentation-and-adrs/SKILL.md",
+          "version": null,
+          "sha256": "f3199cfec5d6fdfa6533f180b1e6cbee584cd6175d8eb25c0d186c833120609c",
+          "fingerprint_basis": "Đã đọc và áp dụng trong scope P3.3 hiện hành"
+        }
+      }
+    ],
+    "outcome": {
+      "delivery_status": "COMPLETED",
+      "verification_level": "LOCAL_SYNTHETIC_VERIFIED",
+      "human_acceptance": "PENDING_REVIEW",
+      "limitations": [
+        "Self-review, không reviewer độc lập",
+        "Physical camera/paper/Safari/UAT/production/multi-replica/remoteCI NOT_RUN",
+        "200 bài chỉ kiểm contract/schema; workload3bài, không full200lesson capacity",
+        "Chưa main DB init/restart3443/released",
+        "Correction giữ original phase event; không là thêm một lượt skill usage"
+      ]
+    },
+    "evidence_refs": [
+      "current_chat:P3.3-plan-r1/C33-01–03",
+      "docs/tasks/CHURCH-P3.3.md",
+      "docs/engineering/P3.3-prep-classes.md",
+      "output/p3.3/verification.json",
+      "output/p3.3/source-manifest.json",
+      "output/p3.3/browser-results.json",
+      "output/p3.3/qualification.json",
+      "output/p3.3/pre-final-review/verification.json"
+    ],
+    "measurements": {
+      "elapsed_seconds": {
+        "value": null,
+        "source_ref": null,
+        "missing_reason": "Không có counters đo được theo skill/phase; không suy từ estimate %"
+      },
+      "tool_calls": {
+        "value": null,
+        "source_ref": null,
+        "missing_reason": "Không có counters đo được theo skill/phase; không suy từ estimate %"
+      },
+      "input_tokens": {
+        "value": null,
+        "source_ref": null,
+        "missing_reason": "Không có counters đo được theo skill/phase; không suy từ estimate %"
+      },
+      "output_tokens": {
+        "value": null,
+        "source_ref": null,
+        "missing_reason": "Không có counters đo được theo skill/phase; không suy từ estimate %"
+      },
+      "cached_input_tokens": {
+        "value": null,
+        "source_ref": null,
+        "missing_reason": "Không có counters đo được theo skill/phase; không suy từ estimate %"
+      },
+      "reasoning_output_tokens": {
+        "value": null,
+        "source_ref": null,
+        "missing_reason": "Không có counters đo được theo skill/phase; không suy từ estimate %"
+      },
+      "client": null,
+      "model": null,
+      "effort": null
+    }
+  }
+}

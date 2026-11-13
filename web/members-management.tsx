@@ -2,7 +2,11 @@ import { useEffect, useRef, useState } from "react";
 import type { ChurchRef } from "./access-context";
 import { ApiError } from "./api";
 import { DataExchangePanel } from "./data-exchange";
+import { isCardIntent, MemberCards } from "./member-cards";
+import { MemberCertificates } from "./member-certificates";
 import { MemberForm } from "./member-form";
+import { MemberPrepClasses } from "./member-prep-classes";
+import { MemberRites } from "./member-rites";
 import {
   baptismLabels,
   dayLabel,
@@ -19,6 +23,7 @@ import {
   stageLabels,
 } from "./members-api";
 import type { UnitDto } from "./organization-api";
+import type { riteNames } from "./rites-api";
 import {
   type TenantIntent,
   type TenantRealm,
@@ -47,6 +52,7 @@ import {
   TextInput,
   Toolbar,
 } from "./ui/components";
+import { PresenceDots } from "./ui/components/presence";
 import "./members-management.css";
 interface Context {
   church: ChurchRef;
@@ -63,6 +69,10 @@ interface Props {
   onChurch?: (church: ChurchRef) => void;
   onBack?: () => void;
   onFamily?: (id: string) => void;
+  onClass?: (id: string) => void;
+  onCertificate?: (id: string) => void;
+  onAttendance?: (id: string) => void;
+  onRite?: (kind: keyof typeof riteNames, id: string) => void;
   initialMemberId?: string | null;
   initialFilters?: Record<string, string>;
   initialCreate?: boolean;
@@ -79,6 +89,8 @@ const blankFilters = {
   familyId: "",
   firstVisit: "",
   visitorStage: "",
+  attendance: "",
+  attendanceUntil: "",
 };
 export function MembersManagement({
   realm,
@@ -90,6 +102,10 @@ export function MembersManagement({
   onChurch,
   onBack,
   onFamily,
+  onClass,
+  onCertificate,
+  onRite,
+  onAttendance,
   initialMemberId,
   initialFilters,
   initialCreate,
@@ -165,6 +181,7 @@ export function MembersManagement({
     currentPending =
       pending?.realm === realm &&
       pending.churchId === churchId &&
+      !isCardIntent(pending, base) &&
       pending.path.startsWith(`${base}/members`)
         ? pending
         : null;
@@ -189,6 +206,8 @@ export function MembersManagement({
       familyId: "Gia đình",
       firstVisit: "Đến lần đầu",
       visitorStage: "Giai đoạn thân hữu",
+      attendance: "Hiện diện",
+      attendanceUntil: "Kỳ đến",
     };
     const values: Record<string, Record<string, string>> = {
       type: memberTypeLabels,
@@ -269,7 +288,12 @@ export function MembersManagement({
     }
   }, [ctx, initialCreate, options, pending]);
   useEffect(() => {
-    if (ctx && initialMemberId) void open(initialMemberId);
+    const recoveredId =
+      isCardIntent(pending, base) && pending?.realm === realm && pending.churchId === churchId
+        ? pending.resource?.memberId
+        : null;
+    if (ctx && (recoveredId || initialMemberId))
+      void open((recoveredId || initialMemberId) as string);
   }, [ctx, initialMemberId]);
   useEffect(() => {
     if (!ctx) return;
@@ -282,14 +306,23 @@ export function MembersManagement({
     setError("");
     Promise.all([
       tenantRequest<MemberPage>(realm, `${base}/members?${query()}`, { signal: abort.signal }),
-      tenantRequest<{ all: number; believer: number; visitor: number }>(
-        realm,
-        `${base}/members/summary?${query(undefined, true)}`,
-        { signal: abort.signal },
-      ),
+      tenantRequest<{
+        all: number;
+        believer: number;
+        visitor: number;
+        attendanceWindow?: { fingerprint: string } | null;
+      }>(realm, `${base}/members/summary?${query(undefined, true)}`, { signal: abort.signal }),
     ])
       .then(([p, c]) => {
         if (!abort.signal.aborted && current === generation.current) {
+          if (
+            (p.data.attendanceWindow?.fingerprint ?? null) !==
+            (c.data.attendanceWindow?.fingerprint ?? null)
+          )
+            throw new ApiError(
+              "CURSOR_CONTEXT_MISMATCH",
+              "Nguồn hiện diện đổi giữa hai lần đọc. Tải lại danh sách.",
+            );
           setPage(p.data);
           setCounts(c.data);
         }
@@ -358,7 +391,10 @@ export function MembersManagement({
     setFields({});
     setHistory(null);
     try {
-      const r = await tenantRequest<MemberDto>(realm, `${base}/members/${id}`);
+      const r = await tenantRequest<MemberDto>(
+        realm,
+        `${base}/members/${id}${filters.attendanceUntil ? `?attendanceUntil=${filters.attendanceUntil}` : ""}`,
+      );
       if (request === detailGeneration.current) setSelected(r.data);
     } catch (e) {
       if (request === detailGeneration.current) fail(e);
@@ -674,6 +710,24 @@ export function MembersManagement({
                   Tải thêm danh mục
                 </Button>
               )}
+              <Field label="Hiện diện">
+                <Select
+                  value={filters.attendance}
+                  disabled={locked}
+                  onChange={(e) => setFilters({ ...filters, attendance: e.target.value })}
+                >
+                  <option value="">Tất cả</option>
+                  <option value="absent3">Vắng 3 CN liên tiếp</option>
+                </Select>
+              </Field>
+              <Field label="Kỳ hiện diện đến" hint="Chọn ngày Chúa nhật; trống = CN gần nhất.">
+                <TextInput
+                  type="date"
+                  value={filters.attendanceUntil}
+                  disabled={locked}
+                  onChange={(e) => setFilters({ ...filters, attendanceUntil: e.target.value })}
+                />
+              </Field>
               {(filters.familyId ||
                 Object.entries(filters).some(([k, v]) => v && k !== "participation") ||
                 filters.participation !== "current") && (
@@ -762,7 +816,9 @@ export function MembersManagement({
                               {participationLabels[m.participation]}
                             </div>
                           </td>
-                          <td>—</td>
+                          <td>
+                            <PresenceDots value={m.attendance} />
+                          </td>
                           <td>
                             {m.units
                               .slice(0, 2)
@@ -853,6 +909,39 @@ export function MembersManagement({
                   : []),
               ]}
             />
+            {ctx?.capabilities.includes("rites:read") && (
+              <MemberRites
+                key={`rites:${selected.id}`}
+                realm={realm}
+                churchId={churchId}
+                memberId={selected.id}
+                locked={locked}
+                onOpen={onRite}
+                onFail={fail}
+              />
+            )}
+            {ctx?.capabilities.includes("certificates:read") && (
+              <MemberCertificates
+                key={`certificates:${selected.id}`}
+                realm={realm}
+                churchId={churchId}
+                memberId={selected.id}
+                locked={locked}
+                onOpen={onCertificate}
+                onFail={fail}
+              />
+            )}
+            {ctx?.capabilities.includes("classes:read") && (
+              <MemberPrepClasses
+                key={selected.id}
+                realm={realm}
+                churchId={churchId}
+                memberId={selected.id}
+                locked={locked}
+                onOpen={onClass}
+                onFail={fail}
+              />
+            )}
             {selected.visitor && (
               <>
                 <SectionHeader
@@ -884,8 +973,12 @@ export function MembersManagement({
                 )}
               </>
             )}
-            <SectionHeader title="Hiện diện" />
-            <p className="muted">Chưa khả dụng.</p>
+            <SectionHeader title="Hiện diện 12 Chúa nhật" />
+            <PresenceDots
+              value={selected.attendance}
+              detail
+              onOpen={locked ? undefined : onAttendance}
+            />
             <SectionHeader title="Gia đình" />
             {onFamily && (
               <Button variant="link" disabled={locked} onClick={() => onFamily(selected.familyId)}>
@@ -924,8 +1017,20 @@ export function MembersManagement({
             )}
             <SectionHeader title="Dâng hiến" />
             <p className="muted">Chưa khả dụng.</p>
-            <SectionHeader title="QR / Thẻ tín hữu" />
-            <p className="muted">Chưa khả dụng.</p>
+            {ctx?.capabilities.includes("cards:read") && (
+              <MemberCards
+                key={selected.id}
+                realm={realm}
+                churchId={churchId}
+                memberId={selected.id}
+                memberName={selected.fullName}
+                principalKey={principalKey}
+                canManage={ctx.capabilities.includes("cards:manage")}
+                pending={pending}
+                onPending={onPending}
+                onAuthError={onAuthError}
+              />
+            )}
             <div className="members-actions">
               {canWrite && (
                 <Button disabled={locked} onClick={() => startChange("participation")}>

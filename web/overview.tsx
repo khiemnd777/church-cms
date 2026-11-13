@@ -3,6 +3,7 @@ import type { OverviewDto, OverviewTarget } from "../api/overview/contracts";
 import type { ChurchRef } from "./access-context";
 import { ApiError } from "./api";
 import { dayLabel } from "./members-api";
+import { dateLabel, riteNames } from "./rites-api";
 import { authErrorCodes, type TenantRealm, tenantRequest } from "./tenant-mutation";
 import { Badge, Button, Card, Feedback, IconButton, Loading, SectionHeader } from "./ui/components";
 import {
@@ -11,6 +12,7 @@ import {
   OverviewShortcut,
   OverviewStages,
 } from "./ui/components/overview";
+import { AttendanceChart } from "./ui/components/presence";
 import "./overview.css";
 interface Props {
   realm: TenantRealm;
@@ -151,19 +153,48 @@ export function OverviewView({
               </div>
             </Card>
             <Card className="kpi">
-              <div className="lbl">THỜ PHƯỢNG CHÚA NHẬT</div>
-              <div className="big num">—</div>
-              <div className="small muted">Chưa khả dụng</div>
+              <div className="lbl">THỜ PHƯỢNG CN {dateLabel(value.attendance.until)}</div>
+              <div className="big num">{value.attendance.value ?? "—"}</div>
+              <div className="small muted">
+                {value.attendance.latest.state === "closed"
+                  ? "Người hiện diện · roster đã chốt"
+                  : value.attendance.latest.sessionId
+                    ? "Buổi chưa chốt"
+                    : "Chưa chọn buổi tham chiếu"}
+              </div>
               <div className="foot">
-                <span>Điểm danh chưa triển khai</span>
+                <span>So CN trước: {value.attendance.delta ?? "—"}</span>
+                <span>
+                  TB4 CN: {value.attendance.average4 ?? "—"} · {value.attendance.coverage4}/4 đã
+                  chốt
+                </span>
+                <span>
+                  Tỷ lệ{" "}
+                  {value.attendance.latest.rate === null ? "—" : `${value.attendance.latest.rate}%`}{" "}
+                  · {value.attendance.latest.included ?? "—"} roster
+                </span>
+                <span>Thân hữu tại snapshot: {value.attendance.latest.visitors ?? "—"}</span>
+                {value.attendance.latest.sessionId &&
+                  link("Xem buổi", () =>
+                    onNavigate({
+                      kind: "attendance",
+                      sessionId: value.attendance.latest.sessionId as string,
+                    }),
+                  )}
               </div>
             </Card>
             <Card className="kpi">
               <div className="lbl">LỄ NGHI NĂM {value.day.slice(0, 4)}</div>
-              <div className="big num">—</div>
-              <div className="small muted">Chưa khả dụng</div>
+              <div className="big num">{value.rites.value}</div>
+              <div className="small muted">Sự kiện đã ghi sổ, có ngày trong năm</div>
               <div className="foot">
-                <span>Sổ lễ nghi chưa triển khai</span>
+                {["baptism", "dedication", "marriage", "funeral"].map((k) => (
+                  <span key={k}>
+                    {riteNames[k as keyof typeof riteNames]} <b>{value.rites.counts[k]}</b>
+                  </span>
+                ))}
+                <span>Chưa rõ ngày: {value.rites.unknownDate}</span>
+                {link("Mở sổ lễ nghi", () => onNavigate({ kind: "rites", tab: "bap" }))}
               </div>
             </Card>
           </section>
@@ -188,8 +219,10 @@ export function OverviewView({
                     <span>Mới đến 30 ngày</span>
                   </div>
                   <div>
-                    <b className="num">—</b>
-                    <span>Dự thờ phượng: Chưa khả dụng</span>
+                    <b className="num">{value.attendance.latest.visitors ?? "—"}</b>
+                    <span>
+                      Dự thờ phượng CN {dateLabel(value.attendance.until)} · loại hồ sơ tại snapshot
+                    </span>
                   </div>
                   <div>
                     <b className="num">{value.visitors.convertedYear}</b>
@@ -303,10 +336,25 @@ export function OverviewView({
                 disabled={pending || !value.organization.configured}
                 onClick={() => onNavigate({ kind: "members", create: true })}
               />
-              <OverviewShortcut icon="qr" label="Điểm danh QR" disabled />
-              <OverviewShortcut icon="drop" label="Sổ Báp-têm" disabled />
+              <OverviewShortcut
+                icon="qr"
+                label="Điểm danh QR"
+                disabled={pending}
+                onClick={() => onNavigate({ kind: "attendance" })}
+              />
+              <OverviewShortcut
+                icon="drop"
+                label="Sổ Báp-têm"
+                disabled={pending}
+                onClick={() => onNavigate({ kind: "rites", tab: "bap" })}
+              />
               <OverviewShortcut icon="stamp" label="Đề xuất chi" disabled />
-              <OverviewShortcut icon="print" label="In giấy chứng nhận" disabled />
+              <OverviewShortcut
+                icon="print"
+                label="In giấy chứng nhận"
+                disabled={pending}
+                onClick={() => onNavigate({ kind: "forms" })}
+              />
               <OverviewShortcut icon="heart" label="Thăm viếng" disabled />
               <OverviewShortcut icon="chart" label="Báo cáo Tổng Liên Hội" disabled />
             </div>
@@ -314,7 +362,16 @@ export function OverviewView({
           <section className="grid g-73">
             <Card>
               <SectionHeader title="Hiện diện thờ phượng 12 Chúa nhật gần nhất" />
-              <p>— · Chưa khả dụng</p>
+              <AttendanceChart
+                value={value.attendance}
+                communionDays={value.rites.communionDays}
+                disabled={pending}
+                onOpen={(id) => onNavigate({ kind: "attendance", sessionId: id })}
+              />
+              <p className="small muted">
+                — thiếu buổi/chưa chốt;0 là có buổi đã chốt, không người hiện diện. Màu vàng: có bản
+                ghi Tiệc Thánh ngày đó.
+              </p>
             </Card>
             <Card>
               <SectionHeader title="Cần quan tâm tuần này" />
@@ -323,8 +380,19 @@ export function OverviewView({
                   Thân hữu mới đến trong 30 ngày: <b>{value.visitors.new30}</b>
                 </p>
                 {link("Xem thân hữu mới", () => members({ type: "visitor", firstVisit: "last30" }))}
-                <p>Vắng 3 Chúa nhật liên tiếp · Lớp dự bị · Đề xuất chi · Cầu thay</p>
-                <p className="muted">— · Chưa khả dụng</p>
+                <p>
+                  Vắng 3 CN liên tiếp: <b>{value.attendance.absent3}</b> · chỉ tính đủ ba roster đã
+                  chốt
+                </p>
+                {link("Xem người vắng", () =>
+                  members({ attendance: "absent3", attendanceUntil: value.attendance.until }),
+                )}
+                <p>
+                  Lớp dự bị: <b>{value.classes.courses}</b> khóa đang hoạt động ·{" "}
+                  <b>{value.classes.enrollments}</b> lượt ghi danh đang học
+                </p>
+                {link("Mở lớp dự bị", () => onNavigate({ kind: "rites", tab: "class" }))}
+                <p className="muted">Đề xuất chi · Cầu thay: chưa khả dụng</p>
               </div>
             </Card>
           </section>
@@ -368,7 +436,45 @@ export function OverviewView({
             </Card>
             <Card>
               <SectionHeader title="Lễ nghi gần đây" />
-              <p>— · Chưa khả dụng</p>
+              {!value.rites.recent.length && <p>Chưa có lễ đã ghi nhận.</p>}
+              <div className="list">
+                {value.rites.recent.map((r) => (
+                  <div className="li" key={r.id}>
+                    <div className="t">
+                      <b>{riteNames[r.kind]}</b>
+                      <span>
+                        {dateLabel(r.record.date)} ·{" "}
+                        {r.people
+                          .slice(0, r.kind === "marriage" ? 2 : 1)
+                          .map((p) => p.fullName)
+                          .join(" & ")}
+                        {r.record.payload.kind === "communion"
+                          ? ` · Số dự lễ: ${r.record.payload.count ?? "Chưa rõ"}`
+                          : ""}
+                      </span>
+                    </div>
+                    <Button
+                      variant="link"
+                      disabled={pending}
+                      onClick={() =>
+                        onNavigate({
+                          kind: "rites",
+                          tab: {
+                            baptism: "bap",
+                            dedication: "ded",
+                            marriage: "wed",
+                            funeral: "fun",
+                            communion: "com",
+                          }[r.kind],
+                          riteId: r.id,
+                        })
+                      }
+                    >
+                      Mở
+                    </Button>
+                  </div>
+                ))}
+              </div>
             </Card>
           </section>
         </>

@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "event_id": "CHURCH-P3/P3.2/human-review/1",
+  "event_type": "evaluation",
+  "task_id": "CHURCH-P3",
+  "scope_id": "P3.2",
+  "recorded_at": "2026-11-13T00:21:27.158255+00:00",
+  "reported_by": "delivery_owner",
+  "source_kind": "human_feedback",
+  "subject_event_id": "CHURCH-P3/P3.2/implementation/1",
+  "assessment_source": "human",
+  "review_attempt": 1,
+  "decision": "ACCEPTED",
+  "findings": [],
+  "authority": {
+    "approval": "nghiệm thu P3.2-r1 theo checklist; đồng ý mở planning P3.3",
+    "scope": "Nghiệm thu P3.2-r1/P32-01–05 theo checklist local/synthetic; mở PLANNING_ONLY P3.3 để trình trước coding. Không publication/deploy/real data/main DB init/restart."
+  },
+  "record_maintenance": {
+    "skill_id": "documentation-and-adrs",
+    "source": "Repo",
+    "contribution_summary": "Ghi nghiệm thu P3.2-r1 và mở planning P3.3 trong task/plan/state, giữ snapshot kỹ thuật và note physical NOT_RUN",
+    "contribution_percent_estimate": 100,
+    "estimate_source": "agent_self_report",
+    "source_identity": {
+      "kind": "repository",
+      "path": ".agents/skills/documentation-and-adrs/SKILL.md",
+      "version": null,
+      "sha256": "f3199cfec5d6fdfa6533f180b1e6cbee584cd6175d8eb25c0d186c833120609c",
+      "fingerprint_basis": "Đã đọc/áp dụng cho bảo trì hồ sơ được user cho phép; không ghi lại usage implementation"
+    }
+  },
+  "evidence_refs": [
+    "current_chat:nghiệm thu P3.2-r1 theo checklist; đồng ý mở planning P3.3",
+    "docs/tasks/CHURCH-P3.2.md",
+    "docs/tasks/CHURCH-P3.md",
+    "output/p3.2/verification.json",
+    "docs/engineering/skill-usage/records/CHURCH-P3/P3.2-implementation-1.json"
+  ],
+  "limits": [
+    "Nghiệm thu local/synthetic không đóng camera điện thoại thật hoặc bản in giấy thật: P3-PHYSICAL-01 vẫn NOT_RUN",
+    "Không sửa technical receipt/source manifest/implementation journal P3.2-r1",
+    "Không chạy lại tests/runtime để ghi nhận human acceptance",
+    "P3.3 chỉ planning trong chat, chưa thiết kế/implementation được duyệt, P3.4–P3.6 chưa mở",
+    "Không commit/push/deploy/real data/main DB init/restart dịch vụ"
+  ]
+}

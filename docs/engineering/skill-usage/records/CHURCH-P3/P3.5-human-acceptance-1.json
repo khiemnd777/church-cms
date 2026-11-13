@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "event_id": "CHURCH-P3/P3.5/human-review/1",
+  "event_type": "evaluation",
+  "task_id": "CHURCH-P3",
+  "scope_id": "P3.5",
+  "recorded_at": "2026-11-13T08:23:13.128961+00:00",
+  "reported_by": "delivery_owner",
+  "source_kind": "human_feedback",
+  "subject_event_id": "CHURCH-P3/P3.5/implementation/1",
+  "assessment_source": "human",
+  "review_attempt": 1,
+  "decision": "ACCEPTED",
+  "findings": [],
+  "authority": {
+    "approval": "Nghiệm thu P3.5-r1 theo năm mục trên; mở P3.6.",
+    "scope": "Nghiệm thu P3.5-r1/P35-01–05 theo đủ năm mục local/synthetic; mở P3.6 PLANNING_ONLY để trình kế hoạch/ASCII duyệt trước coding. Không đóng P3/mở P4 hoặc publication/deploy/real data/main DB init/restart3443."
+  },
+  "accepted_checklist": [
+    "Bốn mẫu đúng nguồn; thiếu/khác biệt rõ; không demo tự điền",
+    "Preview/DOCX/PDF cùng nội dung/phiên bản; tiếng Việt/phân trang/vùng ký",
+    "Chốt/thay thế/thu hồi bảo toàn bản cũ và lịch sử",
+    "Quyền/tenant/source/concurrency/rollback/render failures/replay",
+    "W06/W11/W14/W17 hai realm và regression P3.1–P3.4"
+  ],
+  "record_maintenance": {
+    "skill_id": "documentation-and-adrs",
+    "source": "Repo",
+    "contribution_summary": "Tick năm mục, append human acceptance, mở planning P3.6, giữ snapshots kỹ thuật và physical NOT_RUN",
+    "contribution_percent_estimate": 100,
+    "estimate_source": "agent_self_report",
+    "source_identity": {
+      "kind": "repository",
+      "path": ".agents/skills/documentation-and-adrs/SKILL.md",
+      "version": null,
+      "sha256": "f3199cfec5d6fdfa6533f180b1e6cbee584cd6175d8eb25c0d186c833120609c",
+      "fingerprint_basis": "Đã đọc/áp dụng để ghi nhận chỉ dẫn hiện hành; không tính lại usage implementation P3.5 hoặc lưu planning P3.6 chưa duyệt"
+    }
+  },
+  "evidence_refs": [
+    "current_chat:Nghiệm thu P3.5-r1 theo năm mục trên; mở P3.6.",
+    "docs/tasks/CHURCH-P3.5.md",
+    "docs/tasks/CHURCH-P3.md",
+    "output/p3.5/verification.json",
+    "output/p3.5/source-manifest.json",
+    "docs/engineering/skill-usage/records/CHURCH-P3/P3.5-implementation-1.json",
+    "docs/engineering/skill-usage/records/CHURCH-P3/P3.5-implementation-verification-1.json"
+  ],
+  "limits": [
+    "Human acceptance local/synthetic không đóng Camera thật/giấy thật P3-PHYSICAL-01; cả hai NOT_RUN",
+    "Native Word/Safari/UAT/production/multi-replica/remoteCI/main runtime NOT_RUN giữ nguyên",
+    "Không chạy lại tests/runtime để ghi nghiệm thu; không rewrite technical receipt/source manifest/implementation journals",
+    "P3.6 chỉ planning trong chat, chưa duyệt thiết kế/implementation; chưa đóng P3 hoặc mở P4",
+    "Không commit/push/deploy/real data/main DB init/restart3443"
+  ]
+}

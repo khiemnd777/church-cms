@@ -6,6 +6,7 @@ export interface TenantGrant {
   churchId: ObjectId;
   policyContext: string;
   canWrite: boolean;
+  canReadAttendance?: boolean;
   unitScope?: readonly string[];
   canManageMemberships?: boolean;
   receiptScope?: "memberships";

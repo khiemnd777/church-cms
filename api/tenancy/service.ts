@@ -35,6 +35,19 @@ export class Tenancy {
   private get churches() {
     return this.db.db.collection<Church>("churches");
   }
+  async certificateIdentity(churchId: ObjectId, tx: ClientSession) {
+    const c = await this.churches.findOne({ _id: churchId, status: "active" }, { session: tx });
+    requireCondition(c, 404, "NOT_FOUND");
+    return { id: c._id.toHexString(), name: c.name, code: c.code, version: c.version };
+  }
+  async cardIdentity(churchId: ObjectId, tx: ClientSession) {
+    const c = await this.churches.findOne(
+      { _id: churchId, status: "active" },
+      { session: tx, projection: { name: 1, code: 1 } },
+    );
+    requireCondition(c, 404, "NOT_FOUND");
+    return { name: c.name, code: c.code };
+  }
   async overview(churchId: ObjectId, tx: ClientSession) {
     const c = await this.churches.findOne({ _id: churchId, status: "active" }, { session: tx });
     requireCondition(c, 404, "NOT_FOUND");

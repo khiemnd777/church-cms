@@ -1,0 +1,86 @@
+{
+  "schema_version": 1,
+  "event_id": "CHURCH-P3/P3-physical-note/implementation/1",
+  "event_type": "phase_handoff",
+  "task_id": "CHURCH-P3",
+  "scope_id": "P3-physical-note",
+  "recorded_at": "2026-11-12T23:38:09.838787+00:00",
+  "reported_by": "delivery_owner",
+  "source_kind": "agent_self_report",
+  "phase": "implementation",
+  "handoff_index": 1,
+  "classification": {
+    "delivery": "roadmap",
+    "complexity": "documentation_only_physical_verification_reminder",
+    "ui": false
+  },
+  "authority": {
+    "approval": "Ghi lại giới hạn Camera thật và bản in giấy vào note để agent có thể nhắc tôi sau này/tránh quên.",
+    "scope": "Lưu ghi chú nhắc hai giới hạn kiểm chứng; không duyệt kế hoạch/coding P3.2 hoặc mở task khác"
+  },
+  "skills": [
+    {
+      "skill_id": "documentation-and-adrs",
+      "contribution_summary": "Ghi note tại task P3, liên kết current state để agent nhắc tại các mốc; giữ NOT_RUN đến khi có bằng chứng vật lý và Khiêm xác nhận",
+      "contribution_percent_estimate": 100,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/documentation-and-adrs/SKILL.md",
+        "version": null,
+        "sha256": "f3199cfec5d6fdfa6533f180b1e6cbee584cd6175d8eb25c0d186c833120609c",
+        "fingerprint_basis": "Đã đọc/áp dụng cho note trong phạm vi yêu cầu hiện tại"
+      }
+    }
+  ],
+  "outcome": {
+    "delivery_status": "COMPLETED",
+    "verification_level": "DOCUMENTATION_ONLY",
+    "human_acceptance": "NOT_APPLICABLE",
+    "limitations": [
+      "Ghi chú không thay kiểm chứng thực tế hoặc phê duyệt P3.2",
+      "Không chạy lại tests/runtime, không sửa source app",
+      "Không tạo lịch nhắc tự động; agent nhắc theo ngữ cảnh task"
+    ]
+  },
+  "evidence_refs": [
+    "current_chat:Ghi lại giới hạn Camera thật và bản in giấy vào note",
+    "docs/tasks/CHURCH-P3.md#p3-physical-verification-note",
+    "docs/project-state.md"
+  ],
+  "measurements": {
+    "elapsed_seconds": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có bộ đếm tài nguyên đo được cho scope ghi chú"
+    },
+    "tool_calls": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có bộ đếm tài nguyên đo được cho scope ghi chú"
+    },
+    "input_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có bộ đếm tài nguyên đo được cho scope ghi chú"
+    },
+    "output_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có bộ đếm tài nguyên đo được cho scope ghi chú"
+    },
+    "cached_input_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có bộ đếm tài nguyên đo được cho scope ghi chú"
+    },
+    "reasoning_output_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có bộ đếm tài nguyên đo được cho scope ghi chú"
+    },
+    "client": null,
+    "model": null,
+    "effort": null
+  }
+}

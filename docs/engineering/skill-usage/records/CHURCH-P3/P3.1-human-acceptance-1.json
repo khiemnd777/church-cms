@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "event_id": "CHURCH-P3/P3.1/human-review/1",
+  "event_type": "evaluation",
+  "task_id": "CHURCH-P3",
+  "scope_id": "P3.1",
+  "recorded_at": "2026-11-12T23:25:23.258419+00:00",
+  "reported_by": "delivery_owner",
+  "source_kind": "human_feedback",
+  "subject_event_id": "CHURCH-P3/P3.1/implementation/1",
+  "assessment_source": "human",
+  "review_attempt": 1,
+  "decision": "ACCEPTED",
+  "findings": [],
+  "authority": {
+    "approval": "Nghiệm thu P3.1-r1, mở P3.2",
+    "scope": "Nghiệm thu P3.1-r1/P31-01–05 local/synthetic; mở PLANNING_ONLY P3.2 để duyệt trước coding. Chưa publication/deploy/dữ liệu thật/P3.3."
+  },
+  "record_maintenance": {
+    "skill_id": "documentation-and-adrs",
+    "source": "Repo",
+    "contribution_summary": "Ghi nghiệm thu P3.1-r1 và mở planning P3.2 trong task/plan/state, giữ nguyên technical receipt/implementation journal/source manifest",
+    "contribution_percent_estimate": 100,
+    "estimate_source": "agent_self_report",
+    "source_identity": {
+      "kind": "repository",
+      "path": ".agents/skills/documentation-and-adrs/SKILL.md",
+      "version": null,
+      "sha256": "f3199cfec5d6fdfa6533f180b1e6cbee584cd6175d8eb25c0d186c833120609c",
+      "fingerprint_basis": "Đã đọc và áp dụng cho bảo trì hồ sơ được phép, không ghi lại usage implementation"
+    }
+  },
+  "evidence_refs": [
+    "current_chat:Nghiệm thu P3.1-r1, mở P3.2",
+    "docs/tasks/CHURCH-P3.1.md",
+    "docs/tasks/CHURCH-P3.md",
+    "output/p3.1/verification.json",
+    "docs/engineering/skill-usage/records/CHURCH-P3/P3.1-implementation-1.json"
+  ],
+  "limits": [
+    "Ngày nghiệm thu theo ngữ cảnh hiện hành của Khiêm:2026-11-13",
+    "Không sửa source ứng dụng hoặc chạy lại tests/runtime để ghi nhận nghiệm thu",
+    "Giữ nguyên snapshot technical receipts/implementation journal/source manifest P3.1-r1",
+    "P3.2 chỉ planning trong chat, thiết kế chi tiết chưa được duyệt/không coding",
+    "Không tự commit/push/deploy/dùng dữ liệu thật/init main DB/restart dịch vụ; P3.3 chưa mở",
+    "Giữ các giới hạn NOT_RUN đã bàn giao P3.1; human acceptance không là production release"
+  ]
+}

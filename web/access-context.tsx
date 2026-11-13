@@ -112,9 +112,11 @@ export function AccessContextView({
             />
           </Card>
           <Feedback>
-            {value.capabilities.includes("organization:read")
-              ? "Cấu hình và hồ sơ thuộc viên Hội Thánh đã khả dụng trong menu. Các chức năng nghiệp vụ khác chưa khả dụng."
-              : "Chức năng nghiệp vụ chưa khả dụng."}
+            {value.capabilities.includes("attendance:read")
+              ? "Điểm danh tay và quét QR đã khả dụng trong menu theo quyền hiện tại. Camera cần quyền truy cập trên thiết bị."
+              : value.capabilities.includes("organization:read")
+                ? "Cấu hình và hồ sơ thuộc viên Hội Thánh đã khả dụng trong menu. Các chức năng nghiệp vụ khác chưa khả dụng."
+                : "Chức năng nghiệp vụ chưa khả dụng."}
           </Feedback>
         </>
       )}

@@ -294,8 +294,17 @@ try {
   );
   assert(await drawer.getByText("0900123456", { exact: true }).isVisible(), "phone-leading-zero");
   assert(
-    (await drawer.getByText("Chưa khả dụng.", { exact: true }).count()) === 3,
-    "attendance-giving-qr-unavailable",
+    (await drawer.getByText("Chưa khả dụng.", { exact: true }).count()) === 1,
+    "giving-unavailable",
+  );
+  assert(
+    (await drawer.locator('.ui-presence-dots [aria-label$=": Chưa chọn buổi"]').count()) === 12,
+    "twelve-attendance-slots-missing-without-selected-reference",
+  );
+  await drawer.getByRole("button", { name: "Cấp thẻ", exact: true }).waitFor();
+  assert(
+    await drawer.getByRole("button", { name: "Cấp thẻ", exact: true }).isEnabled(),
+    "cards-available-in-current-profile-p32",
   );
   await drawer.getByRole("button", { name: "Lịch sử hồ sơ", exact: true }).click();
   await drawer.getByText("Tạo hồ sơ", { exact: true }).waitFor();

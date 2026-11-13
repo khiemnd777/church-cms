@@ -89,6 +89,8 @@ async function checkVisibleNavigation() {
         "Gia đình",
         "Ban ngành & Khu vực",
         "Phân quyền",
+        "Điểm danh",
+        "Sổ lễ nghi",
         "Cấu hình",
       ];
       assert(
@@ -104,11 +106,11 @@ async function checkVisibleNavigation() {
         `nav-${theme}-${width}-real-visible-text`,
       );
       assert(
-        (await description.count()) === 7 &&
+        (await description.count()) === expectedLabels.length - 1 &&
           (
             await Promise.all(
               Array.from(
-                { length: 7 },
+                { length: expectedLabels.length - 1 },
                 async (_, i) =>
                   (await description.nth(i).isVisible()) &&
                   (await description.nth(i).innerText()) === "Chọn Hội Thánh trước",
@@ -119,10 +121,10 @@ async function checkVisibleNavigation() {
       );
       const buttons = page.locator(".side .nav-a");
       assert(
-        (await buttons.count()) === 8 &&
+        (await buttons.count()) === expectedLabels.length &&
           (
             await Promise.all(
-              Array.from({ length: 8 }, async (_, i) =>
+              Array.from({ length: expectedLabels.length }, async (_, i) =>
                 i === 1
                   ? (await buttons.nth(i).isEnabled()) &&
                     (await buttons.nth(i).getAttribute("aria-current")) === "page"

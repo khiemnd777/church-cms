@@ -1,0 +1,25 @@
+{
+  "license": "SIL Open Font License 1.1; accompanying OFL files retained",
+  "files": [
+    {
+      "path": "BeVietnamPro-Regular.ttf",
+      "source": "https://raw.githubusercontent.com/google/fonts/main/ofl/bevietnampro/BeVietnamPro-Regular.ttf",
+      "sha256": "cd1ef6e9d7db28ad5cdb88a65ccbe693870e60d340b791f349d248342b4fe4c3"
+    },
+    {
+      "path": "BeVietnamPro-Bold.ttf",
+      "source": "https://raw.githubusercontent.com/google/fonts/main/ofl/bevietnampro/BeVietnamPro-Bold.ttf",
+      "sha256": "7f738fe5c43c8872807b20e2d30d42163618de8a4daf7f48a939adac32c16847"
+    },
+    {
+      "path": "Lora-SemiBold.ttf",
+      "source": "https://raw.githubusercontent.com/cyrealtype/Lora-Cyrillic/main/fonts/ttf/Lora-SemiBold.ttf",
+      "sha256": "a9f5bbcebb6b53d53b6d7d571b2076f3db4931026693397200f69801b6701a81"
+    },
+    {
+      "path": "Lora-SemiBoldItalic.ttf",
+      "source": "https://raw.githubusercontent.com/cyrealtype/Lora-Cyrillic/main/fonts/ttf/Lora-SemiBoldItalic.ttf",
+      "sha256": "c6fa1c0f00230cd7e1543a4f9695de93f54a8c3ecb4c07d2d6bea504f9e101e0"
+    }
+  ]
+}

@@ -1,6 +1,56 @@
 # Hiện trạng Church CMS
 
-Cập nhật: Khiêm đã nghiệm thu P2.6-r1 và đóng P2 ngày2026-11-12. **P2 CLOSED; P2.1–P2.6 HUMAN ACCEPTED local/synthetic; P3 NOT_OPENED.** Đây là bản tóm tắt hiện hành duy nhất. Authority/acceptance chi tiết: [CHURCH-P0](tasks/CHURCH-P0.md), [CHURCH-P1](tasks/CHURCH-P1.md), [UI-STD-r1](tasks/UI-STD-r1.md).
+Cập nhật ngày2026-11-13: **P1/P2/P3 CLOSED; P3.1–P3.6 HUMAN ACCEPTED local/synthetic; P3.6-r1 SOURCE_COMPLETE / LOCAL_SYNTHETIC_VERIFIED / HUMAN_ACCEPTANCE=ACCEPTED đủ5/5mục. P4 NOT_OPENED; chưa released.** Đây là bản tóm tắt hiện hành duy nhất. Các trạng thái implementation/planning cũ phía dưới giữ chronology trước kết quả mới.
+
+## P3 — đã đóng theo chỉ dẫn Khiêm 2026-11-13
+
+**P3 CLOSED local/synthetic; P4 NOT_OPENED.** [Biên bản đóng P3](tasks/CHURCH-P3.md#đóng-p3), [closure evaluation](engineering/skill-usage/records/CHURCH-P3/P3-closure-1.json) dẫn đủ sáu acceptance P3.1–P3.6. Chỉ cập nhật hồ sơ và thông báo chat P4 theo chỉ dẫn, không duyệt P4-plan-r1/mở P4 hoặc implementation mới. Không chạy lại tests/runtime, không thay technical snapshots hoặc journals trước đó. Chưa commit/push/deploy/real data/main DB init/restart3443. P3-PHYSICAL-01 Camera/giấy thật và mọi NOT_RUN dưới đây giữ nguyên.
+
+## P3.6-r1 — đã nghiệm thu đủ năm mục
+
+P36-01–05/C36-01–03/ASCII hoàn tất; Khiêm đã nghiệm thu đủ năm mục local/synthetic. [Evaluation nghiệm thu](engineering/skill-usage/records/CHURCH-P3/P3.6-human-acceptance-1.json). [Task/checklist](tasks/CHURCH-P3.6.md), [contracts/runbook](engineering/P3.6-reporting.md), [receipt](../output/p3.6/verification.json), [journal](engineering/skill-usage/records/CHURCH-P3/P3.6-implementation-1.json). Reference explicit/partial unique/reason+confirmation;12CN calendar/coverage/missing≠0; public ports/snapshot/fresh auth; W01/W02/W14/W04/W05 hai realm/filter/cursor/export source binding; QR/lớp/lễ/chứng nhận public workflow.
+
+**PASS263tests/3762assertions;329P36+5973regressionFirefoxchecks;9workloadconfigs/480measuredjourneys/1920HTTPSrequests;restore34collections fingerprints khớp.** Readback0syntheticDB/privateP3.6dirs/verificationcontainers/listener3472. Typecheck/lint(UI CSS nguồn10warnings)/UIguard/product+reference builds/audit/diff PASS; bundle516.80kB warning>500kB. Self-review, không reviewer độc lập. p95 local tải2000/10: W01~8.30s/W04~8.83s; không production SLA/capacity. [Số đo/giới hạn](tasks/CHURCH-P3.6.md#bằng-chứng-thực-chạy).
+
+Đã ghi acceptance theo chỉ dẫn Khiêm; không chạy lại tests/runtime. Các số liệu/readback ở trên giữ snapshot bàn giao. P3 đã đóng theo chỉ dẫn mới; tiếp tục dừng, P4 chưa mở. Chưa commit/push/deploy/real data/main DB init/restart3443. **P3-PHYSICAL-01 Camera điện thoại/bản giấy thật vẫn NOT_RUN**, native Word/main runtime/Safari/UAT/pilot/remoteCI/production/multi-replica NOT_RUN. [Note cần nhắc](tasks/CHURCH-P3.md#p3-physical-verification-note): chỉ đóng khi có bằng chứng thực tế và Khiêm xác nhận; nhắc tại nghiệm thu P3.6 và trước UAT/pilot/release. Giữ historical receipts/acceptance P3.1–P3.5 và technical receipt/source manifest/implementation journal P3.6; trạng thái pending của bản bàn giao gốc được evaluation nghiệm thu bổ sung, không rewrite lịch sử.
+
+## P3.5-r1 — đã nghiệm thu local/synthetic
+
+**P35-01–05/C35-01–03/ASCII SOURCE_COMPLETE / LOCAL_SYNTHETIC_VERIFIED / HUMAN_ACCEPTED đủ năm mục; chưa released.** [Task/checklist](tasks/CHURCH-P3.5.md), [contracts](engineering/P3.5-certificates.md), [evaluation](engineering/skill-usage/records/CHURCH-P3/P3.5-human-acceptance-1.json). Snapshot bàn giao giữ nguyên:253tests/3638assertions,417Firefoxchecks+3666browserregression,10tài liệu/12trang render+visualPASS,6workloadconfigs/90journeys/3same-key409retries. Static/build/UI/audit/diff PASS;10warnings CSS nguồn và bundle509,05kB warning; self-review. [Receipt](../output/p3.5/verification.json), [journal usage](engineering/skill-usage/records/CHURCH-P3/P3.5-implementation-1.json), [verification completion](engineering/skill-usage/records/CHURCH-P3/P3.5-implementation-verification-1.json) không đổi và không tính lại usage.
+
+Không chạy lại tests/runtime trong bước nghiệm thu. Readback0DB/private CA/renderer jobs/browser containers là snapshot bàn giao; không main DB init/restart3443/commit/push/deploy/real data. Camera/giấy/native Word và stress15s/5MiB exact saturation NOT_RUN giữ nguyên. Tại thời điểm nghiệm thu P3.5, P3.6 chỉ mở planning; authority và kết quả mới ở đầu trang thay trạng thái lịch sử đó.
+
+## P3.4-r1 — đã nghiệm thu local/synthetic
+
+- P34-01–05/C34-01–03/ASCII **SOURCE_COMPLETE / LOCAL_SYNTHETIC_VERIFIED; HUMAN_ACCEPTANCE=ACCEPTED theo đủ năm mục checklist; chưa released**. [Task/checklist](tasks/CHURCH-P3.4.md), [contracts](engineering/P3.4-rites.md), [receipt](../output/p3.4/verification.json), [journal](engineering/skill-usage/records/CHURCH-P3/P3.4-implementation-1.json).
+- Năm tab W06/W14, canonical Members.baptism + public Rites history handler, same transaction/import compatibility, snapshots, preview/CAS/fences/replay, explicit relations và no auto family/deceased/communion counts. Giữ Lớp dự bị và classes:interview riêng; policy11 rites:read/manage cho owner/pastor/secretary.
+- PASS238tests/3366assertions,3665Firefoxchecks (768P34+736classes+541members+417import+785attendance+418QR),20source parity/120layout samples, gap18px.9configs/540measured+90warmup/2731attempts gồm31contention409, p95=42.39–651.75ms cho5bước list/detail/preview/commit/history. Local communion workload, không SLA/full mixed capacity. Static/build/UI/audit PASS,10warningsCSSnguồn. Self-review, không reviewer độc lập. Readback0syntheticDB/privateP34dirs/verificationcontainers; main runtime chưa kiểm chứng source/schema mới.
+- P3.5 chỉ mở planning; P3.6 chưa mở. Các số đo trên giữ snapshot bàn giao, không chạy lại trong lần ghi nhận nghiệm thu. Không commit/push/deploy/real data/main DB init/restart3443. Safari/remoteCI/production/multi-replica/UAT NOT_RUN. **Camera điện thoại/giấy thật vẫn NOT_RUN** theo [note](tasks/CHURCH-P3.md#p3-physical-verification-note); chỉ đóng khi có bằng chứng thực tế và Khiêm xác nhận. Những trạng thái planning cũ trong lịch sử phía dưới ghi thời điểm trước approval P3.4.
+
+## P3.3-r1 — đã nghiệm thu local/synthetic
+
+- Khiêm duyệt P3.3-plan-r1/C33-01–03, trọn P33-01–05 local/synthetic. **SOURCE_COMPLETE / LOCAL_SYNTHETIC_VERIFIED; HUMAN_ACCEPTANCE=ACCEPTED theo checklist; P3.4 chỉ mở planning, chưa released.** [Task/checklist](tasks/CHURCH-P3.3.md), [contracts](engineering/P3.3-prep-classes.md), [receipt](../output/p3.3/verification.json), [journal head](engineering/skill-usage/records/CHURCH-P3/P3.3-implementation-correction-1.json).
+- PASS221tests/3166assertions,2773Firefoxchecks (736P33+785attendance+419QR+541members+173accounts+119navigation). W06source parity/light-dark/responsive/keyboard/route continuity;18px toolbar-table gap60mẫu.9configs/540completed measured +90warmup,1237attempts gồm157contention409 bounded exact-intent retry, p95=25.59–284.51ms mark+progress read local. Roster2000/cap2001/200lesson metadata validated; workload3bài không full200lessoncapacity. Self-review, không review độc lập. Static/build/UI/audit PASS,10warningsCSSnguồn; readback0syntheticDB/CAp33dirs/container.
+- Không commit/push/deploy/real data/main DB init/restart3443; runtime chính/Safari/remoteCI/production/multi-replica/UAT NOT_RUN. P3.4 chỉ planning; P3.5/P3.6 chưa mở. Giữ P3.1/P3.2 human acceptance và toàn bộ technical snapshots P3.3. Không chạy lại runtime/tests trong bước ghi nhận nghiệm thu. Journal correction giữ original event, không tính thêm usage.
+- **P3-PHYSICAL-01 vẫn NOT_RUN:** camera điện thoại và giấy thật; [note](tasks/CHURCH-P3.md#p3-physical-verification-note). Chỉ đóng sau bằng chứng thực tế và Khiêm xác nhận, nhắc lại P3.5/P3.6 và trước UAT/pilot/release.
+
+## P3.2-r1 — gói đã nghiệm thu và bằng chứng bàn giao
+
+- Khiêm: “duyệt P3.2-plan-r1”. Triển khai trọn P32-01–05 local/synthetic; code/wiring trước tests, bàn giao rồi dừng trước P3.3. [Task/authority](tasks/CHURCH-P3.2.md). Không commit/push/deploy/dữ liệu thật/init main DB/restart dịch vụ hiện hành. P3.3 nay chỉ mở planning; P3.4–P3.6 chưa mở.
+- **P32-01–05 hoàn tất local/synthetic, HUMAN ACCEPTED theo chỉ dẫn mới; P3.3 chỉ mở planning, chưa released.** [Contracts](engineering/P3.2-cards-qr.md), [receipt](../output/p3.2/verification.json), [journal](engineering/skill-usage/records/CHURCH-P3/P3.2-implementation-1.json). 208tests/2924assertions;1917Firefoxchecks (418QR+785attendance+173accounts+541members);9configs/540measured completed/1190HTTPattempts gồm110contention409, p95=20.49–236.33ms local resolution+commit. Static/build/UI/audit PASS,10warningsCSSnguồn. Self-review; main runtime/Safari/remoteCI/production/multi-replica NOT_RUN;0syntheticP32DB/CA dirs/container. Không init main DB/restart3443, commit/push/deploy/dữ liệu thật. Các ghi chép planning/implementing trong lịch sử giữ chronology; P3.1 receipts/usage không đổi.
+- **Cần nhắc Khiêm — P3-PHYSICAL-01:** camera điện thoại thật và bản in giấy thật vẫn **NOT_RUN**. Agent nhắc khi tiếp tục/bàn giao/nghiệm thu P3.2, rà lại P3.5/P3.6 và trước UAT/pilot/phát hành; nghiệm thu local/synthetic không tự đóng các mục này. [Ghi chú và điều kiện hoàn tất](tasks/CHURCH-P3.md#p3-physical-verification-note).
+
+
+## P3.1 — gói đã nghiệm thu và bằng chứng bàn giao
+
+- Khiêm duyệt P3.1-plan-r1 cùng ba lựa chọn và trọn P31-01–05 local/synthetic, bàn giao rồi dừng trước P3.2. Chưa commit/push/deploy/dữ liệu thật. [Authority/task](tasks/CHURCH-P3.1.md), [contracts](engineering/P3.1-attendance.md).
+- **P31-01–05/P3.1-r1 SOURCE_COMPLETE / LOCAL_SYNTHETIC_VERIFIED; HUMAN_ACCEPTANCE=ACCEPTED theo chỉ dẫn ngày2026-11-13; chưa released.** PASS195tests/2756assertions,1359Firefoxchecks;9configs/540completed measured intents (765attempts gồm225contention409, exact-intent retry), p95=11.81–244.87ms synthetic. Roster explain indexed; schema/cap2000/reset2000/revoke/real-commit loss verified. [Task/checklist](tasks/CHURCH-P3.1.md), [receipt](../output/p3.1/verification.json), [journal](engineering/skill-usage/records/CHURCH-P3/P3.1-implementation-1.json). Readback0P31DB/private directories/browser containers. Lint10warningsCSSnguồn, các static/builds/UI/audit PASS. Self-review; NOT_RUN Safari/physical/remoteCI/production/multi-replica/main runtime. Không init main DB/restart3443; chưa commit/push/deploy/dữ liệu thật. **P3.1 đã nghiệm thu; P3.2 được mở planning tại thời điểm nghiệm thu này, approval/bàn giao P3.2 về sau ghi phía trên; P3.3–P3.6 chưa mở.** Số đo là snapshot bàn giao trước nghiệm thu, không chạy lại trong lần ghi nhận này.
+
+## P3 — lịch sử duyệt danh mục và mở kế hoạch P3.1
+
+- Khiêm: “Duyệt P3-plan-r1. Mở kế hoạch chi tiết P3.1 để duyệt trước coding.” Danh mục sáu gói và thứ tự bàn giao đã được duyệt; P3.1 Buổi nhóm và điểm danh tay đang lập kế hoạch chi tiết trong chat, chưa được duyệt implementation. P3.2–P3.6 chưa mở.
+- Chỉ ghi nhận danh mục/authority trong tài liệu; dự thảo contracts/quy tắc/mockup P3.1 chưa duyệt không lưu thành thiết kế đã chốt. Chưa có code, tests hoặc bằng chứng runtime P3; không Git publication/deploy/dữ liệu thật, init main DB hoặc restart dịch vụ.
+- [Roadmap và điểm dừng](tasks/CHURCH-P3.md); [journal phê duyệt](engineering/skill-usage/records/CHURCH-P3/P3-plan-human-approval-1.json). Bằng chứng và giới hạn P2 giữ nguyên, không chạy lại tests để ghi nhận chỉ dẫn.
 
 ## CI-REFERENCE-r1 — 2026-11-11
 

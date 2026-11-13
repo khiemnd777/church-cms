@@ -1,4 +1,5 @@
 import { type ClientSession, type Document, ObjectId } from "mongodb";
+import type { AttendanceReporting } from "../attendance/reporting";
 import type { TenantGrant } from "../authorization/tenant-grant";
 import { type Candidate, type ExportColumn, limits } from "../data-exchange/contracts";
 import { requireCondition } from "../errors";
@@ -43,6 +44,7 @@ export class ExchangeMembers {
       baptism: Baptism;
       visitor: Visitor | null;
     }) => void,
+    private reporting?: AttendanceReporting,
   ) {
     this.queries = new MemberQueries(key, now);
   }
@@ -149,7 +151,19 @@ export class ExchangeMembers {
     tx: ClientSession,
   ) {
     const q = new URLSearchParams(filters),
-      plan = this.queries.pipeline(g, q, this.families);
+      w =
+        this.reporting && (q.has("attendance") || q.has("attendanceUntil"))
+          ? await this.reporting.window(g, tx, q.get("attendanceUntil"))
+          : undefined,
+      plan = this.queries.pipeline(
+        g,
+        q,
+        this.families,
+        false,
+        w && this.reporting
+          ? { stages: this.reporting.absentStages(g, w), fingerprint: w.fingerprint }
+          : undefined,
+      );
     requireCondition(!q.has("cursor") && !q.has("limit"), 400, "INVALID_REQUEST");
     const rows = await this.rows
       .aggregate<Member>([...plan.stages.slice(0, -1), { $limit: limits.exportRows + 1 }], {
@@ -201,6 +215,6 @@ export class ExchangeMembers {
         data.push(columns.map((c) => record[c]));
       }
     }
-    return data;
+    return { data, sourceContext: w?.fingerprint ?? null };
   }
 }

@@ -166,6 +166,10 @@ export const memberIndexes: Record<
   }[]
 > = {
   members: [
+    {
+      key: { churchId: 1, "baptism.status": 1, nameKey: 1, _id: 1 },
+      name: "members_rites_baptism_page",
+    },
     { key: { churchId: 1, code: 1 }, name: "member_code_unique", unique: true },
     {
       key: { churchId: 1, familyId: 1, householdRole: 1 },

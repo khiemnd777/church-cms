@@ -4,7 +4,7 @@ Ngày tổng hợp: 2026-11-10. Nguồn chi tiết: [hồ sơ P0](tasks/CHURCH-P
 
 ## Phạm vi được phép hiện tại
 
-**P1 CLOSED; P2 CLOSED; P2.1–P2.6 HUMAN ACCEPTED local/synthetic.** Khiêm: “Nghiệm thu P2.6-r1. Đóng P2. Chưa mở P3.” ngày2026-11-12. P3 NOT_OPENED; không tự lập kế hoạch/implementation P3 hoặc Git publication/deploy/dữ liệu thật. [Closure P2](tasks/CHURCH-P2.md#đóng-p2); live status duy nhất tại project-state.
+P3.6-plan-r1/C36-01–03/ASCII đã được Khiêm duyệt để triển khai P36-01–05 local/synthetic và bàn giao một lần theo roadmap P3. [Đầu ra/checklist/bằng chứng P3.6-r1](tasks/CHURCH-P3.6.md), [contracts](engineering/P3.6-reporting.md). Khiêm đã nghiệm thu P3.6-r1 đủ năm mục local/synthetic; [evaluation](engineering/skill-usage/records/CHURCH-P3/P3.6-human-acceptance-1.json). Khiêm đã cho đóng P3; [biên bản closure](tasks/CHURCH-P3.md#đóng-p3). P4 NOT_OPENED; không commit/push/deploy/real data/main DB init/restart3443. Camera/giấy thật/native Word NOT_RUN. Live state duy nhất tại project-state; các mục phía dưới giữ chronology.
 
 ## P0 — Đặc tả và phê duyệt
 
@@ -142,3 +142,78 @@ P26-01–05 source complete/local-synthetic verified: public metrics/snapshot AP
 ## Đóng P2 — 2026-11-12
 
 Khiêm: “Nghiệm thu P2.6-r1. Đóng P2. Chưa mở P3.” P2.1–P2.6 đã nghiệm thu local/synthetic; P2 CLOSED, P3 NOT_OPENED. [Closure](tasks/CHURCH-P2.md#đóng-p2), [acceptance P2.6](engineering/skill-usage/records/CHURCH-P2/P2.6-human-acceptance-1.json). Không tự mở planning/implementation P3 hoặc publication/deploy/dữ liệu thật; bằng chứng và giới hạn kỹ thuật giữ nguyên từ bàn giao, không chạy tests mới.
+
+## P3-plan-r1 — duyệt danh mục và mở planning P3.1
+
+Khiêm: **“Duyệt P3-plan-r1. Mở kế hoạch chi tiết P3.1 để duyệt trước coding.”** ngày2026-11-12. Chỉ dẫn này thay điểm dừng chưa mở P3 ở biên bản đóng P2. Danh mục sáu gói/đầu ra/phụ thuộc tại [CHURCH-P3](tasks/CHURCH-P3.md): điểm danh tay → QR/thẻ → lớp dự bị → sổ lễ nghi → chứng nhận → tổng hợp/kiểm chứng. Gói P3.1 đang lập kế hoạch chi tiết trong chat; chưa có quyền implementation, không mở P3.2–P3.6/publication/deploy/dữ liệu thật. Chỉ ghi nhận phần đã được duyệt, không lưu dự thảo P3.1 chưa duyệt thành đặc tả đã chốt.
+
+## P3.1-plan-r1 — implementation được duyệt
+
+Khiêm duyệt P3.1-plan-r1, gồm ba lựa chọn ở mục3, trọn P31-01–05 local/synthetic; bàn giao nghiệm thu rồi dừng trước P3.2. Không commit/push/deploy/dữ liệu thật. [Task/authority](tasks/CHURCH-P3.1.md), [contracts/runbook](engineering/P3.1-attendance.md). Chỉ dẫn này thay giới hạn planning-only P3.1 ở biên bản trước; không mở gói khác.
+
+## Bàn giao P3.1-r1 — 2026-11-12
+
+P31-01–05 source complete/local-synthetic verified: Attendance sessions/snapshots/marks/CAS/generation/ledger/resource ACL/W05/qualification. [Biên bản và checklist](tasks/CHURCH-P3.1.md), [contracts/runbook](engineering/P3.1-attendance.md), [receipt](../output/p3.1/verification.json). Chờ Khiêm nghiệm thu rồi mới có thể mở gói tiếp theo bằng chỉ dẫn riêng; dừng trước P3.2. Không Git publication/deploy/dữ liệu thật/init main DB/restart3443. Live status chỉ tại project-state.
+
+## Nghiệm thu P3.1-r1; mở kế hoạch P3.2 — 2026-11-13
+
+Theo chỉ dẫn Khiêm “Nghiệm thu P3.1-r1, mở P3.2”, P31-01–05 HUMAN ACCEPTED local/synthetic. [Biên bản/evidence](tasks/CHURCH-P3.1.md), [acceptance](engineering/skill-usage/records/CHURCH-P3/P3.1-human-acceptance-1.json). P3.2 Thẻ tín hữu/QR mở PLANNING_ONLY theo P3-plan-r1; contracts/ASCII/mockup đề xuất trong chat chờ duyệt trước coding. Không sửa receipt/journal implementation P3.1 hoặc tính lại usage; không chạy lại runtime/tests trong bước ghi nhận. Không tự mở P3.3/publication/deploy/dữ liệu thật/init main DB/restart dịch vụ.
+
+## Quyền implementation P3.2 — 2026-11-13
+
+Khiêm: “duyệt P3.2-plan-r1”. P32-01–05 theo [task P3.2](tasks/CHURCH-P3.2.md) được phép trọn gói local/synthetic, code/wiring trước tests, bàn giao rồi dừng trước P3.3. Không publication/deploy/dữ liệu thật/init main DB/restart. P3-PHYSICAL-01 chưa kiểm camera điện thoại/bản giấy, giữ mục cần nhắc và không tự đóng bằng synthetic.
+
+## Bàn giao P3.2-r1
+
+P32-01–05 Cards/QR source complete/local-synthetic verified: lifecycle/snapshot/revision + Attendance proof60giây/fresh commit + W14/W05/print86×54mm + tests/qualification + contracts/evidence. [Checklist/kết quả](tasks/CHURCH-P3.2.md), [contracts](engineering/P3.2-cards-qr.md). Human acceptance chờ Khiêm; P3.3 chưa mở. Physical camera/giấy giữ NOT_RUN; chưa init main DB/restart3443/publication/deploy/dữ liệu thật. Trạng thái hiện hành duy nhất tại project-state.
+
+## Nghiệm thu P3.2-r1; mở planning P3.3
+
+Theo Khiêm “nghiệm thu P3.2-r1 theo checklist; đồng ý mở planning P3.3”, P32-01–05 HUMAN ACCEPTED local/synthetic. [Biên bản](tasks/CHURCH-P3.2.md), [evaluation](engineering/skill-usage/records/CHURCH-P3/P3.2-human-acceptance-1.json). P3.3 Lớp dự bị chỉ PLANNING_ONLY: khảo sát nghiệp vụ/source, trình contracts/acceptance/ASCII trong chat để duyệt trước coding, không tự tạo draft đã duyệt hoặc code. Bằng chứng/journal implementation P3.2 giữ nguyên; camera thật/giấy thật vẫn NOT_RUN. Không publication/deploy/real data/main DB init/restart; P3.4–P3.6 chưa mở.
+
+## P3.3-plan-r1 — implementation authority
+
+Khiêm duyệt C33-01–03 và trọn P33-01–05 local/synthetic; [task](tasks/CHURCH-P3.3.md). Code/wiring toàn gói trước tests; bàn giao rồi dừng trước P3.4. Chưa commit/push/deploy/real data/main DB init/restart; camera thật/giấy giữ NOT_RUN. Live status tại project-state.
+
+## Bàn giao P3.3-r1
+
+P33-01–05 source complete/local-synthetic verified theo C33-01–03: khóa/ghi danh, source Attendance/credit bù, phỏng vấn sự kiện không tự điều kiện Báp-têm, W06/W14/W05, tests/workload/contracts/evidence. [Checklist/kết quả](tasks/CHURCH-P3.3.md), [contracts](engineering/P3.3-prep-classes.md). Human acceptance pending; P3.4 chưa mở. Physical camera/giấy/main runtime/full200lessoncapacity/production chưa kiểm; không publication/deploy/real data/main DB init/restart. Live state chỉ tại project-state.
+
+## P3.4-plan-r1 — implementation được duyệt 2026-11-13
+
+Khiêm duyệt C34-01–03/ASCII và trọn P34-01–05 local/synthetic; [authority và phạm vi](tasks/CHURCH-P3.4.md). Code/wiring trước tests, một lần bàn giao rồi dừng trước P3.5. Không commit/push/deploy/real data/main DB init/restart. Physical NOT_RUN giữ nguyên; các planning-only phía trên là lịch sử trước approval này.
+
+## Bàn giao P3.4-r1
+
+P34-01–05 local/synthetic hoàn tất và đã kiểm chứng; [task/checklist](tasks/CHURCH-P3.4.md), [contracts](engineering/P3.4-rites.md). Chờ human acceptance, chưa released; dừng trước P3.5/P3.6. Bằng chứng và giới hạn tại task/receipt; live state duy nhất tại project-state. Không commit/push/deploy/real data/main DB init/restart. Physical NOT_RUN giữ nguyên.
+
+## P3.5-plan-r1 — implementation được duyệt 2026-11-13
+
+Khiêm duyệt C35-01–03/ASCII và trọn P35-01–05 local/synthetic; [authority/checklist](tasks/CHURCH-P3.5.md). Code/wiring trước tests, một lần bàn giao rồi dừng trước P3.6. Không commit/push/deploy/real data/main DB init/restart. Physical NOT_RUN giữ nguyên; planning-only phía trên là chronology trước approval.
+
+## P3.5-r1 — bàn giao local/synthetic 2026-11-13
+
+P35-01–05/C35-01–03/ASCII hoàn tất; [task/checklist](tasks/CHURCH-P3.5.md), [contracts](engineering/P3.5-certificates.md), [receipt](../output/p3.5/verification.json). Technical PASS không thay Khiêm nghiệm thu/release. Chờ nghiệm thu năm mục; dừng trước P3.6, chưa mở planning/coding. Không commit/push/deploy/real data/main DB init/restart3443. Physical/native Word NOT_RUN giữ nguyên; live status duy nhất tại project-state.
+
+## P3.5-r1 accepted; P3.6 mở planning — 2026-11-13
+
+Khiêm: **“Nghiệm thu P3.5-r1 theo năm mục trên; mở P3.6.”** [Biên bản/checklist](tasks/CHURCH-P3.5.md), [evaluation](engineering/skill-usage/records/CHURCH-P3/P3.5-human-acceptance-1.json). Không sửa technical snapshots/usage cũ. P3.6 chỉ PLANNING_ONLY trong chat để duyệt kế hoạch trước coding; không mở P4/đóng P3/publication/deploy/real data/main DB init/restart. Physical/native Word NOT_RUN giữ nguyên.
+
+## P3.6-plan-r1 — implementation được duyệt 2026-11-13
+
+Khiêm duyệt C36-01–03/ASCII và P36-01–05 local/synthetic; [task/authority](tasks/CHURCH-P3.6.md). Code/wiring trước tests, bàn giao rồi dừng; chưa đóng P3/mở P4, chưa publication/deploy/real data/main DB init/restart3443. Physical/native Word NOT_RUN giữ nguyên.
+
+
+## Đầu ra bàn giao P3.6-r1 — 2026-11-13
+
+P36-01–05 hoàn tất nguồn và kiểm chứng local/synthetic theo plan-r1/C36-01–03/ASCII. [Checklist/biên bản](tasks/CHURCH-P3.6.md) gồm công thức/source window; UI/drilldown hai realm; cross-P3 workflow; quyền/concurrency/replay/regression; tải/restore/cleanup/NOT_RUN. Chờ Khiêm nghiệm thu; không tự đóng P3/mở P4 hoặc publication/deploy/dữ liệu thật. Read ports/snapshot/query contracts và runbook tại [P3.6](engineering/P3.6-reporting.md).
+
+
+## Nghiệm thu P3.6-r1 và giữ điểm dừng — 2026-11-13
+
+Khiêm: **“Anh nghiệm thu P3.6-r1 theo năm mục; ghi nhận acceptance rồi tiếp tục dừng trước đóng P3, chưa mở P4.”** P36-01–05 HUMAN_ACCEPTED đủ năm mục local/synthetic. [Biên bản/checklist](tasks/CHURCH-P3.6.md), [evaluation](engineering/skill-usage/records/CHURCH-P3/P3.6-human-acceptance-1.json). Giữ nguyên technical snapshots/journal implementation; không chạy lại tests/runtime. Chưa đóng P3/mở P4/commit/push/deploy/real data/main DB init/restart3443. Camera/giấy thật/native Word và các giới hạn NOT_RUN vẫn giữ nguyên. Live state duy nhất tại project-state.
+
+
+## Đóng P3; P4 chưa mở — 2026-11-13
+
+Theo chỉ dẫn Khiêm, P3 CLOSED sau nghiệm thu sáu gói local/synthetic. [Biên bản](tasks/CHURCH-P3.md#đóng-p3), [closure evaluation](engineering/skill-usage/records/CHURCH-P3/P3-closure-1.json). Chỉ thông báo chat P4 đã chỉ định; không duyệt P4-plan-r1 hoặc mở P4/planning chi tiết/coding. Giữ technical snapshots, NOT_RUN và giới hạn; chưa commit/push/deploy/real data/main DB init/restart3443. Live state duy nhất tại project-state; các điểm dừng P3 chưa đóng phía trên là lịch sử.

@@ -117,7 +117,7 @@ async function capture(name: string, subject = page) {
           document.querySelectorAll<HTMLElement>(
             "main button,dialog[open] button,input,select,textarea",
           ),
-        ).filter(visible);
+        ).filter((e) => visible(e) && !e.closest(".ui-report-chart"));
         const fields = Array.from(document.querySelectorAll(".ui-field"))
           .filter(visible)
           .flatMap((f) => {
@@ -364,10 +364,17 @@ try {
   );
   assert((await page.locator(".qa button").count()) === 8, "eight-original-shortcuts");
   assert(
-    (await page.locator(".qa button:disabled").count()) === 6,
-    "future-six-shortcuts-disabled",
+    (await page.locator(".qa button:disabled").count()) === 3,
+    "future-three-shortcuts-disabled",
   );
-  assert((await page.locator(".chart svg").count()) === 0, "no-fake-attendance-chart");
+  assert(
+    (await page.locator(".ui-report-chart button").count()) === 12,
+    "twelve-calendar-slots-without-fabricated-counts",
+  );
+  assert(
+    (await page.locator(".ui-report-chart button:disabled").count()) === 12,
+    "missing-reference-slots-disabled",
+  );
   await capture("w01-complete");
   // Independent approved HTML and actual W01, same viewport/theme/local fonts.
   // Compare retained styles only; real data and unavailable sections intentionally differ.

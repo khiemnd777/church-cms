@@ -1,5 +1,6 @@
 import { type ClientSession, type Document, MongoServerError, ObjectId } from "mongodb";
 import type { z } from "zod";
+import type { AttendanceReporting, ReportingWindow } from "../attendance/reporting";
 import type { Audit } from "../audit/service";
 import type { TenantGrant } from "../authorization/tenant-grant";
 import { AppError, requireCondition } from "../errors";
@@ -9,6 +10,8 @@ import { idempotencyKey, objectId, parse, version } from "../http-validation";
 import type { Database } from "../infrastructure/database";
 import type { Operations } from "../operations/service";
 import type { Organization } from "../organization/service";
+import { AttendanceMembers } from "./attendance";
+import { CardMembers } from "./cards";
 import { ageOn, businessDay } from "./dates";
 import { ExchangeMembers } from "./exchange";
 import { FamilyMembers } from "./families";
@@ -22,7 +25,9 @@ import {
 } from "./models";
 import { OrganizationMembers } from "./organization";
 import { OverviewMembers } from "./overview";
+import { PrepMembers } from "./prep-classes";
 import { escaped, MemberQueries } from "./queries";
+import { type BaptismChange, RiteMembers } from "./rites";
 import {
   convertMember,
   createMember,
@@ -32,6 +37,68 @@ import {
 } from "./validation";
 export class Members {
   private queries: MemberQueries;
+  private reporting?: AttendanceReporting;
+  bindAttendanceReports(reports: AttendanceReporting) {
+    this.reporting = reports;
+  }
+  private async reportingWindow(g: TenantGrant, tx: ClientSession, q = new URLSearchParams()) {
+    if (
+      this.reporting &&
+      (g.actorKind === "owner" || g.canReadAttendance) &&
+      !g.unitScope &&
+      !g.receiptScope
+    )
+      return this.reporting.window(g, tx, q.get("attendanceUntil"));
+    requireCondition(!q.has("attendance") && !q.has("attendanceUntil"), 403, "FORBIDDEN");
+    return undefined;
+  }
+  private reportPlan(g: TenantGrant, w?: ReportingWindow) {
+    return w && this.reporting
+      ? { stages: this.reporting.absentStages(g, w), fingerprint: w.fingerprint }
+      : undefined;
+  }
+  private baptismChanged: BaptismChange | null = null;
+  bindBaptismLedger(handler: BaptismChange) {
+    this.baptismChanged = handler;
+  }
+  ritesPort() {
+    return new RiteMembers(
+      this.db,
+      async (g, id, expected, fact, reason, tx, op, requestId, riteId) => {
+        const old = await this.raw(g, id.toHexString(), tx);
+        requireCondition(old.version === expected, 412, "VERSION_CONFLICT");
+        const m = {
+          ...old,
+          baptism: fact,
+          version: old.version + 1,
+          writeFence: old.writeFence + 1,
+          updatedAt: this.now(),
+          updatedBy: g.actorId,
+        };
+        this.validateDates(m);
+        const saved = await this.rows.replaceOne(
+          { _id: id, churchId: g.churchId, version: expected },
+          m,
+          { session: tx },
+        );
+        requireCondition(saved.matchedCount, 412, "VERSION_CONFLICT");
+        await this.record(
+          g,
+          old,
+          m,
+          "baptism_corrected",
+          ["baptism"],
+          businessDay(this.now()),
+          fact.date,
+          reason,
+          tx,
+          op,
+          requestId,
+          riteId,
+        );
+      },
+    );
+  }
   constructor(
     private db: Database,
     private ops: Operations,
@@ -42,6 +109,15 @@ export class Members {
     private now: () => Date = () => new Date(),
   ) {
     this.queries = new MemberQueries(key, now);
+  }
+  prepPort() {
+    return new PrepMembers(this.db);
+  }
+  cardPort() {
+    return new CardMembers(this.db);
+  }
+  attendancePort() {
+    return new AttendanceMembers(this.db);
   }
   overviewPort(key: string) {
     return new OverviewMembers(this.db, this.families, key, this.now);
@@ -69,10 +145,18 @@ export class Members {
     requireCondition(row, 404, "NOT_FOUND");
     return row;
   }
-  private async enrich(g: TenantGrant, rows: Member[], detail = false) {
-    const fs = await this.families.byIds(g.churchId, [
-      ...new Map(rows.map((m) => [m.familyId.toHexString(), m.familyId])).values(),
-    ]);
+  private async enrich(
+    g: TenantGrant,
+    rows: Member[],
+    detail = false,
+    tx?: ClientSession,
+    w?: ReportingWindow,
+  ) {
+    const fs = await this.families.byIds(
+      g.churchId,
+      [...new Map(rows.map((m) => [m.familyId.toHexString(), m.familyId])).values()],
+      tx,
+    );
     const ids = [
       ...new Map(
         [
@@ -83,7 +167,7 @@ export class Members {
         ].map((id) => [id.toHexString(), id]),
       ).values(),
     ];
-    const labels = await this.organization.labels(g.churchId, ids),
+    const labels = await this.organization.labels(g.churchId, ids, tx),
       today = businessDay(this.now());
     const caregiverIds = rows.flatMap((m) =>
       m.visitor?.caregiverId ? [m.visitor.caregiverId] : [],
@@ -91,9 +175,18 @@ export class Members {
     const caregivers = await this.rows
       .find(
         { churchId: g.churchId, _id: { $in: caregiverIds } },
-        { projection: { _id: 1, fullName: 1 } },
+        { session: tx, projection: { _id: 1, fullName: 1 } },
       )
       .toArray();
+    const reports =
+      tx && w && this.reporting
+        ? await this.reporting.members(
+            g,
+            rows.map((m) => m._id),
+            tx,
+            w,
+          )
+        : null;
     return rows.map((m) => {
       const f = fs.find((f) => f._id.equals(m.familyId)),
         area = f?.areaId ? labels.find((u) => u.id === f.areaId?.toHexString()) : null;
@@ -124,68 +217,99 @@ export class Members {
         version: m.version,
         createdAt: m.createdAt.toISOString(),
         updatedAt: m.updatedAt.toISOString(),
-        availability: { attendance: "not_available", giving: "not_available", qr: "not_available" },
+        attendance: reports?.get(m._id.toHexString()) ?? null,
+        availability: {
+          attendance: reports ? "available" : "not_available",
+          giving: "not_available",
+          qr: "available",
+        },
       };
     });
   }
-  async get(g: TenantGrant, id: string) {
-    const row = await this.raw(g, id),
-      items = await this.enrich(g, [row], true),
-      dto = items[0];
-    requireCondition(dto, 404, "NOT_FOUND");
-    const related = await this.rows
-      .find(
-        { churchId: g.churchId, familyId: row.familyId, _id: { $ne: row._id } },
-        { projection: { _id: 1, code: 1, fullName: 1, householdRole: 1, participation: 1 } },
-      )
-      .sort({ nameKey: 1, _id: 1 })
-      .limit(26)
-      .toArray();
-    return {
-      ...dto,
-      familyMembers: {
-        items: related.slice(0, 25).map((m) => ({
-          id: m._id.toHexString(),
-          code: m.code,
-          fullName: m.fullName,
-          householdRole: m.householdRole,
-          participation: m.participation,
-        })),
-        hasMore: related.length > 25,
-      },
-    };
+  async get(g: TenantGrant, id: string, q = new URLSearchParams()) {
+    this.queries.allow(q, ["attendanceUntil"]);
+    return this.db.readSnapshot(g.churchId.toHexString(), async (tx) => {
+      await g.fence(tx);
+      const w = await this.reportingWindow(g, tx, q),
+        row = await this.raw(g, id, tx),
+        items = await this.enrich(g, [row], true, tx, w),
+        dto = items[0];
+      requireCondition(dto, 404, "NOT_FOUND");
+      const related = await this.rows
+        .find(
+          { churchId: g.churchId, familyId: row.familyId, _id: { $ne: row._id } },
+          {
+            session: tx,
+            projection: { _id: 1, code: 1, fullName: 1, householdRole: 1, participation: 1 },
+          },
+        )
+        .sort({ nameKey: 1, _id: 1 })
+        .limit(26)
+        .toArray();
+      return {
+        ...dto,
+        familyMembers: {
+          items: related.slice(0, 25).map((m) => ({
+            id: m._id.toHexString(),
+            code: m.code,
+            fullName: m.fullName,
+            householdRole: m.householdRole,
+            participation: m.participation,
+          })),
+          hasMore: related.length > 25,
+        },
+      };
+    });
   }
-
   async list(g: TenantGrant, q: URLSearchParams) {
-    const query = this.queries.pipeline(g, q, this.families),
-      limit = this.queries.limit(q),
-      rows = await this.rows.aggregate<Member & { birthdayKey?: string }>(query.stages).toArray();
-    const more = rows.length > limit;
-    if (more) rows.pop();
-    const last = rows.at(-1);
-    return {
-      items: await this.enrich(g, rows),
-      nextCursor:
-        more && last
-          ? this.queries.encode(
-              query.context,
-              query.birthday ? (last.birthdayKey as string) : last.nameKey,
-              last._id.toHexString(),
-            )
-          : null,
-    };
+    return this.db.readSnapshot(g.churchId.toHexString(), async (tx) => {
+      await g.fence(tx);
+      const w = await this.reportingWindow(g, tx, q),
+        query = this.queries.pipeline(g, q, this.families, false, this.reportPlan(g, w)),
+        limit = this.queries.limit(q),
+        rows = await this.rows
+          .aggregate<Member & { birthdayKey?: string }>(query.stages, {
+            session: tx,
+            maxTimeMS: 10000,
+          })
+          .toArray();
+      const more = rows.length > limit;
+      if (more) rows.pop();
+      const last = rows.at(-1);
+      return {
+        items: await this.enrich(g, rows, false, tx, w),
+        attendanceWindow: w ? { until: w.until, fingerprint: w.fingerprint } : null,
+        nextCursor:
+          more && last
+            ? this.queries.encode(
+                query.context,
+                query.birthday ? (last.birthdayKey as string) : last.nameKey,
+                last._id.toHexString(),
+              )
+            : null,
+      };
+    });
   }
   async summary(g: TenantGrant, q: URLSearchParams) {
-    const query = this.queries.pipeline(g, q, this.families, true),
-      counts = await this.rows
-        .aggregate<{ _id: string; n: number }>([
-          ...query.stages,
-          { $group: { _id: "$type", n: { $sum: 1 } } },
-        ])
-        .toArray();
-    const believers = counts.find((c) => c._id === "believer")?.n ?? 0,
-      visitors = counts.find((c) => c._id === "visitor")?.n ?? 0;
-    return { all: believers + visitors, believer: believers, visitor: visitors };
+    return this.db.readSnapshot(g.churchId.toHexString(), async (tx) => {
+      await g.fence(tx);
+      const w = await this.reportingWindow(g, tx, q),
+        query = this.queries.pipeline(g, q, this.families, true, this.reportPlan(g, w)),
+        counts = await this.rows
+          .aggregate<{ _id: string; n: number }>(
+            [...query.stages, { $group: { _id: "$type", n: { $sum: 1 } } }],
+            { session: tx, maxTimeMS: 10000 },
+          )
+          .toArray();
+      const believer = counts.find((c) => c._id === "believer")?.n ?? 0,
+        visitor = counts.find((c) => c._id === "visitor")?.n ?? 0;
+      return {
+        all: believer + visitor,
+        believer,
+        visitor,
+        attendanceWindow: w ? { until: w.until, fingerprint: w.fingerprint } : null,
+      };
+    });
   }
   async familyPicker(g: TenantGrant, q: URLSearchParams) {
     this.queries.allow(q, ["q", "limit", "cursor"]);
@@ -310,7 +434,19 @@ export class Members {
     tx: ClientSession,
     operationId: ObjectId,
     requestId: string,
+    originRiteId?: ObjectId,
   ) {
+    if (this.baptismChanged && JSON.stringify(old?.baptism) !== JSON.stringify(m.baptism))
+      await this.baptismChanged(
+        g,
+        m._id,
+        old?.baptism ?? null,
+        m.baptism,
+        tx,
+        operationId,
+        requestId,
+        originRiteId,
+      );
     await this.histories.insertOne(
       {
         _id: new ObjectId(),
@@ -356,6 +492,7 @@ export class Members {
       (g, raw, tx, op, requestId, meta) =>
         this.createInTransaction(g, parse(createMember, raw), tx, op, requestId, meta),
       (m) => this.validateDates(m),
+      this.reporting,
     );
   }
   private async createInTransaction(

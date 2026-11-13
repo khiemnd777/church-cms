@@ -1,0 +1,27 @@
+.rites-section,
+.rites-form,
+.rites-person {
+  display: grid;
+  gap: 18px;
+}
+.rites-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+.rites-actions,
+.rites-picker-list {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+.rites-picker-list {
+  max-height: 30vh;
+  overflow: auto;
+}
+@media (max-width: 560px) {
+  .rites-form-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
