@@ -42,6 +42,40 @@ export class Organization {
   private get units() {
     return this.db.db.collection<Unit>("organization_units");
   }
+  async attendanceUnit(churchId: ObjectId, id: ObjectId, tx: ClientSession, active = true) {
+    const u = await this.units.findOne(
+      {
+        _id: id,
+        churchId,
+        kind: { $in: ["age_ministry", "service_ministry", "area"] },
+        ...(active ? { status: "active" as const } : {}),
+      },
+      { session: tx },
+    );
+    requireCondition(u, 404, "NOT_FOUND");
+    return { id: u._id, name: u.name, kind: u.kind, version: u.version };
+  }
+  async attendanceUnits(churchId: ObjectId, ids: readonly string[], tx: ClientSession) {
+    return this.units
+      .find(
+        {
+          churchId,
+          _id: { $in: ids.map(objectId) },
+          status: "active",
+          kind: { $in: ["age_ministry", "service_ministry", "area"] },
+        },
+        { session: tx, projection: { _id: 1 } },
+      )
+      .toArray();
+  }
+  async attendanceAreaLabels(churchId: ObjectId, ids: ObjectId[], tx: ClientSession) {
+    return this.units
+      .find(
+        { churchId, kind: "area", _id: { $in: ids } },
+        { session: tx, projection: { _id: 1, name: 1 } },
+      )
+      .toArray();
+  }
   async validateScope(churchId: ObjectId, scope: Scope, tx: ClientSession) {
     if (scope.kind !== "assigned_units") return;
     for (const id of scope.unitIds) {

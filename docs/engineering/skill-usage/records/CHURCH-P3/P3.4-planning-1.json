@@ -1,0 +1,145 @@
+{
+  "schema_version": 1,
+  "event_id": "CHURCH-P3/P3.4/planning/1",
+  "event_type": "phase_handoff",
+  "task_id": "CHURCH-P3",
+  "scope_id": "P3.4",
+  "recorded_at": "2026-11-13T07:06:52.837472+00:00",
+  "reported_by": "delivery_owner",
+  "source_kind": "agent_self_report",
+  "phase": "planning",
+  "handoff_index": 1,
+  "classification": {
+    "delivery": "roadmap",
+    "complexity": "rites_five_tabs_canonical_baptism_snapshots_history",
+    "ui": true
+  },
+  "authority": {
+    "approval": "Duyệt P3.4-plan-r1, gồm C34-01–03 và ASCII. Triển khai trọn P34-01–05 local/synthetic rồi bàn giao nghiệm thu, dừng trước P3.5. Chưa commit/push, deploy hoặc dùng dữ liệu thật.",
+    "scope": "P34-01–05 local/synthetic; dừng trước P3.5; không commit/push/deploy/real data/main DB init/restart3443"
+  },
+  "evidence_refs": [
+    "current_chat:P3.4-plan-r1/C34-01–03/ASCII",
+    "docs/tasks/CHURCH-P3.4.md"
+  ],
+  "skills": [
+    {
+      "skill_id": "planning-and-task-breakdown",
+      "contribution_summary": "Phạm vi P34-01–05, code/wiring trước tests, một lần bàn giao rồi dừng trước P3.5",
+      "contribution_percent_estimate": 20,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/planning-and-task-breakdown/SKILL.md",
+        "version": null,
+        "sha256": "fb768e0a3d3a77f733eb613c078fb61dde0845a438c65cc095fc6448dc166d4c",
+        "fingerprint_basis": "Đã đọc/áp dụng trong planning cùng chat; ghi record sau approval ở thời điểm hiện hành."
+      }
+    },
+    {
+      "skill_id": "spec-driven-development",
+      "contribution_summary": "C34-01–03: canonical baptism, người liên quan explicit, quyền xác nhận sự kiện",
+      "contribution_percent_estimate": 30,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/spec-driven-development/SKILL.md",
+        "version": null,
+        "sha256": "c6cfb5c766c45243290d4dcfc7eb3857dbfb77556355c7960a4411762764858b",
+        "fingerprint_basis": "Đã đọc/áp dụng trong planning cùng chat; ghi record sau approval ở thời điểm hiện hành."
+      }
+    },
+    {
+      "skill_id": "api-and-interface-design",
+      "contribution_summary": "Ownership Members/Rites/import, public ports, compatibility, CAS/preview/ledger",
+      "contribution_percent_estimate": 20,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/api-and-interface-design/SKILL.md",
+        "version": null,
+        "sha256": "2550ac99404f1d52566cdd95fd809e0984eb29f1174132a864fb7beb9f688f79",
+        "fingerprint_basis": "Đã đọc/áp dụng trong planning cùng chat; ghi record sau approval ở thời điểm hiện hành."
+      }
+    },
+    {
+      "skill_id": "frontend-ui-engineering",
+      "contribution_summary": "W06/W14/source HTML, ASCII và UI-STD-r1",
+      "contribution_percent_estimate": 20,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/frontend-ui-engineering/SKILL.md",
+        "version": null,
+        "sha256": "b5c47fed383892428172bf0b9c1ed1aeab50066ff9421a87a6c344f746386495",
+        "fingerprint_basis": "Đã đọc/áp dụng trong planning cùng chat; ghi record sau approval ở thời điểm hiện hành."
+      }
+    },
+    {
+      "skill_id": "documentation-and-adrs",
+      "contribution_summary": "Ghi authority/phạm vi và bảo toàn nghiệm thu/evidence P3.3, physical NOT_RUN",
+      "contribution_percent_estimate": 10,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/documentation-and-adrs/SKILL.md",
+        "version": null,
+        "sha256": "f3199cfec5d6fdfa6533f180b1e6cbee584cd6175d8eb25c0d186c833120609c",
+        "fingerprint_basis": "Đã đọc/áp dụng trong planning cùng chat; ghi record sau approval ở thời điểm hiện hành."
+      }
+    }
+  ],
+  "outcome": {
+    "delivery_status": "COMPLETED",
+    "verification_level": "APPROVED_CHAT_PLAN_SOURCE_INSPECTION",
+    "human_acceptance": "ACCEPTED",
+    "limitations": [
+      "Phê duyệt kế hoạch, không phải nghiệm thu implementation",
+      "Ghi sau approval với thời điểm hiện hành; không giả timestamp lịch sử",
+      "Chưa physical camera/paper/production evidence"
+    ]
+  },
+  "measurements": {
+    "elapsed_seconds": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có counters đo được theo phase/skill; không suy từ estimate %"
+    },
+    "tool_calls": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có counters đo được theo phase/skill; không suy từ estimate %"
+    },
+    "input_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có counters đo được theo phase/skill; không suy từ estimate %"
+    },
+    "output_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có counters đo được theo phase/skill; không suy từ estimate %"
+    },
+    "cached_input_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có counters đo được theo phase/skill; không suy từ estimate %"
+    },
+    "reasoning_output_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có counters đo được theo phase/skill; không suy từ estimate %"
+    },
+    "client": null,
+    "model": null,
+    "effort": null
+  },
+  "self_assessment": {
+    "status": "APPROVED_FOR_IMPLEMENTATION",
+    "limits": [
+      "Planning được duyệt, không là proof runtime",
+      "Ghi sau approval với timestamp hiện hành; không dựng timestamp lịch sử",
+      "Physical camera/paper vẫn NOT_RUN"
+    ]
+  }
+}

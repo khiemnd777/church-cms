@@ -104,3 +104,7 @@ Theo kế hoạch Khiêm duyệt, W04 dùng IconButton grid/Card và table/Bản
 ## W01 — P2.6 Tổng quan
 
 P2.6 dùng hero/4KPI/visitors+birthdays/8quick icons/attendance+care/areas+rites theo HTML chuẩn; `web/ui/components/overview.tsx` là shared adapters, `web/overview.css` chỉ layout. [Contracts và khác biệt đã duyệt](engineering/P2.6-overview-qualification.md#w01-và-nguồn-ui). Tên hồ sơ dùng markup `.li .t b` block rồi detail, tránh tên/ngày dính cùng dòng. Menu Tổng quan active và icon+tên; hai quick actions nối W02/W15, sáu action tương lai disabled. Không chart/count giả, không suy mục sư từ account role. Rendered comparison cùng viewport/theme/local fonts với HTML nguồn; nội dung real synthetic và unavailable sections không phải pixel-identical bản demo.
+
+## W05 — P3.1 điểm danh tay
+
+Theo P3.1-plan-r1 đã duyệt: header/buổi/count/progress/list giữ source W05; shared AttendanceItem dùng semantic button aria-pressed và label trạng thái. AttendanceProgress chuyển inline source height8/surface-2/radius5/good fill vào adapters, width theo count, aria progressbar. Không đổi CSS source/hash. Feature attendance.css chỉ layout; form/modal/candidates/history dùng kit, menu icon+tên. QR scan disabled đến P3.2. [Contracts/runbook](engineering/P3.1-attendance.md). Technical rendered proof và human acceptance ghi riêng trong task/state.

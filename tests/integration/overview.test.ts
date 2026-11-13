@@ -75,8 +75,11 @@ describe("P2.6 snapshot dashboard and filter contracts", () => {
     expect(d.families.believersPerFamily).toBeNull();
     expect(d.birthdays.items).toEqual([]);
     expect(d.visitors.latest).toEqual([]);
-    expect(d.attendance).toEqual({ value: null, availability: "not_available" });
-    expect(d.rites).toEqual({ value: null, availability: "not_available" });
+    expect(d.attendance.value).toBeNull();
+    expect(d.attendance.days).toHaveLength(12);
+    expect(d.attendance.coverage4).toBe(0);
+    expect(d.rites.value).toBe(0);
+    expect(d.rites.availability).toBe("available");
     expect(d.organization.secretary).toBeNull();
     expect(d.church.address).toBe("Địa chỉ synthetic");
     expect(r.headers.get("cache-control")).toBe("no-store");

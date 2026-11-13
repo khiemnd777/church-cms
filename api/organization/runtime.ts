@@ -1,5 +1,6 @@
 import { type ClientSession, type Filter, ObjectId } from "mongodb";
 import { z } from "zod";
+import type { AttendanceReporting } from "../attendance/reporting";
 import type { Audit } from "../audit/service";
 import type { TenantGrant } from "../authorization/tenant-grant";
 import { requireCondition } from "../errors";
@@ -91,6 +92,7 @@ export class OrganizationRuntime {
     private audit: Audit,
     key: string,
     private now: () => Date,
+    private reporting?: AttendanceReporting,
   ) {
     this.queries = new TenantQueries(key, now, "organization-runtime");
   }
@@ -230,6 +232,14 @@ export class OrganizationRuntime {
       if (more) rows.pop();
       const leaderIds = rows.flatMap((u) => (u.leaderMemberId ? [u.leaderMemberId] : [])),
         leaders = g.unitScope ? [] : await this.members.labels(g.churchId, leaderIds, tx);
+      const reports =
+        this.reporting && (g.actorKind === "owner" || g.canReadAttendance)
+          ? await this.reporting.units(
+              g,
+              rows.filter((u) => u.kind !== "board").map((u) => u._id),
+              tx,
+            )
+          : null;
       const items = [];
       for (const u of rows)
         items.push({
@@ -246,7 +256,15 @@ export class OrganizationRuntime {
             !g.unitScope && u.kind === "area"
               ? await this.families.countInArea(g.churchId, u._id, tx)
               : null,
-          attendance: { value: null, availability: "not_available" as const },
+          attendance: reports?.get(u._id.toHexString()) ?? {
+            value: null,
+            availability: "not_available" as const,
+            present: 0,
+            included: 0,
+            sessions: 0,
+            from: null,
+            to: null,
+          },
         });
       const settings = await this.db.db
         .collection<Settings>("church_settings")

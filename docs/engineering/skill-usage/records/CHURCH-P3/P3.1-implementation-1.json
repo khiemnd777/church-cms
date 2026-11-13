@@ -1,0 +1,156 @@
+{
+  "schema_version": 1,
+  "event_id": "CHURCH-P3/P3.1/implementation/1",
+  "event_type": "phase_handoff",
+  "task_id": "CHURCH-P3",
+  "scope_id": "P3.1",
+  "recorded_at": "2026-11-12T16:31:06.975750+00:00",
+  "reported_by": "delivery_owner",
+  "source_kind": "agent_self_report",
+  "phase": "implementation",
+  "handoff_index": 1,
+  "classification": {
+    "delivery": "roadmap",
+    "complexity": "attendance_snapshots_authorization_concurrency_ui",
+    "ui": true
+  },
+  "authority": {
+    "approval": "Duyệt P3.1-plan-r1, gồm ba lựa chọn ở mục 3. Triển khai trọn P31-01–05 local/synthetic, bàn giao nghiệm thu rồi dừng trước P3.2. Chưa commit/push, deploy hoặc dùng dữ liệu thật.",
+    "scope": "P31-01–05 local/synthetic; dừng trước P3.2, chưa publication/deploy/real data/main-runtime upgrade"
+  },
+  "skills": [
+    {
+      "skill_id": "incremental-implementation",
+      "contribution_summary": "Triển khai xuyên domain/schema/public ports/routes/grants/ledger/UI trước tests",
+      "contribution_percent_estimate": 30,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/incremental-implementation/SKILL.md",
+        "version": null,
+        "sha256": "4663b276ac0d2f38be6f14a23d792783a255efe714710726af21c0f52c873359",
+        "fingerprint_basis": "Đã đọc và thực sự áp dụng trong P31-01–05"
+      }
+    },
+    {
+      "skill_id": "frontend-ui-engineering",
+      "contribution_summary": "W05 hai realm, source patterns/semantics/pending/reauth, sửa geometry từ ảnh thực tế",
+      "contribution_percent_estimate": 25,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/frontend-ui-engineering/SKILL.md",
+        "version": null,
+        "sha256": "b5c47fed383892428172bf0b9c1ed1aeab50066ff9421a87a6c344f746386495",
+        "fingerprint_basis": "Đã đọc và thực sự áp dụng trong P31-01–05"
+      }
+    },
+    {
+      "skill_id": "test-driven-development",
+      "contribution_summary": "Integration real Mongo/Redis, concurrency/rollback/revoke/unknown commit, browser và qualification sau code",
+      "contribution_percent_estimate": 25,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/test-driven-development/SKILL.md",
+        "version": null,
+        "sha256": "48d85b44f5e6286ba2a7a43550083609f299aa4001391768e9da126d2db86742",
+        "fingerprint_basis": "Đã đọc và thực sự áp dụng trong P31-01–05"
+      }
+    },
+    {
+      "skill_id": "code-review-and-quality",
+      "contribution_summary": "Self-review contracts/source/diff/callers và sửa copy/menu/geometry; không reviewer độc lập",
+      "contribution_percent_estimate": 10,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/code-review-and-quality/SKILL.md",
+        "version": null,
+        "sha256": "045ed6d37f590d7ad3b2ee47c1e66ada4bbff1e9d5d232c20a4eeaa5694e39f6",
+        "fingerprint_basis": "Đã đọc và thực sự áp dụng trong P31-01–05"
+      }
+    },
+    {
+      "skill_id": "security-and-hardening",
+      "contribution_summary": "Rà fresh scope trước read/replay/receipt, reduced DTO, strict body/CSRF/TLS và negative cases",
+      "contribution_percent_estimate": 5,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/security-and-hardening/SKILL.md",
+        "version": null,
+        "sha256": "4549688254258d5d6836a0f2d8cf606460a9baf426e9c644d3244a9973778ad3",
+        "fingerprint_basis": "Đã đọc và thực sự áp dụng trong P31-01–05"
+      }
+    },
+    {
+      "skill_id": "documentation-and-adrs",
+      "contribution_summary": "Authority/contracts/runbook/evidence/task/state và journal",
+      "contribution_percent_estimate": 5,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/documentation-and-adrs/SKILL.md",
+        "version": null,
+        "sha256": "f3199cfec5d6fdfa6533f180b1e6cbee584cd6175d8eb25c0d186c833120609c",
+        "fingerprint_basis": "Đã đọc và thực sự áp dụng trong P31-01–05"
+      }
+    }
+  ],
+  "outcome": {
+    "delivery_status": "COMPLETED",
+    "verification_level": "SOURCE_COMPLETE_LOCAL_SYNTHETIC_VERIFIED",
+    "human_acceptance": "PENDING_REVIEW",
+    "limitations": [
+      "Self-review, không independent reviewer",
+      "Chưa human acceptance hoặc released",
+      "NOT_RUN Safari/physical/camera/remoteCI/production/multi-replica/real data/SLA/main instance",
+      "P3.2 chưa mở"
+    ]
+  },
+  "evidence_refs": [
+    "docs/tasks/CHURCH-P3.1.md",
+    "docs/engineering/P3.1-attendance.md",
+    "output/p3.1/verification.json",
+    "output/p3.1/integration.log",
+    "output/p3.1/browser-results.json",
+    "output/p3.1/qualification.json",
+    "output/p3.1/cleanup-readback.json"
+  ],
+  "measurements": {
+    "elapsed_seconds": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có bộ đếm tài nguyên đo được theo skill/scope phase; số tests/checks không phải token/time usage"
+    },
+    "tool_calls": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có bộ đếm tài nguyên đo được theo skill/scope phase; số tests/checks không phải token/time usage"
+    },
+    "input_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có bộ đếm tài nguyên đo được theo skill/scope phase; số tests/checks không phải token/time usage"
+    },
+    "output_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có bộ đếm tài nguyên đo được theo skill/scope phase; số tests/checks không phải token/time usage"
+    },
+    "cached_input_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có bộ đếm tài nguyên đo được theo skill/scope phase; số tests/checks không phải token/time usage"
+    },
+    "reasoning_output_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có bộ đếm tài nguyên đo được theo skill/scope phase; số tests/checks không phải token/time usage"
+    },
+    "client": null,
+    "model": null,
+    "effort": null
+  }
+}

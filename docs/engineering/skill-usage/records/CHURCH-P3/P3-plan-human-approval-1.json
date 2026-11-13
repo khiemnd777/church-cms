@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "event_id": "CHURCH-P3/P3-plan/human-review/1",
+  "event_type": "evaluation",
+  "task_id": "CHURCH-P3",
+  "scope_id": "P3-plan",
+  "recorded_at": "2026-11-12T13:43:29.476306+00:00",
+  "reported_by": "delivery_owner",
+  "source_kind": "human_feedback",
+  "subject_event_id": "CHURCH-P3/P3-plan/planning/1",
+  "assessment_source": "human",
+  "review_attempt": 1,
+  "decision": "ACCEPTED",
+  "findings": [],
+  "authority": {
+    "approval": "Duyệt P3-plan-r1. Mở kế hoạch chi tiết P3.1 để duyệt trước coding.",
+    "scope": "Duyệt danh mục P3; chỉ mở planning P3.1, chưa coding/publication/deploy/dữ liệu thật"
+  },
+  "record_maintenance": {
+    "skill_id": "documentation-and-adrs",
+    "source": "Repo",
+    "contribution_summary": "Ghi nhận danh mục đã duyệt và mở planning P3.1 trong task/context/plan/state; không lưu dự thảo P3.1",
+    "contribution_percent_estimate": 100,
+    "estimate_source": "agent_self_report",
+    "source_identity": {
+      "kind": "repository",
+      "path": ".agents/skills/documentation-and-adrs/SKILL.md",
+      "version": null,
+      "sha256": "f3199cfec5d6fdfa6533f180b1e6cbee584cd6175d8eb25c0d186c833120609c",
+      "fingerprint_basis": "Đã đọc/áp dụng chỉ cho bảo trì hồ sơ được duyệt"
+    }
+  },
+  "evidence_refs": [
+    "current_chat:Duyệt P3-plan-r1. Mở kế hoạch chi tiết P3.1 để duyệt trước coding.",
+    "docs/tasks/CHURCH-P3.md",
+    "docs/project-state.md"
+  ],
+  "limits": [
+    "P3.1 planning-only; chưa coding hoặc kiểm thử P3",
+    "Không thay receipts/usage P2; không dùng dữ liệu thật/publication/deploy"
+  ]
+}

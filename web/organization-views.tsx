@@ -92,7 +92,12 @@ export function OrganizationUnitsView({
                   <td>{u.scheduleText ?? "Chưa có"}</td>
                   {area && !scoped && <td>{u.householdCount ?? "—"}</td>}
                   <td>{u.memberCount.value ?? "—"}</td>
-                  <td>Chưa có dữ liệu</td>
+                  <td>
+                    {u.attendance.value === null ? "—" : `${u.attendance.value}%`}
+                    <div className="small muted">
+                      {u.attendance.sessions} buổi riêng đã chốt / 12 tuần
+                    </div>
+                  </td>
                   <td>
                     <div className="organization-runtime-actions">
                       {viewButton(u)}
@@ -115,7 +120,11 @@ export function OrganizationUnitsView({
             {!scoped && <p>Trưởng đơn vị: {leader(u)}</p>}
             <p>Lịch: {u.scheduleText ?? "Chưa có"}</p>
             {area && !scoped && <p>{u.householdCount ?? "—"} gia đình</p>}
-            <p>{u.memberCount.value ?? "—"} người · Hiện diện: Chưa có dữ liệu</p>
+            <p>
+              {u.memberCount.value ?? "—"} người · Hiện diện:{" "}
+              {u.attendance.value === null ? "—" : `${u.attendance.value}%`} ·{" "}
+              {u.attendance.sessions} buổi riêng đã chốt / 12 tuần
+            </p>
             <div className="organization-runtime-actions">{actions(u)}</div>
           </div>
         </Card>

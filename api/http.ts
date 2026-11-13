@@ -1,6 +1,10 @@
 import { AppError, requireCondition } from "./errors";
-export async function readJson(req: Request): Promise<unknown> {
-  requireCondition(Number(req.headers.get("content-length") ?? 0) <= 16384, 413, "INVALID_REQUEST");
+export async function readJson(req: Request, maxBytes = 16384): Promise<unknown> {
+  requireCondition(
+    Number(req.headers.get("content-length") ?? 0) <= maxBytes,
+    413,
+    "INVALID_REQUEST",
+  );
   requireCondition(
     req.headers.get("content-type")?.split(";")[0] === "application/json",
     415,
@@ -14,7 +18,7 @@ export async function readJson(req: Request): Promise<unknown> {
       const { done, value } = await reader.read();
       if (done) break;
       size += value.length;
-      if (size > 16384) {
+      if (size > maxBytes) {
         await reader.cancel();
         throw new AppError(413, "INVALID_REQUEST");
       }

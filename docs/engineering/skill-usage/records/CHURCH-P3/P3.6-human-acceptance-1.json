@@ -1,0 +1,80 @@
+{
+  "schema_version": 1,
+  "event_id": "CHURCH-P3/P3.6/human-review/1",
+  "event_type": "evaluation",
+  "task_id": "CHURCH-P3",
+  "scope_id": "P3.6",
+  "recorded_at": "2026-11-13T15:37:36.155848+00:00",
+  "reported_by": "delivery_owner",
+  "source_kind": "human_feedback",
+  "subject_event_id": "CHURCH-P3/P3.6/implementation/1",
+  "assessment_source": "human",
+  "review_attempt": 1,
+  "decision": "ACCEPTED",
+  "findings": [],
+  "authority": {
+    "approval": "Anh nghiệm thu P3.6-r1 theo năm mục; ghi nhận acceptance rồi tiếp tục dừng trước đóng P3, chưa mở P4.",
+    "scope": "Ghi nhận nghiệm thu P3.6-r1/P36-01–05 đủ năm mục local/synthetic. Tiếp tục dừng trước đóng P3; P4 chưa mở. Không implementation mới/commit/push/deploy/real data/main DB init/restart3443."
+  },
+  "accepted_checklist": [
+    "Công thức/kỳ/snapshot đúng;0/thiếu dữ liệu/không áp dụng phân biệt rõ.",
+    "W01/W02/W14/W04 drilldown đúng nguồn, UI-STD-r1/hai realm.",
+    "Workflow điểm danh/QR/lớp/lễ/chứng nhận đối soát được.",
+    "Quyền/concurrency/revoke/rollback/replay/regression đạt.",
+    "Workload/restore/cleanup có bằng chứng và giới hạn NOT_RUN rõ."
+  ],
+  "record_maintenance": {
+    "skill_id": "documentation-and-adrs",
+    "source": "Repo",
+    "contribution_summary": "Ghi evaluation human acceptance5/5, tick checklist/cập nhật task-plan-live state, giữ technical snapshots và điểm dừng P3/P4",
+    "contribution_percent_estimate": 100,
+    "estimate_source": "agent_self_report",
+    "source_identity": {
+      "kind": "repository",
+      "path": ".agents/skills/documentation-and-adrs/SKILL.md",
+      "version": null,
+      "sha256": "f3199cfec5d6fdfa6533f180b1e6cbee584cd6175d8eb25c0d186c833120609c",
+      "fingerprint_basis": "Đã đọc/áp dụng để ghi nhận chỉ dẫn hiện hành; evaluation không tính thêm usage implementation"
+    }
+  },
+  "evidence_refs": [
+    "current_chat:Anh nghiệm thu P3.6-r1 theo năm mục; ghi nhận acceptance rồi tiếp tục dừng trước đóng P3, chưa mở P4.",
+    "docs/tasks/CHURCH-P3.6.md",
+    "docs/project-state.md",
+    "docs/project-plan.md",
+    "docs/tasks/CHURCH-P3.md",
+    "docs/engineering/skill-usage/records/CHURCH-P3/P3.6-implementation-1.json",
+    "output/p3.6/verification.json",
+    "output/p3.6/source-manifest.json"
+  ],
+  "technical_snapshots_sha256": {
+    "output/p3.6/tests-full.log": "1e98d068974fcd5b2b38e2570b8497c606a25b1dbad08e8e3b8735d489a2cb9d",
+    "output/p3.6/browser-results.json": "42936d9568dbaa54bf391d81d23f20b2fc4fa1841b4fd6fe4d031684d4cebf27",
+    "output/p3.6/workload.json": "ec69e4e5a22a8d483012456865e07e8e4e3f6f71bcf7ad7287078b53498086de",
+    "output/p3.6/restore.json": "c48c317bee6543cbaace4924af031d0327ee7bfd387fa9c55c03c70060d6e858",
+    "output/p3.6/workflow.json": "5522d186d8c334b4be82605f6fb696dea932b2398f8f6737fca0353898d7fccf",
+    "output/p3.6/cleanup-readback.json": "5c8c4014e82c3642dd25e3991238dc1ff029fe813d379716ba8dc2b381229a8c",
+    "output/p3.6/self-review.json": "5973cb7f3b71bf600a6414946b749311dd5bddad311b1c1f7a82ed875cf21899",
+    "output/p3.6/typecheck.log": "8366207267355d3e3d5bf3bf6e8c94c5f93f6078c34f08973fa2b38cdda6cc92",
+    "output/p3.6/lint.log": "8693ad9f137ef902c9f1d3cefe328b69c8c2a17e00b002ce84179efb2656b6bd",
+    "output/p3.6/ui-check.log": "e69dcef3975a06cddd9a23ff226c500f02626e15fb2ec446446faab5d189c7fc",
+    "output/p3.6/build.log": "e103d1a05c29cdc7a369fb820e9fae8c2451caf7bf851a8548b7539d16abb67c",
+    "output/p3.6/build-ui.log": "d0b443093e8b4ada29449f951a9f9a6fd56c6409856f8ae8386199e777b504e0",
+    "output/p3.6/audit.json": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+    "output/p3.6/diff-check.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "output/p3.6/code-before-tests.json": "d1c056ba171d6bb25ba4b5891a120ea9aee31a22a496a84bd7da8ee52257c1c1",
+    "output/p3.6/source-manifest.json": "b28880514466bc1ff030064cd72ac9174ce8785c5358d4ccc1c5cbad4d895552",
+    "output/p3.6/p36-overview-1440-light.png": "6e463c0a153c1e67b5415293c139378fe6ec2bdd7612cedddca3914a450267b7",
+    "output/p3.6/p36-overview-390-dark.png": "b50f0ec85fd343b6fe5c3c8b4004d9f8270c39b5de5f7ffef1c7c363c0251624",
+    "output/p3.6/verification.json": "c9a5879335136d427f7175cdc77d110da1573a255aa3ea7de701004281abdbc7",
+    "docs/engineering/skill-usage/records/CHURCH-P3/P3.6-implementation-1.json": "3233fbbdd8d065e2449d792e04b95ed02989da016ee777fbb3aaa69a96062877"
+  },
+  "limits": [
+    "Human acceptance local/synthetic; P3 chưa đóng/P4 chưa mở/chưa released",
+    "Camera điện thoại thật/bản giấy thật P3-PHYSICAL-01 và native Word vẫn NOT_RUN; không suy bằng chứng thiết bị thật từ acceptance này",
+    "Main runtime/Safari/UAT/pilot/remoteCI/production/multi-replica NOT_RUN giữ nguyên",
+    "Số đo local p95 W04~8.83s tại2000/10 giữ nguyên; không suy production SLA/capacity/RPO/RTO/PITR",
+    "Không chạy lại tests/runtime; không rewrite technical receipt/source manifest/implementation journals hoặc tính lại usage",
+    "Không commit/push/deploy/real data/main DB init/restart3443"
+  ]
+}

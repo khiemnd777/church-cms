@@ -230,7 +230,17 @@ export class Operations {
   async getTenant(
     grant: TenantGrant,
     id: string,
-    namespace: "organization" | "members" | "families" | "exchange",
+    namespace:
+      | "organization"
+      | "members"
+      | "families"
+      | "exchange"
+      | "attendance"
+      | "cards"
+      | "prep-classes"
+      | "rites"
+      | "certificates",
+    authorizeResource?: (tx: ClientSession, op: Operation) => Promise<void>,
   ) {
     requireCondition(grant.canWrite, 403, "FORBIDDEN");
     requireCondition(/^[a-f0-9]{24}$/i.test(id), 400, "INVALID_REQUEST");
@@ -254,6 +264,16 @@ export class Operations {
         403,
         "FORBIDDEN",
       );
+      if (
+        namespace === "attendance" ||
+        namespace === "cards" ||
+        namespace === "prep-classes" ||
+        namespace === "rites" ||
+        namespace === "certificates"
+      ) {
+        requireCondition(authorizeResource, 403, "FORBIDDEN");
+        await authorizeResource(tx, op);
+      }
       return {
         operationId: op._id.toHexString(),
         status: op.status,

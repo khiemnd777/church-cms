@@ -5,6 +5,7 @@ export interface TenantIntent extends Intent {
   churchId: string;
   realm: TenantRealm;
   principalKey: string;
+  resource?: { kind: "member_card"; memberId: string };
   upload?: { file: File; format: "csv" | "xlsx"; source: string };
 }
 export const authErrorCodes = [
@@ -34,6 +35,8 @@ export function useTenantMutation({
   onAuthError,
   operationPath,
   prefix,
+  acceptPath,
+  intentResource,
   onSuccess,
 }: {
   realm: TenantRealm;
@@ -45,6 +48,8 @@ export function useTenantMutation({
   onAuthError: (error: unknown) => void;
   operationPath: string;
   prefix: string;
+  acceptPath?: (path: string) => boolean;
+  intentResource?: TenantIntent["resource"];
   onSuccess: (data: unknown) => void;
 }) {
   const [busy, setBusy] = useState(false),
@@ -76,7 +81,9 @@ export function useTenantMutation({
       intent.realm !== realm ||
       intent.churchId !== churchId ||
       intent.principalKey !== principalKey ||
-      !(intent.path === prefix || intent.path.startsWith(`${prefix}/`))
+      !(acceptPath
+        ? acceptPath(intent.path)
+        : intent.path === prefix || intent.path.startsWith(`${prefix}/`))
     ) {
       setError(
         "Phiên hoặc quyền hiện tại không khớp người đã tạo thao tác. Đối soát trước khi tiếp tục.",
@@ -155,6 +162,7 @@ export function useTenantMutation({
       key: crypto.randomUUID(),
       version,
       createdAt: Date.now(),
+      ...(intentResource ? { resource: intentResource } : {}),
     });
   }
   return {

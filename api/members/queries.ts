@@ -8,7 +8,13 @@ import { birthdayFilterValid, birthdayWindow, businessDay, shiftDay, validDay } 
 import { searchName } from "./models";
 export const escaped = (value: string) => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 export class MemberQueries extends TenantQueries {
-  pipeline(g: TenantGrant, q: URLSearchParams, families: Families, summary = false) {
+  pipeline(
+    g: TenantGrant,
+    q: URLSearchParams,
+    families: Families,
+    summary = false,
+    reporting?: { stages: Document[]; fingerprint: string },
+  ) {
     this.allow(
       q,
       summary
@@ -23,6 +29,8 @@ export class MemberQueries extends TenantQueries {
             "birthday",
             "firstVisit",
             "visitorStage",
+            "attendance",
+            "attendanceUntil",
           ]
         : [
             "q",
@@ -36,10 +44,18 @@ export class MemberQueries extends TenantQueries {
             "birthday",
             "firstVisit",
             "visitorStage",
+            "attendance",
+            "attendanceUntil",
             "limit",
             "cursor",
           ],
     );
+    requireCondition(
+      !q.has("attendance") || (q.get("attendance") === "absent3" && !!reporting),
+      400,
+      "INVALID_REQUEST",
+    );
+    requireCondition(!q.has("attendanceUntil") || !!reporting, 400, "INVALID_REQUEST");
     const text = searchName(q.get("q") ?? ""),
       type = q.get("type"),
       participation = q.get("participation") ?? "current",
@@ -139,6 +155,7 @@ export class MemberQueries extends TenantQueries {
         { $match: { birthdayKey: { $ne: null } } },
       );
     }
+    if (q.has("attendance")) stages.push(...(reporting?.stages ?? []));
     const context = this.context(g, "members", [
       text,
       type ?? null,
@@ -152,6 +169,9 @@ export class MemberQueries extends TenantQueries {
       birthday || firstVisit ? today : null,
       firstVisit ?? null,
       visitorStage ?? null,
+      q.get("attendance"),
+      q.get("attendanceUntil"),
+      reporting?.fingerprint ?? null,
     ]);
     if (!summary && q.has("cursor")) {
       const last = this.decode(q.get("cursor") as string, context),

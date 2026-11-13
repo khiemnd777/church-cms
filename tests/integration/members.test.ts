@@ -200,9 +200,9 @@ describe("P2.2 real Mongo/HTTP contracts", () => {
     expect(m.phone).toBe("0900123456");
     expect(m.consent.wordingVersion).toBe("member-consent-r1");
     expect(m.availability).toEqual({
-      attendance: "not_available",
+      attendance: "available",
       giving: "not_available",
-      qr: "not_available",
+      qr: "available",
     });
     const stored = await db.db.collection("members").findOne({ _id: new ObjectId(id) });
     expect(stored?.consent.actorKind).toBe("owner");
@@ -618,10 +618,14 @@ describe("P2.2 real Mongo/HTTP contracts", () => {
     expect((await owner.call(`${b}?q=${encodeURIComponent("[.*")}`)).json.data.items).toHaveLength(
       0,
     );
-    expect((await owner.call(`${b}/summary?familyId=${first.familyId}`)).json.data).toEqual({
+    expect((await owner.call(`${b}/summary?familyId=${first.familyId}`)).json.data).toMatchObject({
       all: 2,
       believer: 1,
       visitor: 1,
+      attendanceWindow: {
+        until: expect.any(String),
+        fingerprint: expect.stringMatching(/^[a-f0-9]{64}$/),
+      },
     });
     expect(
       (await owner.call(`${b}?familyId=${first.familyId}&type=visitor`)).json.data.items[0].id,
@@ -795,10 +799,14 @@ describe("P2.2 real Mongo/HTTP contracts", () => {
       const r = await owner.call(`${b}?${query}`);
       expect(r.status).toBe(200);
       expect(r.json.data.items.map((v: { id: string }) => v.id)).toEqual([m.id]);
-      expect((await owner.call(`${b}/summary?${query}`)).json.data).toEqual({
+      expect((await owner.call(`${b}/summary?${query}`)).json.data).toMatchObject({
         all: 1,
         believer: 1,
         visitor: 0,
+        attendanceWindow: {
+          until: expect.any(String),
+          fingerprint: expect.stringMatching(/^[a-f0-9]{64}$/),
+        },
       });
     }
     expect((await owner.call(`${b}?areaId=${new ObjectId()}`)).json.data.items).toHaveLength(0);

@@ -3,12 +3,16 @@ import type { OverviewTarget } from "../api/overview/contracts";
 import { AccessContextView } from "./access-context";
 import type { Role, Scope } from "./accounts-api";
 import { ApiError, churchAuth, refreshChurchCsrf } from "./api";
+import { AttendanceView } from "./attendance";
+import { CertificatesView } from "./certificates";
 import { FamiliesManagement } from "./families-management";
 import { MembersManagement } from "./members-management";
 import { OrganizationManagement } from "./organization-management";
 import { OrganizationRuntimeView } from "./organization-runtime";
 import { OverviewView } from "./overview";
 import { usePendingNavigation } from "./pending-navigation";
+import { RitesView } from "./rites";
+import { kindTabs } from "./rites-api";
 import type { TenantIntent } from "./tenant-mutation";
 import { AppShell, AuthCard, Button, Feedback, Field, Loading, TextInput } from "./ui/components";
 
@@ -42,36 +46,48 @@ export function ChurchApp() {
     [context, setContext] = useState(""),
     [reload, setReload] = useState(0);
   const [section, setSection] = useState(
-    location.pathname.endsWith("/overview")
-      ? "overview"
-      : location.pathname.endsWith("/bans")
-        ? "bans"
-        : location.pathname.endsWith("/roles")
-          ? "roles"
-          : location.pathname.endsWith("/config")
-            ? "config"
-            : location.pathname.endsWith("/members")
-              ? "members"
-              : location.pathname.endsWith("/families")
-                ? "families"
-                : "access",
+    location.pathname.endsWith("/forms")
+      ? "forms"
+      : location.pathname.endsWith("/rites")
+        ? "rites"
+        : location.pathname.endsWith("/attendance")
+          ? "attendance"
+          : location.pathname.endsWith("/overview")
+            ? "overview"
+            : location.pathname.endsWith("/bans")
+              ? "bans"
+              : location.pathname.endsWith("/roles")
+                ? "roles"
+                : location.pathname.endsWith("/config")
+                  ? "config"
+                  : location.pathname.endsWith("/members")
+                    ? "members"
+                    : location.pathname.endsWith("/families")
+                      ? "families"
+                      : "access",
   );
   useEffect(() => {
     const back = () =>
       setSection(
-        location.pathname.endsWith("/overview")
-          ? "overview"
-          : location.pathname.endsWith("/bans")
-            ? "bans"
-            : location.pathname.endsWith("/roles")
-              ? "roles"
-              : location.pathname.endsWith("/config")
-                ? "config"
-                : location.pathname.endsWith("/members")
-                  ? "members"
-                  : location.pathname.endsWith("/families")
-                    ? "families"
-                    : "access",
+        location.pathname.endsWith("/forms")
+          ? "forms"
+          : location.pathname.endsWith("/rites")
+            ? "rites"
+            : location.pathname.endsWith("/attendance")
+              ? "attendance"
+              : location.pathname.endsWith("/overview")
+                ? "overview"
+                : location.pathname.endsWith("/bans")
+                  ? "bans"
+                  : location.pathname.endsWith("/roles")
+                    ? "roles"
+                    : location.pathname.endsWith("/config")
+                      ? "config"
+                      : location.pathname.endsWith("/members")
+                        ? "members"
+                        : location.pathname.endsWith("/families")
+                          ? "families"
+                          : "access",
       );
     window.addEventListener("popstate", back);
     return () => window.removeEventListener("popstate", back);
@@ -86,7 +102,7 @@ export function ChurchApp() {
     history.pushState(
       null,
       "",
-      `/h/${code}${next === "overview" || next === "access" || next === "config" || next === "members" || next === "families" || next === "bans" || next === "roles" ? `/${next}` : ""}${query?.size ? `?${query}` : ""}`,
+      `/h/${code}${next === "forms" || next === "rites" || next === "attendance" || next === "overview" || next === "access" || next === "config" || next === "members" || next === "families" || next === "bans" || next === "roles" ? `/${next}` : ""}${query?.size ? `?${query}` : ""}`,
     );
     if (next === "access") setReload((x) => x + 1);
   }
@@ -105,7 +121,7 @@ export function ChurchApp() {
     history.replaceState(
       null,
       "",
-      `/h/${code}${next === "home" || next === "reauth" ? (selectedSection === "overview" || selectedSection === "access" || selectedSection === "config" || selectedSection === "members" || selectedSection === "families" || selectedSection === "bans" || selectedSection === "roles" ? `/${selectedSection}${location.search}` : "") : next === "change" ? "/change-password" : next === "support" ? "/support" : "/login"}`,
+      `/h/${code}${next === "home" || next === "reauth" ? (selectedSection === "forms" || selectedSection === "rites" || selectedSection === "attendance" || selectedSection === "overview" || selectedSection === "access" || selectedSection === "config" || selectedSection === "members" || selectedSection === "families" || selectedSection === "bans" || selectedSection === "roles" ? `/${selectedSection}${location.search}` : "") : next === "change" ? "/change-password" : next === "support" ? "/support" : "/login"}`,
     );
   }
   function accept(identity: User) {
@@ -334,7 +350,16 @@ export function ChurchApp() {
       if (target.memberId) q.set("memberId", target.memberId);
       if (target.create) q.set("action", "create");
       selectSection("members", q);
-    } else selectSection(target.kind);
+    } else {
+      const q = new URLSearchParams();
+      if (target.kind === "attendance" && target.sessionId) q.set("sessionId", target.sessionId);
+      if (target.kind === "rites") {
+        if (target.tab) q.set("tab", target.tab);
+        if (target.riteId) q.set("riteId", target.riteId);
+        if (target.courseId) q.set("courseId", target.courseId);
+      }
+      selectSection(target.kind, q);
+    }
   }
   const feedback = (
     <>
@@ -379,6 +404,31 @@ export function ChurchApp() {
           },
           ...(["pastor", "secretary", "ministry_lead"].includes(user.role ?? "")
             ? [
+                {
+                  id: "attendance",
+                  label: "Điểm danh",
+                  icon: "check" as const,
+                  disabled: !!pendingIntent,
+                  onSelect: () => selectSection("attendance"),
+                },
+                ...(["pastor", "secretary"].includes(user.role ?? "")
+                  ? [
+                      {
+                        id: "forms",
+                        label: "Biểu mẫu & Báo cáo",
+                        icon: "file" as const,
+                        disabled: !!pendingIntent,
+                        onSelect: () => selectSection("forms"),
+                      },
+                      {
+                        id: "rites",
+                        label: "Sổ lễ nghi",
+                        icon: "book" as const,
+                        disabled: !!pendingIntent,
+                        onSelect: () => selectSection("rites"),
+                      },
+                    ]
+                  : []),
                 {
                   id: "bans",
                   label: "Ban ngành & Khu vực",
@@ -432,6 +482,46 @@ export function ChurchApp() {
             onAuthError={fail}
             onNavigate={overviewNavigate}
           />
+        ) : section === "forms" ? (
+          <CertificatesView
+            key={`${user.accountId}:${user.churchId}:${user.version}`}
+            realm="church"
+            churchId={user.churchId}
+            pending={pendingIntent}
+            onPending={setPendingIntent}
+            onAuthError={fail}
+            onTitle={onTitle}
+          />
+        ) : section === "rites" ? (
+          <RitesView
+            onCertificate={(kind, id) =>
+              selectSection("forms", new URLSearchParams({ kind, riteId: id }))
+            }
+            key={`${user.accountId}:${user.churchId}:${user.version}`}
+            realm="church"
+            churchId={user.churchId}
+            pending={pendingIntent}
+            onPending={setPendingIntent}
+            onAuthError={fail}
+            onTitle={onTitle}
+            onAttendance={(id) =>
+              selectSection("attendance", new URLSearchParams({ sessionId: id }))
+            }
+            onMember={(id) => {
+              setMemberToOpen(id);
+              selectSection("members", new URLSearchParams({ memberId: id }));
+            }}
+          />
+        ) : section === "attendance" ? (
+          <AttendanceView
+            key={`${user.accountId}:${user.churchId}:${user.version}`}
+            realm="church"
+            churchId={user.churchId}
+            pending={pendingIntent}
+            onPending={setPendingIntent}
+            onTitle={onTitle}
+            onAuthError={fail}
+          />
         ) : section === "bans" || section === "roles" ? (
           <OrganizationRuntimeView
             key={`${user.accountId}:${user.churchId}:${user.version}:${section}`}
@@ -471,6 +561,16 @@ export function ChurchApp() {
             realm="church"
             churchId={user.churchId}
             initialMemberId={memberToOpen ?? new URLSearchParams(location.search).get("memberId")}
+            onCertificate={(id) => selectSection("forms", new URLSearchParams({ editionId: id }))}
+            onAttendance={(id) =>
+              selectSection("attendance", new URLSearchParams({ sessionId: id }))
+            }
+            onRite={(kind, id) =>
+              selectSection("rites", new URLSearchParams({ riteId: id, tab: kindTabs[kind] }))
+            }
+            onClass={(id) =>
+              selectSection("rites", new URLSearchParams({ courseId: id, tab: "class" }))
+            }
             initialCreate={new URLSearchParams(location.search).get("action") === "create"}
             onFamily={(id) => {
               if (!pendingIntent) {

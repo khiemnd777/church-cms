@@ -585,7 +585,7 @@ try {
   assert(
     (await page
       .getByText(
-        "Cấu hình và hồ sơ thuộc viên Hội Thánh đã khả dụng trong menu. Các chức năng nghiệp vụ khác chưa khả dụng.",
+        "Điểm danh tay và quét QR đã khả dụng trong menu theo quyền hiện tại. Camera cần quyền truy cập trên thiết bị.",
         { exact: true },
       )
       .isVisible()) &&

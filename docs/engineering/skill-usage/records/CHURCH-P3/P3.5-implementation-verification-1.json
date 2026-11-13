@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "event_type": "verification_completion",
+  "event_id": "CHURCH-P3/P3.5/implementation-verification/1",
+  "scope_id": "P3.5",
+  "recorded_at": "2026-11-13T08:17:40.150780+00:00",
+  "linked_event": "CHURCH-P3/P3.5/implementation/1",
+  "linked_record": "P3.5-implementation-1.json",
+  "additional_skill_usage": false,
+  "outcome": {
+    "delivery_status": "COMPLETED",
+    "verification_level": "LOCAL_SYNTHETIC_VERIFIED",
+    "human_acceptance": "PENDING_REVIEW",
+    "released": false,
+    "next_package": "P3.6 NOT_OPENED"
+  },
+  "checks": {
+    "tests": 253,
+    "assertions": 3638,
+    "browser_p35": 417,
+    "browser_regression": 3666,
+    "rendered_documents": 10,
+    "rendered_pages": 12,
+    "workload_configs": 6,
+    "measured_journeys": 90,
+    "contention_retries_same_key": 3
+  },
+  "evidence_refs": [
+    "output/p3.5/verification.json",
+    "output/p3.5/review.json",
+    "output/p3.5/visual-review.json",
+    "output/p3.5/cleanup-readback.json"
+  ],
+  "limits": [
+    "Physical camera/paper/native Word/Safari/UAT/production/multi-replica/remoteCI NOT_RUN",
+    "15s/5MiB exact saturation NOT_RUN; configured guards source-reviewed",
+    "No commit/push/deploy/real data/main DB init/restart3443",
+    "Self-review only; P3.6 NOT_OPENED"
+  ]
+}

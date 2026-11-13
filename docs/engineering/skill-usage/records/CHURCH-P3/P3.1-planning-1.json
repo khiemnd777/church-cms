@@ -1,0 +1,137 @@
+{
+  "schema_version": 1,
+  "event_id": "CHURCH-P3/P3.1/planning/1",
+  "event_type": "phase_handoff",
+  "task_id": "CHURCH-P3",
+  "scope_id": "P3.1",
+  "recorded_at": "2026-11-12T16:28:38.060066+00:00",
+  "reported_by": "delivery_owner",
+  "source_kind": "agent_self_report",
+  "phase": "planning",
+  "handoff_index": 1,
+  "classification": {
+    "delivery": "roadmap",
+    "complexity": "attendance_snapshot_scope_concurrency_ui",
+    "ui": true
+  },
+  "authority": {
+    "approval": "Duyệt P3.1-plan-r1, gồm ba lựa chọn ở mục 3. Triển khai trọn P31-01–05 local/synthetic, bàn giao nghiệm thu rồi dừng trước P3.2. Chưa commit/push, deploy hoặc dùng dữ liệu thật.",
+    "scope": "P31-01–05 local/synthetic, chưa mở P3.2/publication/deploy/real data"
+  },
+  "evidence_refs": [
+    "current_chat:P3.1-plan-r1",
+    "docs/tasks/CHURCH-P3.1.md",
+    "docs/engineering/P3.1-attendance.md"
+  ],
+  "skills": [
+    {
+      "skill_id": "planning-and-task-breakdown",
+      "contribution_summary": "Phạm vi một gói P31-01–05 và thứ tự code trước tests",
+      "contribution_percent_estimate": 20,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/planning-and-task-breakdown/SKILL.md",
+        "version": null,
+        "sha256": "fb768e0a3d3a77f733eb613c078fb61dde0845a438c65cc095fc6448dc166d4c",
+        "fingerprint_basis": "Đã đọc/áp dụng khi lập kế hoạch; file nguồn không đổi trong task, ghi sau approval"
+      }
+    },
+    {
+      "skill_id": "spec-driven-development",
+      "contribution_summary": "Danh sách snapshot/quyền/trạng thái/ba lựa chọn và ngoại lệ",
+      "contribution_percent_estimate": 30,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/spec-driven-development/SKILL.md",
+        "version": null,
+        "sha256": "c6cfb5c766c45243290d4dcfc7eb3857dbfb77556355c7960a4411762764858b",
+        "fingerprint_basis": "Đã đọc/áp dụng khi lập kế hoạch; file nguồn không đổi trong task, ghi sau approval"
+      }
+    },
+    {
+      "skill_id": "api-and-interface-design",
+      "contribution_summary": "Contracts/grants/per-row CAS/session generation/receipt ACL",
+      "contribution_percent_estimate": 25,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/api-and-interface-design/SKILL.md",
+        "version": null,
+        "sha256": "2550ac99404f1d52566cdd95fd809e0984eb29f1174132a864fb7beb9f688f79",
+        "fingerprint_basis": "Đã đọc/áp dụng khi lập kế hoạch; file nguồn không đổi trong task, ghi sau approval"
+      }
+    },
+    {
+      "skill_id": "frontend-ui-engineering",
+      "contribution_summary": "Đối chiếu W05 và preview ASCII trước coding",
+      "contribution_percent_estimate": 15,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/frontend-ui-engineering/SKILL.md",
+        "version": null,
+        "sha256": "b5c47fed383892428172bf0b9c1ed1aeab50066ff9421a87a6c344f746386495",
+        "fingerprint_basis": "Đã đọc/áp dụng khi lập kế hoạch; file nguồn không đổi trong task, ghi sau approval"
+      }
+    },
+    {
+      "skill_id": "documentation-and-adrs",
+      "contribution_summary": "Ghi nhận roadmap P3 được duyệt và quyền planning P3.1",
+      "contribution_percent_estimate": 10,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/documentation-and-adrs/SKILL.md",
+        "version": null,
+        "sha256": "f3199cfec5d6fdfa6533f180b1e6cbee584cd6175d8eb25c0d186c833120609c",
+        "fingerprint_basis": "Đã đọc/áp dụng khi lập kế hoạch; file nguồn không đổi trong task, ghi sau approval"
+      }
+    }
+  ],
+  "outcome": {
+    "delivery_status": "COMPLETED",
+    "verification_level": "APPROVED_CHAT_PLAN_SOURCE_INSPECTION",
+    "human_acceptance": "ACCEPTED",
+    "limitations": [
+      "Đây là phê duyệt kế hoạch, không phải nghiệm thu implementation",
+      "Ghi sau approval với thời điểm hiện hành; không tạo timestamp lịch sử"
+    ]
+  },
+  "measurements": {
+    "elapsed_seconds": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có bộ đếm đo được theo skill phase"
+    },
+    "tool_calls": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có bộ đếm đo được theo skill phase"
+    },
+    "input_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có bộ đếm đo được theo skill phase"
+    },
+    "output_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có bộ đếm đo được theo skill phase"
+    },
+    "cached_input_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có bộ đếm đo được theo skill phase"
+    },
+    "reasoning_output_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có bộ đếm đo được theo skill phase"
+    },
+    "client": null,
+    "model": null,
+    "effort": null
+  }
+}

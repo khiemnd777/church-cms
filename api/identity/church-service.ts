@@ -340,6 +340,9 @@ export class ChurchIdentity {
       capabilities: capabilitiesFor(ctx.account.role),
       availability: {
         business: "not_available",
+        attendance: capabilitiesFor(ctx.account.role).includes("attendance:read")
+          ? "available"
+          : "not_available",
         organization: capabilitiesFor(ctx.account.role).includes("organization:roster")
           ? "available"
           : "not_available",

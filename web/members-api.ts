@@ -4,6 +4,7 @@ export type MemberDto = Awaited<ReturnType<Members["get"]>>;
 export interface MemberPage {
   items: Omit<MemberDto, "familyMembers">[];
   nextCursor: string | null;
+  attendanceWindow?: { until: string; fingerprint: string } | null;
 }
 export type FamilyPage = Awaited<ReturnType<Members["familyPicker"]>>;
 export type HistoryPage = Awaited<ReturnType<Members["history"]>>;

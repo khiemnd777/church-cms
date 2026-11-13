@@ -1,9 +1,24 @@
 import { resolve } from "node:path";
 import type { ObjectId } from "mongodb";
+import { MongoServerError } from "mongodb";
+import type { AttendanceGrant } from "./attendance/models";
+import { AttendanceReporting } from "./attendance/reporting";
+import { Attendance } from "./attendance/service";
 import { AuditReader } from "./audit/reader";
 import { policyMatrix, policyVersion } from "./authorization/church-policy";
 import { ownerCapabilities } from "./authorization/owner-policy";
 import type { TenantGrant } from "./authorization/tenant-grant";
+import type { CardGrant } from "./cards/models";
+import { printDocument, printError, printScript } from "./cards/printing";
+import { Cards } from "./cards/service";
+import type { CertificateGrant } from "./certificates/models";
+import {
+  certificatePrintError,
+  certificatePrintScript,
+  printCertificate,
+} from "./certificates/printing";
+import { Certificates } from "./certificates/service";
+import { CertificateSources } from "./certificates/source";
 import type { Config } from "./config";
 import { limits } from "./data-exchange/contracts";
 import { DataExchange } from "./data-exchange/service";
@@ -22,11 +37,74 @@ import type { OrganizationGrant } from "./organization/grant";
 import { OrganizationRuntime } from "./organization/runtime";
 import { Organization } from "./organization/service";
 import { Overview } from "./overview/service";
+import { PrepAttendanceSource } from "./prep-classes/attendance-port";
+import type { ClassGrant } from "./prep-classes/models";
+import { PrepReporting } from "./prep-classes/reporting";
+import { PrepClasses } from "./prep-classes/service";
+import type { RiteGrant } from "./rites/models";
+import { RiteReporting } from "./rites/reporting";
+import { Rites } from "./rites/service";
 import { Tenancy } from "./tenancy/service";
 export interface RequestInfo {
   ip: string;
 }
 const messages: Record<string, string> = {
+  CERT_SOURCE_REQUIRED: "Chọn đúng hồ sơ, lễ hoặc ghi danh cùng Hội Thánh.",
+  CERT_SOURCE_LOCKED: "Dữ kiện nguồn đã biết được khóa. Đối soát nguồn hoặc giữ giá trị đã chọn.",
+  CERT_SUPPLEMENT_INVALID: "Chỉ bổ sung trường phù hợp với mẫu này.",
+  CERT_DATE_INVALID: "Kiểm tra ngày sinh, ngày lễ và ngày chốt bản.",
+  CERT_KIND_IMMUTABLE: "Không đổi loại mẫu của bản nháp đã tạo.",
+  CERT_PREVIEW_STALE: "Preview đã hết hạn hoặc nguồn đã thay đổi. Tải lại và chuẩn bị preview mới.",
+  CERT_INCOMPLETE: "Còn dữ kiện thiếu hoặc mâu thuẫn. Đối soát trước khi chốt.",
+  CERT_FAITH_CONFIRMATION: "Cần xác nhận riêng nội dung đức tin trong GCN Báp-têm.",
+  CERT_REASON_REQUIRED: "Nhập lý do thay thế hoặc thu hồi bản.",
+  CERT_VERSION_STALE: "Bản nguồn đã có phiên bản mới. Đối soát lịch sử.",
+  CERT_NOT_CURRENT: "Bản đã thay thế hoặc thu hồi; không tải/in lại.",
+  CERT_RENDER_BUSY: "Đang tạo tài liệu khác. Thử chuẩn bị preview lại sau.",
+  CERT_RENDER_TIMEOUT: "Tạo file quá thời hạn. Bản chưa được chốt; kiểm tra lại.",
+  CERT_RENDER_FAILED: "Chưa tạo được file. Bản chưa được chốt.",
+  ATTENDANCE_REFERENCE_REASON: "Cần lý do thay đổi buổi tham chiếu.",
+  ATTENDANCE_REFERENCE_EXISTS:
+    "Ngày này đã có buổi tham chiếu. Bỏ chọn buổi cũ có lý do trước khi chọn buổi khác.",
+  CERT_SOURCE_TEXT_INVALID:
+    "Nguồn có ký tự không hợp lệ cho tài liệu. Đối soát nguồn rồi chuẩn bị preview lại.",
+  CERT_PREVIEW_LIMIT:
+    "Đã đạt giới hạn preview tạm của Hội Thánh. Chốt bản đang làm hoặc chờ preview hết hạn.",
+  CERT_FILE_LIMIT: "Tài liệu vượt giới hạn dung lượng. Bản chưa được chốt.",
+  CERT_PAGE_LIMIT: "Tài liệu vượt giới hạn số trang. Kiểm tra nội dung; không cắt bớt dữ kiện.",
+  RITE_KIND_IMMUTABLE: "Không đổi loại lễ của bản ghi. Tạo bản ghi đúng loại.",
+  RITE_SUBJECT_IMMUTABLE:
+    "Bản Báp-têm đã ghi nhận không đổi người. Hủy có đối soát rồi ghi bản đúng.",
+  RITE_REASON_REQUIRED: "Nhập lý do thay đổi trạng thái hoặc đính chính.",
+  RITE_DATE_INVALID: "Kiểm tra ngày lễ/ngày sinh/ngày qua đời và trạng thái ghi nhận.",
+  RITE_MEMBER_REQUIRED: "Thành hôn cần ít nhất một người liên kết hồ sơ Hội Thánh.",
+  RITE_SAME_PERSON: "Hai người trong lễ thành hôn phải là hai hồ sơ khác nhau.",
+  RITE_BAPTISM_DECISION:
+    "Thông tin Báp-têm sau ghi nhận phải khớp ngày/nơi lễ. Chọn cập nhật theo lễ hoặc đính chính trước.",
+  RITE_PREVIEW_STALE:
+    "Dữ liệu đã thay đổi hoặc chưa xem preview. Tải lại và kiểm tra trước khi xác nhận.",
+  RITE_BAPTISM_EXISTS: "Hồ sơ đã có một bản Báp-têm được ghi nhận. Mở bản hiện có để đính chính.",
+  PREP_COURSE_STATE: "Khóa không ở trạng thái cho phép thao tác. Tải lại để kiểm tra.",
+  PREP_PLAN_LOCKED:
+    "Chương trình/ngày khai giảng đã gắn buổi học hoặc đã được sử dụng. Giữ lịch sử và kiểm tra lại.",
+  PREP_OPEN_SESSIONS: "Còn buổi đang mở. Chốt các buổi trước khi đóng khóa.",
+  PREP_NOT_ELIGIBLE: "Hồ sơ cần là tín hữu dự bị đang sinh hoạt/vắng lâu và chưa Báp-têm.",
+  PREP_CONFIRM_UNKNOWN: "Chưa rõ trạng thái Báp-têm. Cần xác nhận và ghi lý do để ghi danh.",
+  PREP_ALREADY_ENROLLED: "Học viên đã có ghi danh trong khóa. Mở danh sách để xem hoặc khôi phục.",
+  PREP_REGULAR_EXISTS: "Bài đã có buổi chính. Mở buổi hiện có hoặc tạo buổi học bù.",
+  PREP_MAKEUP_UNAVAILABLE: "Cần buổi chính đã chốt và ngày học bù không trước buổi chính.",
+  PREP_ALREADY_CREDITED: "Học viên đã có bài được xác nhận. Tải lại danh sách cần học bù.",
+  PREP_NOT_ENROLLED: "Chỉ chọn học viên đang học trong khóa để học bù.",
+  QR_RESOLUTION_STALE: "Kết quả xác minh đã thay đổi hoặc hết hạn. Tải lại buổi và quét lại.",
+  QR_NOT_AVAILABLE: "Không thể dùng thẻ cho buổi này. Kiểm tra thẻ và danh sách buổi.",
+  CARD_NOT_USABLE: "Thẻ không còn sử dụng được hoặc hồ sơ đã ngừng sinh hoạt. Tải lại để kiểm tra.",
+  CARD_ALREADY_ACTIVE: "Hồ sơ đã có thẻ đang hiệu lực. Tải lại hoặc chọn Đổi thẻ.",
+  ATTENDANCE_ROSTER_LIMIT:
+    "Mỗi buổi tối đa 2.000 dòng danh sách. Không có dữ liệu bị cắt hoặc ghi một phần.",
+  ATTENDANCE_PREVIEW_STALE:
+    "Danh sách hoặc phiên xem trước đã thay đổi/hết hạn. Xem lại trước khi mở buổi.",
+  ATTENDANCE_SESSION_CHANGED: "Buổi đã chốt, mở lại hoặc làm lại. Tải lại trước khi ghi nhận.",
+  ATTENDANCE_STATE: "Buổi không ở trạng thái cho phép thao tác. Tải lại để kiểm tra.",
   FILE_LIMIT:
     "File vượt giới hạn dòng, cột, dung lượng hoặc tài nguyên xử lý. Thu hẹp dữ liệu rồi thử lại.",
   FILE_INVALID: "File không đúng định dạng CSV UTF-8 hoặc Excel .xlsx theo mẫu.",
@@ -92,8 +170,8 @@ const security = {
   "X-Content-Type-Options": "nosniff",
   "Referrer-Policy": "no-referrer",
   "Content-Security-Policy":
-    "default-src 'self'; script-src 'self'; style-src 'self'; font-src 'self'; img-src 'self' data:; connect-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'",
-  "Permissions-Policy": "camera=(), microphone=(), geolocation=()",
+    "default-src 'self'; script-src 'self'; style-src 'self'; font-src 'self'; img-src 'self' data:; connect-src 'self'; worker-src 'self' blob:; media-src 'self' blob:; frame-ancestors 'none'; base-uri 'none'; form-action 'self'",
+  "Permissions-Policy": "camera=(self), microphone=(), geolocation=()",
 };
 function cookies(req: Request) {
   const map = new Map<string, string>();
@@ -143,6 +221,7 @@ export function createApp(
     organization,
   );
   const families = new Families(identity.db, identity.now, identity.audit);
+  const reports = new AttendanceReporting(identity.db, identity.now);
   const members = new Members(
     identity.db,
     operations,
@@ -152,6 +231,7 @@ export function createApp(
     conf.csrfKey,
     identity.now,
   );
+  members.bindAttendanceReports(reports);
   const exchange = new DataExchange(
     identity.db,
     operations,
@@ -168,12 +248,67 @@ export function createApp(
     identity.audit,
     conf.csrfKey,
     identity.now,
+    reports,
   );
   const familyApp = new FamilyApplication(
     families,
     members.familyPort(conf.csrfKey),
     operations,
     organization,
+    conf.csrfKey,
+    identity.now,
+  );
+  const cards = new Cards(
+    identity.db,
+    members.cardPort(),
+    tenancy,
+    operations,
+    identity.audit,
+    conf.csrfKey,
+    identity.now,
+  );
+  const attendance = new Attendance(
+    identity.db,
+    members.attendancePort(),
+    organization,
+    operations,
+    identity.audit,
+    conf.csrfKey,
+    identity.now,
+    cards,
+    new PrepAttendanceSource(identity.db, members.attendancePort()),
+  );
+  const prepClasses = new PrepClasses(
+    identity.db,
+    members.prepPort(),
+    members.attendancePort(),
+    organization,
+    attendance,
+    operations,
+    identity.audit,
+    conf.csrfKey,
+    identity.now,
+  );
+  const rites = new Rites(
+    identity.db,
+    members.ritesPort(),
+    operations,
+    identity.audit,
+    conf.csrfKey,
+    identity.now,
+  );
+  members.bindBaptismLedger(rites.baptismChanged);
+  const certificates = new Certificates(
+    identity.db,
+    new CertificateSources(
+      members.ritesPort(),
+      rites.certificatePort(),
+      prepClasses.certificatePort(),
+      tenancy,
+      identity.now,
+    ),
+    operations,
+    identity.audit,
     conf.csrfKey,
     identity.now,
   );
@@ -184,6 +319,9 @@ export function createApp(
     organization,
     organizationRuntime,
     identity.now,
+    reports,
+    new RiteReporting(identity.db),
+    new PrepReporting(identity.db),
   );
   const log = options.log ?? ((row) => console.info(JSON.stringify(row)));
   return async function handle(req: Request, info: RequestInfo): Promise<Response> {
@@ -195,7 +333,9 @@ export function createApp(
     let requestRealm: Realm = "owner",
       actorChurchId: ObjectId | null = null,
       targetChurchId: ObjectId | null = null,
-      targetAccountId: ObjectId | undefined;
+      targetAccountId: ObjectId | undefined,
+      printing = false,
+      printingCertificate = false;
     const headers = new Headers({
       ...security,
       "X-Request-Id": requestId,
@@ -271,6 +411,7 @@ export function createApp(
               actorId,
               churchId,
               canWrite: false,
+              canReadAttendance: true,
               policyContext: `${policyVersion}:owner`,
               fence: async (tx) => {
                 await auth.fence(tx);
@@ -289,6 +430,9 @@ export function createApp(
               actorId,
               churchId,
               canWrite: false,
+              canReadAttendance: ["pastor", "secretary", "ministry_lead"].includes(
+                ctx.account.role,
+              ),
               policyContext: `${policyVersion}:${ctx.account.version}`,
               fence: (tx) => auth.fence(tx),
             };
@@ -318,6 +462,7 @@ export function createApp(
               actorId,
               churchId,
               canWrite: true,
+              canReadAttendance: true,
               policyContext: `${policyVersion}:owner`,
               fence: async (tx) => {
                 await auth.fence(tx);
@@ -336,6 +481,9 @@ export function createApp(
               actorId,
               churchId,
               canWrite: true,
+              canReadAttendance: ["pastor", "secretary", "ministry_lead"].includes(
+                ctx.account.role,
+              ),
               policyContext: `${policyVersion}:${ctx.account.version}`,
               fence: (tx) => auth.fence(tx),
             };
@@ -469,6 +617,7 @@ export function createApp(
               actorId,
               churchId,
               canWrite: true,
+              canReadAttendance: true,
               policyContext: `${policyVersion}:owner`,
               fence: async (tx) => {
                 await auth.fence(tx);
@@ -487,6 +636,9 @@ export function createApp(
               actorId,
               churchId,
               canWrite: ["pastor", "secretary"].includes(ctx.account.role),
+              canReadAttendance: ["pastor", "secretary", "ministry_lead"].includes(
+                ctx.account.role,
+              ),
               policyContext: `${policyVersion}:${ctx.account.version}`,
               fence: (tx) => auth.fence(tx),
             };
@@ -587,6 +739,7 @@ export function createApp(
               actorId,
               churchId,
               canWrite: true,
+              canReadAttendance: true,
               policyContext: `${policyVersion}:owner`,
               fence: async (tx) => {
                 await auth.fence(tx);
@@ -605,6 +758,9 @@ export function createApp(
               actorId,
               churchId,
               canWrite: ["pastor", "secretary"].includes(ctx.account.role),
+              canReadAttendance: ["pastor", "secretary", "ministry_lead"].includes(
+                ctx.account.role,
+              ),
               policyContext: `${policyVersion}:${ctx.account.version}`,
               fence: (tx) => auth.fence(tx),
             };
@@ -625,8 +781,7 @@ export function createApp(
             } else if (action === "history")
               response = json(await members.history(grant, tail as string, url.searchParams));
             else if (tail) {
-              requireCondition(!url.search, 400, "INVALID_REQUEST");
-              const m = await members.get(grant, tail);
+              const m = await members.get(grant, tail, url.searchParams);
               headers.set("ETag", `"${m.version}"`);
               response = json(m);
             } else response = json(await members.list(grant, url.searchParams));
@@ -657,6 +812,749 @@ export function createApp(
               : await members.create(grant, body, key, requestId);
             headers.set("ETag", `"${(result.data.member as { version: number }).version}"`);
             response = json(result.data, result.status, { replayed: result.replayed });
+          }
+        } else if (
+          /^\/api\/v1\/(?:owner\/)?churches\/[^/]+\/(?:members\/[^/]+\/certificates|certificates\/(?:operations\/[^/]+|drafts(?:\/[^/]+(?:\/(?:prepare|issue|history))?)?|editions(?:\/[^/]+(?:\/(?:revise|revoke|print|print-script|files\/(?:pdf|docx)))?)?))$/.test(
+            path,
+          )
+        ) {
+          const parts = path.split("/"),
+            isOwner = parts[3] === "owner",
+            offset = isOwner ? 1 : 0,
+            churchId = objectId(parts[4 + offset] as string),
+            memberRead = parts[5 + offset] === "members",
+            section = parts[6 + offset],
+            id = parts[7 + offset],
+            action = parts[8 + offset],
+            format = parts[9 + offset];
+          const methods =
+            memberRead ||
+            section === "operations" ||
+            action === "history" ||
+            action === "files" ||
+            action === "print" ||
+            action === "print-script"
+              ? ["GET"]
+              : action
+                ? ["POST"]
+                : section === "drafts"
+                  ? id
+                    ? ["GET", "PATCH"]
+                    : ["GET", "POST"]
+                  : ["GET"];
+          requireCondition(methods.includes(req.method), 405, "METHOD_NOT_ALLOWED");
+          requestRealm = isOwner ? "owner" : "church";
+          targetChurchId = churchId;
+          printing = action === "print";
+          printingCertificate = printing;
+          const writing = req.method !== "GET",
+            capability =
+              writing || section === "operations" ? "certificates:manage" : "certificates:read";
+          route = `P35.${requestRealm}.${section}.${action ?? "root"}.${req.method}`;
+          let grant: CertificateGrant;
+          if (isOwner) {
+            const ctx = await identity.authorize(ownerToken, "owner", false, true);
+            actorId = ctx.owner._id;
+            const auth = identity.ownerGrant(ctx, capability);
+            grant = {
+              actorKind: "owner",
+              actorId,
+              churchId,
+              canWrite: true,
+              canReadAttendance: true,
+              canManageCertificates: true,
+              policyContext: `${policyVersion}:owner`,
+              fence: async (tx) => {
+                await auth.fence(tx);
+                await access.fence(churchId, tx, true);
+              },
+            };
+          } else {
+            const ctx = await churchIdentity.authorize(churchToken, false, false);
+            actorId = ctx.account._id;
+            actorChurchId = ctx.account.churchId;
+            requireCondition(churchId.equals(ctx.account.churchId), 404, "NOT_FOUND");
+            const auth = churchIdentity.grant(ctx);
+            auth.require(capability);
+            grant = {
+              actorKind: "church_user",
+              actorId,
+              churchId,
+              canWrite: true,
+              canReadAttendance: ["pastor", "secretary", "ministry_lead"].includes(
+                ctx.account.role,
+              ),
+              canManageCertificates:
+                ctx.account.role === "pastor" || ctx.account.role === "secretary",
+              policyContext: `${policyVersion}:${ctx.account.version}`,
+              fence: (tx) => auth.fence(tx),
+            };
+          }
+          if (writing) {
+            requireCondition(!url.search, 400, "INVALID_REQUEST");
+            requireCondition(req.headers.get("origin") === conf.origin, 403, "CSRF_FAILED");
+            await identity.csrfSession(
+              isOwner ? ownerToken : churchToken,
+              requestRealm,
+              req.headers.get("x-csrf-token"),
+            );
+            const body = await readJson(req, 32768),
+              key = req.headers.get("idempotency-key"),
+              match = req.headers.get("if-match");
+            if (action === "prepare") {
+              requireCondition(
+                body &&
+                  typeof body === "object" &&
+                  !Array.isArray(body) &&
+                  Object.keys(body).length === 0,
+                422,
+                "VALIDATION_FAILED",
+              );
+              response = json(await certificates.prepare(grant, id as string, match));
+            } else {
+              const result =
+                section === "editions"
+                  ? action === "revise"
+                    ? await certificates.revise(grant, id as string, body, key, match, requestId)
+                    : await certificates.revoke(grant, id as string, body, key, match, requestId)
+                  : action === "issue"
+                    ? await certificates.issue(grant, id as string, body, key, match, requestId)
+                    : await certificates.saveDraft(grant, id ?? null, body, key, match, requestId);
+              response = json(result.data, result.status, { replayed: result.replayed });
+            }
+          } else if (memberRead)
+            response = json(
+              await certificates.list(grant, url.searchParams, parts[6 + offset] as string),
+            );
+          else if (section === "operations") {
+            requireCondition(!url.search, 400, "INVALID_REQUEST");
+            response = json(await certificates.operation(grant, id as string));
+          } else if (action === "history")
+            response = json(await certificates.historyPage(grant, id as string, url.searchParams));
+          else if (action === "files" || action === "print" || action === "print-script") {
+            requireCondition(
+              [...url.searchParams.keys()].every((k) => k === "version") &&
+                url.searchParams.getAll("version").length === 1,
+              400,
+              "INVALID_REQUEST",
+            );
+            const v = url.searchParams.get("version");
+            requireCondition(
+              v && /^[1-9][0-9]*$/.test(v) && Number.isSafeInteger(Number(v)),
+              400,
+              "INVALID_REQUEST",
+            );
+            if (action === "files") {
+              const file = await certificates.file(
+                grant,
+                id as string,
+                format as "pdf" | "docx",
+                Number(v),
+                requestId,
+              );
+              response = new Response(new Uint8Array(file.bytes), {
+                headers: {
+                  ...security,
+                  "Content-Type":
+                    format === "pdf"
+                      ? "application/pdf"
+                      : "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                  "Content-Disposition": `attachment; filename="${file.filename}"`,
+                  ETag: `"${file.hash}"`,
+                },
+              });
+            } else {
+              const e = await certificates.printable(grant, id as string, Number(v));
+              if (action === "print-script")
+                response = new Response(certificatePrintScript, {
+                  headers: { ...security, "Content-Type": "application/javascript" },
+                });
+              else {
+                const files = await Array.fromAsync(
+                  new Bun.Glob("*.css").scan({ cwd: resolve("dist/assets") }),
+                );
+                response = new Response(
+                  printCertificate(
+                    e.snapshot.content,
+                    e.pages,
+                    files.map((n) => `/assets/${n}`),
+                    `${path}-script?version=${e.version}`,
+                  ),
+                  { headers: { ...security, "Content-Type": "text/html; charset=utf-8" } },
+                );
+              }
+            }
+          } else if (section === "drafts")
+            response = json(
+              id
+                ? await certificates.getDraft(grant, id)
+                : await certificates.draftList(grant, url.searchParams),
+            );
+          else if (id) {
+            requireCondition(!url.search, 400, "INVALID_REQUEST");
+            response = json(await certificates.getEdition(grant, id));
+          } else response = json(await certificates.list(grant, url.searchParams));
+        } else if (
+          /^\/api\/v1\/(?:owner\/)?churches\/[^/]+\/(?:members\/[^/]+\/rites|rites\/(?:people|baptism-facts|operations\/[^/]+|records(?:\/preview|\/[^/]+(?:\/(?:history|preview))?)?))$/.test(
+            path,
+          )
+        ) {
+          const parts = path.split("/"),
+            isOwner = parts[3] === "owner",
+            offset = isOwner ? 1 : 0,
+            churchId = objectId(parts[4 + offset] as string),
+            memberRead = parts[5 + offset] === "members",
+            section = parts[6 + offset],
+            recordId =
+              section === "records" && parts[7 + offset] !== "preview"
+                ? parts[7 + offset]
+                : undefined,
+            preview =
+              section === "records" &&
+              (parts[7 + offset] === "preview" || parts[8 + offset] === "preview"),
+            history = parts[8 + offset] === "history";
+          const methods =
+            memberRead || section !== "records" || history
+              ? ["GET"]
+              : preview
+                ? ["POST"]
+                : recordId
+                  ? ["GET", "PATCH"]
+                  : ["GET", "POST"];
+          requireCondition(methods.includes(req.method), 405, "METHOD_NOT_ALLOWED");
+          requestRealm = isOwner ? "owner" : "church";
+          targetChurchId = churchId;
+          const writing = req.method !== "GET",
+            capability = writing || section === "operations" ? "rites:manage" : "rites:read";
+          route = `P34.${requestRealm}.${section}.${preview ? "preview" : history ? "history" : "root"}.${req.method}`;
+          let grant: RiteGrant;
+          if (isOwner) {
+            const ctx = await identity.authorize(ownerToken, "owner", false, true);
+            actorId = ctx.owner._id;
+            const auth = identity.ownerGrant(ctx, capability);
+            grant = {
+              actorKind: "owner",
+              actorId,
+              churchId,
+              canWrite: true,
+              canReadAttendance: true,
+              canManageRites: true,
+              policyContext: `${policyVersion}:owner`,
+              fence: async (tx) => {
+                await auth.fence(tx);
+                await access.fence(churchId, tx, true);
+              },
+            };
+          } else {
+            const ctx = await churchIdentity.authorize(churchToken, false, false);
+            actorId = ctx.account._id;
+            actorChurchId = ctx.account.churchId;
+            requireCondition(churchId.equals(ctx.account.churchId), 404, "NOT_FOUND");
+            const auth = churchIdentity.grant(ctx);
+            auth.require(capability);
+            grant = {
+              actorKind: "church_user",
+              actorId,
+              churchId,
+              canWrite: true,
+              canReadAttendance: ["pastor", "secretary", "ministry_lead"].includes(
+                ctx.account.role,
+              ),
+              canManageRites: ctx.account.role === "pastor" || ctx.account.role === "secretary",
+              policyContext: `${policyVersion}:${ctx.account.version}`,
+              fence: (tx) => auth.fence(tx),
+            };
+          }
+          if (!writing) {
+            if (memberRead)
+              response = json(
+                await rites.list(grant, url.searchParams, parts[6 + offset] as string),
+              );
+            else if (section === "people" || section === "baptism-facts")
+              response = json(
+                await rites.peoplePage(grant, url.searchParams, section === "baptism-facts"),
+              );
+            else if (section === "operations") {
+              requireCondition(!url.search, 400, "INVALID_REQUEST");
+              response = json(await rites.operation(grant, parts[7 + offset] as string));
+            } else if (history)
+              response = json(await rites.historyPage(grant, recordId as string, url.searchParams));
+            else if (recordId) {
+              requireCondition(!url.search, 400, "INVALID_REQUEST");
+              const data = await rites.get(grant, recordId);
+              headers.set("ETag", `"${data.version}"`);
+              response = json(data);
+            } else response = json(await rites.list(grant, url.searchParams));
+          } else {
+            requireCondition(!url.search, 400, "INVALID_REQUEST");
+            requireCondition(req.headers.get("origin") === conf.origin, 403, "CSRF_FAILED");
+            await identity.csrfSession(
+              isOwner ? ownerToken : churchToken,
+              requestRealm,
+              req.headers.get("x-csrf-token"),
+            );
+            const body = await readJson(req, 131072),
+              match = req.headers.get("if-match");
+            if (preview) response = json(await rites.preview(grant, recordId ?? null, body, match));
+            else {
+              const r = await rites.save(
+                grant,
+                recordId ?? null,
+                body,
+                req.headers.get("idempotency-key"),
+                match,
+                requestId,
+              );
+              response = json(r.data, r.status, { replayed: r.replayed });
+            }
+          }
+        } else if (
+          /^\/api\/v1\/(?:owner\/)?churches\/[^/]+\/(?:members\/[^/]+\/prep-classes|prep-classes\/(?:operations\/[^/]+|courses(?:\/[^/]+(?:\/(?:activate|close|reopen|candidates|history|meetings|enrollments(?:\/[^/]+\/(?:state|interview))?))?)?))$/.test(
+            path,
+          )
+        ) {
+          const parts = path.split("/"),
+            isOwner = parts[3] === "owner",
+            offset = isOwner ? 1 : 0,
+            churchId = objectId(parts[4 + offset] as string),
+            memberRead = parts[5 + offset] === "members",
+            section = parts[6 + offset],
+            id = parts[7 + offset],
+            action = parts[8 + offset],
+            memberId = parts[9 + offset],
+            detail = parts[10 + offset];
+          requestRealm = isOwner ? "owner" : "church";
+          targetChurchId = churchId;
+          const methods =
+            memberRead ||
+            section === "operations" ||
+            ["candidates", "history"].includes(action ?? "")
+              ? ["GET"]
+              : detail
+                ? ["POST"]
+                : action
+                  ? action === "enrollments" || action === "meetings"
+                    ? ["GET", "POST"]
+                    : ["POST"]
+                  : id
+                    ? ["GET", "PATCH"]
+                    : ["GET", "POST"];
+          requireCondition(methods.includes(req.method), 405, "METHOD_NOT_ALLOWED");
+          const writing = req.method !== "GET",
+            capability = writing
+              ? detail === "interview"
+                ? "classes:interview"
+                : "classes:manage"
+              : "classes:read";
+          route = `P33.${requestRealm}.${section}.${action ?? "root"}.${detail ?? "root"}.${req.method}`;
+          let grant: ClassGrant;
+          if (isOwner) {
+            const ctx = await identity.authorize(ownerToken, "owner", false, true);
+            actorId = ctx.owner._id;
+            const auth = identity.ownerGrant(ctx, capability);
+            grant = {
+              actorKind: "owner",
+              actorId,
+              churchId,
+              canWrite: true,
+              canReadAttendance: true,
+              canManageClasses: true,
+              canInterview: true,
+              policyContext: `${policyVersion}:owner`,
+              fence: async (tx) => {
+                await auth.fence(tx);
+                await access.fence(churchId, tx, true);
+              },
+            };
+          } else {
+            const ctx = await churchIdentity.authorize(churchToken, false, false);
+            actorId = ctx.account._id;
+            actorChurchId = ctx.account.churchId;
+            requireCondition(churchId.equals(ctx.account.churchId), 404, "NOT_FOUND");
+            const auth = churchIdentity.grant(ctx);
+            auth.require(capability);
+            grant = {
+              actorKind: "church_user",
+              actorId,
+              churchId,
+              canWrite: true,
+              canReadAttendance: ["pastor", "secretary", "ministry_lead"].includes(
+                ctx.account.role,
+              ),
+              canManageClasses: ctx.account.role === "pastor" || ctx.account.role === "secretary",
+              canInterview: ctx.account.role === "pastor",
+              policyContext: `${policyVersion}:${ctx.account.version}`,
+              fence: (tx) => auth.fence(tx),
+            };
+          }
+          if (!writing) {
+            if (memberRead)
+              response = json(
+                await prepClasses.memberCourses(
+                  grant,
+                  parts[6 + offset] as string,
+                  url.searchParams,
+                ),
+              );
+            else if (section === "operations") {
+              requireCondition(!url.search, 400, "INVALID_REQUEST");
+              response = json(await prepClasses.operation(grant, id as string));
+            } else if (action === "candidates")
+              response = json(await prepClasses.candidates(grant, id as string, url.searchParams));
+            else if (action === "enrollments")
+              response = json(
+                await prepClasses.enrollmentPage(grant, id as string, url.searchParams),
+              );
+            else if (action === "meetings")
+              response = json(await prepClasses.meetingPage(grant, id as string, url.searchParams));
+            else if (action === "history")
+              response = json(await prepClasses.historyPage(grant, id as string, url.searchParams));
+            else if (id) {
+              requireCondition(!url.search, 400, "INVALID_REQUEST");
+              const data = await prepClasses.get(grant, id);
+              headers.set("ETag", `"${data.version}"`);
+              response = json(data);
+            } else response = json(await prepClasses.list(grant, url.searchParams));
+          } else {
+            requireCondition(!url.search, 400, "INVALID_REQUEST");
+            requireCondition(req.headers.get("origin") === conf.origin, 403, "CSRF_FAILED");
+            await identity.csrfSession(
+              isOwner ? ownerToken : churchToken,
+              requestRealm,
+              req.headers.get("x-csrf-token"),
+            );
+            const body = await readJson(req, 196608),
+              key = req.headers.get("idempotency-key"),
+              match = req.headers.get("if-match");
+            const result =
+              detail === "interview"
+                ? await prepClasses.interview(
+                    grant,
+                    id as string,
+                    memberId as string,
+                    body,
+                    key,
+                    match,
+                    requestId,
+                  )
+                : detail === "state"
+                  ? await prepClasses.changeEnrollment(
+                      grant,
+                      id as string,
+                      memberId as string,
+                      body,
+                      key,
+                      match,
+                      requestId,
+                    )
+                  : action === "enrollments"
+                    ? await prepClasses.enroll(grant, id as string, body, key, requestId)
+                    : action === "meetings"
+                      ? await prepClasses.meeting(grant, id as string, body, key, requestId)
+                      : action
+                        ? await prepClasses.transition(
+                            grant,
+                            id as string,
+                            action as "activate" | "close" | "reopen",
+                            body,
+                            key,
+                            match,
+                            requestId,
+                          )
+                        : id
+                          ? await prepClasses.patch(grant, id, body, key, match, requestId)
+                          : await prepClasses.create(grant, body, key, requestId);
+            response = json(result.data, result.status, { replayed: result.replayed });
+          }
+        } else if (
+          /^\/api\/v1\/(?:owner\/)?churches\/[^/]+\/(?:members\/[^/]+\/(?:card|cards)|cards\/(?:operations\/[^/]+|[^/]+\/(?:render|print|print-script|history|replace|revoke)))$/.test(
+            path,
+          )
+        ) {
+          const parts = path.split("/"),
+            isOwner = parts[3] === "owner",
+            offset = isOwner ? 1 : 0,
+            churchId = objectId(parts[4 + offset] as string),
+            section = parts[5 + offset],
+            id = parts[6 + offset],
+            action = parts[7 + offset];
+          requestRealm = isOwner ? "owner" : "church";
+          targetChurchId = churchId;
+          printing = action === "print";
+          const writing = action === "cards" || action === "replace" || action === "revoke";
+          requireCondition(req.method === (writing ? "POST" : "GET"), 405, "METHOD_NOT_ALLOWED");
+          route = `P32.${requestRealm}.cards.${action}.${req.method}`;
+          let grant: CardGrant;
+          if (isOwner) {
+            const ctx = await identity.authorize(ownerToken, "owner", false, true);
+            actorId = ctx.owner._id;
+            const auth = identity.ownerGrant(ctx, writing ? "cards:manage" : "cards:read");
+            grant = {
+              actorKind: "owner",
+              actorId,
+              churchId,
+              canWrite: true,
+              canReadAttendance: true,
+              canManageCards: true,
+              policyContext: `${policyVersion}:owner`,
+              fence: async (tx) => {
+                await auth.fence(tx);
+                await access.fence(churchId, tx, true);
+              },
+            };
+          } else {
+            const ctx = await churchIdentity.authorize(churchToken, false, false);
+            actorId = ctx.account._id;
+            actorChurchId = ctx.account.churchId;
+            requireCondition(churchId.equals(ctx.account.churchId), 404, "NOT_FOUND");
+            const auth = churchIdentity.grant(ctx);
+            auth.require(writing ? "cards:manage" : "cards:read");
+            grant = {
+              actorKind: "church_user",
+              actorId,
+              churchId,
+              canWrite: true,
+              canReadAttendance: ["pastor", "secretary", "ministry_lead"].includes(
+                ctx.account.role,
+              ),
+              canManageCards: ctx.account.role === "pastor" || ctx.account.role === "secretary",
+              policyContext: `${policyVersion}:${ctx.account.version}`,
+              fence: (tx) => auth.fence(tx),
+            };
+          }
+          if (writing) {
+            requireCondition(!url.search, 400, "INVALID_REQUEST");
+            requireCondition(req.headers.get("origin") === conf.origin, 403, "CSRF_FAILED");
+            await identity.csrfSession(
+              isOwner ? ownerToken : churchToken,
+              requestRealm,
+              req.headers.get("x-csrf-token"),
+            );
+            const body = await readJson(req),
+              key = req.headers.get("idempotency-key");
+            const result =
+              section === "members"
+                ? await cards.issue(grant, id as string, body, key, requestId)
+                : await cards.change(
+                    grant,
+                    id as string,
+                    action as "replace" | "revoke",
+                    body,
+                    key,
+                    req.headers.get("if-match"),
+                    requestId,
+                  );
+            response = json(result.data, result.status, { replayed: result.replayed });
+          } else if (action === "history")
+            response = json(await cards.historyPage(grant, id as string, url.searchParams));
+          else if (id === "operations") {
+            requireCondition(!url.search, 400, "INVALID_REQUEST");
+            response = json(await cards.operation(grant, action as string));
+          } else if (section === "members") {
+            requireCondition(!url.search, 400, "INVALID_REQUEST");
+            response = json(await cards.current(grant, id as string));
+          } else {
+            requireCondition(
+              [...url.searchParams.keys()].every((k) => k === "version") &&
+                url.searchParams.getAll("version").length <= 1,
+              400,
+              "INVALID_REQUEST",
+            );
+            const v = url.searchParams.get("version"),
+              expected = v ? Number(v) : undefined;
+            requireCondition(
+              v === null || (/^[1-9][0-9]*$/.test(v) && Number.isSafeInteger(expected)),
+              400,
+              "INVALID_REQUEST",
+            );
+            const render = await cards.render(grant, id as string, expected);
+            if (action === "render") response = json(render);
+            else if (action === "print-script")
+              response = new Response(printScript, {
+                headers: {
+                  ...Object.fromEntries(headers),
+                  "Content-Type": "text/javascript; charset=utf-8",
+                },
+              });
+            else {
+              const index = await Bun.file(`${resolve(options.dist ?? "dist")}/index.html`).text();
+              const css = Array.from(
+                index.matchAll(/href="(\/assets\/[A-Za-z0-9._-]+\.css)"/g),
+                (m) => m[1] as string,
+              );
+              requireCondition(css.length, 503, "DEPENDENCY_UNAVAILABLE");
+              response = new Response(
+                printDocument(render, css, `${path}-script?version=${render.card.version}`),
+                {
+                  headers: {
+                    ...Object.fromEntries(headers),
+                    "Content-Type": "text/html; charset=utf-8",
+                  },
+                },
+              );
+            }
+          }
+        } else if (
+          /^\/api\/v1\/(?:owner\/)?churches\/[^/]+\/attendance\/(?:sessions(?:\/[^/]+(?:\/(?:candidates|participants(?:\/[^/]+)?|roster-changes|history|open|close|reopen|reset|qr-resolutions|scans))?)?|operations\/[^/]+)$/.test(
+            path,
+          )
+        ) {
+          const parts = path.split("/"),
+            isOwner = parts[3] === "owner",
+            offset = isOwner ? 1 : 0,
+            churchId = objectId(parts[4 + offset] as string),
+            section = parts[6 + offset],
+            id = parts[7 + offset],
+            action = parts[8 + offset],
+            memberId = parts[9 + offset];
+          requestRealm = isOwner ? "owner" : "church";
+          targetChurchId = churchId;
+          const marking = action === "participants" && !!memberId,
+            scanning = action === "qr-resolutions" || action === "scans";
+          const methods =
+            section === "operations" ||
+            action === "candidates" ||
+            action === "history" ||
+            (action === "participants" && !memberId)
+              ? ["GET"]
+              : marking
+                ? ["PATCH"]
+                : action
+                  ? ["POST"]
+                  : id
+                    ? ["GET", "PATCH"]
+                    : ["GET", "POST"];
+          requireCondition(methods.includes(req.method), 405, "METHOD_NOT_ALLOWED");
+          const writing = req.method !== "GET",
+            manager = writing
+              ? !marking && !scanning
+              : action === "candidates" || action === "history";
+          const capability = scanning
+            ? "attendance:scan"
+            : manager
+              ? "attendance:manage"
+              : writing
+                ? "attendance:mark"
+                : "attendance:read";
+          route = `P31.${isOwner ? "owner" : "church"}.${section}.${action ?? "root"}.${req.method}`;
+          let grant: AttendanceGrant;
+          if (isOwner) {
+            const ctx = await identity.authorize(ownerToken, "owner", false, true);
+            actorId = ctx.owner._id;
+            const auth = identity.ownerGrant(ctx, capability);
+            grant = {
+              actorKind: "owner",
+              actorId,
+              churchId,
+              canWrite: true,
+              canReadAttendance: true,
+              canManageAttendance: true,
+              canReadClasses: true,
+              canManageClasses: true,
+              policyContext: `${policyVersion}:owner`,
+              fence: async (tx) => {
+                await auth.fence(tx);
+                await access.fence(churchId, tx, true);
+              },
+            };
+          } else {
+            const ctx = await churchIdentity.authorize(churchToken, false, false);
+            actorId = ctx.account._id;
+            actorChurchId = ctx.account.churchId;
+            requireCondition(churchId.equals(ctx.account.churchId), 404, "NOT_FOUND");
+            const auth = churchIdentity.grant(ctx);
+            auth.require(capability);
+            grant = {
+              actorKind: "church_user",
+              actorId,
+              churchId,
+              canWrite: true,
+              canReadAttendance: ["pastor", "secretary", "ministry_lead"].includes(
+                ctx.account.role,
+              ),
+              canManageAttendance:
+                ctx.account.role === "pastor" || ctx.account.role === "secretary",
+              canReadClasses: ctx.account.role === "pastor" || ctx.account.role === "secretary",
+              canManageClasses: ctx.account.role === "pastor" || ctx.account.role === "secretary",
+              ...(ctx.account.scope.kind === "assigned_units"
+                ? { unitScope: ctx.account.scope.unitIds }
+                : {}),
+              policyContext: `${policyVersion}:${ctx.account.version}`,
+              fence: (tx) => auth.fence(tx),
+            };
+          }
+          if (!writing) {
+            if (section === "operations") {
+              requireCondition(!url.search, 400, "INVALID_REQUEST");
+              response = json(await attendance.operation(grant, id as string));
+            } else if (action === "candidates")
+              response = json(await attendance.candidates(grant, id as string, url.searchParams));
+            else if (action === "participants")
+              response = json(await attendance.roster(grant, id as string, url.searchParams));
+            else if (action === "history")
+              response = json(await attendance.historyPage(grant, id as string, url.searchParams));
+            else if (id) {
+              requireCondition(!url.search, 400, "INVALID_REQUEST");
+              const data = await attendance.get(grant, id);
+              headers.set("ETag", `"${data.version}"`);
+              response = json(data);
+            } else response = json(await attendance.list(grant, url.searchParams));
+          } else {
+            requireCondition(!url.search, 400, "INVALID_REQUEST");
+            requireCondition(req.headers.get("origin") === conf.origin, 403, "CSRF_FAILED");
+            await identity.csrfSession(
+              isOwner ? ownerToken : churchToken,
+              requestRealm,
+              req.headers.get("x-csrf-token"),
+            );
+            const body = await readJson(req),
+              key = req.headers.get("idempotency-key"),
+              match = req.headers.get("if-match");
+            if (action === "qr-resolutions") {
+              await identity.rate.qrResolution(
+                churchId.toHexString(),
+                grant.actorKind,
+                grant.actorId.toHexString(),
+              );
+              response = json(await attendance.qrResolution(grant, id as string, body));
+            } else {
+              const result =
+                action === "scans"
+                  ? await attendance.scan(grant, id as string, body, key, match, requestId)
+                  : marking
+                    ? await attendance.mark(
+                        grant,
+                        id as string,
+                        memberId as string,
+                        body,
+                        key,
+                        match,
+                        requestId,
+                      )
+                    : action === "roster-changes"
+                      ? await attendance.changeRoster(
+                          grant,
+                          id as string,
+                          body,
+                          key,
+                          match,
+                          requestId,
+                        )
+                      : action
+                        ? await attendance.transition(
+                            grant,
+                            id as string,
+                            action as "open" | "close" | "reopen" | "reset",
+                            body,
+                            key,
+                            match,
+                            requestId,
+                          )
+                        : id
+                          ? await attendance.patch(grant, id, body, key, match, requestId)
+                          : await attendance.create(grant, body, key, requestId);
+              response = json(result.data, result.status, { replayed: result.replayed });
+            }
           }
         } else if (
           /^\/api\/v1\/(?:owner\/)?churches\/[^/]+\/(?:authorization\/policy|organization\/(?:overview|units\/[^/]+\/(?:members|details|memberships|membership-preview|history)|board-terms(?:\/[^/]+(?:\/(?:confirm|amend|close|cancel|history))?)?))$/.test(
@@ -706,6 +1604,7 @@ export function createApp(
               actorId,
               churchId,
               canWrite: true,
+              canReadAttendance: true,
               canManageMemberships: true,
               policyContext: `${policyVersion}:owner`,
               fence: async (tx) => {
@@ -735,6 +1634,9 @@ export function createApp(
               actorId,
               churchId,
               canWrite: ctx.account.role === "pastor",
+              canReadAttendance: ["pastor", "secretary", "ministry_lead"].includes(
+                ctx.account.role,
+              ),
               canManageMemberships:
                 ctx.account.role === "pastor" || ctx.account.role === "secretary",
               ...(ctx.account.scope.kind === "assigned_units"
@@ -853,6 +1755,7 @@ export function createApp(
               actorId,
               churchId,
               canWrite: true,
+              canReadAttendance: true,
               policyContext: `${policyVersion}:owner`,
               fence: async (tx) => {
                 await ownerGrant.fence(tx);
@@ -1048,6 +1951,7 @@ export function createApp(
               organization: "available",
               members: "available",
               families: "available",
+              attendance: "available",
             },
           });
         } else if (/^\/api\/v1\/churches\/[^/]+\/context$/.test(path)) {
@@ -1258,10 +2162,10 @@ export function createApp(
               "/owner/change-password",
               "/owner/support",
             ].includes(path) ||
-              /^\/owner\/churches\/[a-f0-9]{24}(?:\/(?:accounts|manage|config|members|families|bans|roles|overview))?$/i.test(
+              /^\/owner\/churches\/[a-f0-9]{24}(?:\/(?:accounts|manage|config|members|families|bans|roles|overview|attendance|rites|forms))?$/i.test(
                 path,
               ) ||
-              /^\/h\/[a-z0-9-]{1,100}(?:\/(?:login|change-password|support|config|members|families|bans|roles|overview|access))?$/i.test(
+              /^\/h\/[a-z0-9-]{1,100}(?:\/(?:login|change-password|support|config|members|families|bans|roles|overview|access|attendance|rites|forms))?$/i.test(
                 path,
               ),
             404,
@@ -1278,7 +2182,14 @@ export function createApp(
         }
       }
     } catch (error) {
-      let e = error instanceof AppError ? error : new AppError(503, "DEPENDENCY_UNAVAILABLE");
+      let e =
+        error instanceof AppError
+          ? error
+          : error instanceof MongoServerError &&
+              error.code === 11000 &&
+              String(error.message).includes("attendance_sunday_reference_unique")
+            ? new AppError(409, "ATTENDANCE_REFERENCE_EXISTS")
+            : new AppError(503, "DEPENDENCY_UNAVAILABLE");
       if (e.status === 403) {
         try {
           if (requestRealm === "church" || targetChurchId)
@@ -1325,6 +2236,22 @@ export function createApp(
         { status: e.status, headers },
       );
     }
+    if (printing && response.status >= 400)
+      response = new Response(
+        (printingCertificate ? certificatePrintError : printError)(
+          messages[
+            response.status === 401
+              ? "REAUTH_REQUIRED"
+              : printingCertificate
+                ? "CERT_NOT_CURRENT"
+                : "CARD_NOT_USABLE"
+          ] as string,
+        ),
+        {
+          status: response.status,
+          headers: { ...Object.fromEntries(headers), "Content-Type": "text/html; charset=utf-8" },
+        },
+      );
     log({
       requestId,
       route,

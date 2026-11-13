@@ -1,3 +1,6 @@
+import type { ReportingWindow } from "../attendance/reporting";
+import type { PrepReporting } from "../prep-classes/reporting";
+import type { RiteReporting } from "../rites/reporting";
 export interface OverviewPerson {
   id: string;
   code: string;
@@ -63,10 +66,21 @@ export interface OverviewDto {
   areas: { id: string | null; people: number; families: number }[];
   areaGroupCount: number;
   unassigned: { people: number; families: number };
-  attendance: OverviewMetric;
-  rites: OverviewMetric;
+  attendance: ReportingWindow &
+    OverviewMetric & {
+      latest: ReportingWindow["days"][number];
+      delta: number | null;
+      average4: number | null;
+      coverage4: number;
+      absent3: number;
+    };
+  rites: Awaited<ReturnType<RiteReporting["read"]>>;
+  classes: Awaited<ReturnType<PrepReporting["read"]>>;
 }
 export type OverviewTarget =
   | { kind: "members"; filters?: Record<string, string>; memberId?: string; create?: boolean }
   | { kind: "families" }
-  | { kind: "bans" };
+  | { kind: "bans" }
+  | { kind: "attendance"; sessionId?: string }
+  | { kind: "rites"; tab?: string; riteId?: string; courseId?: string }
+  | { kind: "forms" };

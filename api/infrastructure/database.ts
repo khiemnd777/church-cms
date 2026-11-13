@@ -1,4 +1,7 @@
 import { type ClientSession, type Db, MongoClient, MongoError } from "mongodb";
+import { attendanceIndexes, attendanceSchemas } from "../attendance/schema";
+import { cardIndexes, cardSchemas } from "../cards/schema";
+import { certificateIndexes, certificateSchemas } from "../certificates/schema";
 import type { Config } from "../config";
 import { exchangeIndexes, exchangeSchemas } from "../data-exchange/schema";
 import { AppError } from "../errors";
@@ -6,6 +9,8 @@ import { familyHistorySchema, familyIndexes, familySchema } from "../families/sc
 import type { AuditEvent, Credential, Owner, Session } from "../identity/models";
 import { memberIndexes, memberSchemas } from "../members/schema";
 import { organizationSchemas } from "../organization/schema";
+import { classIndexes, classSchemas } from "../prep-classes/schema";
+import { riteIndexes, riteSchemas } from "../rites/schema";
 export class Database {
   readonly client: MongoClient;
   readonly db: Db;
@@ -146,6 +151,11 @@ const common = {
   updatedAt: date,
 };
 const definitions = {
+  ...attendanceSchemas,
+  ...cardSchemas,
+  ...classSchemas,
+  ...riteSchemas,
+  ...certificateSchemas,
   ...exchangeSchemas,
   ...organizationSchemas,
   ...memberSchemas,
@@ -465,6 +475,11 @@ const indexes: Record<
     partialFilterExpression?: Record<string, unknown>;
   }[]
 > = {
+  ...attendanceIndexes,
+  ...cardIndexes,
+  ...classIndexes,
+  ...riteIndexes,
+  ...certificateIndexes,
   ...memberIndexes,
   ...exchangeIndexes,
   ...familyIndexes,
@@ -578,7 +593,19 @@ export async function initialize(
     );
   }
   for (const [name, schema] of Object.entries(definitions)) {
-    const validator = { $jsonSchema: { bsonType: "object", ...schema } };
+    const validator = {
+      $jsonSchema: { bsonType: "object", ...schema },
+      ...(name === "attendance_sessions"
+        ? {
+            $expr: {
+              $and: [
+                { $lte: ["$presentCount", "$includedCount"] },
+                { $lte: ["$includedCount", "$rowCount"] },
+              ],
+            },
+          }
+        : {}),
+    };
     if (await db.listCollections({ name }).hasNext())
       await db.command({
         collMod: name,
