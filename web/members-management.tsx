@@ -289,7 +289,10 @@ export function MembersManagement({
   }, [ctx, initialCreate, options, pending]);
   useEffect(() => {
     const recoveredId =
-      isCardIntent(pending, base) && pending?.realm === realm && pending.churchId === churchId
+      isCardIntent(pending, base) &&
+      pending?.resource?.kind === "member_card" &&
+      pending.realm === realm &&
+      pending.churchId === churchId
         ? pending.resource?.memberId
         : null;
     if (ctx && (recoveredId || initialMemberId))

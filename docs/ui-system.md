@@ -108,3 +108,7 @@ P2.6 dùng hero/4KPI/visitors+birthdays/8quick icons/attendance+care/areas+rites
 ## W05 — P3.1 điểm danh tay
 
 Theo P3.1-plan-r1 đã duyệt: header/buổi/count/progress/list giữ source W05; shared AttendanceItem dùng semantic button aria-pressed và label trạng thái. AttendanceProgress chuyển inline source height8/surface-2/radius5/good fill vào adapters, width theo count, aria progressbar. Không đổi CSS source/hash. Feature attendance.css chỉ layout; form/modal/candidates/history dùng kit, menu icon+tên. QR scan disabled đến P3.2. [Contracts/runbook](engineering/P3.1-attendance.md). Technical rendered proof và human acceptance ghi riêng trong task/state.
+
+## P4.4 — native list semantics
+
+Theo ASCII P4.4 đã duyệt, `ContentList` dùng nguyên pattern `.list/.li/.t` của HTML nguồn, chuyển div thành ul/li cho semantics. Adapter `.ui-content-list` chỉ reset margin/padding/list-style mặc định của ul để giữ geometry; không đổi tokens/base/patterns, palette hoặc font. Visibility dùng `Choice` radio theo ASCII; feature CSS chỉ bố trí nội dung/actions. Bằng chứng UI thuộc task P4.4, chưa là human acceptance hoặc release.

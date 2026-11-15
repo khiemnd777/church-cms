@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "event_id": "CHURCH-P4/P4.2/self-review/1",
+  "event_type": "evaluation",
+  "task_id": "CHURCH-P4",
+  "scope_id": "P4.2",
+  "recorded_at": "2026-11-14T00:46:54.354051+07:00",
+  "reported_by": "delivery_owner",
+  "source_kind": "agent_self_review",
+  "subject_event_id": "CHURCH-P4/P4.2/implementation/1",
+  "assessment_source": "agent_self_review",
+  "review_attempt": 1,
+  "decision": "PASS",
+  "findings": [],
+  "resolved_cases": [
+    "Deterministic preview row IDs and name sorting; valid speaker beyond bounded candidate page",
+    "No nested readSnapshot via lead unit-list; fresh own-unit source authorization",
+    "Exact historical revision beyond first25editions; no silent fallback print",
+    "Source drift/invalid retained member warns in print; edition snapshots stay immutable",
+    "50-row print in normal block table flow with fixed column proportions;3A4pages with repeatedheader/roworder/geometry checked",
+    "Test fixture/idle-reauth/route handler state timing and bounded workload retries corrected; failed attempts archived"
+  ],
+  "evidence_refs": [
+    "docs/tasks/CHURCH-P4.2.md",
+    "docs/engineering/P4.2-programs.md",
+    "output/p4.2/verification.json",
+    "output/p4.2/source-manifest.json",
+    "output/p4.2/browser-results.json",
+    "output/p4.2/qualification.json",
+    "output/p4.2/print-verification.json",
+    "output/p4.2/readback.json",
+    "output/p4.2/p41-evidence-preservation.json"
+  ],
+  "limits": [
+    "Self-review only; not independent review or human acceptance",
+    "No outstanding actionable finding in approved P4.2 scope after recheck; not a certification"
+  ]
+}

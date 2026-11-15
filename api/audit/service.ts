@@ -13,6 +13,7 @@ export class Audit {
     operationId: ObjectId,
     tx: ClientSession,
     safeSummary = eventType,
+    audience: "general" | "pastoral" = "general",
   ) {
     await this.db.audits.insertOne(
       {
@@ -30,6 +31,7 @@ export class Audit {
         requestId,
         outcome: "success",
         safeSummary,
+        audience,
       },
       { session: tx },
     );

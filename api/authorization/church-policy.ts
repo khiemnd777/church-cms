@@ -31,7 +31,7 @@ export function validateRoleScope(role: Role, scope: Scope) {
     );
 }
 // Only implemented capabilities are advertised; business modules extend this versioned catalogue in P2.
-export const policyVersion = 13;
+export const policyVersion = 18;
 export const churchCapabilities = ["context:read", "policy:read"] as const;
 export function capabilitiesFor(role: Role): readonly string[] {
   return role === "pastor"
@@ -42,6 +42,17 @@ export function capabilitiesFor(role: Role): readonly string[] {
         "organization:read",
         "organization:manage",
         "overview:read",
+        "schedule:read",
+        "schedule:manage",
+        "programs:read",
+        "programs:manage",
+        "care:read",
+        "care:manage",
+        "visitation:read",
+        "visitation:manage",
+        "prayers:read",
+        "prayers:manage",
+        "prayers:private",
         "attendance:read",
         "attendance:mark",
         "attendance:manage",
@@ -69,6 +80,16 @@ export function capabilitiesFor(role: Role): readonly string[] {
           "organization:roster",
           "organization:read",
           "overview:read",
+          "schedule:read",
+          "schedule:manage",
+          "programs:read",
+          "programs:manage",
+          "care:read",
+          "care:manage",
+          "visitation:read",
+          "visitation:manage",
+          "prayers:read",
+          "prayers:manage",
           "attendance:read",
           "attendance:mark",
           "attendance:manage",
@@ -92,6 +113,9 @@ export function capabilitiesFor(role: Role): readonly string[] {
         ? [
             ...churchCapabilities,
             "organization:roster",
+            "schedule:read",
+            "programs:read",
+            "programs:manage",
             "attendance:read",
             "attendance:mark",
             "attendance:scan",
@@ -132,9 +156,29 @@ export function policyMatrix() {
           : role === "ministry_lead"
             ? "Đơn vị được giao: điểm danh"
             : "Không",
+      scheduling:
+        role === "pastor" || role === "secretary"
+          ? "Toàn bộ: quản lý lịch"
+          : role === "ministry_lead"
+            ? "Đơn vị được giao: xem lịch đã xếp"
+            : "Không",
+      programs:
+        role === "pastor" || role === "secretary"
+          ? "Toàn bộ: soạn/chốt/in"
+          : role === "ministry_lead"
+            ? "Ban được giao: soạn/chốt/in"
+            : "Không",
+      visitation:
+        role === "pastor" || role === "secretary" ? "Toàn bộ: quản lý thăm viếng" : "Không",
+      care: role === "pastor" || role === "secretary" ? "Nguồn/đề nghị: quản lý" : "Không",
       giving: "Chưa mở",
       expense: "Chưa mở",
-      prayer: "Chưa mở",
+      prayer:
+        role === "pastor"
+          ? "Chung và riêng tư: quản lý"
+          : role === "secretary"
+            ? "Chung nội bộ: quản lý"
+            : "Không",
     })),
   };
 }

@@ -1,0 +1,11 @@
+.prayer-content {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.prayer-row-actions {
+  display: grid;
+  gap: 8px;
+  justify-items: end;
+  flex: none;
+}

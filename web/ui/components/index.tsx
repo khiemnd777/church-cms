@@ -625,3 +625,29 @@ export function AppShell({
 
 export { AttendanceItem, AttendanceProgress } from "./attendance";
 export { MemberCardView, QrVideo } from "./qr";
+
+// Uses the approved HTML list/row pattern; content and actions remain owned by callers.
+export function ContentList({
+  label,
+  className,
+  items,
+}: {
+  label: string;
+  className?: string;
+  items: { id: string; icon: IconName; title: ReactNode; detail: ReactNode; action: ReactNode }[];
+}) {
+  return (
+    <ul aria-label={label} className={cx("list", "ui-content-list", className)}>
+      {items.map((item) => (
+        <li className="li" key={item.id}>
+          <Icon name={item.icon} />
+          <div className="t">
+            <b>{item.title}</b>
+            <span>{item.detail}</span>
+          </div>
+          {item.action}
+        </li>
+      ))}
+    </ul>
+  );
+}

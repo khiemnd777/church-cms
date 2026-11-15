@@ -57,9 +57,11 @@ export class SyntheticClient {
     }
     const binary = /text\/csv|spreadsheetml/.test(response.headers.get("content-type") ?? ""),
       bytes = binary ? new Uint8Array(await response.arrayBuffer()) : null,
-      payload = response.status === 204 || binary ? null : await response.json();
+      html = /text\/html|application\/javascript/.test(response.headers.get("content-type") ?? ""),
+      text = html ? await response.text() : null,
+      payload = response.status === 204 || binary || html ? null : await response.json();
     if (payload?.data?.csrfToken) this.csrf = payload.data.csrfToken;
-    return { status: response.status, payload, headers: response.headers, bytes };
+    return { status: response.status, payload, headers: response.headers, bytes, text };
   }
   async login(email: string, password: string, churchCode?: string) {
     await this.call(`auth/csrf?realm=${this.realm}`);

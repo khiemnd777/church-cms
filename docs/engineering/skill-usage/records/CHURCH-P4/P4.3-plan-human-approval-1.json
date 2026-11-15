@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "event_id": "CHURCH-P4/P4.3/human-plan-review/1",
+  "event_type": "evaluation",
+  "task_id": "CHURCH-P4",
+  "scope_id": "P4.3",
+  "recorded_at": "2026-11-14T06:38:53.820506+07:00",
+  "reported_by": "delivery_owner",
+  "source_kind": "human_feedback",
+  "subject_event_id": "CHURCH-P4/P4.3/planning/1",
+  "assessment_source": "human",
+  "review_attempt": 1,
+  "decision": "ACCEPTED",
+  "findings": [],
+  "authority": {
+    "approval": "Duyệt P4.3-plan-r1, C43-01–03 và ASCII, cho phép triển khai trọn P43-01–05 local/synthetic, bàn giao rồi dừng trước P4.4",
+    "scope": "Trọn P43-01–05 local/synthetic, C43-01–03/ASCII; dừng trước P4.4; không commit/push/deploy/real data/main DB init/restart3443"
+  },
+  "evidence_refs": [
+    "current_chat:P4.3-plan-r1/C43-01–03/ASCII",
+    "docs/tasks/CHURCH-P4.3.md"
+  ],
+  "limits": [
+    "Plan approval only; implementation chờ bàn giao và human acceptance"
+  ]
+}

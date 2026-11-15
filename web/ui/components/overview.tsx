@@ -8,6 +8,7 @@ export function OverviewHero({
   day,
   secretary,
   term,
+  onSchedule,
 }: {
   name: string;
   code: string;
@@ -15,6 +16,7 @@ export function OverviewHero({
   day: string;
   secretary: string | null;
   term: string | null;
+  onSchedule?: () => void;
 }) {
   return (
     <section className="hero">
@@ -55,9 +57,16 @@ export function OverviewHero({
         <div className="next-sun">
           Lịch giảng & sinh hoạt
           <br />
-          <b>Chưa khả dụng</b>
+          <b>{onSchedule ? "Xem lịch và phân công" : "Chưa khả dụng"}</b>
         </div>
-        <Button className="hero-btn" disabled title="Lịch giảng & sinh hoạt — Chưa khả dụng">
+        <Button
+          className="hero-btn"
+          disabled={!onSchedule}
+          onClick={onSchedule}
+          title={
+            onSchedule ? "Mở lịch giảng & sinh hoạt" : "Lịch giảng & sinh hoạt — Chưa khả dụng"
+          }
+        >
           <Icon name="book" />
           Lịch giảng & sinh hoạt
         </Button>

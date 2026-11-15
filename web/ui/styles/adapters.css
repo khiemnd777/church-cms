@@ -702,3 +702,70 @@ a {
 .ui-report-chart small {
   font-size: 10px;
 }
+
+/* P4.2: authenticated A4 browser print uses shared light theme and controls. */
+.program-print-page main {
+  max-width: 210mm;
+  margin: 0 auto;
+  padding: 18px;
+}
+.program-print-sheet {
+  page: program;
+}
+.program-print-sheet table {
+  width: 100%;
+  table-layout: fixed;
+  margin-top: 18px;
+}
+.program-print-sheet th:nth-child(1) {
+  width: 6%;
+}
+.program-print-sheet th:nth-child(2) {
+  width: 26%;
+}
+.program-print-sheet th:nth-child(3) {
+  width: 28%;
+}
+.program-print-sheet header {
+  display: grid;
+  gap: 12px;
+  text-align: center;
+}
+.program-print-sheet td {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.program-print-controls {
+  display: grid;
+  gap: 12px;
+  margin-top: 18px;
+}
+@page program {
+  size: A4;
+  margin-top: 12mm;
+  margin-right: 12mm;
+  margin-bottom: 12mm;
+  margin-left: 12mm;
+}
+@media print {
+  .program-print-page main {
+    padding: 0;
+    max-width: none;
+  }
+  .program-print-controls {
+    display: none;
+  }
+  .program-print-sheet tr {
+    break-inside: avoid;
+  }
+  .program-print-sheet thead {
+    display: table-header-group;
+  }
+}
+
+/* Native list semantics retain the approved div-based list geometry. */
+.ui-content-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}

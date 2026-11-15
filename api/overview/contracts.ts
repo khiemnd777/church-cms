@@ -18,6 +18,14 @@ export interface OverviewMetric {
   availability: "available" | "not_available";
 }
 export interface OverviewDto {
+  care: {
+    pending: number | null;
+    lastEvaluatedAt: string | null;
+    lastCompleteAt: string | null;
+    complete: boolean;
+    availability: "available" | "not_available";
+  };
+  prayers: { active: number | null; availability: "available" | "not_available" };
   asOf: string;
   day: string;
   timezone: "Asia/Ho_Chi_Minh";
@@ -83,4 +91,6 @@ export type OverviewTarget =
   | { kind: "bans" }
   | { kind: "attendance"; sessionId?: string }
   | { kind: "rites"; tab?: string; riteId?: string; courseId?: string }
-  | { kind: "forms" };
+  | { kind: "forms" }
+  | { kind: "worship" }
+  | { kind: "care"; section?: "prayers" | "suggestions" };

@@ -42,7 +42,19 @@
     "test:browser:p3.5": "CHURCH_EVIDENCE_DIR=output/p3.5 bash scripts/browser-check.sh browser-certificates.ts",
     "qualify:p3.5": "bun scripts/p35-qualification.ts",
     "test:browser:p3.6": "CHURCH_EVIDENCE_DIR=output/p3.6 bash scripts/browser-check.sh browser-p3-reporting.ts",
-    "qualify:p3.6": "bun scripts/p36-qualification.ts"
+    "qualify:p3.6": "bun scripts/p36-qualification.ts",
+    "test:browser:p4.1": "CHURCH_EVIDENCE_DIR=output/p4.1 bash scripts/browser-check.sh browser-scheduling.ts",
+    "qualify:p4.1": "bun scripts/p41-qualification.ts",
+    "test:browser:p4.2": "CHURCH_EVIDENCE_DIR=output/p4.2 bash scripts/browser-check.sh browser-programs.ts",
+    "qualify:p4.2": "bun scripts/p42-qualification.ts",
+    "test:browser:p4.3": "CHURCH_EVIDENCE_DIR=output/p4.3 bash scripts/browser-check.sh browser-visitation.ts",
+    "qualify:p4.3": "bun scripts/p43-qualification.ts",
+    "test:browser:p4.4": "CHURCH_EVIDENCE_DIR=output/p4.4 bash scripts/browser-check.sh browser-prayers.ts",
+    "qualify:p4.4": "bun scripts/p44-qualification.ts",
+    "test:browser:p4.5": "CHURCH_EVIDENCE_DIR=output/p4.5 bash scripts/browser-check.sh browser-care.ts",
+    "qualify:p4.5": "bun scripts/p45-qualification.ts",
+    "qualify:p4.6": "bun scripts/p46-qualification.ts",
+    "test:browser:p4.6": "CHURCH_EVIDENCE_DIR=output/p4.6/browser bash scripts/browser-check.sh browser-p4-integration.ts"
   },
   "dependencies": {
     "@fontsource/be-vietnam-pro": "5.2.7",

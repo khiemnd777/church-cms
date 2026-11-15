@@ -127,8 +127,11 @@ export class Operations {
       operationId: ObjectId,
     ) => Promise<{ safeResult: Record<string, unknown>; resourceRefs: Operation["resourceRefs"] }>,
     status = 200,
+    authorizeReplay?: (tx: ClientSession, op: Operation) => Promise<void>,
   ) {
     requireCondition(grant.canWrite, 403, "FORBIDDEN");
+    if (routeKey.startsWith("prayers/") || routeKey.startsWith("care/"))
+      requireCondition(authorizeReplay, 403, "FORBIDDEN");
     return this.executeScoped(
       grant,
       {
@@ -145,6 +148,7 @@ export class Operations {
       mutate,
       status,
       true,
+      authorizeReplay,
     );
   }
   private async executeScoped(
@@ -161,6 +165,7 @@ export class Operations {
     ) => Promise<{ safeResult: Record<string, unknown>; resourceRefs: Operation["resourceRefs"] }>,
     status: number,
     fencedReplay = false,
+    authorizeReplay?: (tx: ClientSession, op: Operation) => Promise<void>,
   ): Promise<OperationResult> {
     requireCondition(
       key && /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(key),
@@ -179,7 +184,10 @@ export class Operations {
       return await this.db.transaction(async (tx) => {
         await grant.fence(tx);
         const existing = await this.collection.findOne(lookup, { session: tx });
-        if (existing) return this.replay(existing, payloadHash);
+        if (existing) {
+          if (authorizeReplay) await authorizeReplay(tx, existing);
+          return this.replay(existing, payloadHash);
+        }
         const now = this.now();
         await this.collection.insertOne(
           {
@@ -211,7 +219,10 @@ export class Operations {
           if (fencedReplay)
             return this.db.transaction(async (tx) => {
               await grant.fence(tx);
-              return this.replay(existing, payloadHash);
+              const fresh = await this.collection.findOne(lookup, { session: tx });
+              requireCondition(fresh, 404, "NOT_FOUND");
+              if (authorizeReplay) await authorizeReplay(tx, fresh);
+              return this.replay(fresh, payloadHash);
             });
           return this.replay(existing, payloadHash);
         }
@@ -239,7 +250,12 @@ export class Operations {
       | "cards"
       | "prep-classes"
       | "rites"
-      | "certificates",
+      | "certificates"
+      | "scheduling"
+      | "programs"
+      | "visitation"
+      | "prayers"
+      | "care",
     authorizeResource?: (tx: ClientSession, op: Operation) => Promise<void>,
   ) {
     requireCondition(grant.canWrite, 403, "FORBIDDEN");
@@ -265,6 +281,11 @@ export class Operations {
         "FORBIDDEN",
       );
       if (
+        namespace === "care" ||
+        namespace === "prayers" ||
+        namespace === "visitation" ||
+        namespace === "programs" ||
+        namespace === "scheduling" ||
         namespace === "attendance" ||
         namespace === "cards" ||
         namespace === "prep-classes" ||

@@ -1,12 +1,14 @@
 import type { AttendanceReporting } from "../attendance/reporting";
 import { policyVersion } from "../authorization/church-policy";
 import type { TenantGrant } from "../authorization/tenant-grant";
+import type { CareReporting } from "../care/reporting";
 import { requireCondition } from "../errors";
 import type { Database } from "../infrastructure/database";
 import { businessDay } from "../members/dates";
 import type { OverviewMembers } from "../members/overview";
 import type { OrganizationRuntime } from "../organization/runtime";
 import type { Organization } from "../organization/service";
+import type { PrayerReporting } from "../prayers/reporting";
 import type { PrepReporting } from "../prep-classes/reporting";
 import type { RiteReporting } from "../rites/reporting";
 import type { Tenancy } from "../tenancy/service";
@@ -22,6 +24,8 @@ export class Overview {
     private attendance: AttendanceReporting,
     private rites: RiteReporting,
     private classes: PrepReporting,
+    private prayers?: PrayerReporting,
+    private care?: CareReporting,
   ) {}
   async get(g: TenantGrant): Promise<OverviewDto> {
     requireCondition(!g.unitScope && !g.receiptScope, 403, "FORBIDDEN");
@@ -43,9 +47,22 @@ export class Overview {
         last4 = window.days.slice(-4),
         absent3 = await this.members.absent3(g, tx, window, this.attendance),
         rites = await this.rites.read(g, tx, day),
-        classes = await this.classes.read(g, tx);
+        classes = await this.classes.read(g, tx),
+        prayers = this.prayers
+          ? await this.prayers.read(g, tx)
+          : { active: null, availability: "not_available" as const };
       requireCondition(latest && previous, 503, "DEPENDENCY_UNAVAILABLE");
       return {
+        care: this.care
+          ? await this.care.read(g, tx)
+          : {
+              pending: null,
+              lastEvaluatedAt: null,
+              lastCompleteAt: null,
+              complete: false,
+              availability: "not_available",
+            },
+        prayers,
         asOf: at.toISOString(),
         day,
         timezone: "Asia/Ho_Chi_Minh",

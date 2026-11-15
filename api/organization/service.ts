@@ -10,6 +10,7 @@ import type { Database } from "../infrastructure/database";
 import { ageOn, businessDay } from "../members/dates";
 import type { Assignment } from "../members/models";
 import type { Operations } from "../operations/service";
+import { TenantQueries } from "../tenant-queries";
 import type { OrganizationGrant } from "./grant";
 import {
   ageBands,
@@ -41,6 +42,65 @@ export class Organization {
   }
   private get units() {
     return this.db.db.collection<Unit>("organization_units");
+  }
+  async schedulingUnit(churchId: ObjectId, id: ObjectId, tx: ClientSession, choir = false) {
+    const u = await this.units.findOne(
+      {
+        churchId,
+        _id: id,
+        status: "active",
+        ...(choir ? { kind: "service_ministry" as const } : {}),
+      },
+      { session: tx },
+    );
+    requireCondition(u, 422, "SCHEDULE_UNIT_UNAVAILABLE");
+    return { id: u._id, name: u.name, kind: u.kind, version: u.version };
+  }
+  async fenceSchedulingUnit(churchId: ObjectId, id: ObjectId, version: number, tx: ClientSession) {
+    const r = await this.units.updateOne(
+      { churchId, _id: id, version, status: "active" },
+      { $inc: { writeFence: 1 } },
+      { session: tx },
+    );
+    requireCondition(r.matchedCount, 412, "VERSION_CONFLICT");
+  }
+  async schedulingUnits(g: TenantGrant, q: URLSearchParams) {
+    requireCondition(!g.unitScope && !g.receiptScope, 403, "FORBIDDEN");
+    const query = new TenantQueries(this.key, this.now, "scheduling-units");
+    query.allow(q, ["limit", "cursor", "choir"]);
+    requireCondition(!q.has("choir") || q.get("choir") === "true", 400, "INVALID_REQUEST");
+    const limit = query.limit(q),
+      context = query.context(g, "units", q.get("choir")),
+      after = q.has("cursor") ? query.decode(q.get("cursor") as string, context) : null;
+    return this.db.readSnapshot(g.churchId.toHexString(), async (tx) => {
+      await g.fence(tx);
+      const filter: Filter<Unit> = {
+        churchId: g.churchId,
+        status: "active",
+        ...(q.has("choir") ? { kind: "service_ministry" as const } : {}),
+        ...(after
+          ? {
+              $or: [
+                { nameKey: { $gt: after.key } },
+                { nameKey: after.key, _id: { $gt: objectId(after.id) } },
+              ],
+            }
+          : {}),
+      };
+      const rows = await this.units
+          .find(filter, { session: tx })
+          .sort({ nameKey: 1, _id: 1 })
+          .limit(limit + 1)
+          .toArray(),
+        more = rows.length > limit;
+      rows.splice(limit);
+      const last = rows.at(-1);
+      return {
+        items: rows.map((u) => ({ id: u._id.toHexString(), name: u.name, kind: u.kind })),
+        nextCursor:
+          more && last ? query.encode(context, last.nameKey, last._id.toHexString()) : null,
+      };
+    });
   }
   async attendanceUnit(churchId: ObjectId, id: ObjectId, tx: ClientSession, active = true) {
     const u = await this.units.findOne(

@@ -1133,7 +1133,7 @@ describe("P1.3 Accounts and church realm — real Mongo/Redis", () => {
     expect(provider.json.data.principal.principalKind).toBe("owner");
     expect(
       provider.json.data.capabilities.some(
-        (v: string) => v.startsWith("finance") || v.startsWith("prayer"),
+        (v: string) => v.startsWith("finance") || v === "prayers:private",
       ),
     ).toBe(false);
   });

@@ -119,12 +119,14 @@ export class AuditReader {
         from?.toISOString() ?? null,
         to?.toISOString() ?? null,
         "occurredAt+id:desc",
+        "audience:general+legacy-r1",
       ]),
     );
     const after = query.has("cursor")
       ? this.decode(query.get("cursor") as string, grant.actorId.toHexString(), filter)
       : null;
     const base: Filter<AuditEvent> = {
+      $or: [{ audience: "general" }, { audience: { $exists: false } }],
       ...(churchId ? { targetChurchId: new ObjectId(churchId) } : {}),
       ...(eventType ? { eventType } : {}),
       ...(from || to

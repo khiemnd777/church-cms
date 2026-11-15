@@ -43,6 +43,7 @@ export interface Session {
   writeFence: number;
 }
 export interface AuditEvent {
+  audience?: "general" | "pastoral";
   operationId?: ObjectId;
   _id: ObjectId;
   occurredAt: Date;

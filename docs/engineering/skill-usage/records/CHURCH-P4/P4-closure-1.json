@@ -1,0 +1,98 @@
+{
+  "schema_version": 1,
+  "event_id": "CHURCH-P4/P4/milestone-closure/1",
+  "event_type": "evaluation",
+  "task_id": "CHURCH-P4",
+  "scope_id": "P4",
+  "recorded_at": "2026-11-14T23:35:48.918520+00:00",
+  "client_date": "2026-11-15",
+  "reported_by": "delivery_owner",
+  "source_kind": "human_feedback",
+  "subject_event_id": "CHURCH-P4/P4-plan/planning/1",
+  "assessment_source": "human",
+  "review_attempt": 1,
+  "decision": "ACCEPTED",
+  "evaluation_purpose": "Đóng P4 sau sáu gói đã nghiệm thu local/synthetic; không tính thêm usage planning/implementation",
+  "findings": [],
+  "milestone_closure": {
+    "milestone": "P4",
+    "status": "CLOSED",
+    "accepted_packages": [
+      {
+        "package": "P4.1-r1",
+        "event_id": "CHURCH-P4/P4.1/human-review/1",
+        "evidence_ref": "docs/engineering/skill-usage/records/CHURCH-P4/P4.1-human-acceptance-1.json"
+      },
+      {
+        "package": "P4.2-r1",
+        "event_id": "CHURCH-P4/P4.2/human-review/1",
+        "evidence_ref": "docs/engineering/skill-usage/records/CHURCH-P4/P4.2-human-acceptance-1.json"
+      },
+      {
+        "package": "P4.3-r1",
+        "event_id": "CHURCH-P4/P4.3/human-review/1",
+        "evidence_ref": "docs/engineering/skill-usage/records/CHURCH-P4/P4.3-human-acceptance-1.json"
+      },
+      {
+        "package": "P4.4-r1",
+        "event_id": "CHURCH-P4/P4.4/human-review/1",
+        "evidence_ref": "docs/engineering/skill-usage/records/CHURCH-P4/P4.4-human-acceptance-1.json"
+      },
+      {
+        "package": "P4.5-r1",
+        "event_id": "CHURCH-P4/P4.5/human-review/1",
+        "evidence_ref": "docs/engineering/skill-usage/records/CHURCH-P4/P4.5-human-acceptance-1.json"
+      },
+      {
+        "package": "P4.6-r1",
+        "event_id": "CHURCH-P4/P4.6/human-review/1",
+        "evidence_ref": "docs/engineering/skill-usage/records/CHURCH-P4/P4.6-human-acceptance-1.json"
+      }
+    ],
+    "next_milestone": "P5",
+    "next_milestone_status": "NOT_OPENED",
+    "authority": "nghiệm thu năm mục P4.6-r1, đóng P4."
+  },
+  "authority": {
+    "approval": "nghiệm thu năm mục P4.6-r1, đóng P4.",
+    "scope": "Nghiệm thu P4.6-r1/P46-01–05 đủ5/5 local/synthetic và đóng P4; P5 chưa mở, không publication/release/real data/main operations"
+  },
+  "record_maintenance": {
+    "source_event_id": "CHURCH-P4/P4.6/human-review/1",
+    "evidence_ref": "docs/engineering/skill-usage/records/CHURCH-P4/P4.6-human-acceptance-1.json",
+    "note": "Dùng cùng record bảo trì documentation-and-adrs100% cho lượt acceptance/closure, không lặp usage"
+  },
+  "evidence_refs": [
+    "current_chat:nghiệm thu năm mục P4.6-r1, đóng P4.",
+    "docs/tasks/CHURCH-P4.md",
+    "docs/tasks/CHURCH-P4.6.md",
+    "docs/project-plan.md",
+    "docs/project-state.md",
+    "docs/engineering/skill-usage/records/CHURCH-P4/P4-plan-planning-1.json",
+    "docs/engineering/skill-usage/records/CHURCH-P4/P4.1-human-acceptance-1.json",
+    "docs/engineering/skill-usage/records/CHURCH-P4/P4.2-human-acceptance-1.json",
+    "docs/engineering/skill-usage/records/CHURCH-P4/P4.3-human-acceptance-1.json",
+    "docs/engineering/skill-usage/records/CHURCH-P4/P4.4-human-acceptance-1.json",
+    "docs/engineering/skill-usage/records/CHURCH-P4/P4.5-human-acceptance-1.json",
+    "docs/engineering/skill-usage/records/CHURCH-P4/P4.6-human-acceptance-1.json"
+  ],
+  "technical_snapshots_sha256": {
+    "output/p4.6/verification.json": "59c3d7d90bd9c86cf7fbfe635d47f2893cfdcae299a255acd4c66d822ae947a4",
+    "output/p4.6/source-manifest.json": "3acac8d11a39e237501930e39ca2c21dc92d3215d66c8143d02278673031bfaa",
+    "output/p4.6/readback.json": "28d69315fba4e3e4a35647383faa3ba4ab2dafc446b7457d6b7a3b1359d9d8cc",
+    "docs/engineering/skill-usage/records/CHURCH-P4/P4.6-implementation-1.json": "0a3a21426a96720873853bfb769ec4658633bf70e85f2561c5781eea04bad63d",
+    "docs/engineering/skill-usage/records/CHURCH-P4/P4.6-self-review-1.json": "54f45e5876b1b4c8095b5153dd58301567cd2de4f395bc6580066b4f2360ebe9"
+  },
+  "preserved_evidence_ref": "docs/engineering/skill-usage/records/CHURCH-P4/P4.6-human-acceptance-1.json",
+  "limits": [
+    "P4 CLOSED chỉ trong phạm vi local/synthetic đã nghiệm thu; NOT_RELEASED, không production-ready hoặc release authority",
+    "P5 NOT_OPENED; chưa mở planning chi tiết/danh mục hoặc implementation P5",
+    "Không chạy lại tests/runtime; giữ nguyên technical artifacts/source manifests/implementation và self-review journals",
+    "P3.4 prior race và P42post-reauth fast-fill exact cause UNKNOWN giữ nguyên; keyboard PASS không chứng minh fast-fill/paste đã sửa",
+    "P4 preview digest không tự invalidated chỉ vì rotate key; bỏ pending cũ, fresh authorized receipt trước preview/confirm mới",
+    "Quiesce đã quan sát0inflight/drain0/probe503; held-request stress chưa chạy; postrestore HTTP handler in-process với Mongo/Redis thật, source/workload HTTPS",
+    "Physical/native Word/Safari/UAT/main runtime/pilot/remoteCI/production/multi-replica/independent review NOT_RUN; main schemas/index/Policy18 chưa áp",
+    "Local workload/restore không production SLA/capacity/RPO/RTO/PITR",
+    "Không commit/push/deploy/real data/main DB read/init/restart3443/worktree/delegation hoặc gửi thông báo tới chat khác"
+  ]
+}

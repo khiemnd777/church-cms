@@ -771,7 +771,13 @@ describe("P3.4 Rites real Mongo Redis", () => {
       ),
       owner.call(rp(c), { ...b, preview: p.payload.data.context }),
     ]);
-    expect([profile.status, ceremony.status].filter((x) => x === 412).length).toBe(1);
+    expect(
+      [profile.status, ceremony.status].filter((x) => x === 412).length,
+      JSON.stringify({
+        profile: { status: profile.status, code: profile.payload?.error?.code ?? null },
+        ceremony: { status: ceremony.status, code: ceremony.payload?.error?.code ?? null },
+      }),
+    ).toBe(1);
     expect([profile.status, ceremony.status].filter((x) => x === 200 || x === 201).length).toBe(1);
     const final = (await owner.call(`${base(c)}/members/${m.id}`)).payload.data;
     expect(final.version).toBe(m.version + 1);
