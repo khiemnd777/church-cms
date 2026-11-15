@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "event_id": "CHURCH-P4/P4.1/self-review/1",
+  "event_type": "evaluation",
+  "task_id": "CHURCH-P4",
+  "scope_id": "P4.1",
+  "recorded_at": "2026-11-14T00:09:14.472858+07:00",
+  "reported_by": "delivery_owner",
+  "source_kind": "agent_self_review",
+  "subject_event_id": "CHURCH-P4/P4.1/implementation/1",
+  "assessment_source": "agent_self_review",
+  "review_attempt": 1,
+  "decision": "PASS",
+  "findings": [],
+  "resolved_cases": [
+    "INVALID_REQUEST date validated before shiftDay, regression returns400 rather than503",
+    "New recurring preview names whole series rather than one occurrence",
+    "Cancelled individual exception distinguished from superseded generation; preview/fingerprint/explicit confirmation/history prevent silent resurrection",
+    "Conditional persistence checks matchedCount; inactive assigned-unit detail denies404"
+  ],
+  "evidence_refs": [
+    "docs/tasks/CHURCH-P4.1.md",
+    "docs/engineering/P4.1-scheduling.md",
+    "output/p4.1/verification.json",
+    "output/p4.1/source-manifest.json",
+    "output/p4.1/browser-results.json",
+    "output/p4.1/qualification.json",
+    "output/p4.1/readback.json"
+  ],
+  "limits": [
+    "Self-review only, not independent reviewer or human acceptance",
+    "No outstanding actionable finding in approved P4.1 scope after recheck; not a certification"
+  ]
+}

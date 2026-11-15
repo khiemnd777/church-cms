@@ -11,6 +11,10 @@ import type { TenantGrant } from "./authorization/tenant-grant";
 import type { CardGrant } from "./cards/models";
 import { printDocument, printError, printScript } from "./cards/printing";
 import { Cards } from "./cards/service";
+import type { CareGrant } from "./care/models";
+import { CareReporting } from "./care/reporting";
+import { Care } from "./care/service";
+import { CareSources } from "./care/sources";
 import type { CertificateGrant } from "./certificates/models";
 import {
   certificatePrintError,
@@ -34,21 +38,58 @@ import { cookie, cookieName, type Identity, type SessionResult } from "./identit
 import { Members } from "./members/service";
 import { Operations } from "./operations/service";
 import type { OrganizationGrant } from "./organization/grant";
+import { ProgramOrganization } from "./organization/programs";
 import { OrganizationRuntime } from "./organization/runtime";
 import { Organization } from "./organization/service";
 import { Overview } from "./overview/service";
+import type { PrayerGrant } from "./prayers/models";
+import { PrayerReporting } from "./prayers/reporting";
+import { Prayers } from "./prayers/service";
 import { PrepAttendanceSource } from "./prep-classes/attendance-port";
 import type { ClassGrant } from "./prep-classes/models";
 import { PrepReporting } from "./prep-classes/reporting";
 import { PrepClasses } from "./prep-classes/service";
+import type { ProgramGrant } from "./programs/models";
+import { printProgram, programPrintError, programPrintScript } from "./programs/printing";
+import { Programs } from "./programs/service";
+import { ProgramSources } from "./programs/sources";
 import type { RiteGrant } from "./rites/models";
 import { RiteReporting } from "./rites/reporting";
 import { Rites } from "./rites/service";
+import type { ScheduleGrant } from "./scheduling/models";
+import { Scheduling } from "./scheduling/service";
 import { Tenancy } from "./tenancy/service";
+import { Visitation } from "./visitation/service";
+import { VisitationSources } from "./visitation/sources";
 export interface RequestInfo {
   ip: string;
 }
 const messages: Record<string, string> = {
+  VISIT_TARGET_UNAVAILABLE:
+    "Đối tượng/gia đình không còn phù hợp để ghi nghiệp vụ mới. Giữ hồ sơ để đối soát, hoàn tất hoặc hủy có lý do.",
+  VISIT_ASSIGNEE_UNAVAILABLE:
+    "Người phụ trách không còn hợp lệ. Chọn người khác hoặc bỏ phân công.",
+  VISIT_PARTICIPANT_UNAVAILABLE:
+    "Người tham gia phải còn hoạt động hoặc vắng lâu trong cùng Hội Thánh.",
+  VISIT_FUTURE_DATE: "Ngày thăm không được ở tương lai.",
+  VISIT_CASE_CLOSED: "Hồ sơ đã đóng; chỉ có thể đính chính lần thăm có lý do.",
+  VISIT_CASE_EXISTS:
+    "Đã có hồ sơ đang mở cho đối tượng và nhóm lý do này. Kiểm tra danh sách trước khi tạo mới.",
+  VISIT_PREVIEW_STALE: "Hồ sơ hoặc nguồn đã thay đổi. Xem trước lại trước khi lưu.",
+  VISIT_SOURCE_STALE: "Nguồn đã thay đổi. Đọc lại hồ sơ và xem trước lại.",
+  VISIT_CONFIRMATION_REQUIRED: "Xác nhận trước khi hoàn tất hoặc hủy hồ sơ.",
+  VISIT_NEEDS_VISITED_ENTRY: "Cần ít nhất một lần Đã gặp để hoàn tất hồ sơ.",
+  VISIT_COMPLETION_INVALID:
+    "Không thể đổi lần Đã gặp cuối cùng của hồ sơ đã hoàn tất thành kết quả khác.",
+  PROGRAM_SOURCE_UNAVAILABLE:
+    "Lịch/ban/nhiệm kỳ hoặc phân công không còn phù hợp. Đối soát nguồn trước khi chốt.",
+  PROGRAM_SOURCE_STALE: "Nguồn đã thay đổi. Xem trước lại trước khi lưu/chốt.",
+  PROGRAM_PREVIEW_STALE: "Chương trình hoặc nguồn đã thay đổi. Xem trước lại.",
+  PROGRAM_DRAFT_LOCKED: "Bản đã chốt được giữ nguyên. Tạo nháp đính chính nếu cần.",
+  PROGRAM_PERSON_UNAVAILABLE:
+    "Chỉ chọn người hiện còn trong ban. Phân công cũ không còn phù hợp cần thay hoặc bỏ.",
+  PROGRAM_INCOMPLETE_CONFIRMATION: "Xác nhận các tiết mục còn chưa phân công trước khi chốt.",
+  PROGRAM_EXISTS: "Buổi/ban này đã có chương trình. Mở chương trình hiện có để đối soát.",
   CERT_SOURCE_REQUIRED: "Chọn đúng hồ sơ, lễ hoặc ghi danh cùng Hội Thánh.",
   CERT_SOURCE_LOCKED: "Dữ kiện nguồn đã biết được khóa. Đối soát nguồn hoặc giữ giá trị đã chọn.",
   CERT_SUPPLEMENT_INVALID: "Chỉ bổ sung trường phù hợp với mẫu này.",
@@ -58,6 +99,18 @@ const messages: Record<string, string> = {
   CERT_INCOMPLETE: "Còn dữ kiện thiếu hoặc mâu thuẫn. Đối soát trước khi chốt.",
   CERT_FAITH_CONFIRMATION: "Cần xác nhận riêng nội dung đức tin trong GCN Báp-têm.",
   CERT_REASON_REQUIRED: "Nhập lý do thay thế hoặc thu hồi bản.",
+  SCHEDULE_PREVIEW_STALE: "Lịch hoặc nguồn đã thay đổi. Hãy xem trước lại.",
+  SCHEDULE_TIME_INVALID: "Giờ kết thúc phải sau giờ bắt đầu, trong tối đa 24 giờ.",
+  SCHEDULE_RANGE_LIMIT: "Chuỗi lịch phải kết thúc trong tối đa 365 ngày.",
+  SCHEDULE_OCCURRENCE_LIMIT: "Chuỗi lịch vượt giới hạn 200 lần diễn ra.",
+  SCHEDULE_EMPTY: "Quy tắc chưa tạo lần diễn ra nào trong khoảng đã chọn.",
+  SCHEDULE_PAST_LOCKED: "Lịch đã qua cần lý do đính chính và giữ ngày giờ/phạm vi.",
+  SCHEDULE_CANCELLED: "Lịch đã hủy được giữ trong lịch sử. Tạo lịch mới nếu cần.",
+  SCHEDULE_PERSON_UNAVAILABLE: "Người được phân công không còn phù hợp.",
+  SCHEDULE_UNIT_UNAVAILABLE: "Đơn vị được chọn không còn hoạt động.",
+  SCHEDULE_CONFLICT_CONFIRMATION: "Xác nhận trùng giờ và nhập lý do trước khi lưu.",
+  SCHEDULE_EXCEPTION_CONFIRMATION: "Xác nhận các lần đã chỉnh riêng bị ảnh hưởng.",
+  SCHEDULE_CONFLICT_LIMIT: "Có quá nhiều xung đột. Hãy thu hẹp phạm vi lịch.",
   CERT_VERSION_STALE: "Bản nguồn đã có phiên bản mới. Đối soát lịch sử.",
   CERT_NOT_CURRENT: "Bản đã thay thế hoặc thu hồi; không tải/in lại.",
   CERT_RENDER_BUSY: "Đang tạo tài liệu khác. Thử chuẩn bị preview lại sau.",
@@ -150,6 +203,25 @@ const messages: Record<string, string> = {
   PASSWORD_CHANGE_REQUIRED: "Vui lòng đổi mật khẩu.",
   VALIDATION_FAILED: "Kiểm tra thông tin đã nhập.",
   RATE_LIMITED: "Bạn đã thử quá nhiều lần. Vui lòng thử lại sau.",
+  CARE_SIGNAL_EXISTS: "Đã có nguồn nhu cầu đang mở cho đối tượng và loại này.",
+  CARE_EPISODE_EXISTS: "Đề nghị đã được đánh giá đồng thời. Vui lòng tải lại.",
+  CARE_ALREADY_DECIDED: "Đề nghị đã được xử lý hoặc không còn hoạt động.",
+  CARE_SIGNAL_ENDED: "Nguồn nhu cầu đã kết thúc.",
+  CARE_SOURCE_INVALID: "Nguồn hoặc ngày ghi nhận không hợp lệ.",
+  CARE_SOURCE_UNKNOWN: "Chưa đủ bằng chứng từ nguồn để chuyển sang thăm viếng.",
+  CARE_TARGET_UNAVAILABLE: "Đối tượng không còn hợp lệ trong nguồn hiện hành.",
+  CARE_SOURCE_STALE: "Nguồn đã thay đổi. Vui lòng đánh giá và xem trước lại.",
+  CARE_PREVIEW_STALE: "Nội dung hoặc nguồn đã đổi. Vui lòng xem trước lại.",
+  CARE_LINK_CHANGED: "Hồ sơ đang mở đã thay đổi. Vui lòng kiểm tra và xem trước lại.",
+  CARE_CONFIRMATION_REQUIRED: "Cần xác nhận sau khi xem trước.",
+  PRAYER_SOURCE_STALE: "Nguồn người gửi đã thay đổi. Vui lòng xem trước lại.",
+  PRAYER_SOURCE_UNAVAILABLE: "Người gửi không còn hợp lệ để chọn mới.",
+  PRAYER_DATE_INVALID: "Ngày nhận/chia sẻ không hợp lệ hoặc ở tương lai.",
+  PRAYER_CLOSED: "Lời cầu thay đã đóng; chỉ có thể đính chính có lý do.",
+  PRAYER_PRIVATE_SHARE: "Không ghi nhận chia sẻ cho lời cầu thay riêng tư.",
+  PRAYER_STATE_CONFLICT: "Trạng thái lời cầu thay đã thay đổi.",
+  PRAYER_PREVIEW_STALE: "Thông tin đã thay đổi. Vui lòng xem trước lại.",
+  PRAYER_CONFIRMATION_REQUIRED: "Cần xác nhận nội dung và phạm vi xem.",
   DEPENDENCY_UNAVAILABLE: "Dịch vụ tạm thời không khả dụng. Vui lòng thử lại.",
   CSRF_FAILED: "Phiên xác thực không hợp lệ. Vui lòng tải lại trang.",
   FORBIDDEN: "Bạn không có quyền thực hiện thao tác này.",
@@ -289,6 +361,37 @@ export function createApp(
     conf.csrfKey,
     identity.now,
   );
+  const scheduling = new Scheduling(
+    identity.db,
+    members.schedulingPort(),
+    organization,
+    operations,
+    identity.audit,
+    conf.csrfKey,
+    identity.now,
+  );
+  const programs = new Programs(
+    identity.db,
+    new ProgramSources(
+      members.programPort(),
+      new ProgramOrganization(identity.db, conf.csrfKey, identity.now),
+      scheduling,
+      tenancy,
+      identity.now,
+    ),
+    operations,
+    identity.audit,
+    conf.csrfKey,
+    identity.now,
+  );
+  const visitation = new Visitation(
+    identity.db,
+    new VisitationSources(members.visitationPort(), families.visitationPort()),
+    operations,
+    identity.audit,
+    conf.csrfKey,
+    identity.now,
+  );
   const rites = new Rites(
     identity.db,
     members.ritesPort(),
@@ -312,6 +415,23 @@ export function createApp(
     conf.csrfKey,
     identity.now,
   );
+  const prayers = new Prayers(
+    identity.db,
+    members.prayerPort(),
+    operations,
+    identity.audit,
+    conf.csrfKey,
+    identity.now,
+  );
+  const care = new Care(
+    identity.db,
+    new CareSources(members.carePort(), families.carePort(), reports),
+    visitation.carePort(),
+    operations,
+    identity.audit,
+    conf.csrfKey,
+    identity.now,
+  );
   const overview = new Overview(
     identity.db,
     tenancy,
@@ -322,6 +442,8 @@ export function createApp(
     reports,
     new RiteReporting(identity.db),
     new PrepReporting(identity.db),
+    new PrayerReporting(prayers),
+    new CareReporting(care),
   );
   const log = options.log ?? ((row) => console.info(JSON.stringify(row)));
   return async function handle(req: Request, info: RequestInfo): Promise<Response> {
@@ -335,7 +457,8 @@ export function createApp(
       targetChurchId: ObjectId | null = null,
       targetAccountId: ObjectId | undefined,
       printing = false,
-      printingCertificate = false;
+      printingCertificate = false,
+      printingProgram = false;
     const headers = new Headers({
       ...security,
       "X-Request-Id": requestId,
@@ -411,6 +534,9 @@ export function createApp(
               actorId,
               churchId,
               canWrite: false,
+              canReadCare: true,
+              canManageCare: false,
+              prayerAudience: "shared",
               canReadAttendance: true,
               policyContext: `${policyVersion}:owner`,
               fence: async (tx) => {
@@ -430,6 +556,9 @@ export function createApp(
               actorId,
               churchId,
               canWrite: false,
+              canReadCare: true,
+              canManageCare: false,
+              prayerAudience: ctx.account.role === "pastor" ? "all" : "shared",
               canReadAttendance: ["pastor", "secretary", "ministry_lead"].includes(
                 ctx.account.role,
               ),
@@ -994,6 +1123,618 @@ export function createApp(
             requireCondition(!url.search, 400, "INVALID_REQUEST");
             response = json(await certificates.getEdition(grant, id));
           } else response = json(await certificates.list(grant, url.searchParams));
+        } else if (
+          /^\/api\/v1\/(?:owner\/)?churches\/[^/]+\/care\/suggestions(?:\/[^/]+){0,3}$/.test(path)
+        ) {
+          const parts = path.split("/"),
+            isOwner = parts[3] === "owner",
+            offset = isOwner ? 1 : 0,
+            churchId = objectId(parts[4 + offset] as string),
+            tail = parts.slice(7 + offset),
+            area = tail[0] === "signals" ? "signal" : "alert",
+            segments = area === "signal" ? tail.slice(1) : tail;
+          const special =
+              area === "alert" && ["evaluate", "people", "operations"].includes(segments[0] ?? ""),
+            operation = special && segments[0] === "operations",
+            people = special && segments[0] === "people",
+            evaluate = special && segments[0] === "evaluate",
+            preview = segments.at(-1) === "preview",
+            history = segments.at(-1) === "history",
+            id = operation
+              ? segments[1]
+              : !special && segments[0] && segments[0] !== "preview"
+                ? segments[0]
+                : null;
+          requireCondition(
+            operation
+              ? segments.length === 2
+              : people || evaluate
+                ? segments.length === 1
+                : preview
+                  ? segments.length <= (id ? 2 : 1)
+                  : history
+                    ? !!id && segments.length === 2
+                    : segments.length <= (id ? 1 : 0),
+            404,
+            "NOT_FOUND",
+          );
+          requireCondition(!history || !!id, 404, "NOT_FOUND");
+          requireCondition(area === "signal" || !preview || !!id, 404, "NOT_FOUND");
+          requireCondition(
+            preview || evaluate
+              ? req.method === "POST"
+              : operation || people || history
+                ? req.method === "GET"
+                : id
+                  ? ["GET", "PATCH"].includes(req.method)
+                  : ["GET", ...(area === "signal" ? ["POST"] : [])].includes(req.method),
+            405,
+            "METHOD_NOT_ALLOWED",
+          );
+          const writing = req.method !== "GET";
+          requestRealm = isOwner ? "owner" : "church";
+          targetChurchId = churchId;
+          route = `P45.${requestRealm}.${special ? segments[0] : area}.${preview ? "preview" : history ? "history" : "root"}.${req.method}`;
+          let grant: CareGrant;
+          if (isOwner) {
+            const ctx = await identity.authorize(ownerToken, "owner", false, true),
+              auth = identity.ownerGrant(ctx, writing || operation ? "care:manage" : "care:read");
+            actorId = ctx.owner._id;
+            grant = {
+              actorKind: "owner",
+              actorId,
+              churchId,
+              canWrite: true,
+              canReadCare: true,
+              canManageCare: true,
+              canReadAttendance: true,
+              policyContext: `${policyVersion}:owner`,
+              fence: async (tx) => {
+                await auth.fence(tx);
+                await access.fence(churchId, tx, true);
+              },
+            };
+          } else {
+            const ctx = await churchIdentity.authorize(churchToken, false, false);
+            actorId = ctx.account._id;
+            actorChurchId = ctx.account.churchId;
+            requireCondition(churchId.equals(actorChurchId), 404, "NOT_FOUND");
+            const auth = churchIdentity.grant(ctx);
+            auth.require(writing || operation ? "care:manage" : "care:read");
+            grant = {
+              actorKind: "church_user",
+              actorId,
+              churchId,
+              canWrite: true,
+              canReadCare: true,
+              canManageCare: ["pastor", "secretary"].includes(ctx.account.role),
+              canReadAttendance: true,
+              policyContext: `${policyVersion}:${ctx.account.version}`,
+              fence: (tx) => auth.fence(tx),
+            };
+          }
+          if (!writing) {
+            if (people) response = json(await visitation.people(grant, url.searchParams));
+            else if (operation) {
+              requireCondition(!url.search, 400, "INVALID_REQUEST");
+              response = json(await care.operation(grant, id as string));
+            } else if (history)
+              response = json(await care.history(grant, id as string, area, url.searchParams));
+            else if (id) {
+              requireCondition(!url.search, 400, "INVALID_REQUEST");
+              const r = await care.get(grant, id, area);
+              headers.set("ETag", `"${r.record.version}"`);
+              response = json(r);
+            } else response = json(await care.list(grant, url.searchParams, area));
+          } else {
+            requireCondition(!url.search, 400, "INVALID_REQUEST");
+            requireCondition(req.headers.get("origin") === conf.origin, 403, "CSRF_FAILED");
+            await identity.csrfSession(
+              isOwner ? ownerToken : churchToken,
+              requestRealm,
+              req.headers.get("x-csrf-token"),
+            );
+            const body = await readJson(req),
+              match = req.headers.get("if-match");
+            if (preview)
+              response = json(
+                area === "signal"
+                  ? await care.previewSignal(grant, id ?? null, body, match)
+                  : await care.previewAlert(grant, id as string, body, match),
+              );
+            else {
+              const r = evaluate
+                ? await care.evaluate(grant, body, req.headers.get("idempotency-key"), requestId)
+                : area === "signal"
+                  ? await care.saveSignal(
+                      grant,
+                      id ?? null,
+                      body,
+                      req.headers.get("idempotency-key"),
+                      match,
+                      requestId,
+                    )
+                  : await care.decide(
+                      grant,
+                      id as string,
+                      body,
+                      req.headers.get("idempotency-key"),
+                      match,
+                      requestId,
+                    );
+              response = json(r.data, r.status, { replayed: r.replayed });
+            }
+          }
+        } else if (
+          /^\/api\/v1\/(?:owner\/)?churches\/[^/]+\/care\/prayers(?:\/(?:people|preview|operations\/[^/]+|[^/]+(?:\/(?:preview|history))?))?$/.test(
+            path,
+          )
+        ) {
+          const parts = path.split("/"),
+            isOwner = parts[3] === "owner",
+            offset = isOwner ? 1 : 0,
+            churchId = objectId(parts[4 + offset] as string),
+            tail = parts[7 + offset],
+            action = parts[8 + offset],
+            reserved = ["people", "operations", "preview"].includes(tail ?? ""),
+            id = tail && !reserved ? tail : undefined,
+            preview = tail === "preview" || action === "preview",
+            writing = req.method !== "GET";
+          requireCondition(!(tail === "people" || tail === "preview") || !action, 404, "NOT_FOUND");
+          requireCondition(tail !== "operations" || !!action, 404, "NOT_FOUND");
+          requireCondition(
+            preview
+              ? req.method === "POST"
+              : !tail || (id && !action)
+                ? (id ? ["GET", "PATCH"] : ["GET", "POST"]).includes(req.method)
+                : req.method === "GET",
+            405,
+            "METHOD_NOT_ALLOWED",
+          );
+          requestRealm = isOwner ? "owner" : "church";
+          targetChurchId = churchId;
+          route = `P44.${requestRealm}.${reserved ? tail : "requests"}.${preview ? "preview" : action === "history" ? "history" : "root"}.${req.method}`;
+          let grant: PrayerGrant;
+          if (isOwner) {
+            const ctx = await identity.authorize(ownerToken, "owner", false, true),
+              auth = identity.ownerGrant(
+                ctx,
+                writing || tail === "operations" ? "prayers:manage" : "prayers:read",
+              );
+            actorId = ctx.owner._id;
+            grant = {
+              actorKind: "owner",
+              actorId,
+              churchId,
+              canWrite: true,
+              prayerAudience: "shared",
+              policyContext: `${policyVersion}:owner`,
+              fence: async (tx) => {
+                await auth.fence(tx);
+                await access.fence(churchId, tx, true);
+              },
+            };
+          } else {
+            const ctx = await churchIdentity.authorize(churchToken, false, false);
+            actorId = ctx.account._id;
+            actorChurchId = ctx.account.churchId;
+            requireCondition(churchId.equals(actorChurchId), 404, "NOT_FOUND");
+            const auth = churchIdentity.grant(ctx);
+            auth.require(writing || tail === "operations" ? "prayers:manage" : "prayers:read");
+            grant = {
+              actorKind: "church_user",
+              actorId,
+              churchId,
+              canWrite: ["pastor", "secretary"].includes(ctx.account.role),
+              prayerAudience: ctx.account.role === "pastor" ? "all" : "shared",
+              policyContext: `${policyVersion}:${ctx.account.version}`,
+              fence: (tx) => auth.fence(tx),
+            };
+          }
+          if (!writing) {
+            if (tail === "people") response = json(await prayers.people(grant, url.searchParams));
+            else if (tail === "operations") {
+              requireCondition(!url.search, 400, "INVALID_REQUEST");
+              response = json(await prayers.operation(grant, action as string));
+            } else if (action === "history")
+              response = json(await prayers.history(grant, id as string, url.searchParams));
+            else if (id) {
+              requireCondition(!url.search, 400, "INVALID_REQUEST");
+              const p = await prayers.get(grant, id);
+              headers.set("ETag", `"${p.version}"`);
+              response = json(p);
+            } else response = json(await prayers.list(grant, url.searchParams));
+          } else {
+            requireCondition(!url.search, 400, "INVALID_REQUEST");
+            requireCondition(req.headers.get("origin") === conf.origin, 403, "CSRF_FAILED");
+            await identity.csrfSession(
+              isOwner ? ownerToken : churchToken,
+              requestRealm,
+              req.headers.get("x-csrf-token"),
+            );
+            const body = await readJson(req),
+              match = req.headers.get("if-match");
+            if (preview) response = json(await prayers.preview(grant, id ?? null, body, match));
+            else {
+              const r = await prayers.save(
+                grant,
+                id ?? null,
+                body,
+                req.headers.get("idempotency-key"),
+                match,
+                requestId,
+              );
+              response = json(r.data, r.status, { replayed: r.replayed });
+            }
+          }
+        } else if (
+          /^\/api\/v1\/(?:owner\/)?churches\/[^/]+\/care\/(?:people|operations\/[^/]+|cases(?:\/preview|\/[^/]+(?:\/(?:preview|entries|history))?)?)$/.test(
+            path,
+          )
+        ) {
+          const parts = path.split("/"),
+            isOwner = parts[3] === "owner",
+            offset = isOwner ? 1 : 0,
+            churchId = objectId(parts[4 + offset] as string),
+            section = parts[6 + offset],
+            tail = parts[7 + offset],
+            action = parts[8 + offset],
+            id = section === "cases" && tail !== "preview" ? tail : undefined,
+            preview = tail === "preview" || action === "preview",
+            writing = req.method !== "GET";
+          requireCondition(
+            preview
+              ? req.method === "POST"
+              : section === "cases" && !action
+                ? (id ? ["GET", "PATCH"] : ["GET", "POST"]).includes(req.method)
+                : req.method === "GET",
+            405,
+            "METHOD_NOT_ALLOWED",
+          );
+          requestRealm = isOwner ? "owner" : "church";
+          targetChurchId = churchId;
+          route = `P43.${requestRealm}.${section}.${preview ? "preview" : (action ?? "root")}.${req.method}`;
+          let grant: TenantGrant;
+          if (isOwner) {
+            const ctx = await identity.authorize(ownerToken, "owner", false, true);
+            actorId = ctx.owner._id;
+            const auth = identity.ownerGrant(
+              ctx,
+              writing || section === "operations" ? "visitation:manage" : "visitation:read",
+            );
+            grant = {
+              actorKind: "owner",
+              actorId,
+              churchId,
+              canWrite: true,
+              policyContext: `${policyVersion}:owner`,
+              fence: async (tx) => {
+                await auth.fence(tx);
+                await access.fence(churchId, tx, true);
+              },
+            };
+          } else {
+            const ctx = await churchIdentity.authorize(churchToken, false, false);
+            actorId = ctx.account._id;
+            actorChurchId = ctx.account.churchId;
+            requireCondition(churchId.equals(actorChurchId), 404, "NOT_FOUND");
+            const auth = churchIdentity.grant(ctx);
+            auth.require(
+              writing || section === "operations" ? "visitation:manage" : "visitation:read",
+            );
+            grant = {
+              actorKind: "church_user",
+              actorId,
+              churchId,
+              canWrite: ["pastor", "secretary"].includes(ctx.account.role),
+              policyContext: `${policyVersion}:${ctx.account.version}`,
+              fence: (tx) => auth.fence(tx),
+            };
+          }
+          if (!writing) {
+            if (section === "people")
+              response = json(await visitation.people(grant, url.searchParams));
+            else if (section === "operations") {
+              requireCondition(!url.search, 400, "INVALID_REQUEST");
+              response = json(await visitation.operation(grant, tail as string));
+            } else if (action === "entries")
+              response = json(await visitation.entriesPage(grant, id as string, url.searchParams));
+            else if (action === "history")
+              response = json(await visitation.historyPage(grant, id as string, url.searchParams));
+            else if (id) {
+              requireCondition(!url.search, 400, "INVALID_REQUEST");
+              const c = await visitation.get(grant, id);
+              headers.set("ETag", `"${c.version}"`);
+              response = json(c);
+            } else response = json(await visitation.list(grant, url.searchParams));
+          } else {
+            requireCondition(!url.search, 400, "INVALID_REQUEST");
+            requireCondition(req.headers.get("origin") === conf.origin, 403, "CSRF_FAILED");
+            await identity.csrfSession(
+              isOwner ? ownerToken : churchToken,
+              requestRealm,
+              req.headers.get("x-csrf-token"),
+            );
+            const body = await readJson(req),
+              match = req.headers.get("if-match");
+            if (preview) response = json(await visitation.preview(grant, id ?? null, body, match));
+            else {
+              const r = await visitation.save(
+                grant,
+                id ?? null,
+                body,
+                req.headers.get("idempotency-key"),
+                match,
+                requestId,
+              );
+              response = json(r.data, r.status, { replayed: r.replayed });
+            }
+          }
+        } else if (
+          /^\/api\/v1\/(?:owner\/)?churches\/[^/]+\/programs\/(?:units|occurrences|people|operations\/[^/]+|drafts(?:\/preview|\/[^/]+(?:\/(?:preview|history|editions|print|print-script))?)?)$/.test(
+            path,
+          )
+        ) {
+          const parts = path.split("/"),
+            isOwner = parts[3] === "owner",
+            offset = isOwner ? 1 : 0,
+            churchId = objectId(parts[4 + offset] as string),
+            section = parts[6 + offset],
+            tail = parts[7 + offset],
+            action = parts[8 + offset],
+            id = section === "drafts" && tail !== "preview" ? tail : undefined,
+            preview = tail === "preview" || action === "preview",
+            print = action === "print" || action === "print-script",
+            writing = req.method !== "GET";
+          requireCondition(
+            preview
+              ? req.method === "POST"
+              : section === "drafts" && !action
+                ? (id ? ["GET", "PATCH"] : ["GET", "POST"]).includes(req.method)
+                : req.method === "GET",
+            405,
+            "METHOD_NOT_ALLOWED",
+          );
+          printingProgram = action === "print";
+          printing = printingProgram;
+          requestRealm = isOwner ? "owner" : "church";
+          targetChurchId = churchId;
+          route = `P42.${requestRealm}.${section}.${preview ? "preview" : (action ?? "root")}.${req.method}`;
+          let grant: ProgramGrant;
+          if (isOwner) {
+            const ctx = await identity.authorize(ownerToken, "owner", false, true);
+            actorId = ctx.owner._id;
+            const auth = identity.ownerGrant(
+              ctx,
+              writing || section === "people" || section === "operations"
+                ? "programs:manage"
+                : "programs:read",
+            );
+            grant = {
+              actorKind: "owner",
+              actorId,
+              churchId,
+              canWrite: true,
+              canManagePrograms: true,
+              policyContext: `${policyVersion}:owner`,
+              fence: async (tx) => {
+                await auth.fence(tx);
+                await access.fence(churchId, tx, true);
+              },
+            };
+          } else {
+            const ctx = await churchIdentity.authorize(churchToken, false, false);
+            actorId = ctx.account._id;
+            actorChurchId = ctx.account.churchId;
+            requireCondition(churchId.equals(actorChurchId), 404, "NOT_FOUND");
+            const auth = churchIdentity.grant(ctx);
+            auth.require(
+              writing || section === "people" || section === "operations"
+                ? "programs:manage"
+                : "programs:read",
+            );
+            grant = {
+              actorKind: "church_user",
+              actorId,
+              churchId,
+              canWrite: true,
+              canManagePrograms: ["pastor", "secretary", "ministry_lead"].includes(
+                ctx.account.role,
+              ),
+              ...(ctx.account.scope.kind === "assigned_units"
+                ? { unitScope: ctx.account.scope.unitIds.map((id) => id.toLowerCase()) }
+                : {}),
+              policyContext: `${policyVersion}:${ctx.account.version}`,
+              fence: (tx) => auth.fence(tx),
+            };
+          }
+          if (!writing) {
+            if (section === "units") response = json(await programs.units(grant, url.searchParams));
+            else if (section === "occurrences")
+              response = json(await programs.occurrences(grant, url.searchParams));
+            else if (section === "people")
+              response = json(await programs.people(grant, url.searchParams));
+            else if (section === "operations") {
+              requireCondition(!url.search, 400, "INVALID_REQUEST");
+              response = json(await programs.operation(grant, tail as string));
+            } else if (action === "editions")
+              response = json(await programs.editionsPage(grant, id as string, url.searchParams));
+            else if (action === "history")
+              response = json(await programs.historyPage(grant, id as string, url.searchParams));
+            else if (print) {
+              requireCondition(
+                [...url.searchParams.keys()].every((k) => k === "version" || k === "revision") &&
+                  url.searchParams.getAll("version").length === 1 &&
+                  url.searchParams.getAll("revision").length <= 1,
+                400,
+                "INVALID_REQUEST",
+              );
+              const v = url.searchParams.get("version"),
+                r = url.searchParams.get("revision");
+              requireCondition(
+                v &&
+                  /^[1-9][0-9]*$/.test(v) &&
+                  Number.isSafeInteger(Number(v)) &&
+                  (!r || (/^[1-9][0-9]*$/.test(r) && Number.isSafeInteger(Number(r)))),
+                400,
+                "INVALID_REQUEST",
+              );
+              const p = await programs.printable(
+                grant,
+                id as string,
+                r ? Number(r) : null,
+                Number(v),
+              );
+              if (action === "print-script")
+                response = new Response(programPrintScript, {
+                  headers: { ...security, "Content-Type": "application/javascript" },
+                });
+              else {
+                const files = await Array.fromAsync(
+                  new Bun.Glob("*.css").scan({ cwd: resolve(options.dist ?? "dist", "assets") }),
+                );
+                response = new Response(
+                  printProgram(
+                    p,
+                    files.map((n) => `/assets/${n}`),
+                    `${path}-script?${url.searchParams}`,
+                  ),
+                  { headers: { ...security, "Content-Type": "text/html; charset=utf-8" } },
+                );
+              }
+            } else if (id) {
+              requireCondition(!url.search, 400, "INVALID_REQUEST");
+              const d = await programs.get(grant, id);
+              headers.set("ETag", `"${d.version}"`);
+              response = json(d);
+            } else response = json(await programs.list(grant, url.searchParams));
+          } else {
+            requireCondition(!url.search, 400, "INVALID_REQUEST");
+            requireCondition(req.headers.get("origin") === conf.origin, 403, "CSRF_FAILED");
+            await identity.csrfSession(
+              isOwner ? ownerToken : churchToken,
+              requestRealm,
+              req.headers.get("x-csrf-token"),
+            );
+            const body = await readJson(req),
+              match = req.headers.get("if-match");
+            if (preview) response = json(await programs.preview(grant, id ?? null, body, match));
+            else {
+              const r = await programs.save(
+                grant,
+                id ?? null,
+                body,
+                req.headers.get("idempotency-key"),
+                match,
+                requestId,
+              );
+              response = json(r.data, r.status, { replayed: r.replayed });
+            }
+          }
+        } else if (
+          /^\/api\/v1\/(?:owner\/)?churches\/[^/]+\/scheduling\/(?:people|units|operations\/[^/]+|occurrences(?:\/preview|\/[^/]+(?:\/(?:preview|history))?)?)$/.test(
+            path,
+          )
+        ) {
+          const parts = path.split("/"),
+            isOwner = parts[3] === "owner",
+            offset = isOwner ? 1 : 0,
+            churchId = objectId(parts[4 + offset] as string),
+            section = parts[6 + offset],
+            tail = parts[7 + offset],
+            action = parts[8 + offset],
+            id = section === "occurrences" && tail !== "preview" ? tail : undefined,
+            preview = tail === "preview" || action === "preview";
+          const writing = req.method !== "GET",
+            managing = writing || section !== "occurrences" || action === "history";
+          requireCondition(
+            section === "occurrences" && preview
+              ? req.method === "POST"
+              : section === "occurrences" && !action
+                ? (id ? ["GET", "PATCH"] : ["GET", "POST"]).includes(req.method)
+                : req.method === "GET",
+            405,
+            "METHOD_NOT_ALLOWED",
+          );
+          requestRealm = isOwner ? "owner" : "church";
+          targetChurchId = churchId;
+          route = `P41.${requestRealm}.${section}.${preview ? "preview" : action === "history" ? "history" : "root"}.${req.method}`;
+          let grant: ScheduleGrant;
+          if (isOwner) {
+            const ctx = await identity.authorize(ownerToken, "owner", false, true);
+            actorId = ctx.owner._id;
+            const auth = identity.ownerGrant(ctx, managing ? "schedule:manage" : "schedule:read");
+            grant = {
+              actorKind: "owner",
+              actorId,
+              churchId,
+              canWrite: true,
+              canManageSchedule: true,
+              policyContext: `${policyVersion}:owner`,
+              fence: async (tx) => {
+                await auth.fence(tx);
+                await access.fence(churchId, tx, true);
+              },
+            };
+          } else {
+            const ctx = await churchIdentity.authorize(churchToken, false, false);
+            actorId = ctx.account._id;
+            actorChurchId = ctx.account.churchId;
+            requireCondition(churchId.equals(actorChurchId), 404, "NOT_FOUND");
+            const auth = churchIdentity.grant(ctx);
+            auth.require(managing ? "schedule:manage" : "schedule:read");
+            grant = {
+              actorKind: "church_user",
+              actorId,
+              churchId,
+              canWrite: ["pastor", "secretary"].includes(ctx.account.role),
+              canManageSchedule: ["pastor", "secretary"].includes(ctx.account.role),
+              ...(ctx.account.scope.kind === "assigned_units"
+                ? { unitScope: ctx.account.scope.unitIds.map((id) => id.toLowerCase()) }
+                : {}),
+              policyContext: `${policyVersion}:${ctx.account.version}`,
+              fence: (tx) => auth.fence(tx),
+            };
+          }
+          if (!writing) {
+            if (section === "people")
+              response = json(await scheduling.people(grant, url.searchParams));
+            else if (section === "units")
+              response = json(await scheduling.units(grant, url.searchParams));
+            else if (section === "operations") {
+              requireCondition(!url.search, 400, "INVALID_REQUEST");
+              response = json(await scheduling.operation(grant, tail as string));
+            } else if (action === "history")
+              response = json(await scheduling.historyPage(grant, id as string, url.searchParams));
+            else if (id) {
+              requireCondition(!url.search, 400, "INVALID_REQUEST");
+              const r = await scheduling.get(grant, id);
+              headers.set("ETag", `"${r.version}"`);
+              response = json(r);
+            } else response = json(await scheduling.list(grant, url.searchParams));
+          } else {
+            requireCondition(!url.search, 400, "INVALID_REQUEST");
+            requireCondition(req.headers.get("origin") === conf.origin, 403, "CSRF_FAILED");
+            await identity.csrfSession(
+              isOwner ? ownerToken : churchToken,
+              requestRealm,
+              req.headers.get("x-csrf-token"),
+            );
+            const body = await readJson(req),
+              match = req.headers.get("if-match");
+            if (preview) response = json(await scheduling.preview(grant, id ?? null, body, match));
+            else {
+              const r = await scheduling.save(
+                grant,
+                id ?? null,
+                body,
+                req.headers.get("idempotency-key"),
+                match,
+                requestId,
+              );
+              response = json(r.data, r.status, { replayed: r.replayed });
+            }
+          }
         } else if (
           /^\/api\/v1\/(?:owner\/)?churches\/[^/]+\/(?:members\/[^/]+\/rites|rites\/(?:people|baptism-facts|operations\/[^/]+|records(?:\/preview|\/[^/]+(?:\/(?:history|preview))?)?))$/.test(
             path,
@@ -2162,10 +2903,10 @@ export function createApp(
               "/owner/change-password",
               "/owner/support",
             ].includes(path) ||
-              /^\/owner\/churches\/[a-f0-9]{24}(?:\/(?:accounts|manage|config|members|families|bans|roles|overview|attendance|rites|forms))?$/i.test(
+              /^\/owner\/churches\/[a-f0-9]{24}(?:\/(?:accounts|manage|config|members|families|bans|roles|overview|attendance|rites|forms|worship|care))?$/i.test(
                 path,
               ) ||
-              /^\/h\/[a-z0-9-]{1,100}(?:\/(?:login|change-password|support|config|members|families|bans|roles|overview|access|attendance|rites|forms))?$/i.test(
+              /^\/h\/[a-z0-9-]{1,100}(?:\/(?:login|change-password|support|config|members|families|bans|roles|overview|access|attendance|rites|forms|worship|care))?$/i.test(
                 path,
               ),
             404,
@@ -2238,13 +2979,19 @@ export function createApp(
     }
     if (printing && response.status >= 400)
       response = new Response(
-        (printingCertificate ? certificatePrintError : printError)(
+        (printingProgram
+          ? programPrintError
+          : printingCertificate
+            ? certificatePrintError
+            : printError)(
           messages[
             response.status === 401
               ? "REAUTH_REQUIRED"
-              : printingCertificate
-                ? "CERT_NOT_CURRENT"
-                : "CARD_NOT_USABLE"
+              : printingProgram
+                ? "PROGRAM_SOURCE_STALE"
+                : printingCertificate
+                  ? "CERT_NOT_CURRENT"
+                  : "CARD_NOT_USABLE"
           ] as string,
         ),
         {

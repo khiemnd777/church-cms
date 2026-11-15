@@ -1,0 +1,192 @@
+{
+  "schema_version": 1,
+  "event_id": "CHURCH-P4/P4.4/implementation/1",
+  "event_type": "phase_handoff",
+  "task_id": "CHURCH-P4",
+  "scope_id": "P4.4",
+  "recorded_at": "2026-11-14T02:15:15.985255+00:00",
+  "reported_by": "delivery_owner",
+  "source_kind": "agent_self_report",
+  "phase": "implementation",
+  "handoff_index": 1,
+  "classification": {
+    "delivery": "roadmap",
+    "complexity": "prayer_immutable_visibility_audience_replay_transactions_UI",
+    "ui": true
+  },
+  "authority": {
+    "approval": "duyệt P4.4-plan-r1, C44-01–03 và ASCII, cho phép triển khai trọn P44-01–05 local/synthetic, bàn giao rồi dừng trước P4.5.",
+    "scope": "Trọn P44-01–05 local/synthetic; C44-01–03/ASCII; dừng P4.5; no publication/deploy/real data/main DB read/init/restart3443"
+  },
+  "skills": [
+    {
+      "skill_id": "incremental-implementation",
+      "contribution_summary": "Trọn P44-01–05/code và wiring trước tests, một bàn giao rồi dừng P4.5",
+      "contribution_percent_estimate": 25,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/incremental-implementation/SKILL.md",
+        "version": null,
+        "sha256": "4663b276ac0d2f38be6f14a23d792783a255efe714710726af21c0f52c873359",
+        "fingerprint_basis": "Đã đọc/áp dụng trong implementation P4.4; bytes hiện hành khớp fingerprint, không sửa skill"
+      }
+    },
+    {
+      "skill_id": "api-and-interface-design",
+      "contribution_summary": "Public Member port, immutable visibility/state/snapshot/preview/CAS, bounded queries và scoped replay/receipt",
+      "contribution_percent_estimate": 15,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/api-and-interface-design/SKILL.md",
+        "version": null,
+        "sha256": "2550ac99404f1d52566cdd95fd809e0984eb29f1174132a864fb7beb9f688f79",
+        "fingerprint_basis": "Đã đọc/áp dụng trong implementation P4.4; bytes hiện hành khớp fingerprint, không sửa skill"
+      }
+    },
+    {
+      "skill_id": "frontend-ui-engineering",
+      "contribution_summary": "W08 native list/visibility/preview/history, W01/W13/two realms, pending/URL/reauth và source UI parity",
+      "contribution_percent_estimate": 20,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/frontend-ui-engineering/SKILL.md",
+        "version": null,
+        "sha256": "b5c47fed383892428172bf0b9c1ed1aeab50066ff9421a87a6c344f746386495",
+        "fingerprint_basis": "Đã đọc/áp dụng trong implementation P4.4; bytes hiện hành khớp fingerprint, không sửa skill"
+      }
+    },
+    {
+      "skill_id": "security-and-hardening",
+      "contribution_summary": "Trusted audience/predicates trước reads/count/search/audit/replay, fresh fences/atomic writes và private RAM purge",
+      "contribution_percent_estimate": 10,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/security-and-hardening/SKILL.md",
+        "version": null,
+        "sha256": "4549688254258d5d6836a0f2d8cf606460a9baf426e9c644d3244a9973778ad3",
+        "fingerprint_basis": "Đã đọc/áp dụng trong implementation P4.4; bytes hiện hành khớp fingerprint, không sửa skill"
+      }
+    },
+    {
+      "skill_id": "test-driven-development",
+      "contribution_summary": "Code-first tests/Mongo/Redis/race/rollback/revoke/ACK loss;707browser checks, regressions và480workload journeys",
+      "contribution_percent_estimate": 20,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/test-driven-development/SKILL.md",
+        "version": null,
+        "sha256": "48d85b44f5e6286ba2a7a43550083609f299aa4001391768e9da126d2db86742",
+        "fingerprint_basis": "Đã đọc/áp dụng trong implementation P4.4; bytes hiện hành khớp fingerprint, không sửa skill"
+      }
+    },
+    {
+      "skill_id": "code-review-and-quality",
+      "contribution_summary": "Self-review coherent privacy/data/contracts/UI change; sửa preview close-reason và expired private intent purge, không review độc lập",
+      "contribution_percent_estimate": 10,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/code-review-and-quality/SKILL.md",
+        "version": null,
+        "sha256": "045ed6d37f590d7ad3b2ee47c1e66ada4bbff1e9d5d232c20a4eeaa5694e39f6",
+        "fingerprint_basis": "Đã đọc/áp dụng trong implementation P4.4; bytes hiện hành khớp fingerprint, không sửa skill"
+      }
+    }
+  ],
+  "measurements": {
+    "elapsed_seconds": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có bộ đếm đo được theo scope/phase"
+    },
+    "tool_calls": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có bộ đếm đo được theo scope/phase"
+    },
+    "input_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có bộ đếm đo được theo scope/phase"
+    },
+    "output_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có bộ đếm đo được theo scope/phase"
+    },
+    "cached_input_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có bộ đếm đo được theo scope/phase"
+    },
+    "reasoning_output_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có bộ đếm đo được theo scope/phase"
+    },
+    "client": null,
+    "model": null,
+    "effort": null
+  },
+  "verification": {
+    "tests": 354,
+    "assertions": 5133,
+    "p44TestsInFullSuite": 26,
+    "browserChecks": 707,
+    "browserRegression": {
+      "p4.3": 398,
+      "p2.4": 1407,
+      "p2.6": 484
+    },
+    "workloadConfigs": 9,
+    "measuredJourneys": 480,
+    "requests": 2646,
+    "retries": 82,
+    "p95JourneyRangeMs": [
+      38.89087499999732,
+      795.6763750000027
+    ],
+    "maxJourneyMs": 2831.653583000001,
+    "bundleKb": 594.9,
+    "queryPlans": 12,
+    "browserRegressionChecks": 2289
+  },
+  "evidence_refs": [
+    "docs/tasks/CHURCH-P4.4.md",
+    "docs/engineering/P4.4-prayers.md",
+    "output/p4.4/verification.json",
+    "output/p4.4/source-manifest.json",
+    "output/p4.4/browser-results.json",
+    "output/p4.4/qualification.json",
+    "output/p4.4/readback.json",
+    "output/p4.4/p43-evidence-preservation.json",
+    "output/p4.4/suite.log"
+  ],
+  "outcome": {
+    "delivery_status": "COMPLETED",
+    "verification_level": "SOURCE_COMPLETE / LOCAL_SYNTHETIC_VERIFIED",
+    "human_acceptance": "PENDING_REVIEW",
+    "limitations": [
+      "Local/synthetic only; human acceptance PENDING_REVIEW; NOT_RELEASED; P4.5–P4.6 NOT_OPENED",
+      "No commit/push/deploy/real data/main DB read/init/restart3443; no worktree or delegated agent",
+      "Self-review only; independent review NOT_RUN",
+      "P3.4 prior race cause remains UNKNOWN; P4.3 diagnostic and acceptance receipts preserved; current full-suite result is a separate snapshot",
+      "Physical camera/paper/printer, Safari/native Word/main runtime/UAT/pilot/remoteCI/production/multi-replica NOT_RUN",
+      "P4 aggregate restore belongs unopened P4.6; no production SLA/capacity/RPO/RTO",
+      "Stored-volume clones have no public-command history; source-linked/public sender/UI workflows are separate checks",
+      "480 five-stage journeys include scoped list+summary/read/preview/correct/history and bounded retry/backoff;6shares/9closes/3cancellations outside latency",
+      "Exact visible counts aggregate matching data;26-document bounds cover measured list/history pages only, not every filter/search query",
+      "Pastoral visibility means all valid current pastor accounts in that tenant; no owner bypass. Existing Owner account provisioning/role/reset remains P1.3 authority, not cryptographic isolation from account/infrastructure administrator",
+      "No revocation push guarantee to idle/offline tabs; next authenticated response enforces fences/clears UI context",
+      "Pending intents and private search are RAM-only; no persistence across reload. Receipt read before client24h resend bound, requires48h server expiry and fresh resource ACL; expired unresolvable intent clears prayer RAM and requires manual reconciliation",
+      "10 pre-existing CSS warnings; bundle594.90KB exceeds Vite500KB advisory",
+      "New schemas/indexes/optional audit audience remain unapplied to main DB; separate maintenance authority and data/index/writer review required"
+    ]
+  },
+  "planning_event_id": "CHURCH-P4/P4.4/planning/correction/1"
+}

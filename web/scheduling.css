@@ -1,0 +1,21 @@
+.schedule-section {
+  display: grid;
+  gap: 18px;
+  min-width: 0;
+}
+.schedule-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+.schedule-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+@media (max-width: 560px) {
+  .schedule-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

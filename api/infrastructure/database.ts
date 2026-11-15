@@ -1,6 +1,7 @@
 import { type ClientSession, type Db, MongoClient, MongoError } from "mongodb";
 import { attendanceIndexes, attendanceSchemas } from "../attendance/schema";
 import { cardIndexes, cardSchemas } from "../cards/schema";
+import { careIndexes, careSchemas } from "../care/schema";
 import { certificateIndexes, certificateSchemas } from "../certificates/schema";
 import type { Config } from "../config";
 import { exchangeIndexes, exchangeSchemas } from "../data-exchange/schema";
@@ -9,8 +10,12 @@ import { familyHistorySchema, familyIndexes, familySchema } from "../families/sc
 import type { AuditEvent, Credential, Owner, Session } from "../identity/models";
 import { memberIndexes, memberSchemas } from "../members/schema";
 import { organizationSchemas } from "../organization/schema";
+import { prayerIndexes, prayerSchemas } from "../prayers/schema";
 import { classIndexes, classSchemas } from "../prep-classes/schema";
+import { programIndexes, programSchemas } from "../programs/schema";
 import { riteIndexes, riteSchemas } from "../rites/schema";
+import { scheduleIndexes, scheduleSchemas } from "../scheduling/schema";
+import { visitationIndexes, visitationSchemas } from "../visitation/schema";
 export class Database {
   readonly client: MongoClient;
   readonly db: Db;
@@ -151,6 +156,11 @@ const common = {
   updatedAt: date,
 };
 const definitions = {
+  ...prayerSchemas,
+  ...careSchemas,
+  ...visitationSchemas,
+  ...programSchemas,
+  ...scheduleSchemas,
   ...attendanceSchemas,
   ...cardSchemas,
   ...classSchemas,
@@ -396,6 +406,7 @@ const definitions = {
       "requestId",
     ],
     properties: {
+      audience: { enum: ["general", "pastoral"] },
       _id: oid,
       occurredAt: date,
       actorKind: { enum: ["owner", "church_user", "system", "anonymous"] },
@@ -475,6 +486,11 @@ const indexes: Record<
     partialFilterExpression?: Record<string, unknown>;
   }[]
 > = {
+  ...prayerIndexes,
+  ...careIndexes,
+  ...visitationIndexes,
+  ...programIndexes,
+  ...scheduleIndexes,
   ...attendanceIndexes,
   ...cardIndexes,
   ...classIndexes,
@@ -595,6 +611,16 @@ export async function initialize(
   for (const [name, schema] of Object.entries(definitions)) {
     const validator = {
       $jsonSchema: { bsonType: "object", ...schema },
+      ...(name === "schedule_occurrences"
+        ? {
+            $expr: {
+              $and: [
+                { $lt: ["$startAt", "$endAt"] },
+                { $lte: [{ $subtract: ["$endAt", "$startAt"] }, 86400000] },
+              ],
+            },
+          }
+        : {}),
       ...(name === "attendance_sessions"
         ? {
             $expr: {

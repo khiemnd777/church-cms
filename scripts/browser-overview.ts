@@ -364,8 +364,8 @@ try {
   );
   assert((await page.locator(".qa button").count()) === 8, "eight-original-shortcuts");
   assert(
-    (await page.locator(".qa button:disabled").count()) === 3,
-    "future-three-shortcuts-disabled",
+    (await page.locator(".qa button:disabled").count()) === 2,
+    "two-future-shortcuts-disabled-after-P43-care-enabled",
   );
   assert(
     (await page.locator(".ui-report-chart button").count()) === 12,
@@ -422,6 +422,15 @@ try {
   await sourcePage.close();
   await page.setViewportSize({ width: 1440, height: 1000 });
   await page.emulateMedia({ colorScheme: "light" });
+  // P4.3 approved behavior: Thăm viếng is now wired; remaining future shortcuts stay disabled.
+  await page.getByRole("button", { name: "Thăm viếng", exact: true }).click();
+  await page.getByRole("heading", { name: "Danh sách thăm viếng", exact: true }).waitFor();
+  assert(new URL(page.url()).pathname.endsWith("/care"), "P43-care-shortcut-opens-real-W08");
+  await page
+    .getByRole("navigation")
+    .getByRole("button", { name: /^Tổng quan(?: —|$)/ })
+    .click();
+  await page.locator(".hero").waitFor();
   await page.getByRole("button", { name: "Tra cứu thuộc viên", exact: true }).focus();
   await page.getByRole("tooltip").filter({ hasText: "Tra cứu thuộc viên" }).waitFor();
   assert(true, "shortcut-keyboard-tooltip");
@@ -628,7 +637,7 @@ try {
         bundleIndexSha256: new Bun.CryptoHasher("sha256")
           .update(await Bun.file("dist/index.html").arrayBuffer())
           .digest("hex"),
-        source: "UI-STD-r1 W01 with P2.6-plan-r1 approved availability adaptations",
+        source: "UI-STD-r1 W01 with P2.6 availability adaptations and approved P4.3 care shortcut",
         limits: [
           "Local synthetic, private CA",
           "Viewport emulation, no Safari/physical/production",

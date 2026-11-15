@@ -1,0 +1,81 @@
+{
+  "schema_version": 1,
+  "event_id": "CHURCH-P4/P4.4/self-review/1",
+  "event_type": "evaluation",
+  "task_id": "CHURCH-P4",
+  "scope_id": "P4.4",
+  "recorded_at": "2026-11-14T02:15:15.985255+00:00",
+  "reported_by": "delivery_owner",
+  "source_kind": "agent_self_review",
+  "subject_event_id": "CHURCH-P4/P4.4/implementation/1",
+  "assessment_source": "agent_self_review",
+  "review_attempt": 1,
+  "decision": "PASS",
+  "findings": [
+    {
+      "category": "UNKNOWN",
+      "description": "Giữ nguyên UNKNOWN nguyên nhân lượt P3.4 raceFAIL trước; current suite là snapshot mới, không xóa finding bằng PASS hoặc human acceptance cũ.",
+      "evidence": [
+        "output/p4.3/attempts/suite-p34-race-before-recheck.log",
+        "output/p4.3/attempts/p34-race-diagnostic.json"
+      ],
+      "skill_attribution": null,
+      "disposition": "Unchanged prior limitation; no reproduced unresolved P44 defect"
+    }
+  ],
+  "resolved_cases": [
+    {
+      "category": "IMPLEMENTATION_DEFECT",
+      "description": "Preview đính chính hồ sơ đã đóng từng dùng correction reason làm closeReason; đã giữ before.closeReason, browser kiểm đúng reason cũ.",
+      "evidence": [
+        "web/prayers.tsx",
+        "scripts/browser-prayers.ts",
+        "output/p4.4/browser-results.json"
+      ],
+      "skill_attribution": null
+    },
+    {
+      "category": "IMPLEMENTATION_DEFECT",
+      "description": "Receipt404 sau24h từng giữ private pending body ở nhánh expired; access-loss callback nay purge cả DOM ẩn/form/query/pending. Browser downgrade sau25h và no-resend PASS.",
+      "evidence": [
+        "web/tenant-mutation.ts",
+        "scripts/browser-prayers.ts",
+        "output/p4.4/browser-results.json"
+      ],
+      "skill_attribution": null
+    },
+    {
+      "category": "TEST_DEFECT",
+      "description": "Harness đã sửa locator W01/reauth/negative duplicated alert và waits cho real ACK/async preview; expected revoke401 SESSION_REVOKED đối chiếu ChurchIdentity fence. Không giảm business assertions; attempts lưu riêng.",
+      "evidence": [
+        "output/p4.4/attempts/README.md",
+        "output/p4.4/browser-results.json",
+        "output/p4.4/suite.log"
+      ],
+      "skill_attribution": null
+    }
+  ],
+  "reviewed_boundaries": [
+    "C44 states/immutable scope/snapshot ownership",
+    "tenant+audience predicate before reads/count/search/history/preview/receipt/POST replay",
+    "audit F23 general+legacy filtering before paging",
+    "root CAS/fresh actor/source fences/atomic history+audit+ledger",
+    "UI epoch/private pending cleanup/two-domain dispatch/source parity",
+    "actual workload plan/retry/cleanup evidence"
+  ],
+  "evidence_refs": [
+    "docs/tasks/CHURCH-P4.4.md",
+    "docs/engineering/P4.4-prayers.md",
+    "output/p4.4/verification.json",
+    "output/p4.4/source-manifest.json",
+    "output/p4.4/browser-results.json",
+    "output/p4.4/qualification.json",
+    "output/p4.4/readback.json",
+    "output/p4.4/p43-evidence-preservation.json",
+    "output/p4.4/suite.log"
+  ],
+  "limits": [
+    "Self-review only; independent review NOT_RUN; not human acceptance or release",
+    "P3.4 prior race UNKNOWN retained; no source/assertion weakening or P4.5 work"
+  ]
+}

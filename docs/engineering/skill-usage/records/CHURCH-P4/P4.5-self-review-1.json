@@ -1,0 +1,88 @@
+{
+  "schema_version": 1,
+  "event_id": "CHURCH-P4/P4.5/self-review/1",
+  "event_type": "evaluation",
+  "task_id": "CHURCH-P4",
+  "scope_id": "P4.5",
+  "recorded_at": "2026-11-14T07:24:46.301029+00:00",
+  "reported_by": "delivery_owner",
+  "source_kind": "agent_self_review",
+  "subject_event_id": "CHURCH-P4/P4.5/implementation/1",
+  "assessment_source": "agent_self_review",
+  "review_attempt": 1,
+  "decision": "PASS",
+  "findings": [
+    {
+      "category": "UNKNOWN",
+      "description": "Prior P3.4 race cause UNKNOWN retained; current suite is separate evidence and does not remove prior finding.",
+      "evidence": [
+        "output/p4.3/attempts/suite-p34-race-before-recheck.log",
+        "output/p4.3/attempts/p34-race-diagnostic.json"
+      ],
+      "skill_attribution": null,
+      "disposition": "Unchanged prior limitation, no reproduced unresolved P45 defect"
+    }
+  ],
+  "resolved_cases": [
+    {
+      "category": "IMPLEMENTATION_DEFECT",
+      "description": "Cached evidence was shown in preview/kept in decision although source had been freshly validated; now current evidence/target visible and captured in history, tested belief-date change after scan.",
+      "evidence": [
+        "api/care/service.ts",
+        "web/care-suggestions.tsx",
+        "tests/integration/care.test.ts"
+      ],
+      "skill_attribution": null
+    },
+    {
+      "category": "IMPLEMENTATION_DEFECT",
+      "description": "Signal mixed-case URI IDs had separate idempotency route scopes; canonical ObjectId normalization now returns same receipt without second correction/history.",
+      "evidence": [
+        "api/care/service.ts",
+        "tests/integration/care.test.ts"
+      ],
+      "skill_attribution": null
+    },
+    {
+      "category": "IMPLEMENTATION_DEFECT",
+      "description": "Care access loss needed global auth propagation to remove sibling Prayer/Visitation cache; ApiError callback now routes Care403 to auth boundary, preserves only idle reauth pending and discards hard session/context pending. Browser realcommitACKloss→role downgrade asserts no hiddenCare/query/pending/Prayer marker.",
+      "evidence": [
+        "web/tenant-mutation.ts",
+        "web/care-suggestions.tsx",
+        "scripts/browser-care.ts"
+      ],
+      "skill_attribution": null
+    },
+    {
+      "category": "TEST_DEFECT",
+      "description": "Initial fixture typings/formatting corrected; list capture now waits real populated rows; no business assertion weakened. Earlier passing snapshots preserved separately.",
+      "evidence": [
+        "output/p4.5/attempts/README.md"
+      ],
+      "skill_attribution": null
+    }
+  ],
+  "reviewed_boundaries": [
+    "Source ownership and no Prayer dependency",
+    "Calendar/newbelief evidence/unknown vsfalse, active episode suppression/recurrence",
+    "Care/Visitation caller-owned transaction and unique open cases",
+    "Fresh grants/source fences/preview/CAS/resource receipt replay",
+    "UI three domains/one dialog/pending/reauth/context clear and current evidence display",
+    "Bounded query/paged assessment/workload/public vsvolume/cleanup limits"
+  ],
+  "evidence_refs": [
+    "docs/tasks/CHURCH-P4.5.md",
+    "docs/engineering/P4.5-care.md",
+    "output/p4.5/verification.json",
+    "output/p4.5/source-manifest.json",
+    "output/p4.5/browser-results.json",
+    "output/p4.5/qualification.json",
+    "output/p4.5/readback.json",
+    "output/p4.5/p44-evidence-preservation.json",
+    "output/p4.5/suite.log"
+  ],
+  "limits": [
+    "Self-review only; independent review NOT_RUN; not human acceptance/release",
+    "No unresolved reproduced P45 defect; P4.6 not opened"
+  ]
+}

@@ -5,7 +5,9 @@ export interface TenantIntent extends Intent {
   churchId: string;
   realm: TenantRealm;
   principalKey: string;
-  resource?: { kind: "member_card"; memberId: string };
+  resource?:
+    | { kind: "member_card"; memberId: string }
+    | { kind: "prayer_request"; visibility: "shared" | "pastoral" };
   upload?: { file: File; format: "csv" | "xlsx"; source: string };
 }
 export const authErrorCodes = [
@@ -38,6 +40,7 @@ export function useTenantMutation({
   acceptPath,
   intentResource,
   onSuccess,
+  onAccessLoss,
 }: {
   realm: TenantRealm;
   churchId: string;
@@ -51,6 +54,7 @@ export function useTenantMutation({
   acceptPath?: (path: string) => boolean;
   intentResource?: TenantIntent["resource"];
   onSuccess: (data: unknown) => void;
+  onAccessLoss?: (error: ApiError) => void;
 }) {
   const [busy, setBusy] = useState(false),
     [error, setError] = useState(""),
@@ -66,6 +70,7 @@ export function useTenantMutation({
   }, []);
   function fail(e: unknown) {
     if (e instanceof ApiError) {
+      if (["FORBIDDEN", "NOT_FOUND", "IDEMPOTENCY_EXPIRED"].includes(e.code)) onAccessLoss?.(e);
       if (authErrorCodes.includes(e.code)) {
         onAuthError(e);
         return;
@@ -104,11 +109,6 @@ export function useTenantMutation({
       onSuccess(data);
     }
     try {
-      if (Date.now() - intent.createdAt >= 24 * 60 * 60_000)
-        throw new ApiError(
-          "IDEMPOTENCY_EXPIRED",
-          "Đã quá thời hạn thử lại. Đối soát danh sách trước thao tác mới.",
-        );
       if (checking && intent.operationId) {
         try {
           const r = await tenantRequest<{ safeResult: unknown }>(
@@ -121,6 +121,11 @@ export function useTenantMutation({
           if (!(e instanceof ApiError && e.code === "NOT_FOUND")) throw e;
         }
       }
+      if (Date.now() - intent.createdAt >= 24 * 60 * 60_000)
+        throw new ApiError(
+          "IDEMPOTENCY_EXPIRED",
+          "Đã quá thời hạn thử lại. Đối soát danh sách trước thao tác mới.",
+        );
       const r = await tenantRequest(realm, intent.path, {
         method: intent.method,
         body: intent.body,

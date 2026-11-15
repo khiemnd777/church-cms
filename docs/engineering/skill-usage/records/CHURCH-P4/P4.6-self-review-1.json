@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "event_id": "CHURCH-P4/P4.6/self-review/1",
+  "event_type": "evaluation",
+  "task_id": "CHURCH-P4",
+  "scope_id": "P4.6",
+  "recorded_at": "2026-11-14T07:56:14.848979+00:00",
+  "reported_by": "delivery_owner",
+  "source_kind": "agent_self_report",
+  "subject_event_id": "CHURCH-P4/P4.6/implementation/1",
+  "assessment_source": "agent_self_review",
+  "review_attempt": 1,
+  "decision": "PASS",
+  "findings": [
+    {
+      "category": "TEST_DEFECT",
+      "description": "Resolved: recurrence fixture must use returned occurrence.input (create returns lastslot); correct Audit.organization/status503; disambiguate duplicate heading; audit snapshot targetChurchId; add current history-plan coverage. No product assertions weakened.",
+      "evidence": [
+        "output/p4.6/attempts/focused-harness-r1.log",
+        "output/p4.6/attempts/browser-heading-selector-r1.json",
+        "tests/integration/p4-workflows.test.ts",
+        "output/p4.6/history-plans.json"
+      ],
+      "skill_attribution": null
+    },
+    {
+      "category": "UNKNOWN",
+      "description": "P42post-reauth fast-fill reset exact cause remains UNKNOWN; network-idle alone did not fix. Current real keyboard+blur path verifies exact reason/preview/finalize; no claim native fastfill/paste repaired. P3.4priorraceUNKNOWN retained separately.",
+      "evidence": [
+        "output/p4.6/attempts/p42-post-reauth-sync-r1.json",
+        "output/p4.6/attempts/p42-post-reauth-sync-r2.json",
+        "output/p4.6/regression/p4.2/browser-results.json",
+        "output/p4.3/attempts/p34-race-diagnostic.json"
+      ],
+      "skill_attribution": null
+    }
+  ],
+  "evidence_refs": [
+    "docs/tasks/CHURCH-P4.6.md",
+    "docs/engineering/P4.6-qualification.md",
+    "output/p4.6/verification.json",
+    "output/p4.6/source-manifest.json",
+    "output/p4.6/qualification.json",
+    "output/p4.6/restore.json",
+    "output/p4.6/history-plans.json",
+    "output/p4.6/readback.json",
+    "output/p4.6/prior-evidence-preservation.json",
+    "output/p4.6/attempts/README.md"
+  ],
+  "limits": [
+    "Self-review, not independent review or human acceptance"
+  ]
+}

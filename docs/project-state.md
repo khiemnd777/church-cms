@@ -1,6 +1,83 @@
 # Hiện trạng Church CMS
 
-Cập nhật ngày2026-11-13: **P1/P2/P3 CLOSED; P3.1–P3.6 HUMAN ACCEPTED local/synthetic; P3.6-r1 SOURCE_COMPLETE / LOCAL_SYNTHETIC_VERIFIED / HUMAN_ACCEPTANCE=ACCEPTED đủ5/5mục. P4 NOT_OPENED; chưa released.** Đây là bản tóm tắt hiện hành duy nhất. Các trạng thái implementation/planning cũ phía dưới giữ chronology trước kết quả mới.
+Cập nhật ngày 2026-11-15: **P1/P2/P3/P4 CLOSED; P4.1–P4.6 HUMAN_ACCEPTED đủ5/5 mỗi gói; P5 NOT_OPENED; chưa released.** Trạng thái hiện hành duy nhất; các mục phía dưới giữ chronology.
+
+
+## P4 — đã đóng theo chỉ dẫn Khiêm 2026-11-15
+
+Khiêm: **“nghiệm thu năm mục P4.6-r1, đóng P4.”** P4.6-r1 đã HUMAN_ACCEPTED đủ năm mục; **P4 CLOSED local/synthetic, P5 NOT_OPENED**. [Task/checklist P4.6](tasks/CHURCH-P4.6.md), [biên bản đóng P4](tasks/CHURCH-P4.md#đóng-p4), [acceptance evaluation](engineering/skill-usage/records/CHURCH-P4/P4.6-human-acceptance-1.json), [closure evaluation](engineering/skill-usage/records/CHURCH-P4/P4-closure-1.json) liên kết đủ sáu gói P4.1–P4.6.
+
+Không chạy lại tests/runtime; giữ snapshot bàn giao 384 tests/5.517 assertions,2.745 browser checks,9configs/480journeys/23plans,restore50collections/readback0. Technical receipts/source manifests/implementation/self-review journals và bằng chứng cũ giữ nguyên hash; acceptance/closure bổ sung lịch sử, không rewrite trạng thái pending trong snapshot gốc.
+
+Giữ P3.4 race/P4.2 fast-fill exact cause UNKNOWN; keyboard PASS không chứng minh fast-fill/paste đã sửa. Giữ giới hạn P4preview digest/receipt/recovery cut line/quiesce0inflight và postrestore handler in-process. Physical/native Word/Safari/UAT/main runtime/pilot/remoteCI/production/multi-replica/independent review NOT_RUN; main schemas/index/Policy18 chưa áp. Local workload/restore không production SLA/capacity/RPO/RTO/PITR. Chưa commit/push/deploy/real data/main DB read/init/restart3443. Không mở P5 hoặc gửi thông báo chat khác. Các mục sau là chronology.
+
+
+## P4.6-r1 — bàn giao, chờ nghiệm thu
+
+P46-01–05/C46-01–03/ASCII hoàn tất và PASS local/synthetic. **Chờ Khiêm nghiệm thu năm mục; dừng trước đóng P4/mở P5.** [Task/checklist](tasks/CHURCH-P4.6.md), [runbook](engineering/P4.6-qualification.md), [verification](../output/p4.6/verification.json). 384tests/5517assertions/0FAIL;144browser tổng hợp+2601regressionchecks=2745;9configs/480distinct terminaljourneys/6877requests/769retryresponses;18list-count+5historyplans=23;restore50collections exact trước transformations;cleanup/readback0. Snapshot50collections khớp trước revoke12sessions/purge1preview/rotatekey;oldcookies401/cursor400/QRproof409/certificatepreview412.81creates/78links,162program/159visit/159prayer. Static/build/UI/audit/diff/shellPASS;10existingCSSwarnings/bundle615.15kB advisory.78prior artifacts/journals và API/web/dependencies/dist56hashes giữ nguyên; source add6runners/tests + package/wrapper/P42harness.5skills journal sum100%; self-review không independentreview/humanacceptance/release.
+
+Giữ P3.4priorraceUNKNOWN và P42postreauthfastfill exactcauseUNKNOWN; keyboardPASS không claim fastfill/pastefixed. Quiesce observed0inflight, chưa held-requeststress. P4previewdigest không tự invalidated khi rotatekey; bỏpendingcũ/freshauthorizedreceipt trướcpreview/confirm. Source/workloadHTTPS; postrestoreHTTPhandler in-process/realMongoRedis. Physical/nativeWord/Safari/UAT/mainruntime/pilot/remoteCI/production/multi-replica/independentreviewNOT_RUN, không SLA/capacity/RPO/RTO/PITR. Main schemas/index/Policy18 chưa áp; không publication/deploy/realdata/mainread/init/restart3443/worktree/delegation. Các mục sau là chronology.
+
+
+## P4.6 — đang triển khai theo approval
+
+Khiêm duyệt P4.6-plan-r1/C46-01–03/ASCII và trọn P46-01–05 local/synthetic. [Task/checklist](tasks/CHURCH-P4.6.md). Hoàn thiện code/wiring trước tests, một handoff; dừng trước đóng P4/mở P5. Không publication/deploy/real data/main DB read/init/restart3443/worktree/delegation; giữ prior evidence/P3.4UNKNOWN/physical/NOT_RUN. Các mục sau là chronology.
+
+
+## Nghiệm thu P4.5-r1, mở planning P4.6
+
+Khiêm: **“nghiệm thu năm mục P4.5-r1 và cho phép mở kế hoạch chi tiết P4.6 để duyệt trước coding.”** [Task/checklist](tasks/CHURCH-P4.5.md), [evaluation](engineering/skill-usage/records/CHURCH-P4/P4.5-human-acceptance-1.json). P45-01–05 HUMAN_ACCEPTED đủ5/5 local/synthetic. Giữ nguyên snapshot380tests/5437assertions,702browser+2996regressionchecks;9configs/480journeys/3210requests/270retries;12plans/cleanup0. Không chạy lại tests/runtime;9technical artifacts/journals P4.5 nguyênSHA256 và source313/dist56 khớp manifest bàn giao. Acceptance bổ sung lịch sử, không rewrite technical snapshots.
+
+P4.6 Tổng hợp/kiểm chứng chỉ khảo sát/kế hoạch chi tiết trong chat; C46/workflow/recovery/workload/ASCII và coding chưa duyệt. P4 chưa đóng/P5 chưa mở. Không publication/deploy/realdata/main DB read/init/restart3443/worktree/delegation. Main schemas/index/Policy18 chưa áp; P3.4 prior race UNKNOWN và physical/native Word/Safari/UAT/main runtime/pilot/remoteCI/production/multi-replica/independent review NOT_RUN giữ nguyên. Aggregate restore P4.6 chưa chạy; workload không SLA/capacity/RPO/RTO. Các mục sau là chronology.
+
+
+## P4.5-r1 — bàn giao, chờ nghiệm thu
+
+P45-01–05/C45-01–03/ASCII hoàn tất nguồn/wiring trước tests và PASS local/synthetic; **chờ Khiêm nghiệm thu đủ5mục, dừng trước P4.6**. [Task/checklist](tasks/CHURCH-P4.5.md), [contracts/runbook](engineering/P4.5-care.md), [verification](../output/p4.5/verification.json).380tests/5437assertions/0FAIL;702W08Firefoxchecks+2996regressionchecks;9configs/480journeys/3210requests/270retries, p95~57–2136ms/max4629ms;12plans/cleanup0. Workload255creates/63links/162dismissals. Static/build/UI/audit/diffPASS,10existingCSSwarnings/bundle615.15kB advisory. Cleanup0,9P44technical artifacts/journals giữ nguyên SHA256. Journal implementation/self-review đã lưu; self-review không independent review hoặc human acceptance.
+
+P4.1 Lịch giảng/sinh hoạt, P4.2 Chương trình ban, P4.3 Hồ sơ thăm viếng, P4.4 Cầu thay/quyền riêng tư đã HUMAN_ACCEPTED. P4.5 Cảnh báo/chăm sóc tự động chờ nghiệm thu; P4.6 Tổng hợp/kiểm chứng NOT_OPENED. Không commit/push/deploy/realdata/main DB read/init/restart3443/worktree/delegation. Main schema/index/Policy18 chưa áp; refresh theo yêu cầu, cachedasOf/partial, không global snapshot/job nền/Prayer inputs/autoselectassignee/external send/auto visited. P3.4 prior race causeUNKNOWN và physical/native Word/Safari/UAT/main runtime/pilot/remoteCI/production/multi-replica/independent reviewNOT_RUN giữ nguyên; aggregate restore P4.6 chưa mở, không SLA/capacity/RPO/RTO. Các mục sau là chronology.
+
+## Nghiệm thu P4.4-r1, mở planning P4.5
+
+Khiêm: **“nghiệm thu P4.4-r1 và cho phép mở kế hoạch chi tiết P4.5 để duyệt trước coding.”** [Task/checklist](tasks/CHURCH-P4.4.md), [evaluation](engineering/skill-usage/records/CHURCH-P4/P4.4-human-acceptance-1.json). P44-01–05 HUMAN_ACCEPTED đủ5/5 local/synthetic. Giữ nguyên snapshot354tests/5133assertions,707browser+2289regressionchecks;9configs/480journeys/2646requests/82retries, p95~39–796ms/max2832ms;12plans/cleanup0. Không chạy lại tests/runtime;9technical artifacts/journals P4.4 nguyênSHA256. P3.4 prior race cause UNKNOWN giữ nguyên, không xóa bằng acceptance.
+
+Chỉ mở khảo sát/kế hoạch chi tiết P4.5 trong chat để duyệt trước coding; chưa chốt C45/nguồn/quyền/trạng thái/contracts/ASCII, không application code/schema/tests/runtime mới hoặc lưu thiết kế chưa duyệt thành quyết định. P4.6 NOT_OPENED. Không commit/push/deploy/real data/main DB read/init/restart3443/worktree/delegation. Giữ main schemas/index/audit audience chưa áp; physical/native Word/Safari/UAT/main runtime/pilot/remoteCI/production/multi-replica/independent review NOT_RUN và aggregate restore P4.6 chưa mở, workload không SLA. Các mục dưới là chronology.
+
+## P4.4-r1 — bàn giao, chờ nghiệm thu
+
+P44-01–05/C44-01–03/ASCII hoàn tất nguồn/wiring trước tests và PASS local/synthetic. **Chờ Khiêm nghiệm thu năm mục; dừng trước P4.5.** [Task/checklist/evidence](tasks/CHURCH-P4.4.md), [contracts/runbook](engineering/P4.4-prayers.md), [verification](../output/p4.4/verification.json).354tests/5133assertions/0FAIL;707W08Firefoxchecks+2289regressionchecks (P43=398/W13=1407/W01=484);9configs/480journeys/2646requests/82retries, p95~39–796ms/max2832ms;12query plans. Cleanup0owned DB/private dirs/listeners/verification containers,9P43technical artifacts/journals nguyênSHA256. Static/build/UI/audit/diff PASS;10existingCSSwarnings/bundle594.90kB advisory. Journal implementation/self-review đã lưu, planning accounting correction liên kết không đổi C44/scope.
+
+P4.1 Lịch giảng/sinh hoạt, P4.2 Chương trình ban, P4.3 Hồ sơ thăm viếng đã HUMAN_ACCEPTED; P4.4 Cầu thay/quyền riêng tư chờ nghiệm thu; P4.5 Cảnh báo/chăm sóc tự động và P4.6 Tổng hợp/kiểm chứng NOT_OPENED. Không commit/push/deploy/real data/main DB read/init/restart3443/worktree/delegation. Main schema/index/audit audience chưa áp; không release. Self-review, chưa independent review/UAT. P3.4 prior race UNKNOWN giữ nguyên (current suite có ca đó PASS); physical/native Word/Safari/main runtime/pilot/remoteCI/production/multi-replica NOT_RUN. Aggregate restore P4.6 chưa mở; không SLA/capacity/RPO/RTO. Private theo application role hiện hành, không cách ly mật mã khỏi Owner account/infrastructure administration. Pending/query chỉ RAM, không revocation push guarantee. Các mục dưới là chronology.
+
+## Nghiệm thu P4.3-r1, mở planning P4.4
+
+Khiêm: **“nghiệm thu năm mục P4.3-r1 và cho phép mở kế hoạch chi tiết P4.4 để duyệt trước coding.”** [Task/checklist](tasks/CHURCH-P4.3.md), [evaluation](engineering/skill-usage/records/CHURCH-P4/P4.3-human-acceptance-1.json). P43-01–05 đủ năm mục HUMAN_ACCEPTED local/synthetic. Giữ snapshot bàn giao:328tests/4728assertions,398W08checks+2217regressionchecks;9configs/480journeys/4953requests/851retries, p95~272–12127ms; cleanup0. Không chạy lại tests/runtime ở lượt nghiệm thu;9technical artifacts/journals P4.3 giữ nguyên SHA256. P3.4 prior race UNKNOWN,10diagnostic loops không tái hiện và final suitePASS vẫn là các bằng chứng tách biệt, không xóa UNKNOWN bằng acceptance.
+
+P4.4 chỉ khảo sát nguồn và trình kế hoạch chi tiết/C44/ASCII trong chat, chưa chốt thiết kế hoặc coding. Không tạo application code/schema hoặc lưu dự thảo chi tiết thành quyết định đã duyệt; P4.5–P4.6 chưa mở. Không publication/deploy/real data/main DB read/init/restart3443. Giữ physical/native Word/main runtime/Safari/UAT/pilot/remoteCI/production/multi-replica NOT_RUN và aggregate restore P4.6 chưa mở; workload không SLA. Các mục sau là chronology.
+
+## P4.3-r1 — bàn giao, chờ nghiệm thu
+
+P43-01–05/C43-01–03/ASCII hoàn tất nguồn/wiring trước test phase và kiểm chứng local/synthetic; chờ Khiêm nghiệm thu năm mục P4.3-r1. P4.4–P4.6 NOT_OPENED. Không publication/deploy/real data/main DB read/init/restart3443. [Task/checklist](tasks/CHURCH-P4.3.md). 328tests/4728assertions;24P43tests trong suite;398W08Firefoxchecks +2217regressionchecks;9configs/480journeys/4953requests/851retries, p95~272–12127ms (max13517ms). [Verification](../output/p4.3/verification.json), [contracts/runbook](engineering/P4.3-visitation.md), [journal](engineering/skill-usage/records/CHURCH-P4/P4.3-implementation-1.json). Static/build/UI/audit/diff PASS,10existingCSSwarnings/bundle577.23kB advisory. Cleanup readback0ownedP43databases/private dirs/listeners; P42technical artifacts/journals giữ nguyên9/9hash. Self-review, chưa independent review/UAT/human acceptance/release. Workload5stages gồm list+summary và bounded retry/backoff; không SLA/capacity production. Pending intent memory-only, aggregate restore P4.6 chưa mở, physical/native Word/main runtime/Safari/UAT/pilot/remoteCI/production/multi-replica NOT_RUN. Một lượt trước327PASS/1P3.4raceFAIL;10diagnostic loops không tái hiện, assertions/P3.4 application source giữ nguyên, chỉ thêm safe error-message. Nguyên nhân lượt trước UNKNOWN, giữ finding/evidence; final suite báo riêng. Các mục bên dưới là chronology trước bàn giao hiện hành.
+
+## Nghiệm thu P4.2-r1, mở planning P4.3
+
+Khiêm: **“Nghiệm thu P4.2-r1 theo năm mục; đồng ý, cho phép mở kế hoạch chi tiết P4.3 để duyệt trước coding.”** [Task/checklist](tasks/CHURCH-P4.2.md), [evaluation](engineering/skill-usage/records/CHURCH-P4/P4.2-human-acceptance-1.json). P42-01–05 đủ năm mục HUMAN_ACCEPTED. Snapshot kỹ thuật giữ nguyên:304tests/4299assertions; focused21/241; browser326+regression1873;9configs/480journeys/3057requests/379retries, p95~54–3125ms; A4 7rows/1page và50rows/3pages; cleanup0. Đây là bằng chứng tại thời điểm bàn giao, không chạy lại runtime/tests ở lượt nghiệm thu.
+
+P4.3 chỉ khảo sát nguồn và trình kế hoạch chi tiết/C43/ASCII trong chat, chưa duyệt thiết kế/coding. Không tạo application code/schema hoặc lưu draft chi tiết như quyết định đã chốt; P4.4–P4.6 chưa mở. Không publication/deploy/real data/main DB init/restart3443. Giữ P4.2 technical receipts/source manifest/implementation/self-review journals và physical/native Word/main runtime/Safari/UAT/pilot/remoteCI/production/multi-replica NOT_RUN; workload không là SLA, aggregate restore thuộc P4.6 chưa mở.
+
+## P4.2-r1 — đã bàn giao, chờ nghiệm thu
+
+Khiêm: **“Duyệt P4.2-plan-r1, C42-01–03 và ASCII. Triển khai trọn P42-01–05 local/synthetic rồi bàn giao, dừng trước P4.3. Chưa commit/push/deploy hoặc dùng dữ liệu thật.”** [Task/checklist](tasks/CHURCH-P4.2.md). Trọn P42-01–05 nguồn và wiring hoàn tất trước test phase.304tests/4299assertions; focused21/241; browser326 + regression1873; workload9configs/480journeys/3057requests/379retries, p95~54–3125ms; A4 7rows/1page và50rows/3pages; cleanup0. [Verification](../output/p4.2/verification.json), [contracts/runbook](engineering/P4.2-programs.md), [journal](engineering/skill-usage/records/CHURCH-P4/P4.2-implementation-1.json). Chờ Khiêm nghiệm thu năm mục P4.2-r1, chưa release. Đã dừng trước P4.3; P4.3–P4.6 chưa mở, không publication/deploy/real data/main DB init/restart3443. Giữ P4.1 acceptance/technical snapshots và mọi physical/NOT_RUN; các mục planning bên dưới giữ chronology.
+
+## P4.1-r1 — đã nghiệm thu; chỉ mở planning P4.2
+
+Khiêm: **“Nghiệm thu P4.1-r1 theo năm mục trong checklist. Mở kế hoạch chi tiết P4.2 để duyệt trước coding.”** [Task/checklist](tasks/CHURCH-P4.1.md), [evaluation](engineering/skill-usage/records/CHURCH-P4/P4.1-human-acceptance-1.json). P41-01–05/C41-01–03/ASCII source complete/local-synthetic verified và HUMAN_ACCEPTED đủ năm mục. P4.2 — Chương trình sinh hoạt ban chỉ investigation/kế hoạch chi tiết trong chat, chưa duyệt coding. P4.3–P4.6 chưa mở.
+
+Giữ snapshot bàn giao **283tests/4059assertions;466P41+1909regressionFirefoxchecks;9configs/480measuredjourneys/2898requests/326retries**, p95local35.13–1149.89ms; không SLA/full200-assignment saturation. Static/build/UI/audit/diff PASS,10sourceCSSwarnings/bundle539.21kB warning. Self-review, không reviewer độc lập; readback0P41DB/private dirs/verification containers/listener3475 là snapshot bàn giao. [Receipt](../output/p4.1/verification.json), [manifest](../output/p4.1/source-manifest.json), [implementation journal](engineering/skill-usage/records/CHURCH-P4/P4.1-implementation-1.json) và self-review giữ nguyên; không chạy lại tests/runtime ở bước nghiệm thu này. Chưa commit/push/deploy/real data/main DB init/restart3443. Giữ P3 physical/native Word/main runtime/Safari/UAT/pilot/remoteCI/production/multi-replica NOT_RUN; P4 aggregate restore thuộc P4.6 chưa mở.
+
+## P4 — danh mục đã duyệt, chỉ mở planning P4.1
+
+Khiêm: **“Duyệt P4-plan-r1. Mở kế hoạch chi tiết P4.1 để duyệt trước coding.”** Đã ghi danh mục sáu gói/thứ tự/điểm dừng tại [CHURCH-P4](tasks/CHURCH-P4.md), [journal danh mục](engineering/skill-usage/records/CHURCH-P4/P4-plan-planning-1.json) và [approval evaluation](engineering/skill-usage/records/CHURCH-P4/P4-plan-human-approval-1.json). P4.1 — Lịch giảng và sinh hoạt chỉ investigation/kế hoạch chi tiết trong chat; chưa duyệt implementation. P4.2–P4.6 chưa mở. Không lưu draft P4.1 như thiết kế đã chốt, không code/tests/runtime mới, không commit/push/deploy/real data/main DB init/restart3443. Giữ P3 CLOSED local/synthetic, technical snapshots và toàn bộ NOT_RUN/physical note; các dòng P4 NOT_OPENED bên dưới là chronology trước approval hiện hành.
 
 ## P3 — đã đóng theo chỉ dẫn Khiêm 2026-11-13
 

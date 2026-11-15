@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "task_id": "CHURCH-P4",
+  "scope_id": "P4-plan",
+  "recorded_at": "2026-11-13T23:28:37.554811+07:00",
+  "reported_by": "delivery_owner",
+  "event_id": "CHURCH-P4/P4-plan/human-review/1",
+  "event_type": "evaluation",
+  "source_kind": "human_feedback",
+  "subject_event_id": "CHURCH-P4/P4-plan/planning/1",
+  "assessment_source": "human",
+  "review_attempt": 1,
+  "decision": "ACCEPTED",
+  "findings": [],
+  "authority": {
+    "approval": "Duyệt P4-plan-r1. Mở kế hoạch chi tiết P4.1 để duyệt trước coding.",
+    "scope": "Duyệt danh mục sáu gói P4-plan-r1; ghi nhận approval và chỉ mở planning P4.1 trong chat; chưa implementation/publication/deploy/real data/main DB init/restart3443"
+  },
+  "evidence_refs": [
+    "current_chat:P4-plan-r1",
+    "current_chat:Duyệt P4-plan-r1. Mở kế hoạch chi tiết P4.1 để duyệt trước coding.",
+    "docs/tasks/CHURCH-P4.md",
+    "docs/project-context.md",
+    "docs/project-plan.md",
+    "docs/project-state.md"
+  ],
+  "limits": [
+    "Ghi nhận danh mục được duyệt và quyền planning P4.1; không approval chi tiết P4.1/coding",
+    "Không thay receipts/source manifests/implementation journals P3; không chạy lại tests/runtime"
+  ]
+}

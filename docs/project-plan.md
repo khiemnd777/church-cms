@@ -4,7 +4,8 @@ Ngày tổng hợp: 2026-11-10. Nguồn chi tiết: [hồ sơ P0](tasks/CHURCH-P
 
 ## Phạm vi được phép hiện tại
 
-P3.6-plan-r1/C36-01–03/ASCII đã được Khiêm duyệt để triển khai P36-01–05 local/synthetic và bàn giao một lần theo roadmap P3. [Đầu ra/checklist/bằng chứng P3.6-r1](tasks/CHURCH-P3.6.md), [contracts](engineering/P3.6-reporting.md). Khiêm đã nghiệm thu P3.6-r1 đủ năm mục local/synthetic; [evaluation](engineering/skill-usage/records/CHURCH-P3/P3.6-human-acceptance-1.json). Khiêm đã cho đóng P3; [biên bản closure](tasks/CHURCH-P3.md#đóng-p3). P4 NOT_OPENED; không commit/push/deploy/real data/main DB init/restart3443. Camera/giấy thật/native Word NOT_RUN. Live state duy nhất tại project-state; các mục phía dưới giữ chronology.
+**P4 CLOSED local/synthetic; P4.1–P4.6 HUMAN_ACCEPTED đủ5/5 mỗi gói**, theo chỉ dẫn Khiêm ngày 2026-11-15. [Biên bản đóng P4](tasks/CHURCH-P4.md#đóng-p4), [acceptance P4.6](tasks/CHURCH-P4.6.md). **P5 NOT_OPENED**; chưa có quyền lập danh mục/kế hoạch hoặc implementation P5. Chưa released/publication/deploy/real data/main DB read/init/restart3443; giữ snapshots/UNKNOWN/NOT_RUN.
+
 
 ## P0 — Đặc tả và phê duyệt
 
@@ -217,3 +218,98 @@ Khiêm: **“Anh nghiệm thu P3.6-r1 theo năm mục; ghi nhận acceptance r�
 ## Đóng P3; P4 chưa mở — 2026-11-13
 
 Theo chỉ dẫn Khiêm, P3 CLOSED sau nghiệm thu sáu gói local/synthetic. [Biên bản](tasks/CHURCH-P3.md#đóng-p3), [closure evaluation](engineering/skill-usage/records/CHURCH-P3/P3-closure-1.json). Chỉ thông báo chat P4 đã chỉ định; không duyệt P4-plan-r1 hoặc mở P4/planning chi tiết/coding. Giữ technical snapshots, NOT_RUN và giới hạn; chưa commit/push/deploy/real data/main DB init/restart3443. Live state duy nhất tại project-state; các điểm dừng P3 chưa đóng phía trên là lịch sử.
+
+
+## P4-plan-r1 — duyệt danh mục, mở planning P4.1 — 2026-11-13
+
+Khiêm: **“Duyệt P4-plan-r1. Mở kế hoạch chi tiết P4.1 để duyệt trước coding.”** [Danh mục sáu gói/thứ tự/điểm dừng](tasks/CHURCH-P4.md), [journal danh mục](engineering/skill-usage/records/CHURCH-P4/P4-plan-planning-1.json), [approval evaluation](engineering/skill-usage/records/CHURCH-P4/P4-plan-human-approval-1.json). Chỉ ghi nhận kế hoạch danh mục đã duyệt; P4.1 mở investigation và kế hoạch chi tiết trong chat, chưa duyệt implementation. Không lưu draft contracts/quy tắc/ASCII P4.1 như quyết định đã chốt. P4.2–P4.6 chưa mở. P3 CLOSED local/synthetic và technical snapshots/NOT_RUN giữ nguyên; không code/tests/runtime mới hoặc commit/push/deploy/real data/main DB init/restart3443.
+
+
+## P4.1-plan-r1 — implementation được duyệt — 2026-11-13
+
+Khiêm duyệt C41-01–03/ASCII và P41-01–05 local/synthetic; [task](tasks/CHURCH-P4.1.md). Domain/API/quyền/W07/callers hoàn chỉnh trước tests/checks/self-review/qualification; một bàn giao rồi dừng trước P4.2. Không publication/deploy/real data/main DB init/restart3443.
+
+
+## Bàn giao P4.1-r1 — 2026-11-14
+
+P41-01–05/C41-01–03/ASCII hoàn tất nguồn và kiểm chứng local/synthetic; [task/năm mục nghiệm thu](tasks/CHURCH-P4.1.md), [receipt](../output/p4.1/verification.json). Calendar/recurrence/assignments/preview/history và quyền hai realm, W07/W13/W01 wiring; tests/browser/workload/index/cleanup/self-review theo scope. Chờ human acceptance, dừng trước P4.2. Không publication/deploy/real data/main DB init/restart3443; giữ NOT_RUN/physical và P3 receipts.
+
+
+## Nghiệm thu P4.1-r1 và mở planning P4.2 — 2026-11-14
+
+Khiêm: **“Nghiệm thu P4.1-r1 theo năm mục trong checklist. Mở kế hoạch chi tiết P4.2 để duyệt trước coding.”** [Checklist/evaluation](tasks/CHURCH-P4.1.md). Năm mục P41-01–05 HUMAN_ACCEPTED local/synthetic. P4.2 chỉ lập kế hoạch chi tiết/ASCII trong chat, chưa duyệt thiết kế hoặc implementation; P4.3–P4.6 chưa mở. Không ghi lại usage hoặc sửa receipts/source manifest/implementation/self-review journals P4.1, không chạy lại tests/runtime. Chưa publication/deploy/real data/main DB init/restart3443; physical/NOT_RUN và qualification limits giữ nguyên.
+
+
+## P4.2-plan-r1 — implementation được duyệt — 2026-11-14
+
+Khiêm: **“Duyệt P4.2-plan-r1, C42-01–03 và ASCII. Triển khai trọn P42-01–05 local/synthetic rồi bàn giao, dừng trước P4.3. Chưa commit/push/deploy hoặc dùng dữ liệu thật.”** [Authority/C42/ASCII/checklist](tasks/CHURCH-P4.2.md). Không mở P4.3 hoặc publication/deploy/real data/main DB init/restart3443.
+
+
+## Bàn giao P4.2-r1 — 2026-11-14
+
+P42-01–05 source/wiring và kiểm chứng local/synthetic hoàn tất; [năm mục nghiệm thu và evidence](tasks/CHURCH-P4.2.md), [contracts/runbook](engineering/P4.2-programs.md). Template/merge giữ manual, draft/immutable revisions/history, rights15 tách program/calendar, W07 hai realm, authenticated A4. Chờ human acceptance, không tự mở P4.3. P4.1 đã nghiệm thu; P4.3 Hồ sơ thăm viếng → P4.4 Cầu thay/quyền riêng tư → P4.5 Cảnh báo/chăm sóc tự động → P4.6 Tổng hợp/kiểm chứng còn theo thứ tự đã duyệt và chưa mở. Giữ giới hạn physical/NOT_RUN/main runtime/restore, chưa publication/deploy/real data. Live state chỉ project-state.
+
+
+## Nghiệm thu P4.2-r1 và mở planning P4.3 — 2026-11-14
+
+Khiêm: **“Nghiệm thu P4.2-r1 theo năm mục; đồng ý, cho phép mở kế hoạch chi tiết P4.3 để duyệt trước coding.”** [Checklist/evaluation](tasks/CHURCH-P4.2.md). P42-01–05 HUMAN_ACCEPTED đủ5/5; chỉ mở planning P4.3 trong chat, chưa chốt C43/contracts/quyền/ASCII hoặc coding. P4.4–P4.6 chưa mở; không chạy lại runtime/tests, không sửa technical receipts/implementation journals, không publication/deploy/real data/main DB init/restart3443. Physical/NOT_RUN và workload/restore limits giữ nguyên.
+
+
+## P4.3 implementation được duyệt — 2026-11-14
+
+Khiêm: **“Duyệt P4.3-plan-r1, C43-01–03 và ASCII, cho phép triển khai trọn P43-01–05 local/synthetic, bàn giao rồi dừng trước P4.4”** [Authority/C43/ASCII/checklist](tasks/CHURCH-P4.3.md). Không mở P4.4 hoặc publication/deploy/real data/main DB init/restart3443.
+
+
+## Bàn giao P4.3-r1 — 2026-11-14
+
+P43-01–05/C43-01–03/ASCII hoàn tất nguồn/wiring trước test phase và kiểm chứng local/synthetic; chờ Khiêm nghiệm thu năm mục P4.3-r1. P4.4–P4.6 NOT_OPENED. Không publication/deploy/real data/main DB read/init/restart3443. [Task/checklist/evidence](tasks/CHURCH-P4.3.md), [contracts](engineering/P4.3-visitation.md). Visitation/public source ports/Policy16/W08 và callers, transaction/history/receipt, tests/browser/workload/cleanup hoàn tất trong scope. Chưa mở P4.4 Cầu thay/quyền riêng tư; P4.5/P4.6 theo thứ tự đã duyệt, physical/NOT_RUN/restore limits giữ nguyên. Live state chỉ project-state.
+
+
+## Nghiệm thu P4.3-r1, mở planning P4.4 — 2026-11-14
+
+Khiêm: **“nghiệm thu năm mục P4.3-r1 và cho phép mở kế hoạch chi tiết P4.4 để duyệt trước coding.”** P43-01–05 đã HUMAN_ACCEPTED đủ năm mục local/synthetic; [task/checklist](tasks/CHURCH-P4.3.md), [evaluation](engineering/skill-usage/records/CHURCH-P4/P4.3-human-acceptance-1.json). Chỉ mở khảo sát/kế hoạch chi tiết P4.4 trong chat để duyệt trước coding; chưa chốt C44/quyền/trạng thái/contracts/ASCII hoặc implementation. P4.5–P4.6 chưa mở. Giữ nguyên technical snapshots/journals P4.3 và UNKNOWN P3.4 race/physical/NOT_RUN/workload/restore limits; không chạy lại runtime/tests hoặc publication/deploy/real data/main DB read/init/restart3443. Live state chỉ project-state.
+
+
+## P4.4 implementation được duyệt — 2026-11-14
+
+Khiêm: **“duyệt P4.4-plan-r1, C44-01–03 và ASCII, cho phép triển khai trọn P44-01–05 local/synthetic, bàn giao rồi dừng trước P4.5.”** [Task/C44/ASCII/checklist](tasks/CHURCH-P4.4.md). Không mở P4.5 hoặc publication/deploy/real data/main DB read/init/restart3443.
+
+
+## Bàn giao P4.4-r1 — 2026-11-14
+
+P44-01–05 hoàn tất nguồn/wiring trước test phase và PASS local/synthetic:354tests/5133assertions,707browserchecks+2289regressionchecks,9configs/480journeys/12plans, cleanup0. [Task/năm mục/evidence](tasks/CHURCH-P4.4.md), [contracts/runbook](engineering/P4.4-prayers.md). Chờ human acceptance; P4.5/P4.6 chưa mở, không tự coding/implementation planning gói sau. Không publication/deploy/real data/main DB read/init/restart3443. P4.1–P4.3 HUMAN_ACCEPTED; giữ P43technical artifacts và P3.4UNKNOWN/physical/NOT_RUN/restore limits. Live state chỉ project-state.
+
+
+## Nghiệm thu P4.4-r1, mở planning P4.5 — 2026-11-14
+
+Khiêm: **“nghiệm thu P4.4-r1 và cho phép mở kế hoạch chi tiết P4.5 để duyệt trước coding.”** P44-01–05 HUMAN_ACCEPTED đủ năm mục local/synthetic; [task/checklist](tasks/CHURCH-P4.4.md), [evaluation](engineering/skill-usage/records/CHURCH-P4/P4.4-human-acceptance-1.json). Chỉ mở khảo sát/kế hoạch chi tiết P4.5 trong chat trước coding; chưa chốt C45/nguồn/quyền/trạng thái/contracts/ASCII hoặc implementation. P4.6 chưa mở. Không chạy lại tests/runtime, giữ9technical artifacts/journals P4.4 và P3.4UNKNOWN/physical/NOT_RUN/restore limits. Không publication/deploy/real data/main DB read/init/restart3443/worktree/delegation. Live state chỉ project-state.
+
+
+## P4.5 implementation được duyệt — 2026-11-14
+
+Khiêm duyệt P4.5-plan-r1/C45-01–03/ASCII, triển khai trọn P45-01–05 local/synthetic, bàn giao rồi dừng P4.6. Không publication/deploy/real data/main DB read/init/restart3443; giữ prior snapshots/UNKNOWN/NOT_RUN. Chi tiết tại [CHURCH-P4.5](tasks/CHURCH-P4.5.md).
+
+
+## Bàn giao P4.5-r1 — 2026-11-14
+
+P45-01–05/C45-01–03/ASCII hoàn tất nguồn/wiring trước testphase và PASS local/synthetic; [task/năm mục/evidence](tasks/CHURCH-P4.5.md), [contracts](engineering/P4.5-care.md). Chờ Khiêm nghiệm thu P4.5-r1; dừng trước P4.6 Tổng hợp/kiểm chứng, chưa mở. P4.1–P4.4 HUMAN_ACCEPTED; giữ9P44technical artifacts/journals. Không publication/deploy/realdata/main DB read/init/restart3443/worktree/delegation. Giữ P3.4UNKNOWN/physical/NOT_RUN/restore limits; live state chỉ project-state.
+
+
+## Nghiệm thu P4.5-r1, mở planning P4.6 — 2026-11-14
+
+Khiêm: **“nghiệm thu năm mục P4.5-r1 và cho phép mở kế hoạch chi tiết P4.6 để duyệt trước coding.”** P45-01–05 HUMAN_ACCEPTED đủ5/5 local/synthetic; [task/checklist](tasks/CHURCH-P4.5.md), [evaluation](engineering/skill-usage/records/CHURCH-P4/P4.5-human-acceptance-1.json). Chỉ mở khảo sát/kế hoạch chi tiết P4.6 Tổng hợp/kiểm chứng trong chat để duyệt trước coding; chưa chốt C46/ASCII/contracts hoặc implementation, P4 chưa đóng/P5 chưa mở. Không chạy lại tests/runtime; giữ9technical artifacts/journals P4.5 nguyênSHA256 và source313/dist56 khớp manifest. Giữ P3.4UNKNOWN/physical/NOT_RUN và giới hạn main-maintenance/workload/restore; không publication/deploy/real data/main DB read/init/restart3443/worktree/delegation. Live state chỉ project-state.
+
+
+## P4.6 implementation được duyệt — 2026-11-14
+
+Khiêm: **“Duyệt P4.6-plan-r1, C46-01–03 và ASCII, cho phép triển khai trọn P46-01–05 local/synthetic, bàn giao rồi dừng trước đóng P4 hoặc mở P5. Chưa commit/push/deploy hoặc dùng dữ liệu thật.”** [Task/contracts/checklist](tasks/CHURCH-P4.6.md). Triển khai trọn P46-01–05 local/synthetic rồi bàn giao, dừng trước đóng P4/mở P5; giữ snapshots/UNKNOWN/NOT_RUN và publication/data boundaries.
+
+
+## Bàn giao P4.6-r1 — 2026-11-14
+
+[Task/năm mục/evidence](tasks/CHURCH-P4.6.md). P46-01–05/C46-01–03/ASCII hoàn tất nguồn và PASS local/synthetic; 384tests/5517assertions/0FAIL;144browser tổng hợp+2601regressionchecks=2745;9configs/480distinct terminaljourneys/6877requests/769retryresponses;18list-count+5historyplans=23;restore50collections exact trước transformations;cleanup/readback0. Chờ Khiêm nghiệm thu, dừng trước đóng P4/mở P5; P4.1–P4.5 HUMAN_ACCEPTED. Không publication/deploy/realdata/mainread/init/restart3443/worktree/delegation. Giữ78prior artifacts/journals, P3.4race/P42fastfillUNKNOWN/physical/NOT_RUN và localrestore/workloadlimits; live state chỉ project-state.
+
+
+## Nghiệm thu P4.6-r1 và đóng P4 — 2026-11-15
+
+Khiêm: **“nghiệm thu năm mục P4.6-r1, đóng P4.”** [Biên bản closure](tasks/CHURCH-P4.md#đóng-p4) liên kết đủ sáu package HUMAN_ACCEPTED. P4 CLOSED local/synthetic; P5 chưa mở. Giữ nguyên technical snapshots/journals, không chạy lại tests/runtime hoặc publication/deploy/real data/main operations; UNKNOWN/NOT_RUN và giới hạn local workload/recovery giữ nguyên. Live state chỉ project-state.

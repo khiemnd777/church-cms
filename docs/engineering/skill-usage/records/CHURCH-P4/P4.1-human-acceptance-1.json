@@ -1,0 +1,92 @@
+{
+  "schema_version": 1,
+  "event_id": "CHURCH-P4/P4.1/human-review/1",
+  "event_type": "evaluation",
+  "task_id": "CHURCH-P4",
+  "scope_id": "P4.1",
+  "recorded_at": "2026-11-14T00:16:26.696801+07:00",
+  "reported_by": "delivery_owner",
+  "source_kind": "human_feedback",
+  "subject_event_id": "CHURCH-P4/P4.1/implementation/1",
+  "assessment_source": "human",
+  "review_attempt": 1,
+  "decision": "ACCEPTED",
+  "findings": [],
+  "authority": {
+    "approval": "Nghiệm thu P4.1-r1 theo năm mục trong checklist. Mở kế hoạch chi tiết P4.2 để duyệt trước coding.",
+    "scope": "Nghiệm thu P4.1-r1/P41-01–05 đủ năm mục local/synthetic; chỉ mở planning P4.2 trong chat để duyệt trước coding; P4.3–P4.6 chưa mở"
+  },
+  "record_maintenance": {
+    "skills": [
+      {
+        "skill_id": "documentation-and-adrs",
+        "contribution_summary": "Ghi acceptance P4.1 đủ5/5 vào task/plan/state và evaluation, giữ technical snapshots/journals",
+        "contribution_percent_estimate": 50,
+        "estimate_source": "agent_self_report",
+        "source_identity": {
+          "kind": "repository",
+          "path": ".agents/skills/documentation-and-adrs/SKILL.md",
+          "version": null,
+          "sha256": "f3199cfec5d6fdfa6533f180b1e6cbee584cd6175d8eb25c0d186c833120609c",
+          "fingerprint_basis": "Đã đọc/áp dụng cho ghi nhận chỉ dẫn hiện hành; không tính lại usage implementation hoặc lưu draft chi tiết P4.2"
+        }
+      },
+      {
+        "skill_id": "planning-and-task-breakdown",
+        "contribution_summary": "Giữ danh mục/điểm dừng đã duyệt khi chuyển từ P4.1 sang PLANNING_ONLY P4.2",
+        "contribution_percent_estimate": 30,
+        "estimate_source": "agent_self_report",
+        "source_identity": {
+          "kind": "repository",
+          "path": ".agents/skills/planning-and-task-breakdown/SKILL.md",
+          "version": null,
+          "sha256": "fb768e0a3d3a77f733eb613c078fb61dde0845a438c65cc095fc6448dc166d4c",
+          "fingerprint_basis": "Đã đọc/áp dụng cho ghi nhận chỉ dẫn hiện hành; không tính lại usage implementation hoặc lưu draft chi tiết P4.2"
+        }
+      },
+      {
+        "skill_id": "spec-driven-development",
+        "contribution_summary": "Tách nghiệm thu P4.1 khỏi quyền planning P4.2; giữ limits và chưa cấp quyền thiết kế/coding mới",
+        "contribution_percent_estimate": 20,
+        "estimate_source": "agent_self_report",
+        "source_identity": {
+          "kind": "repository",
+          "path": ".agents/skills/spec-driven-development/SKILL.md",
+          "version": null,
+          "sha256": "c6cfb5c766c45243290d4dcfc7eb3857dbfb77556355c7960a4411762764858b",
+          "fingerprint_basis": "Đã đọc/áp dụng cho ghi nhận chỉ dẫn hiện hành; không tính lại usage implementation hoặc lưu draft chi tiết P4.2"
+        }
+      }
+    ],
+    "note": "Chỉ bảo trì hồ sơ/authority đã được Khiêm cho phép; không là journal planning P4.2 chưa duyệt hoặc usage implementation mới"
+  },
+  "evidence_refs": [
+    "current_chat:Nghiệm thu P4.1-r1 theo năm mục trong checklist. Mở kế hoạch chi tiết P4.2 để duyệt trước coding.",
+    "docs/tasks/CHURCH-P4.1.md",
+    "docs/tasks/CHURCH-P4.md",
+    "docs/project-plan.md",
+    "docs/project-state.md",
+    "output/p4.1/verification.json",
+    "output/p4.1/source-manifest.json",
+    "output/p4.1/browser-results.json",
+    "output/p4.1/qualification.json",
+    "output/p4.1/readback.json",
+    "docs/engineering/skill-usage/records/CHURCH-P4/P4.1-implementation-1.json",
+    "docs/engineering/skill-usage/records/CHURCH-P4/P4.1-self-review-1.json"
+  ],
+  "preserved_sha256": {
+    "output/p4.1/verification.json": "21cc2bd905b39edb64fa2545c757d570e9ce14175b93ce45b891fddc23509dde",
+    "output/p4.1/source-manifest.json": "cf1a71ef7f5894ded2c0ec929bbb51bb76b67f9dfeeec880167baf808a9a4e19",
+    "output/p4.1/browser-results.json": "46745af8dd685e3ec77a691b246c7e527e2f52105bffe71567c22106b96b183a",
+    "output/p4.1/qualification.json": "b05a46b25d4de377a1a41bae01eaf7bc025eb52e09fbd2d52644368201020518",
+    "output/p4.1/readback.json": "fad0a4919bdc2a1f59714b2d8e8eb63525b5235c0b97b82ffcbed6c0b486b2ac",
+    "docs/engineering/skill-usage/records/CHURCH-P4/P4.1-implementation-1.json": "3d92c67e5448fbdd3466019bab33c524136cf915fb56217783cffbf6138d1f24",
+    "docs/engineering/skill-usage/records/CHURCH-P4/P4.1-self-review-1.json": "4fdcf2f83f8d0b6275547f08e9cddaa73c5705624e7eb458e47312af5734a7ed"
+  },
+  "limits": [
+    "Không chạy lại tests/runtime; không sửa technical receipts/source manifest/implementation/self-review journals",
+    "P4.2 chỉ PLANNING_ONLY trong chat, chưa duyệt chi tiết/coding; P4.3–P4.6 chưa mở",
+    "Không publication/deploy/real data/main DB init/restart3443",
+    "P3 physical/NOT_RUN, workload limits và restore P4.6 chưa mở giữ nguyên"
+  ]
+}

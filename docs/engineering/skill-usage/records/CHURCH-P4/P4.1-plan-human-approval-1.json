@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "task_id": "CHURCH-P4",
+  "scope_id": "P4.1",
+  "recorded_at": "2026-11-13T23:55:07.302245+07:00",
+  "reported_by": "delivery_owner",
+  "event_id": "CHURCH-P4/P4.1/human-plan-review/1",
+  "event_type": "evaluation",
+  "source_kind": "human_feedback",
+  "subject_event_id": "CHURCH-P4/P4.1/planning/1",
+  "assessment_source": "human",
+  "review_attempt": 1,
+  "decision": "ACCEPTED",
+  "findings": [],
+  "authority": {
+    "approval": "Duyệt P4.1-plan-r1, C41-01–03 và ASCII. Triển khai trọn P41-01–05 local/synthetic rồi bàn giao, dừng trước P4.2. Chưa commit/push/deploy hoặc dùng dữ liệu thật.",
+    "scope": "Trọn P41-01–05 local/synthetic; dừng trước P4.2; không publication/deploy/real data/main DB init/restart3443"
+  },
+  "evidence_refs": [
+    "current_chat:P4.1-plan-r1/C41-01–03/ASCII",
+    "current_chat:Duyệt P4.1-plan-r1, C41-01–03 và ASCII. Triển khai trọn P41-01–05 local/synthetic rồi bàn giao, dừng trước P4.2. Chưa commit/push/deploy hoặc dùng dữ liệu thật.",
+    "docs/tasks/CHURCH-P4.1.md",
+    "docs/engineering/P4.1-scheduling.md"
+  ],
+  "limits": [
+    "Chỉ nghiệm thu kế hoạch P4.1, implementation còn cần bàn giao/nghiệm thu riêng"
+  ]
+}

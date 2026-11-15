@@ -92,6 +92,7 @@ export function OverviewView({
       {value && (
         <>
           <OverviewHero
+            onSchedule={() => onNavigate({ kind: "worship" })}
             name={value.church.name}
             code={value.church.code}
             address={[value.church.address, value.church.district, value.church.province]
@@ -355,7 +356,12 @@ export function OverviewView({
                 disabled={pending}
                 onClick={() => onNavigate({ kind: "forms" })}
               />
-              <OverviewShortcut icon="heart" label="Thăm viếng" disabled />
+              <OverviewShortcut
+                icon="heart"
+                label="Thăm viếng"
+                disabled={pending}
+                onClick={() => onNavigate({ kind: "care" })}
+              />
               <OverviewShortcut icon="chart" label="Báo cáo Tổng Liên Hội" disabled />
             </div>
           </Card>
@@ -392,7 +398,20 @@ export function OverviewView({
                   <b>{value.classes.enrollments}</b> lượt ghi danh đang học
                 </p>
                 {link("Mở lớp dự bị", () => onNavigate({ kind: "rites", tab: "class" }))}
-                <p className="muted">Đề xuất chi · Cầu thay: chưa khả dụng</p>
+                <p>
+                  Lời cầu thay đang theo dõi được phép xem: <b>{value.prayers?.active ?? "—"}</b>
+                </p>
+                <p>
+                  Đề nghị chăm sóc chờ duyệt: <b>{value.care?.pending ?? "—"}</b> ·{" "}
+                  {value.care?.lastEvaluatedAt
+                    ? `Đánh giá lần cuối: ${new Date(value.care.lastEvaluatedAt).toLocaleString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" })}${value.care.complete ? "" : " · Chưa xong các lô"}`
+                    : "Chưa đánh giá nguồn"}
+                </p>
+                {link("Mở đề nghị chăm sóc", () =>
+                  onNavigate({ kind: "care", section: "suggestions" }),
+                )}
+                {link("Mở lời cầu thay", () => onNavigate({ kind: "care", section: "prayers" }))}
+                <p className="muted">Đề xuất chi: chưa khả dụng</p>
               </div>
             </Card>
           </section>

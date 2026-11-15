@@ -12,6 +12,7 @@ import type { Operations } from "../operations/service";
 import type { Organization } from "../organization/service";
 import { AttendanceMembers } from "./attendance";
 import { CardMembers } from "./cards";
+import { CareMembers } from "./care";
 import { ageOn, businessDay } from "./dates";
 import { ExchangeMembers } from "./exchange";
 import { FamilyMembers } from "./families";
@@ -25,9 +26,12 @@ import {
 } from "./models";
 import { OrganizationMembers } from "./organization";
 import { OverviewMembers } from "./overview";
+import { PrayerMembers } from "./prayers";
 import { PrepMembers } from "./prep-classes";
+import { ProgramMembers } from "./programs";
 import { escaped, MemberQueries } from "./queries";
 import { type BaptismChange, RiteMembers } from "./rites";
+import { SchedulingMembers } from "./scheduling";
 import {
   convertMember,
   createMember,
@@ -35,6 +39,7 @@ import {
   stageMember,
   updateMember,
 } from "./validation";
+import { VisitationMembers } from "./visitation";
 export class Members {
   private queries: MemberQueries;
   private reporting?: AttendanceReporting;
@@ -60,6 +65,21 @@ export class Members {
   private baptismChanged: BaptismChange | null = null;
   bindBaptismLedger(handler: BaptismChange) {
     this.baptismChanged = handler;
+  }
+  carePort() {
+    return new CareMembers(this.db);
+  }
+  prayerPort() {
+    return new PrayerMembers(this.db);
+  }
+  visitationPort() {
+    return new VisitationMembers(this.db);
+  }
+  programPort() {
+    return new ProgramMembers(this.db);
+  }
+  schedulingPort() {
+    return new SchedulingMembers(this.db);
   }
   ritesPort() {
     return new RiteMembers(

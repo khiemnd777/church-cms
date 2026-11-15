@@ -5,8 +5,10 @@ import { requireCondition } from "../errors";
 import type { Database } from "../infrastructure/database";
 import { businessDay } from "../members/dates";
 import { resourceCode } from "../resource-code";
+import { CareFamilies } from "./care";
 import { type Family, type FamilyHistory, familySnapshot, type LinkChange } from "./models";
 import type { FamilyInput } from "./validation";
+import { VisitationFamilies } from "./visitation";
 
 export type { Family } from "./models";
 export class Families {
@@ -15,6 +17,12 @@ export class Families {
     private now: () => Date,
     private audit: Audit,
   ) {}
+  carePort() {
+    return new CareFamilies(this.db);
+  }
+  visitationPort() {
+    return new VisitationFamilies(this.db);
+  }
   private get rows() {
     return this.db.db.collection<Family>("families");
   }

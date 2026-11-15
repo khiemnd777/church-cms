@@ -17,8 +17,10 @@ import { OverviewView } from "./overview";
 import { usePendingNavigation } from "./pending-navigation";
 import { RitesView } from "./rites";
 import { kindTabs } from "./rites-api";
+import { SchedulingView } from "./scheduling";
 import type { TenantIntent } from "./tenant-mutation";
 import { AppShell, AuthCard, Button, Feedback, Field, Loading, TextInput } from "./ui/components";
+import { VisitationView } from "./visitation";
 import "@fontsource/be-vietnam-pro/400.css";
 import "@fontsource/be-vietnam-pro/500.css";
 import "@fontsource/be-vietnam-pro/600.css";
@@ -35,7 +37,7 @@ interface Owner {
 type Screen = "loading" | "login" | "change" | "support" | "home" | "reauth";
 function ownerRoute() {
   const match =
-    /^\/owner\/churches\/([a-f0-9]{24})\/(accounts|manage|config|members|families|bans|roles|overview|attendance|rites|forms)$/i.exec(
+    /^\/owner\/churches\/([a-f0-9]{24})\/(accounts|manage|config|members|families|bans|roles|overview|attendance|rites|forms|worship|care)$/i.exec(
       location.pathname,
     );
   return match
@@ -51,7 +53,9 @@ function ownerRoute() {
           | "roles"
           | "attendance"
           | "rites"
-          | "forms",
+          | "forms"
+          | "worship"
+          | "care",
         churchId: match[1] as string,
       }
     : { kind: "churches" as const, churchId: null };
@@ -78,7 +82,9 @@ function App() {
       | "roles"
       | "attendance"
       | "rites"
-      | "forms",
+      | "forms"
+      | "worship"
+      | "care",
     id?: string,
     query?: URLSearchParams,
   ) {
@@ -109,6 +115,7 @@ function App() {
       ownerNavigate("members", route.churchId, q);
     } else {
       const q = new URLSearchParams();
+      if (target.kind === "care" && target.section) q.set("careSection", target.section);
       if (target.kind === "attendance" && target.sessionId) q.set("sessionId", target.sessionId);
       if (target.kind === "rites") {
         if (target.tab) q.set("tab", target.tab);
@@ -148,7 +155,7 @@ function App() {
         : next === "support"
           ? "/owner/support"
           : next === "home" || next === "reauth"
-            ? /^\/owner\/churches\/[a-f0-9]{24}(?:\/(?:accounts|manage|config|members|families|bans|roles|overview|attendance|rites|forms))?$/i.test(
+            ? /^\/owner\/churches\/[a-f0-9]{24}(?:\/(?:accounts|manage|config|members|families|bans|roles|overview|attendance|rites|forms|worship|care))?$/i.test(
                 location.pathname,
               )
               ? `${location.pathname}${location.search}`
@@ -402,6 +409,8 @@ function App() {
           "attendance",
           "rites",
           "forms",
+          "worship",
+          "care",
           "config",
           "accounts",
           "members",
@@ -497,6 +506,26 @@ function App() {
           },
         },
         {
+          id: "worship",
+          label: "Thờ phượng & Lịch giảng",
+          icon: "book",
+          description: currentChurch?.name ?? "Chọn Hội Thánh trước",
+          disabled: !currentChurch || currentChurch.status !== "active" || !!pendingIntent,
+          onSelect: () => {
+            if (currentChurch) ownerNavigate("worship", currentChurch.id);
+          },
+        },
+        {
+          id: "care",
+          label: "Chăm sóc & Cầu thay",
+          icon: "heart",
+          description: currentChurch?.name ?? "Chọn Hội Thánh trước",
+          disabled: !currentChurch || currentChurch.status !== "active" || !!pendingIntent,
+          onSelect: () => {
+            if (currentChurch) ownerNavigate("care", currentChurch.id);
+          },
+        },
+        {
           id: "rites",
           label: "Sổ lễ nghi",
           icon: "book",
@@ -540,6 +569,28 @@ function App() {
           onChurch={updateChurch}
           onBack={() => ownerNavigate("churches", route.churchId as string)}
           onNavigate={overviewNavigate}
+        />
+      ) : route.kind === "care" && route.churchId ? (
+        <VisitationView
+          key={`${owner?.employeeId}:${route.churchId}`}
+          realm="owner"
+          churchId={route.churchId}
+          pending={pendingIntent}
+          onPending={setPendingIntent}
+          onAuthError={handleError}
+          onTitle={setHeading}
+          onChurch={updateChurch}
+        />
+      ) : route.kind === "worship" && route.churchId ? (
+        <SchedulingView
+          key={`${owner?.employeeId}:${route.churchId}`}
+          realm="owner"
+          churchId={route.churchId}
+          pending={pendingIntent}
+          onPending={setPendingIntent}
+          onAuthError={handleError}
+          onTitle={setHeading}
+          onChurch={updateChurch}
         />
       ) : route.kind === "forms" && route.churchId ? (
         <CertificatesView
