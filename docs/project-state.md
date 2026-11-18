@@ -1,5 +1,9 @@
 # Hiện trạng Church CMS
 
+## E55-01 — hoãn dependency audit đến trước production
+
+Theo chỉ dẫn mới của Khiêm trong chat: bỏ check audit khi tạo PR, xử lý trước production. Đã bỏ `bun audit` khỏi workflow CI tự động; các checks khác giữ nguyên. E55-01 vẫn OPEN, được USER_DEFERRED_UNTIL_BEFORE_PRODUCTION; advisory high picomatch chưa được sửa. Chỉ dẫn mới thay trạng thái NOT_WAIVED ở các snapshot lịch sử bên dưới đối với gate PR; không chứng minh dependency an toàn hoặc cho phép production. Trước production cần chạy lại audit và xử lý finding hoặc có quyết định chấp nhận rủi ro rõ ràng.
+
 ## Đóng P5; mở planning P6 ở conversation khác — 2026-11-18
 
 Khiêm nghiệm thu **P5.6-r1 đủ năm mục** và cho đóng **P5 local/synthetic**. P5.1-r2/P5.2-r1/P5.3-r1/P5.4-r1/P5.5-r2/P5.6-r1 đều HUMAN_ACCEPTED; **P1–P5 CLOSED local/synthetic, chưa released**. [Biên bản closure](tasks/CHURCH-P5.md#đóng-p5) và [P5.6 acceptance](engineering/skill-usage/records/CHURCH-P5/P5.6-human-acceptance-1.json) là quyết định mới, không rewrite technical snapshots.
