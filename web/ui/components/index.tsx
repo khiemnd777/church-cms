@@ -208,8 +208,37 @@ export function Choice({
     </label>
   );
 }
-export function Card({ className, ...props }: HTMLAttributes<HTMLElement>) {
-  return <section {...props} className={cx("card", className)} />;
+export type ContentSpacing = "compact" | "content" | "section";
+/** The container owns spacing; fragments and conditional children add no layout. */
+export function Stack({
+  space = "section",
+  className,
+  ...props
+}: HTMLAttributes<HTMLDivElement> & { space?: ContentSpacing }) {
+  return <div {...props} className={cx("ui-stack", `ui-stack-${space}`, className)} />;
+}
+export function Card({
+  className,
+  spacing,
+  ...props
+}: HTMLAttributes<HTMLElement> & { spacing?: ContentSpacing }) {
+  return (
+    <section
+      {...props}
+      className={cx("card", spacing && "ui-stack", spacing && `ui-stack-${spacing}`, className)}
+    />
+  );
+}
+export function ContentSection({ title, children }: { title: string; children: ReactNode }) {
+  const id = useId();
+  return (
+    <section aria-labelledby={id} className="ui-content-section">
+      <div className="card-h">
+        <h3 id={id}>{title}</h3>
+      </div>
+      <Stack space="content">{children}</Stack>
+    </section>
+  );
 }
 export function SectionHeader({ title, children }: { title: string; children?: ReactNode }) {
   return (
@@ -255,9 +284,9 @@ export function Feedback({
 }
 export function EmptyState({ message, children }: { message: string; children?: ReactNode }) {
   return (
-    <Card className="empty">
+    <Card className="empty" spacing={children ? "content" : undefined}>
       <p>{message}</p>
-      {children}
+      {children && <div className="ui-empty-actions">{children}</div>}
     </Card>
   );
 }
@@ -449,7 +478,7 @@ export function Modal({
           <Icon name="x" />
         </Button>
       </div>
-      {children}
+      <Stack className="ui-dialog-content">{children}</Stack>
     </dialog>
   );
 }

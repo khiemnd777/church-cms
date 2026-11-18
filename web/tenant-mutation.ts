@@ -6,6 +6,11 @@ export interface TenantIntent extends Intent {
   realm: TenantRealm;
   principalKey: string;
   resource?:
+    | { kind: "finance" }
+    | { kind: "finance-income" }
+    | { kind: "finance-periods"; period: string }
+    | { kind: "payment-void"; paymentId: string }
+    | { kind: "expense"; action: "submit" | "decision" | "payment" }
     | { kind: "member_card"; memberId: string }
     | { kind: "prayer_request"; visibility: "shared" | "pastoral" };
   upload?: { file: File; format: "csv" | "xlsx"; source: string };

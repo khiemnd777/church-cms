@@ -1,0 +1,60 @@
+{
+  "schema_version": 1,
+  "event_id": "CHURCH-P5/P5.5/self-review/1",
+  "event_type": "evaluation",
+  "task_id": "CHURCH-P5",
+  "scope_id": "P5.5",
+  "recorded_at": "2026-11-18T09:25:51.286344+07:00",
+  "reported_by": "delivery_owner",
+  "source_kind": "agent_self_report",
+  "subject_event_id": "CHURCH-P5/P5.5/implementation/1",
+  "assessment_source": "agent_self_review",
+  "review_attempt": 1,
+  "decision": "NEEDS_ATTENTION",
+  "findings": [
+    {
+      "id": "E55-01",
+      "status": "OPEN_NOT_WAIVED",
+      "category": "PREEXISTING_DEPENDENCY_AUDIT",
+      "severity": "high",
+      "command": "bun audit",
+      "exitCode": 1,
+      "package": "picomatch@4.0.7",
+      "chain": "vite -> tinyglobby -> fdir/picomatch",
+      "advisory": "https://github.com/advisories/GHSA-fc5q-39xc-vjpf",
+      "verifiedAt": "2026-11-18T09:25:51.286344+07:00",
+      "lockUnchangedFromStart": true,
+      "lockSha256": "0ef94ceb6e85c35d136f48eab263508c18b47c1b96bdd2ccfdd5f41ef3a70b39",
+      "source": "output/p5.5/audit-final.log",
+      "scope": "Development/build dependency chain identified; application runtime exploitability not tested.",
+      "disposition": "Keep audit FAIL; separate dependency remediation plan/approval required. No upgrade, waiver, main activation or release authorized.",
+      "advisoryReadback": "<=4.0.7 affected; no patched version listed at current readback. Do not assume an available safe upgrade."
+    }
+  ],
+  "resolved_findings": [
+    {
+      "category": "IMPLEMENTATION_DEFECT",
+      "description": "Void PC now blocks inconsistent original ledger/paid proposal before mutation; exact regression and final browser/qualification pass."
+    },
+    {
+      "category": "UI_RECOVERY",
+      "description": "Explicit current readback may release uncertain/stale intent without replay; translated Expense paid/void history verified without private reason."
+    },
+    {
+      "category": "TEST_DEFECT",
+      "description": "Stale control412 vs source409 assertion corrected; history button selector matches actual UI label; failed attempts preserved, valid assertions retained."
+    }
+  ],
+  "limits": [
+    "Self-review only; independent review NOT_RUN.",
+    "Behavior PASS does not waive dependency audit, human acceptance or release."
+  ],
+  "evidence_refs": [
+    "docs/tasks/CHURCH-P5.5.md",
+    "docs/engineering/P5.5-periods.md",
+    "output/p5.5/verification.json",
+    "output/p5.5/preservation.json",
+    "output/p5.5/source-manifest.json",
+    "output/p5.5/dependency-finding.json"
+  ]
+}

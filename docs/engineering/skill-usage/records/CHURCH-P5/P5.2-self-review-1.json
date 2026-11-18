@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "event_id": "CHURCH-P5/P5.2/self-review/1",
+  "event_type": "evaluation",
+  "task_id": "CHURCH-P5",
+  "scope_id": "P5.2",
+  "recorded_at": "2026-11-17T13:52:11.682947+07:00",
+  "reported_by": "delivery_owner",
+  "source_kind": "agent_self_report",
+  "subject_event_id": "CHURCH-P5/P5.2/implementation/1",
+  "assessment_source": "agent_self_review",
+  "review_attempt": 1,
+  "decision": "PASS",
+  "findings": [],
+  "resolved_findings": [
+    {
+      "category": "IMPLEMENTATION_DEFECT",
+      "description": "Duplicate title, pending-dialog/reconciliation lock, ledger row label and ASCII explanation column corrected and browser verified.",
+      "evidence": [
+        "output/p5.2/attempts",
+        "output/p5.2/browser/browser-results.json"
+      ],
+      "skill_attribution": null
+    },
+    {
+      "category": "TEST_DEFECT",
+      "description": "Bun hook and UI selectors corrected; legacy evidence writers isolated and all20 rewrites restored exactly from pre-run snapshot.",
+      "evidence": [
+        "output/p5.2/preservation-restoration.json",
+        "output/p5.2/preservation.json",
+        "tests/evidence.ts"
+      ],
+      "skill_attribution": null
+    },
+    {
+      "category": "REQUIREMENT_CHANGE",
+      "description": "Expectations updated for approved Policy20 and treasurer own operations; raw contention preserved and bounded same-intent retry measured.",
+      "evidence": [
+        "output/p5.2/finance-final.log",
+        "output/p5.2/qualification/qualification.json"
+      ],
+      "skill_attribution": null
+    }
+  ],
+  "limits": [
+    "Local/synthetic only; source complete and behavior verified do not constitute human acceptance or release.",
+    "No publication/commit/push/deploy/real data/main DB read/init/restart3443/P5.3 authority.",
+    "Main Finance schemas/indexes/Policy20 not applied; activation requires separate authorized maintenance.",
+    "Physical/native Word/Safari/UAT/main runtime/pilot/remote CI/production/multi-replica/independent review NOT_RUN.",
+    "P3.4 race and P4.2 fast-fill exact cause UNKNOWN remain unchanged.",
+    "E51-01 USER_WAIVED; original not recovered and further troubleshooting not reopened.",
+    "Workload is a bounded local sample with hot-fence contention and explicit retries; not a production SLA/capacity/RPO/RTO claim."
+  ],
+  "evidence_refs": [
+    "docs/tasks/CHURCH-P5.2.md",
+    "docs/engineering/P5.2-income.md",
+    "output/p5.2/verification.json",
+    "output/p5.2/preservation.json",
+    "output/p5.2/source-manifest.json"
+  ]
+}

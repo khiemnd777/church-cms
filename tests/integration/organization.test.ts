@@ -9,6 +9,7 @@ import { Database, initialize } from "../../api/infrastructure/database";
 import { RateLimit } from "../../api/infrastructure/rate-limit";
 import type { OrganizationGrant } from "../../api/organization/grant";
 import { Organization } from "../../api/organization/service";
+import { writeEvidence } from "../evidence";
 
 const conf = {
   ...config(),
@@ -667,7 +668,7 @@ describe("P2.1 real Organization contracts and transaction fences", () => {
       .limit(26)
       .explain("executionStats");
     expect(JSON.stringify(plan.queryPlanner.winningPlan)).not.toContain("COLLSCAN");
-    await Bun.write(
+    await writeEvidence(
       "output/p2.1/query-explain.json",
       JSON.stringify({ source: "300 synthetic units; no production SLA", plan }, null, 2),
     );

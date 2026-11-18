@@ -1,0 +1,112 @@
+{
+  "schema_version": 1,
+  "event_id": "CHURCH-P5/P5.3/planning/1",
+  "event_type": "phase_handoff",
+  "task_id": "CHURCH-P5",
+  "scope_id": "P5.3",
+  "recorded_at": "2026-11-17T14:28:29.302242+07:00",
+  "reported_by": "delivery_owner",
+  "source_kind": "agent_self_report",
+  "phase": "planning",
+  "handoff_index": 1,
+  "classification": {
+    "delivery": "roadmap",
+    "complexity": "financial proposal workflow",
+    "ui": true
+  },
+  "authority": {
+    "approval": "Duyệt P5.3-plan-r1, C53-01–03 và ASCII, phạm vi là trọn P53-01–05 local/synthetic, bàn giao rồi dừng trước P5.4.",
+    "scope": "P53-01–05 local/synthetic; full code/wiring before tests; no P5.4+, publication, main/realdata operations or alignment fix. E51-01 USER_WAIVED and UI-POSTP8-01 AFTER_P8 remain."
+  },
+  "skills": [
+    {
+      "skill_id": "planning-and-task-breakdown",
+      "contribution_summary": "Giữ vị trí P5.3/điểm dừng, phân biệt nghiệm thu P5.2 với quyền planning P5.3; chuẩn bị kế hoạch trong chat.",
+      "contribution_percent_estimate": 40,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/planning-and-task-breakdown/SKILL.md",
+        "version": null,
+        "sha256": "fb768e0a3d3a77f733eb613c078fb61dde0845a438c65cc095fc6448dc166d4c",
+        "fingerprint_basis": "Read and applied in current authorized acceptance/documentation task plus read-only planning in chat; no native invocation/cost claim."
+      }
+    },
+    {
+      "skill_id": "spec-driven-development",
+      "contribution_summary": "Đối chiếu source W10/W16 và quyền/cấu hình Finance để tách quy tắc đã duyệt với các đề xuất C53 chỉ ở chat.",
+      "contribution_percent_estimate": 40,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/spec-driven-development/SKILL.md",
+        "version": null,
+        "sha256": "c6cfb5c766c45243290d4dcfc7eb3857dbfb77556355c7960a4411762764858b",
+        "fingerprint_basis": "Read and applied in current authorized acceptance/documentation task plus read-only planning in chat; no native invocation/cost claim."
+      }
+    },
+    {
+      "skill_id": "documentation-and-adrs",
+      "contribution_summary": "Ghi acceptance/issue sau P8/authority mở planning, liên kết task/context/plan/state và giữ snapshots.",
+      "contribution_percent_estimate": 20,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/documentation-and-adrs/SKILL.md",
+        "version": null,
+        "sha256": "f3199cfec5d6fdfa6533f180b1e6cbee584cd6175d8eb25c0d186c833120609c",
+        "fingerprint_basis": "Read and applied in current authorized acceptance/documentation task plus read-only planning in chat; no native invocation/cost claim."
+      }
+    }
+  ],
+  "recording_note": "Lưu kế hoạch C53/ASCII đã được Khiêm duyệt, thời điểm ghi hiện tại. Skill identities/contributions tái dùng từ source record của lượt lập kế hoạch trong chat, không tạo native invocation hoặc counters lịch sử.",
+  "source_record": "docs/engineering/skill-usage/records/CHURCH-P5/P5.2-acceptance-opening-P5.3-record-1.json",
+  "outcome": {
+    "delivery_status": "COMPLETED",
+    "verification_level": "APPROVED_CHAT_PLAN_RECORDED",
+    "human_acceptance": "ACCEPTED",
+    "limitations": [
+      "Plan approval is not implementation acceptance or release."
+    ]
+  },
+  "measurements": {
+    "elapsed_seconds": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có measured counters cho toàn lượt; contribution là ước tính phạm vi, không phải time/token."
+    },
+    "tool_calls": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có measured counters cho toàn lượt; contribution là ước tính phạm vi, không phải time/token."
+    },
+    "input_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có measured counters cho toàn lượt; contribution là ước tính phạm vi, không phải time/token."
+    },
+    "output_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có measured counters cho toàn lượt; contribution là ước tính phạm vi, không phải time/token."
+    },
+    "cached_input_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có measured counters cho toàn lượt; contribution là ước tính phạm vi, không phải time/token."
+    },
+    "reasoning_output_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có measured counters cho toàn lượt; contribution là ước tính phạm vi, không phải time/token."
+    },
+    "client": null,
+    "model": null,
+    "effort": null,
+    "missing_context_reason": "Không có measured source cho client/model/effort."
+  },
+  "evidence_refs": [
+    "current_chat:P5.3-plan-r1/C53-01–03/ASCII approval",
+    "docs/tasks/CHURCH-P5.3.md"
+  ]
+}

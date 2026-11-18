@@ -9,6 +9,7 @@ import { OwnerOperations } from "../api/identity/owner-operations";
 import { Identity } from "../api/identity/service";
 import { Database, initialize } from "../api/infrastructure/database";
 import { RateLimit } from "../api/infrastructure/rate-limit";
+import { assertComposition } from "./browser-composition";
 import { localTls } from "./local-tls";
 
 const evidence = process.env.CHURCH_EVIDENCE_DIR ?? "output/p2.2";
@@ -100,6 +101,7 @@ async function capture(name: string, subject = page) {
     await subject.emulateMedia({ colorScheme: theme });
     for (const width of [1440, 901, 900, 560, 390]) {
       await subject.setViewportSize({ width, height: width === 1440 ? 1000 : 844 });
+      await assertComposition(subject, `${name}-${theme}-${width}`, assert, evidence);
       await subject.evaluate(async () => {
         await document.fonts.ready;
         window.scrollTo(0, 0);
@@ -294,8 +296,9 @@ try {
   );
   assert(await drawer.getByText("0900123456", { exact: true }).isVisible(), "phone-leading-zero");
   assert(
-    (await drawer.getByText("Chưa khả dụng.", { exact: true }).count()) === 1,
-    "giving-unavailable",
+    (await drawer.getByRole("heading", { name: "Dâng hiến", exact: true }).count()) === 0 &&
+      (await drawer.getByText("Chưa cấp mã dâng hiến.", { exact: true }).count()) === 0,
+    "owner-personal-giving-hidden-P52-contract",
   );
   assert(
     (await drawer.locator('.ui-presence-dots [aria-label$=": Chưa chọn buổi"]').count()) === 12,

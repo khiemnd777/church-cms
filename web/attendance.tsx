@@ -638,7 +638,7 @@ export function AttendanceView({
       )}
       {session && (
         <>
-          <Card>
+          <Card spacing="content">
             <div className="att-head">
               <div>
                 <strong>{session.label}</strong>

@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { positionLabels, type RuntimeUnit, type Term } from "./organization-runtime-api";
-import { Card, EmptyState, IconButton, SectionHeader, TableFrame } from "./ui/components";
+import { Card, EmptyState, IconButton, SectionHeader, Stack, TableFrame } from "./ui/components";
 
 export type OrganizationDisplay = "card" | "table";
 export function BoardAppointments({ term, display }: { term: Term; display: OrganizationDisplay }) {
@@ -35,8 +35,10 @@ export function BoardAppointments({ term, display }: { term: Term; display: Orga
         <Card key={a.memberId}>
           <SectionHeader title={positionLabels[a.position]} />
           <div className="organization-runtime-group">
-            <p>{a.fullName}</p>
-            {needsReview(a.memberId) && <p>Cần rà soát</p>}
+            <Stack space="compact">
+              <p>{a.fullName}</p>
+              {needsReview(a.memberId) && <p>Cần rà soát</p>}
+            </Stack>
           </div>
         </Card>
       ))}
@@ -117,14 +119,16 @@ export function OrganizationUnitsView({
         <Card key={u.id}>
           <SectionHeader title={u.name}>{viewButton(u)}</SectionHeader>
           <div className="organization-runtime-group">
-            {!scoped && <p>Trưởng đơn vị: {leader(u)}</p>}
-            <p>Lịch: {u.scheduleText ?? "Chưa có"}</p>
-            {area && !scoped && <p>{u.householdCount ?? "—"} gia đình</p>}
-            <p>
-              {u.memberCount.value ?? "—"} người · Hiện diện:{" "}
-              {u.attendance.value === null ? "—" : `${u.attendance.value}%`} ·{" "}
-              {u.attendance.sessions} buổi riêng đã chốt / 12 tuần
-            </p>
+            <Stack space="compact">
+              {!scoped && <p>Trưởng đơn vị: {leader(u)}</p>}
+              <p>Lịch: {u.scheduleText ?? "Chưa có"}</p>
+              {area && !scoped && <p>{u.householdCount ?? "—"} gia đình</p>}
+              <p>
+                {u.memberCount.value ?? "—"} người · Hiện diện:{" "}
+                {u.attendance.value === null ? "—" : `${u.attendance.value}%`} ·{" "}
+                {u.attendance.sessions} buổi riêng đã chốt / 12 tuần
+              </p>
+            </Stack>
             <div className="organization-runtime-actions">{actions(u)}</div>
           </div>
         </Card>

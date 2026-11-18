@@ -31,11 +31,27 @@ export function validateRoleScope(role: Role, scope: Scope) {
     );
 }
 // Only implemented capabilities are advertised; business modules extend this versioned catalogue in P2.
-export const policyVersion = 18;
+export const policyVersion = 24;
 export const churchCapabilities = ["context:read", "policy:read"] as const;
+export const financeReadCapabilities = [
+  "finance:funds:read",
+  "finance:settings:read",
+  "finance:history:read",
+  "finance:receipts:read",
+  "finance:codes:read",
+  "finance:payments:read",
+  "finance:periods:read",
+  "finance:summary:read",
+] as const;
+export const financeManageCapabilities = [
+  "finance:funds:manage",
+  "finance:settings:manage",
+] as const;
 export function capabilitiesFor(role: Role): readonly string[] {
   return role === "pastor"
     ? [
+        ...financeReadCapabilities,
+        ...financeManageCapabilities,
         "context:read",
         "policy:read",
         "organization:roster",
@@ -120,7 +136,17 @@ export function capabilitiesFor(role: Role): readonly string[] {
             "attendance:mark",
             "attendance:scan",
           ]
-        : churchCapabilities;
+        : role === "treasurer"
+          ? [
+              ...churchCapabilities,
+              ...financeReadCapabilities,
+              "finance:receipts:manage",
+              "finance:codes:manage",
+              "finance:payments:manage",
+              "finance:payments:void",
+              "finance:periods:close",
+            ]
+          : churchCapabilities;
 }
 export function capabilityAllowed(capability: string, role: Role) {
   return capabilitiesFor(role).includes(capability);
@@ -171,8 +197,13 @@ export function policyMatrix() {
       visitation:
         role === "pastor" || role === "secretary" ? "Toàn bộ: quản lý thăm viếng" : "Không",
       care: role === "pastor" || role === "secretary" ? "Nguồn/đề nghị: quản lý" : "Không",
-      giving: "Chưa mở",
-      expense: "Chưa mở",
+      giving:
+        role === "pastor"
+          ? "Quỹ/cấu hình: quản lý; thu/chi, tổng hợp, đối chiếu/biên bản khóa: xem"
+          : role === "treasurer"
+            ? "Quỹ/cấu hình/tổng hợp: xem; mã/phiếu thu: lập và hủy; phiếu chi: lập/hủy; đối chiếu/khóa sổ"
+            : "Không",
+      expense: role === "member" ? "Không" : "Theo cấu hình Hội Thánh",
       prayer:
         role === "pastor"
           ? "Chung và riêng tư: quản lý"

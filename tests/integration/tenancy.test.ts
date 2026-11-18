@@ -9,6 +9,7 @@ import { Database, initialize } from "../../api/infrastructure/database";
 import { RateLimit } from "../../api/infrastructure/rate-limit";
 import { Operations } from "../../api/operations/service";
 import { Tenancy } from "../../api/tenancy/service";
+import { writeEvidence } from "../evidence";
 
 const conf = {
   ...config(),
@@ -619,7 +620,7 @@ describe("P1.2 Tenancy real database/transactions", () => {
       expect(plan.executionStats.nReturned <= 26).toBe(true);
       if (name === "all") expect(names.has("name")).toBe(true);
     }
-    await Bun.write(
+    await writeEvidence(
       "output/p1.4/p12-query-explain.json",
       JSON.stringify(
         {

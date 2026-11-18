@@ -7,6 +7,7 @@ import { OwnerOperations } from "../api/identity/owner-operations";
 import { Identity } from "../api/identity/service";
 import { Database, initialize } from "../api/infrastructure/database";
 import { RateLimit } from "../api/infrastructure/rate-limit";
+import { assertComposition } from "./browser-composition";
 import { localTls } from "./local-tls";
 import { SyntheticClient, syntheticUser } from "./p2-fixtures";
 import { p42Fixture, p42Save, p42Schedule, programCommand } from "./p42-fixtures";
@@ -74,6 +75,7 @@ async function capture(name: string, subject = page) {
     await subject.emulateMedia({ colorScheme: theme });
     for (const width of [1440, 901, 900, 560, 390]) {
       await subject.setViewportSize({ width, height: 1000 });
+      await assertComposition(subject, `${name}-${theme}-${width}`, assert, evidence);
       await subject.evaluate(async () => {
         await document.fonts.ready;
         window.scrollTo(0, 0);

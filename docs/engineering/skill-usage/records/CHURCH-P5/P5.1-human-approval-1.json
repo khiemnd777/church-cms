@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "task_id": "CHURCH-P5",
+  "scope_id": "P5.1",
+  "recorded_at": "2026-11-16T09:40:25.648237+07:00",
+  "reported_by": "delivery_owner",
+  "event_id": "CHURCH-P5/P5.1/human-approval/1",
+  "event_type": "evaluation",
+  "source_kind": "human_feedback",
+  "subject_event_id": "CHURCH-P5/P5.1/planning/1",
+  "assessment_source": "human",
+  "review_attempt": 1,
+  "decision": "ACCEPTED",
+  "findings": [],
+  "authority": {
+    "approval": "Duyệt P5.1-plan-r1, C51-01–03 và ASCII, cho phép triển khai trọn P51-01–05 local/synthetic, bàn giao rồi dừng trước P5.2.",
+    "scope": "P51-01–05 local/synthetic; code/wiring toàn gói trước tests; một handoff rồi dừng P5.2; không publication/real data/main DB read/init/restart3443/worktree/delegation."
+  },
+  "evidence_refs": [
+    "current_chat:P5.1-plan-r1/C51-01–03/ASCII",
+    "current_chat:P5.1 approval 2026-11-16",
+    "docs/tasks/CHURCH-P5.1.md",
+    "docs/engineering/P5.1-finance.md"
+  ],
+  "limits": [
+    "Approval kế hoạch và implementation, chưa human acceptance kết quả P5.1-r1."
+  ]
+}

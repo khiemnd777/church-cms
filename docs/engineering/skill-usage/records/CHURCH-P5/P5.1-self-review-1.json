@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "task_id": "CHURCH-P5",
+  "scope_id": "P5.1",
+  "recorded_at": "2026-11-16T09:44:25.390392+07:00",
+  "reported_by": "delivery_owner",
+  "event_id": "CHURCH-P5/P5.1/self-review/1",
+  "event_type": "evaluation",
+  "source_kind": "agent_self_report",
+  "subject_event_id": "CHURCH-P5/P5.1/implementation/1",
+  "assessment_source": "agent_self_review",
+  "review_attempt": 1,
+  "decision": "FAIL",
+  "findings": [
+    {
+      "id": "E51-01",
+      "category": "IMPLEMENTATION_DEFECT",
+      "description": "Evidence preservation workflow failed: old P4.6 history-plans artifact overwritten by legacy full-suite test; original bytes not recovered. Old accepted hash matches before-run baseline. Test output isolation repaired but preservation gate remains unmet.",
+      "evidence": [
+        "output/p5.1/evidence-integrity-incident.json",
+        "output/p5.1/prior-evidence-preservation.json",
+        "tests/integration/p4-workflows.test.ts"
+      ],
+      "skill_attribution": null
+    }
+  ],
+  "code_review_result": "No remaining actionable source defect identified in reviewed scope after Finance/Organization pending repair; independent review NOT_RUN.",
+  "evidence_refs": [
+    "docs/tasks/CHURCH-P5.1.md",
+    "docs/engineering/P5.1-finance.md",
+    "output/p5.1/verification.json",
+    "output/p5.1/source-manifest.json",
+    "output/p5.1/evidence-integrity-incident.json",
+    "output/p5.1/browser/browser-results.json",
+    "output/p5.1/p4-workflows-recheck.log"
+  ]
+}

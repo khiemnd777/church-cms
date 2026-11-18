@@ -1,0 +1,83 @@
+{
+  "schema_version": 1,
+  "event_id": "CHURCH-P5/P5.6/self-review/1",
+  "event_type": "evaluation",
+  "task_id": "CHURCH-P5",
+  "scope_id": "P5.6",
+  "recorded_at": "2026-11-18T11:07:32.940105+07:00",
+  "reported_by": "delivery_owner",
+  "source_kind": "agent_self_report",
+  "subject_event_id": "CHURCH-P5/P5.6/implementation/1",
+  "assessment_source": "agent_self_review",
+  "assessment_scope": "Approved P56 local/synthetic delivery, no release or production certification",
+  "review_attempt": 1,
+  "decision": "PASS",
+  "findings": [],
+  "resolved_findings": [
+    {
+      "id": "UI56-MONTH-LABELS",
+      "category": "IMPLEMENTATION_DEFECT",
+      "status": "RESOLVED",
+      "description": "SVG month labels shrank on390px. Reused named keyboard scroll viewport/minWidth640; verified ArrowRight reachesT12 and labels retain11px, visible scroll hint.",
+      "evidence": [
+        "output/p5.6/browser-first/summary-annual-details-dark-390.png",
+        "output/p5.6/browser-release-candidate/summary-annual-details-dark-390-chart-end.png"
+      ]
+    },
+    {
+      "id": "P56-TEST-INPUT",
+      "category": "TEST_DEFECT",
+      "status": "RESOLVED",
+      "description": "Initial revoke fixture used an invalid permission patch shape. Current contract role/scope/version used; 11reporting tests pass.",
+      "evidence": [
+        "output/p5.6/reporting-tests-final.log"
+      ]
+    },
+    {
+      "id": "P56-TEST-SCROLL",
+      "category": "TEST_DEFECT",
+      "status": "RESOLVED",
+      "description": "End did not scroll horizontally; ArrowRight does. Do not focus chart behind modal: preserve focus trap and test keyboard when modal absent.",
+      "evidence": [
+        "output/p5.6/browser-final.log",
+        "output/p5.6/browser-candidate2.log",
+        "output/p5.6/browser-release-candidate/browser-results.json"
+      ]
+    }
+  ],
+  "retained_observations": [
+    {
+      "id": "P56-SETUP-409",
+      "category": "UNKNOWN",
+      "status": "OBSERVATION_RETAINED",
+      "description": "One earlier P54 concurrent proposal setup returned409; failure precedes intended payment invariant. Setup isolated sequentially; final93PASS and simultaneous payment race still tests single debit/remaining balance30. No claim underlying runtime cause fixed.",
+      "evidence": [
+        "output/p5.6/finance-final.log",
+        "output/p5.6/finance-candidate2.log",
+        "tests/integration/finance-payments.test.ts"
+      ]
+    }
+  ],
+  "unchanged_open_findings": [
+    "E55-01 dependency audit high OPEN_NOT_WAIVED; not upgraded or waived"
+  ],
+  "limits": [
+    "Local/synthetic Firefox/private CA only; physical/Safari/UAT/mainruntime/pilot/remoteCI/production/multi-replica/independent review NOT_RUN.",
+    "P5.6-r1 PENDING_REVIEW; P5 not closed/P6 not opened; no commit/push/deploy/main DB read/init/restart3443/realdata/dependencies/worktree/delegation.",
+    "E51-01 USER_WAIVED/original not recovered; E55-01 OPEN_NOT_WAIVED/audit high retained; UI-POSTP8-01 AFTER_P8 unchanged.",
+    "Policy24/main schema/index not applied; historical payment-ledger index replacement requires separate approved maintenance/backup/activation.",
+    "Full483 suite ran after core backend/reporting/UI wiring, before final mobile rendering repair/test-fixture serialization; final93 Finance and final browser/static cover affected code. No claim full suite rerun after those changes.",
+    "Workload one church per journey; 2/10/20 measured cases at1/5/10 workers, lower-quantile floor((n-1)*q), excludes account/payment setup; no production SLA/capacity or RPO/RTO/PITR claim.",
+    "One earlier P54 concurrent fixture setup returned409 before the intended payment race; exact cause not established. Only fixture preparation serialized; concurrent payments and all money assertions unchanged. Earlier failed log retained; no production write behavior repair claimed.",
+    "P3.4/P4.2 prior race causes remain UNKNOWN. Source composition guard/geometry checks do not prove all UX defects absent.",
+    "Restore exact comparison before session revocation/signing-key rotation; post-cut absence remains UNKNOWN and must not cause automatic money replay.",
+    "Native tall element screenshots may include the existing sticky header during capture; full-page screenshots and isolated W01/mobile-chart images provide additional visual evidence."
+  ],
+  "evidence_refs": [
+    "docs/tasks/CHURCH-P5.6.md",
+    "docs/engineering/P5.6-reporting.md",
+    "output/p5.6/verification.json",
+    "output/p5.6/preservation.json",
+    "output/p5.6/source-manifest.json"
+  ]
+}

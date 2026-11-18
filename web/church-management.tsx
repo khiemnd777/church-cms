@@ -27,6 +27,7 @@ import {
   PaginationControl,
   SectionHeader,
   Select,
+  Stack,
   StatCard,
   Stats,
   TableFrame,
@@ -459,7 +460,7 @@ export function ChurchManagement({
           {loading && <Loading />}
           {detail && (
             <>
-              <Card>
+              <Card spacing="content">
                 <SectionHeader title={detail.name}>
                   <Button aria-label="Sửa Hội Thánh" onClick={() => open("edit")}>
                     Sửa
@@ -657,16 +658,18 @@ export function ChurchManagement({
           )}
           {dialog === "status" ? (
             <>
-              <p>
-                <strong>
-                  {detail?.name} — {detail?.code}
-                </strong>
-              </p>
-              <p>
-                {detail?.status === "active"
-                  ? "Người dùng Hội Thánh sẽ không truy cập được. Dữ liệu được giữ nguyên."
-                  : "Người dùng có thể đăng nhập lại. Các phiên đã thu hồi không tự khôi phục."}
-              </p>
+              <Stack space="compact">
+                <p>
+                  <strong>
+                    {detail?.name} — {detail?.code}
+                  </strong>
+                </p>
+                <p>
+                  {detail?.status === "active"
+                    ? "Người dùng Hội Thánh sẽ không truy cập được. Dữ liệu được giữ nguyên."
+                    : "Người dùng có thể đăng nhập lại. Các phiên đã thu hồi không tự khôi phục."}
+                </p>
+              </Stack>
               <div className="form">
                 <Field label="Lý do" full>
                   <TextArea

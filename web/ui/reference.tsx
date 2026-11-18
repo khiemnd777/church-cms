@@ -6,6 +6,7 @@ import {
   Button,
   Card,
   Choice,
+  ContentSection,
   DialogActions,
   Drawer,
   EmptyState,
@@ -19,6 +20,7 @@ import {
   PaginationControl,
   SectionHeader,
   Select,
+  Stack,
   StatCard,
   Stats,
   TableFrame,
@@ -136,7 +138,7 @@ function Reference() {
         <IconButton icon="search" label="Tìm kiếm minh họa" />
       </Toolbar>
       <div className="ui-preview-grid">
-        <Card>
+        <Card spacing="content">
           <SectionHeader title="Controls và trạng thái" />
           <div className="form">
             <Field label="Tên Hội Thánh">
@@ -170,7 +172,7 @@ function Reference() {
             <Button variant="primary">Lưu</Button>
           </DialogActions>
         </Card>
-        <Card>
+        <Card spacing="content">
           <SectionHeader title="Thông tin và số liệu" />
           <KeyValueList
             items={[
@@ -206,7 +208,7 @@ function Reference() {
             </div>
           ))}
         </Card>
-        <Card>
+        <Card spacing="content">
           <SectionHeader title="Phản hồi" />
           <Feedback tone="success">Đã lưu thông tin.</Feedback>
           <Feedback tone="error">Chưa thể lưu. Kiểm tra dữ liệu và thử lại.</Feedback>
@@ -219,6 +221,25 @@ function Reference() {
           <Button>Thêm Hội Thánh</Button>
         </EmptyState>
       </div>
+      <Card spacing="section" data-ui="composition-reference">
+        <Stack space="compact">
+          <p>Phạm vi minh họa</p>
+          <p>Dòng thông tin cùng nhóm</p>
+        </Stack>
+        <ContentSection title="Đối chiếu nội dung">
+          <Feedback tone="success">Trạng thái đã xác định</Feedback>
+          <Stack space="compact">
+            <p>Dải dữ liệu đã đọc</p>
+            <p>Tổng được đo từ nguồn</p>
+          </Stack>
+        </ContentSection>
+        <ContentSection title="Nhóm độc lập kế tiếp">
+          <p>Nội dung nhóm kế tiếp</p>
+          <DialogActions>
+            <Button>Xem trước</Button>
+          </DialogActions>
+        </ContentSection>
+      </Card>
       <PatternFixture />
       <PaginationControl loading={false} onMore={() => {}} />
       <Modal

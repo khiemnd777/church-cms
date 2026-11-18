@@ -422,7 +422,7 @@ export function SchedulingView(props: Props) {
         )}
       </Toolbar>
       {loading && <Loading />}
-      <Card>
+      <Card spacing="content">
         <SectionHeader title="Phân công sáu Chúa nhật" />
         {table(page, "Phân công sáu Chúa nhật")}
         {page?.nextCursor && (

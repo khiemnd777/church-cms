@@ -10,7 +10,16 @@ import {
   tenantRequest,
   useTenantMutation,
 } from "./tenant-mutation";
-import { Button, DialogActions, Feedback, Field, Modal, QrVideo, Select } from "./ui/components";
+import {
+  Button,
+  DialogActions,
+  Feedback,
+  Field,
+  Modal,
+  QrVideo,
+  Select,
+  Stack,
+} from "./ui/components";
 
 type Resolution = Awaited<ReturnType<Attendance["qrResolution"]>>;
 export function QrAttendance({
@@ -168,14 +177,16 @@ export function QrAttendance({
       }}
     >
       <div className="attendance-dialog-content">
-        <p>
-          <strong>{session.label}</strong> · {session.heldOn} ·{" "}
-          {session.prepClass ? "Lớp dự bị" : (session.unitName ?? "Toàn Hội Thánh")}
-        </p>
-        <p>
-          Đưa QR trên thẻ vào khung để ghi có mặt. Hình camera chỉ được giải mã trên thiết bị; không
-          gửi ảnh lên server.
-        </p>
+        <Stack space="compact">
+          <p>
+            <strong>{session.label}</strong> · {session.heldOn} ·{" "}
+            {session.prepClass ? "Lớp dự bị" : (session.unitName ?? "Toàn Hội Thánh")}
+          </p>
+          <p>
+            Đưa QR trên thẻ vào khung để ghi có mặt. Hình camera chỉ được giải mã trên thiết bị;
+            không gửi ảnh lên server.
+          </p>
+        </Stack>
         <QrVideo videoRef={video} />
         {resolving && <Feedback>Đang xác minh thẻ…</Feedback>}
         {message && <Feedback>{message}</Feedback>}

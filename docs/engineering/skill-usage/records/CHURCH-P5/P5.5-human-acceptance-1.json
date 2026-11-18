@@ -1,0 +1,86 @@
+{
+  "schema_version": 1,
+  "event_id": "CHURCH-P5/P5.5/human-acceptance/1",
+  "event_type": "evaluation",
+  "task_id": "CHURCH-P5",
+  "scope_id": "P5.5",
+  "recorded_at": "2026-11-18T10:23:31.724372+07:00",
+  "reported_by": "delivery_owner",
+  "source_kind": "human_feedback",
+  "subject_event_id": "CHURCH-P5/P5.5/implementation/2",
+  "assessment_source": "human",
+  "review_attempt": 2,
+  "decision": "ACCEPTED",
+  "accepted_revision": "P5.5-r2",
+  "accepted_items": {
+    "P55-01": "HUMAN_ACCEPTED",
+    "P55-02": "HUMAN_ACCEPTED",
+    "P55-03": "HUMAN_ACCEPTED",
+    "P55-04": "HUMAN_ACCEPTED",
+    "P55-05": "HUMAN_ACCEPTED"
+  },
+  "accepted_ui_items": {
+    "UI55-01": "HUMAN_ACCEPTED",
+    "UI55-02": "HUMAN_ACCEPTED",
+    "UI55-03": "HUMAN_ACCEPTED",
+    "UI55-04": "HUMAN_ACCEPTED"
+  },
+  "authority": {
+    "approval": "nghiệm thu. mở P5.6",
+    "scope": "Accept current P5.5-r2 local/synthetic and open detailed P5.6 planning before coding. No implementation C56/ASCII approval inferred; no P5 closure/P6/release/main/realdata/publication."
+  },
+  "findings": [],
+  "retained_exceptions": [
+    {
+      "id": "E51-01",
+      "status": "USER_WAIVED",
+      "originalRecovered": false,
+      "furtherTroubleshooting": "NOT_REOPENED"
+    },
+    {
+      "id": "E55-01",
+      "status": "OPEN_NOT_WAIVED",
+      "fixed": false,
+      "auditPass": false
+    },
+    {
+      "id": "UI-POSTP8-01",
+      "status": "USER_DEFERRED_AFTER_P8",
+      "fixed": false
+    }
+  ],
+  "resolved_human_finding": {
+    "id": "UI-P55-SECTION-01",
+    "status": "HUMAN_ACCEPTED_R2",
+    "prior_review_preserved": "CHURCH-P5/P5.5/human-review/1"
+  },
+  "verified_source_files_before_acceptance": 700,
+  "retainedTechnicalHashes": {
+    "output/p5.5/r2/verification.json": "d2de9460e89e71218e3cc0adb583e0258fe6fd58b0fec570a5fe37878c533b19",
+    "output/p5.5/r2/source-manifest.json": "baaff12f63e80d2997158c95ac7113421a18efedd2be0d571b0e3250efa61439",
+    "output/p5.5/r2/preservation.json": "edcf9df681aff2fe1fe44bc93d14ded0454235fe280ed88e57f1d326b37581a4",
+    "output/p5.5/r2/handoff-validation.json": "c5ea342dc4e94f8612cff427e4012093639e3d9939829106ba4aa0acfd9ef87a",
+    "docs/engineering/skill-usage/records/CHURCH-P5/P5.5-implementation-2.json": "d7e1c1ceccfec5a92cddfe71394397cb175d14eb53f8db5b03fe3fcfe95b37d6",
+    "docs/engineering/skill-usage/records/CHURCH-P5/P5.5-self-review-2.json": "26a3f5da7969590ad7581497a1f5dcd13a65a98199d643afd48c08584fd29deb",
+    "docs/engineering/skill-usage/records/CHURCH-P5/P5.5-human-review-1.json": "a4d7886bd9707986e471591a3a47e8088f5d2ed6307161132e603c12c21668db",
+    "output/p5.5/dependency-finding.json": "43f5bb111a99f9d0e4fa584d0a9b1840a67f93e59566e1eb4e41b374b4c80e63"
+  },
+  "limits": [
+    "Acceptance local/synthetic only; no release/deployment/production proof.",
+    "Original pending technical snapshots preserved; this linked evaluation records later human acceptance.",
+    "No tests/build/runtime rerun; no app/source/dependency/dist changes.",
+    "P5.6 draft/C56/ASCII stays in chat, no task/contract/planning journal until approved."
+  ],
+  "evidence_refs": [
+    "current_chat:P5.5-r2 accepted and P5.6 planning opened",
+    "docs/tasks/CHURCH-P5.5.md",
+    "output/p5.5/r2/verification.json",
+    "output/p5.5/r2/source-manifest.json",
+    "output/p5.5/r2/preservation.json",
+    "output/p5.5/r2/handoff-validation.json",
+    "docs/engineering/skill-usage/records/CHURCH-P5/P5.5-implementation-2.json",
+    "docs/engineering/skill-usage/records/CHURCH-P5/P5.5-self-review-2.json",
+    "docs/engineering/skill-usage/records/CHURCH-P5/P5.5-human-review-1.json",
+    "output/p5.5/dependency-finding.json"
+  ]
+}

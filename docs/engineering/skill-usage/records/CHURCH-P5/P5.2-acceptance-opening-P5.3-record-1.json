@@ -1,0 +1,115 @@
+{
+  "schema_version": 1,
+  "event_id": "CHURCH-P5/P5.2-acceptance-opening-P5.3/implementation/1",
+  "event_type": "phase_handoff",
+  "task_id": "CHURCH-P5",
+  "scope_id": "P5.2-acceptance-opening-P5.3",
+  "recorded_at": "2026-11-17T14:00:08.408729+07:00",
+  "reported_by": "delivery_owner",
+  "source_kind": "agent_self_report",
+  "phase": "implementation",
+  "handoff_index": 1,
+  "classification": {
+    "delivery": "roadmap",
+    "complexity": "documentation acceptance and next-package planning only",
+    "ui": false
+  },
+  "authority": {
+    "approval": "Nghiệm thu P5.2-r1; nhưng thấy vấn đề UI: nút bị canh giữa với field tạo cảm giác nút và fields bị lệch -> note vấn đề này giải quyết sau P8. Tiếp theo mở kế hoạch P5.3",
+    "scope": "Human accept P5.2-r1 P52-01–05 local/synthetic; record UI-POSTP8-01 for after P8; open P5.3 PLANNING_ONLY in chat. No UI fix, P5.3 implementation, P5.4+, Git publication, deploy, real-data/main operations or E51-01 troubleshooting."
+  },
+  "skills": [
+    {
+      "skill_id": "planning-and-task-breakdown",
+      "contribution_summary": "Giữ vị trí P5.3/điểm dừng, phân biệt nghiệm thu P5.2 với quyền planning P5.3; chuẩn bị kế hoạch trong chat.",
+      "contribution_percent_estimate": 40,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/planning-and-task-breakdown/SKILL.md",
+        "version": null,
+        "sha256": "fb768e0a3d3a77f733eb613c078fb61dde0845a438c65cc095fc6448dc166d4c",
+        "fingerprint_basis": "Read and applied in current authorized acceptance/documentation task plus read-only planning in chat; no native invocation/cost claim."
+      }
+    },
+    {
+      "skill_id": "spec-driven-development",
+      "contribution_summary": "Đối chiếu source W10/W16 và quyền/cấu hình Finance để tách quy tắc đã duyệt với các đề xuất C53 chỉ ở chat.",
+      "contribution_percent_estimate": 40,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/spec-driven-development/SKILL.md",
+        "version": null,
+        "sha256": "c6cfb5c766c45243290d4dcfc7eb3857dbfb77556355c7960a4411762764858b",
+        "fingerprint_basis": "Read and applied in current authorized acceptance/documentation task plus read-only planning in chat; no native invocation/cost claim."
+      }
+    },
+    {
+      "skill_id": "documentation-and-adrs",
+      "contribution_summary": "Ghi acceptance/issue sau P8/authority mở planning, liên kết task/context/plan/state và giữ snapshots.",
+      "contribution_percent_estimate": 20,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/documentation-and-adrs/SKILL.md",
+        "version": null,
+        "sha256": "f3199cfec5d6fdfa6533f180b1e6cbee584cd6175d8eb25c0d186c833120609c",
+        "fingerprint_basis": "Read and applied in current authorized acceptance/documentation task plus read-only planning in chat; no native invocation/cost claim."
+      }
+    }
+  ],
+  "outcome": {
+    "delivery_status": "COMPLETED",
+    "verification_level": "SOURCE_DOCUMENTATION_HASH_READBACK_ONLY",
+    "human_acceptance": "NOT_APPLICABLE",
+    "limitations": [
+      "P5.2 human acceptance is recorded by the separate linked evaluation.",
+      "P5.3-plan-r1/C53/ASCII proposals stay in chat; no P5.3 task/contracts or P5.3 planning-phase journal saved before approval.",
+      "No application changes, tests/build/runtime rerun, UI alignment fix, main operations or publication."
+    ]
+  },
+  "measurements": {
+    "elapsed_seconds": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có measured counters cho toàn lượt; contribution là ước tính phạm vi, không phải time/token."
+    },
+    "tool_calls": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có measured counters cho toàn lượt; contribution là ước tính phạm vi, không phải time/token."
+    },
+    "input_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có measured counters cho toàn lượt; contribution là ước tính phạm vi, không phải time/token."
+    },
+    "output_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có measured counters cho toàn lượt; contribution là ước tính phạm vi, không phải time/token."
+    },
+    "cached_input_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có measured counters cho toàn lượt; contribution là ước tính phạm vi, không phải time/token."
+    },
+    "reasoning_output_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có measured counters cho toàn lượt; contribution là ước tính phạm vi, không phải time/token."
+    },
+    "client": null,
+    "model": null,
+    "effort": null,
+    "missing_context_reason": "Không có measured source cho client/model/effort."
+  },
+  "evidence_refs": [
+    "docs/engineering/skill-usage/records/CHURCH-P5/P5.2-human-acceptance-1.json",
+    "docs/tasks/CHURCH-P5.2.md#ui-postp8-01",
+    "docs/tasks/CHURCH-P5.md",
+    "docs/project-state.md",
+    "current_chat:P5.3-plan-r1 proposal only"
+  ]
+}

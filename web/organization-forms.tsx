@@ -9,6 +9,7 @@ import {
   Feedback,
   Field,
   Select,
+  Stack,
   TextArea,
   TextInput,
 } from "./ui/components";
@@ -275,7 +276,7 @@ export function OrganizationForm({
             <b>Xem trước · {unit?.name ?? term?.label ?? label}</b>
           </p>
           {kind === "details" ? (
-            <>
+            <Stack space="compact">
               <p>
                 Người phụ trách: {unit?.leader?.fullName ?? "Chưa giao"} →{" "}
                 {leader?.fullName ?? "Chưa giao"}
@@ -283,7 +284,7 @@ export function OrganizationForm({
               <p>
                 Lịch: {unit?.scheduleText ?? "Chưa có"} → {schedule || "Chưa có"}
               </p>
-            </>
+            </Stack>
           ) : (
             <>
               <p>

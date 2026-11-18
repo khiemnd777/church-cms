@@ -7,6 +7,7 @@ import { OwnerOperations } from "../api/identity/owner-operations";
 import { Identity } from "../api/identity/service";
 import { Database, initialize } from "../api/infrastructure/database";
 import { RateLimit } from "../api/infrastructure/rate-limit";
+import { assertComposition } from "./browser-composition";
 import { localTls } from "./local-tls";
 
 const evidence = process.env.CHURCH_EVIDENCE_DIR ?? "output/p1.3";
@@ -90,7 +91,10 @@ async function checkVisibleNavigation() {
         "Ban ngành & Khu vực",
         "Phân quyền",
         "Điểm danh",
+        "Thờ phượng & Lịch giảng",
+        "Chăm sóc & Cầu thay",
         "Sổ lễ nghi",
+        "Biểu mẫu & Báo cáo",
         "Cấu hình",
       ];
       assert(
@@ -202,6 +206,7 @@ async function captureScreen(name: string) {
     await page.emulateMedia({ colorScheme: theme });
     for (const width of [1440, 900, 560, 390]) {
       await page.setViewportSize({ width, height: width === 1440 ? 1000 : 844 });
+      await assertComposition(page, `${name}-${theme}-${width}`, assert, evidence);
       await page.evaluate(async () => {
         window.scrollTo(0, 0);
         await document.fonts.ready;

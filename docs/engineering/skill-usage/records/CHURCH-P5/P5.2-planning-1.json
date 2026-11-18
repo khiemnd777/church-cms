@@ -1,0 +1,85 @@
+{
+  "schema_version": 1,
+  "event_id": "CHURCH-P5/P5.2/planning/1",
+  "event_type": "phase_handoff",
+  "task_id": "CHURCH-P5",
+  "scope_id": "P5.2",
+  "recorded_at": "2026-11-17T13:40:21.133991+07:00",
+  "reported_by": "delivery_owner",
+  "source_kind": "agent_self_report",
+  "phase": "planning",
+  "handoff_index": 1,
+  "classification": {
+    "delivery": "roadmap",
+    "complexity": "approved financial workflow contracts",
+    "ui": true
+  },
+  "authority": {
+    "approval": "Duyệt P5.2-plan-r1, C52-01–03 và ASCII. Cho phép triển khai trọn P52-01–05 local/synthetic, bàn giao rồi dừng trước P5.3. Giữ ngoại lệ E51-01 đã bỏ qua.",
+    "scope": "P52-01–05 local/synthetic only; stop before P5.3; no publication/commit/push/deploy/real data/main DB read/init/restart3443; E51-01 USER_WAIVED unchanged."
+  },
+  "recording_note": "Ghi lại plan/C52/ASCII đã được Khiêm duyệt trong chat, sau approval. Bảng skill chỉ phản ánh thao tác ghi/đối chiếu kế hoạch trong lượt này, không tái dựng native invocation hoặc thời điểm của lượt planning trước.",
+  "skills": [
+    {
+      "skill_id": "documentation-and-adrs",
+      "contribution_summary": "Lưu plan đã duyệt, authority/C52/ASCII/task và nối context/plan/state hiện hành.",
+      "contribution_percent_estimate": 100,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/documentation-and-adrs/SKILL.md",
+        "version": null,
+        "sha256": "f3199cfec5d6fdfa6533f180b1e6cbee584cd6175d8eb25c0d186c833120609c",
+        "fingerprint_basis": "Đã đọc/applied trong lượt hiện tại; không claim native invocation hoặc fingerprint lịch sử."
+      }
+    }
+  ],
+  "outcome": {
+    "delivery_status": "COMPLETED",
+    "verification_level": "APPROVED_CHAT_PLAN_RECORDED",
+    "human_acceptance": "ACCEPTED",
+    "limitations": [
+      "Approval của kế hoạch không phải human acceptance của implementation hoặc release."
+    ]
+  },
+  "measurements": {
+    "elapsed_seconds": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có measured counters cho phase record; contribution là ước tính phạm vi, không đo tài nguyên."
+    },
+    "tool_calls": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có measured counters cho phase record; contribution là ước tính phạm vi, không đo tài nguyên."
+    },
+    "input_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có measured counters cho phase record; contribution là ước tính phạm vi, không đo tài nguyên."
+    },
+    "output_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có measured counters cho phase record; contribution là ước tính phạm vi, không đo tài nguyên."
+    },
+    "cached_input_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có measured counters cho phase record; contribution là ước tính phạm vi, không đo tài nguyên."
+    },
+    "reasoning_output_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có measured counters cho phase record; contribution là ước tính phạm vi, không đo tài nguyên."
+    },
+    "client": null,
+    "model": null,
+    "effort": null,
+    "missing_context_reason": "Không có measured source cho client/model/effort."
+  },
+  "evidence_refs": [
+    "current_chat:P5.2-plan-r1/C52-01–03/ASCII approval",
+    "docs/tasks/CHURCH-P5.2.md"
+  ]
+}

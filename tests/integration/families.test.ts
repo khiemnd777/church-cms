@@ -10,6 +10,7 @@ import { Identity } from "../../api/identity/service";
 import { Database, initialize } from "../../api/infrastructure/database";
 import { RateLimit } from "../../api/infrastructure/rate-limit";
 import { businessDay } from "../../api/members/dates";
+import { writeEvidence } from "../evidence";
 
 const conf = {
   ...config(),
@@ -895,7 +896,7 @@ describe("P2.3 family real transaction contracts", () => {
       .explain("executionStats");
     expect(plan.executionStats.totalDocsExamined).toBe(1);
     expect(plan.executionStats.nReturned).toBe(1);
-    await Bun.write(
+    await writeEvidence(
       "output/p2.3/family-query-plan.json",
       JSON.stringify(
         { source: "301 synthetic families; code equality only; no production SLA", plan },

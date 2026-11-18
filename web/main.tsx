@@ -9,9 +9,9 @@ import { AttendanceView } from "./attendance";
 import { CertificatesView } from "./certificates";
 import { ChurchApp } from "./church-app";
 import { ChurchManagement } from "./church-management";
+import { ChurchSettingsView } from "./church-settings";
 import { FamiliesManagement } from "./families-management";
 import { MembersManagement } from "./members-management";
-import { OrganizationManagement } from "./organization-management";
 import { OrganizationRuntimeView } from "./organization-runtime";
 import { OverviewView } from "./overview";
 import { usePendingNavigation } from "./pending-navigation";
@@ -19,7 +19,16 @@ import { RitesView } from "./rites";
 import { kindTabs } from "./rites-api";
 import { SchedulingView } from "./scheduling";
 import type { TenantIntent } from "./tenant-mutation";
-import { AppShell, AuthCard, Button, Feedback, Field, Loading, TextInput } from "./ui/components";
+import {
+  AppShell,
+  AuthCard,
+  Button,
+  Feedback,
+  Field,
+  Loading,
+  Stack,
+  TextInput,
+} from "./ui/components";
 import { VisitationView } from "./visitation";
 import "@fontsource/be-vietnam-pro/400.css";
 import "@fontsource/be-vietnam-pro/500.css";
@@ -106,6 +115,7 @@ function App() {
     return () => window.removeEventListener("popstate", back);
   }, []);
   function overviewNavigate(target: OverviewTarget) {
+    if (target.kind === "giving") return;
     if (pendingIntent || !route.churchId) return;
     if (target.kind === "members") {
       setMemberToOpen(target.memberId ?? null);
@@ -319,10 +329,12 @@ function App() {
     return authCard(
       "Hỗ trợ tài khoản",
       <>
-        <p>Nếu quên mật khẩu hoặc mất quyền truy cập tài khoản, vui lòng liên hệ:</p>
-        <p>
-          <strong>Dịch vu chăm sóc và hỗ trợ</strong>
-        </p>
+        <Stack space="compact">
+          <p>Nếu quên mật khẩu hoặc mất quyền truy cập tài khoản, vui lòng liên hệ:</p>
+          <p>
+            <strong>Dịch vu chăm sóc và hỗ trợ</strong>
+          </p>
+        </Stack>
         <Button variant="primary" className="wide" onClick={() => navigate("login")}>
           Về đăng nhập
         </Button>
@@ -728,7 +740,7 @@ function App() {
           onBack={() => ownerNavigate("churches", route.churchId as string)}
         />
       ) : route.kind === "config" && route.churchId ? (
-        <OrganizationManagement
+        <ChurchSettingsView
           key={`${owner?.employeeId}:${route.churchId}`}
           realm="owner"
           churchId={route.churchId}

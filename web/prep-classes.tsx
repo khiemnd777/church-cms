@@ -35,6 +35,7 @@ import {
   PaginationControl,
   SectionHeader,
   Select,
+  Stack,
   TableFrame,
   Tabs,
   TextArea,
@@ -420,14 +421,16 @@ export function PrepClassesView({
                 <Badge>{courseStates[course.state]}</Badge>
               </SectionHeader>
               <div className="prep-card-content">
-                <p>
-                  Khai giảng {course.startOn} · Giảng viên: {course.teacher ?? "Chưa ghi"} · Báp-têm
-                  dự kiến: {course.baptismOn ?? "Chưa ghi"}
-                </p>
-                <p>
-                  {course.lessons.length} bài bắt buộc · {course.enrollmentCount} ghi danh ·{" "}
-                  {course.openSessions} buổi đang mở
-                </p>
+                <Stack space="compact">
+                  <p>
+                    Khai giảng {course.startOn} · Giảng viên: {course.teacher ?? "Chưa ghi"} ·
+                    Báp-têm dự kiến: {course.baptismOn ?? "Chưa ghi"}
+                  </p>
+                  <p>
+                    {course.lessons.length} bài bắt buộc · {course.enrollmentCount} ghi danh ·{" "}
+                    {course.openSessions} buổi đang mở
+                  </p>
+                </Stack>
                 <div className="prep-actions">
                   {canManage && (
                     <>

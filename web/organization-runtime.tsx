@@ -41,6 +41,7 @@ import {
   PaginationControl,
   SectionHeader,
   Select,
+  Stack,
   TableFrame,
   TextArea,
   TextInput,
@@ -744,14 +745,16 @@ export function OrganizationRuntimeView({
       <Modal open={!!historyId} title="Lịch sử tổ chức" onClose={() => setHistoryId(null)}>
         <div className="organization-runtime-group">
           {history?.items.map((h) => (
-            <Card key={h.id}>
-              <p>
-                {h.event} · {h.effectiveOn}
-              </p>
-              <p>{h.reason}</p>
-              <p>
-                {h.actorKind} · {h.actorId}
-              </p>
+            <Card spacing="content" key={h.id}>
+              <Stack space="compact">
+                <p>
+                  {h.event} · {h.effectiveOn}
+                </p>
+                <p>{h.reason}</p>
+                <p>
+                  {h.actorKind} · {h.actorId}
+                </p>
+              </Stack>
               <details>
                 <summary>Thay đổi</summary>
                 <pre>{JSON.stringify({ before: h.before, after: h.after }, null, 2)}</pre>

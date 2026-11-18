@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "task_id": "CHURCH-P5",
+  "scope_id": "P5.1",
+  "recorded_at": "2026-11-16T09:55:00.968867+07:00",
+  "reported_by": "delivery_owner",
+  "event_id": "CHURCH-P5/P5.1/self-review/2",
+  "event_type": "evaluation",
+  "source_kind": "agent_self_report",
+  "subject_event_id": "CHURCH-P5/P5.1/implementation/2",
+  "assessment_source": "agent_self_review",
+  "review_attempt": 2,
+  "decision": "PASS",
+  "findings": [],
+  "resolvedByWaiver": [
+    "E51-01"
+  ],
+  "review_scope": "Disposition and document integrity only, source/runtime evidence reused. PASS does not assert technical restoration, independent review, full human acceptance or release. Prior FAIL retained.",
+  "authority_ref": "CHURCH-P5/P5.1/E51-01/human-waiver/1",
+  "evidence_refs": [
+    "current_chat:E51-01 search request and user waiver",
+    "output/p5.1/recovery/search-and-waiver-1.json",
+    "output/p5.1/evidence-integrity-disposition-r2.json",
+    "output/p5.1/verification-r2.json",
+    "docs/tasks/CHURCH-P5.1.md",
+    "docs/project-state.md"
+  ]
+}

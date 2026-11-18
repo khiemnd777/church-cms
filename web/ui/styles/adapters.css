@@ -42,6 +42,22 @@ button:disabled {
   cursor: not-allowed;
   opacity: 0.55;
 }
+/* UI-COMPOSITION-r1: explicit vertical groups, using the approved spacing tokens. */
+.ui-stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  min-width: 0;
+}
+.ui-stack-content {
+  gap: var(--space-3);
+}
+.ui-stack-compact {
+  gap: var(--space-1);
+}
+.ui-content-section {
+  min-width: 0;
+}
 a {
   color: var(--primary);
 }
@@ -768,4 +784,28 @@ a {
   margin: 0;
   padding: 0;
   list-style: none;
+}
+
+/* Stack owns the vertical rhythm, including source components with standalone margins. */
+.ui-stack > * {
+  min-width: 0;
+  margin-block: 0;
+}
+
+.ui-empty-actions {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+/* P5.6: source W09 chart, bounded scale only; money remains exact in the detail table. */
+.ui-finance-chart line {
+  stroke: var(--line);
+}
+.ui-finance-chart rect {
+  fill: var(--primary);
+}
+.ui-finance-chart .ui-finance-open rect {
+  opacity: 0.45;
 }

@@ -1,0 +1,159 @@
+{
+  "schema_version": 1,
+  "event_id": "CHURCH-P5/P5.4/implementation/1",
+  "event_type": "phase_handoff",
+  "task_id": "CHURCH-P5",
+  "scope_id": "P5.4",
+  "recorded_at": "2026-11-17T15:25:03.167541+07:00",
+  "reported_by": "delivery_owner",
+  "source_kind": "agent_self_report",
+  "phase": "implementation",
+  "handoff_index": 1,
+  "classification": {
+    "delivery": "roadmap",
+    "complexity": "financial payment, shared book invariant and mixed-source read contracts",
+    "ui": true
+  },
+  "authority": {
+    "approval": "Duyệt P5.4-plan-r1, C54-01–03 và ASCII. Cho phép triển khai trọn P54-01–05 local/synthetic, bàn giao rồi dừng trước P5.5. Giữ E51-01 đã bỏ qua và vấn đề canh nút xử lý sau P8.",
+    "scope": "P54-01–05 local/synthetic; code/wiring before tests, no P5.5+/publication/main/realdata/worktree/delegation; preserve waived E51-01/UI AFTER_P8."
+  },
+  "skills": [
+    {
+      "skill_id": "incremental-implementation",
+      "contribution_summary": "Nối Payments/FinanceBook/Expense/Identity/Ops/Audit/UI/callers xuyên lớp, code/wiring toàn gói trước tests.",
+      "contribution_percent_estimate": 20,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/incremental-implementation/SKILL.md",
+        "version": null,
+        "sha256": "4663b276ac0d2f38be6f14a23d792783a255efe714710726af21c0f52c873359",
+        "fingerprint_basis": "Read/applied in current approved package; actual source bytes at recording; no native invocation or measured-cost claim."
+      }
+    },
+    {
+      "skill_id": "api-and-interface-design",
+      "contribution_summary": "Grant/payment namespace, exact source snapshots/preview/unique/CAS/fund+period fences, compatible mixed ledger/netIncome.",
+      "contribution_percent_estimate": 20,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/api-and-interface-design/SKILL.md",
+        "version": null,
+        "sha256": "2550ac99404f1d52566cdd95fd809e0984eb29f1174132a864fb7beb9f688f79",
+        "fingerprint_basis": "Read/applied in current approved package; actual source bytes at recording; no native invocation or measured-cost claim."
+      }
+    },
+    {
+      "skill_id": "frontend-ui-engineering",
+      "contribution_summary": "W10 pay/preview/detail/paid, W09 mixed book/KPI, focus/time/cancel/success tone, scope/privacy/reauth/reconcile theo shared UI.",
+      "contribution_percent_estimate": 25,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/frontend-ui-engineering/SKILL.md",
+        "version": null,
+        "sha256": "b5c47fed383892428172bf0b9c1ed1aeab50066ff9421a87a6c344f746386495",
+        "fingerprint_basis": "Read/applied in current approved package; actual source bytes at recording; no native invocation or measured-cost claim."
+      }
+    },
+    {
+      "skill_id": "test-driven-development",
+      "contribution_summary": "17P54 cases, full/Finance integration, Firefox/private CA/regressions, workload/query plans/cleanup; không code-test per function.",
+      "contribution_percent_estimate": 20,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/test-driven-development/SKILL.md",
+        "version": null,
+        "sha256": "48d85b44f5e6286ba2a7a43550083609f299aa4001391768e9da126d2db86742",
+        "fingerprint_basis": "Read/applied in current approved package; actual source bytes at recording; no native invocation or measured-cost claim."
+      }
+    },
+    {
+      "skill_id": "code-review-and-quality",
+      "contribution_summary": "Self-review contracts/permissions/book invariants và sửa defects UI/fixture/selector có evidence; không claim independent review.",
+      "contribution_percent_estimate": 10,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/code-review-and-quality/SKILL.md",
+        "version": null,
+        "sha256": "045ed6d37f590d7ad3b2ee47c1e66ada4bbff1e9d5d232c20a4eeaa5694e39f6",
+        "fingerprint_basis": "Read/applied in current approved package; actual source bytes at recording; no native invocation or measured-cost claim."
+      }
+    },
+    {
+      "skill_id": "documentation-and-adrs",
+      "contribution_summary": "Approved task/contracts/state, receipts/preservation/manifest/journals/handoff và activation limits.",
+      "contribution_percent_estimate": 5,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/documentation-and-adrs/SKILL.md",
+        "version": null,
+        "sha256": "f3199cfec5d6fdfa6533f180b1e6cbee584cd6175d8eb25c0d186c833120609c",
+        "fingerprint_basis": "Read/applied in current approved package; actual source bytes at recording; no native invocation or measured-cost claim."
+      }
+    }
+  ],
+  "outcome": {
+    "delivery_status": "COMPLETED",
+    "verification_level": "LOCAL_SYNTHETIC_MONGO_REDIS_HTTPS_FIREFOX",
+    "human_acceptance": "PENDING_REVIEW",
+    "limitations": [
+      "Local/synthetic only; human acceptance PENDING_REVIEW and NOT_RELEASED.",
+      "No P5.5+, publication/commit/push/deploy/realdata/mainDBread/init/restart3443/worktree/delegation.",
+      "Main schema/index/Policy22 not applied; finance_ledger_once partial-index replacement requires separate maintenance/activation review.",
+      "Physical/Safari/UAT/mainruntime/pilot/remoteCI/production/multi-replica/independent review NOT_RUN; restore remains P5.6.",
+      "E51-01 USER_WAIVED/original not recovered; UI-POSTP8-01 AFTER_P8 not fixed; P3.4 race/P4.2 fast-fill exact cause UNKNOWN unchanged.",
+      "Book balance is recorded system transactions, not cash/bank reconciliation; current nonnegative guard does not promise historical daily nonnegative after retroactive income void.",
+      "Bounded synthetic fixtures/workload, no production SLA/capacity/RPO/RTO/restore claim.",
+      "Full suite and Finance checks cover final backend/test semantics; final UI-only snapshot timestamp/cancel/success-tone/focus corrections additionally verified by current browser/type/build checks."
+    ]
+  },
+  "measurements": {
+    "elapsed_seconds": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có measured counters cho toàn phase; không suy time/token từ logs hoặc contribution."
+    },
+    "tool_calls": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có measured counters cho toàn phase; không suy time/token từ logs hoặc contribution."
+    },
+    "input_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có measured counters cho toàn phase; không suy time/token từ logs hoặc contribution."
+    },
+    "output_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có measured counters cho toàn phase; không suy time/token từ logs hoặc contribution."
+    },
+    "cached_input_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có measured counters cho toàn phase; không suy time/token từ logs hoặc contribution."
+    },
+    "reasoning_output_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có measured counters cho toàn phase; không suy time/token từ logs hoặc contribution."
+    },
+    "client": null,
+    "model": null,
+    "effort": null,
+    "missing_context_reason": "Không có measured source cho client/model/effort."
+  },
+  "evidence_refs": [
+    "docs/tasks/CHURCH-P5.4.md",
+    "docs/engineering/P5.4-payments.md",
+    "output/p5.4/verification.json",
+    "output/p5.4/preservation.json",
+    "output/p5.4/source-manifest.json"
+  ]
+}

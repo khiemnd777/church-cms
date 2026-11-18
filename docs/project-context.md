@@ -1,5 +1,90 @@
 # Bối cảnh Church CMS
 
+## Đóng P5 và ranh giới planning P6
+
+P5 có sáu gói đã nghiệm thu local/synthetic; [biên bản closure](tasks/CHURCH-P5.md#đóng-p5) không là release hoặc main activation. Năng lực Finance/Policy24/reporting/restore tiếp tục theo contracts đã bàn giao; không waive E55-01, không phục hồi E51-01 hoặc sửa canh nút deferred sau P8. P6 vẫn là phạm vi định hướng biểu mẫu/báo cáo/định dạng và cổng tín hữu từ P0/roadmap; quyền mới chỉ lập kế hoạch chi tiết trong conversation riêng, không tạo contract/implementation khi chưa duyệt. Trạng thái và chat tiếp nhận xem project-state.
+
+## P5.6 — kết quả và ranh giới bàn giao
+
+Finance bổ sung FinanceReporting dùng snapshot/fresh grant với Policy24, Decimal128/string và bookTotals dùng chung ledger; W09 fourKPI/chart12tháng/details theo period/fund. W01 church pastor đủ overview+summary read mới gọi Finance; owner DTO không thêm Finance fields. UI dùng source/shared6/12/18 và vùng cuộn chart keyboard/mobile; không đổi Toolbar/Field. Restore harness chỉ UUID synthetic, đối chiếu trước revoke/rotate, hậu backup UNKNOWN không auto replay. [Thiết kế/giới hạn](engineering/P5.6-reporting.md); [kết quả](tasks/CHURCH-P5.6.md). Trạng thái hiện hành chỉ project-state; P5 closure/P6 không được tự mở.
+
+## Thiết kế UI-COMPOSITION-r1 — adaptation đã duyệt
+
+Theo P5.5-ui-r2-plan-r1/ASCII: Stack/Card spacing quản lý khoảng cách dọc6/12/18px và reset margin-block con trực tiếp; ContentSection tạo heading→body12px; Modal/Drawer dùng content stack chung. Metadata/actions được nhóm có chủ đích; giữ source HTML/hash/palette/font/breakpoint và layout chuyên biệt như AuthCard/Field/KPI. Guard kiểm cả feature và shared components; rendered gap checks/negative control và review ảnh là bắt buộc khi ảnh hưởng. [Chuẩn](ui-system.md#ui-composition-r1), [task/acceptance](tasks/CHURCH-P5.5.md); trạng thái hiện hành chỉ ở project-state.
+
+## P5.5 UI r2 — implementation được duyệt
+
+UI55-01–04 local/synthetic IN_PROGRESS theo P5.5-ui-r2-plan-r1/ASCII; [task](tasks/CHURCH-P5.5.md). P5.5-r1 CHANGES_REQUESTED chưa nghiệm thu; sửa composition/rule/gap checks rồi bàn giao P5.5-r2, dừng P5.6. E51-01 waived/E55-01 open/UI alignment AFTER_P8 giữ nguyên. Phần dưới giữ chronology.
+
+## Human review P5.5-r1 — CHANGES_REQUESTED — 2026-11-18
+
+Khiêm chưa nghiệm thu vì các section dính nhau; yêu cầu nếu lỗi general phải có rule UI/UX khắc phục hiện tại và phòng tái diễn. **P5.5 CHANGES_REQUESTED, chưa HUMAN_ACCEPTED; P5.6 NOT_OPENED.** UI-P55-SECTION-01 OPEN: PeriodPanel thiếu spacing composition; Card không tự tạo vertical gap, shared paragraph/heading margin0. Gate cũ không đo section gaps; browser PASS lịch sử không chứng minh visual acceptance. [Human review](engineering/skill-usage/records/CHURCH-P5/P5.5-human-review-1.json) ghi feedback; technical receipts/journals/manifest r1 giữ nguyên như snapshot lịch sử. E55-01 audit vẫn OPEN_NOT_WAIVED; E51-01 USER_WAIVED, UI-POSTP8-01 AFTER_P8 giữ nguyên. Rule/layout chung và phạm vi migration sẽ trình P5.5-ui-r2-plan-r1/ASCII trong chat trước coding; chưa sửa application/shared UI/rules hoặc chạy runtime mới.
+
+## P5.5-r1 — bàn giao, còn gate dependency — 2026-11-18
+
+[Task/checklist](tasks/CHURCH-P5.5.md), [contracts](engineering/P5.5-periods.md), [verification](../output/p5.5/verification.json). P55-01–03 source complete/behavior local verified; P55-04 kiểm chứng hành vi PASS nhưng **dependency audit FAIL1high E55-01 OPEN_NOT_WAIVED**; P55-05 hồ sơ đã lưu. Chờ Khiêm nghiệm thu5mục; chưa overallPASS/released. P5.1-r2/P5.2-r1/P5.3-r1/P5.4-r1 HUMAN_ACCEPTED; P5.6 NOT_OPENED, dừng tại đây.
+
+466tests/6801assertions; finalFinance82tests/1284assertions;1945browserchecks gồm550P55/68ảnh;13queryplans/32HTTPSjourneys/33KS/32reversals. Full suite trước final PC↔ledger guard; affected final Finance/browser/qualification xác minh guard, reuse unaffected.2805priorartifacts exacthash/15sharedUI unchanged. Static/build/UI/cleanup PASS,10existingCSSwarnings. Lock không đổi; advisory picomatch4.0.7 còn mở, không nâng dependencies hoặc waive.
+
+Khóa allfund/allprior có common DB control fence, preview5min/immutableKS; voidPC đối ứng nguyên kỳ, mộtPC/proposal kể cả sauvoid; W09/W10 totals không ghi reversal thành income. Main schema/index/Policy23 chưa áp; thay key payment-ledger unique index cần maintenance/backup/activation riêng. E51-01USER_WAIVED và UI-POSTP8-01AFTER_P8 giữ nguyên. Physical/Safari/UAT/mainruntime/pilot/remoteCI/production/multi-replica/independent review NOT_RUN; no productionSLA/restoreclaim. Không publication/main/realdata/worktree/delegation. Trạng thái hiện hành duy nhất ở project-state; phần dưới giữ chronology.
+
+## P5.5 — implementation được duyệt — 2026-11-18
+
+Khiêm duyệt P5.5-plan-r1/C55-01–03/ASCII và trọn P55-01–05 local/synthetic; [task/authority](tasks/CHURCH-P5.5.md). Code/wiring trước tests; một handoff rồi dừng P5.6. P5.4-r1 HUMAN_ACCEPTED5/5, E51-01 USER_WAIVED và UI-POSTP8-01 AFTER_P8 giữ nguyên. Không publication/main/realdata/worktree/delegation. Các ghi nhận planning-only bên dưới là lịch sử.
+
+## Nghiệm thu P5.4-r1; mở planning P5.5 — 2026-11-18
+
+Khiêm: **“Nghiệm thu P5.4-r1 theo năm mục checklist. Mở kế hoạch chi tiết P5.5 để duyệt trước coding. Giữ E51-01 đã bỏ qua và vấn đề canh nút xử lý sau P8.”** P54-01–05 **HUMAN_ACCEPTED đủ5/5 local/synthetic**. [Task/checklist](tasks/CHURCH-P5.4.md) và [Human acceptance](engineering/skill-usage/records/CHURCH-P5/P5.4-human-acceptance-1.json) ghi quyết định sau implementation/1. Verification/manifest/implementation/self-review gốc giữ nguyên trạng thái tại handoff; không rewrite technical snapshot thành nghiệm thu, không chạy lại tests/runtime. Source/dependencies/dist không đổi; chưa released/publication/deploy/realdata/mainDBread/init/restart3443.
+
+P5.5 — Khóa sổ và điều chỉnh chỉ **PLANNING_ONLY trong chat**, trình P5.5-plan-r1/C55/quyền/khóa kỳ/sửa sai/ASCII để duyệt trước coding. Chưa duyệt contracts, schema/API/UI hoặc implementation; chưa tạo task/engineering contract/planning journal P5.5. P5.6 chưa mở.
+
+Giữ **E51-01 USER_WAIVED**, original chưa recovered, không troubleshoot tiếp. Giữ **UI-POSTP8-01 USER_DEFERRED_AFTER_P8**, không sửa canh nút trong P5.5–P8. UNKNOWN/NOT_RUN và giới hạn local/synthetic giữ nguyên. Trạng thái hiện hành duy nhất ở project-state; các ghi nhận phía dưới là lịch sử.
+
+## P5.4-r1 — source hoàn tất, bàn giao local/synthetic — 2026-11-17
+
+[Task/checklist](tasks/CHURCH-P5.4.md), [contracts](engineering/P5.4-payments.md), [verification](../output/p5.4/verification.json). P54-01–05 source complete/PASS local-synthetic, **chờ nghiệm thu năm mục, dừng trước P5.5**.448tests/6547assertions, Finance64tests/1030assertions;1395browserchecks (P54:387+P52:379+P53:488+P51:141),12plans/32HTTPSjourneys/22retryresponses/0terminalerrors. Static/build/UI/audit/cleanup/hashPASS;10existingCSSwarnings.2279priorartifacts/journals exacthash,15sharedUI unchanged.
+
+Finance sở hữu payment PC và mixed ledger source riêng; approved→paid atomic/onePC, exact current book guard dùng chung post/void/pay, không opening nhập tay, không actual bank payment. netIncome giữ nghĩa thu ròng; W09 thêm netExpense/opening/closing. Main schema/index/Policy22 chưa áp; index replacement cần maintenance riêng. P5.3-r1 HUMAN_ACCEPTED5/5; E51-01 USER_WAIVED và UI-POSTP8-01 AFTER_P8 giữ nguyên. Chưa humanaccepted/released/publication/realdata; UNKNOWN/NOT_RUN và giới hạn local workload giữ nguyên. Trạng thái hiện hành duy nhất ở project-state; phần dưới là lịch sử.
+
+## P5.4 — implementation được duyệt — 2026-11-17
+
+Khiêm duyệt P5.4-plan-r1/C54-01–03/ASCII và trọn P54-01–05 local/synthetic; [task/authority](tasks/CHURCH-P5.4.md). Code/wiring toàn gói trước tests, một handoff rồi dừng P5.5. Không publication/mainDBread/init/restart3443/realdata. P5.3-r1 HUMAN_ACCEPTED5/5; E51-01 USER_WAIVED, UI-POSTP8-01 AFTER_P8 giữ nguyên. Các ghi nhận planning-only trước đó là lịch sử.
+
+## Nghiệm thu P5.3-r1; mở planning P5.4 — 2026-11-17
+
+Khiêm: **“Nghiệm thu P5.3-r1 theo năm mục checklist. Mở kế hoạch chi tiết P5.4 để duyệt trước coding. Giữ E51-01 đã bỏ qua và vấn đề canh nút xử lý sau P8.”** P53-01–05 **HUMAN_ACCEPTED đủ5/5 local/synthetic**. [Task/checklist](tasks/CHURCH-P5.3.md) và [Human acceptance](engineering/skill-usage/records/CHURCH-P5/P5.3-human-acceptance-1.json) ghi nhận quyết định sau implementation/1; technical verification/manifest/implementation/self-review gốc giữ nguyên trạng thái tại handoff, không rewrite thành nghiệm thu hoặc chạy lại runtime. Source/dependencies/dist không đổi; chưa released, không publication/deploy/real data/main DB read/init/restart3443.
+
+P5.4 — Phiếu chi và sổ thu chi chỉ **PLANNING_ONLY trong chat**, trình P5.4-plan-r1/C54/quyền/số dư/kỳ/ASCII để duyệt trước coding. Chưa duyệt contracts, schema/API/UI hoặc implementation; chưa tạo task/engineering contract/planning journal P5.4. P5.5/P5.6 chưa mở.
+
+Giữ **E51-01 USER_WAIVED**, original chưa recovered và không troubleshoot tiếp. Giữ **UI-POSTP8-01 USER_DEFERRED_AFTER_P8**, không sửa canh nút trong P5.4–P8. Prior UNKNOWN/NOT_RUN và giới hạn local/synthetic giữ nguyên. Trạng thái hiện hành duy nhất tại project-state; các ghi nhận phía dưới là lịch sử.
+
+## P5.3-r1 — source hoàn tất, bàn giao local/synthetic — 2026-11-17
+
+[Task/checklist](tasks/CHURCH-P5.3.md), [contracts](engineering/P5.3-expenses.md), [verification](../output/p5.3/verification.json). P53-01–05 hoàn tất source/behavior PASS local/synthetic; human acceptance/release là gates riêng. Dừng trước P5.4; không thanh toán hoặc ghi sổ từ duyệt. Giữ E51-01 USER_WAIVED, UI-POSTP8-01 AFTER_P8 và prior1713protectedbytes. Live state duy nhất ở project-state; chi tiết outcome/evidence trong task.
+
+
+## P5.3 — implementation được duyệt — 2026-11-17
+
+Khiêm duyệt P5.3-plan-r1/C53-01–03/ASCII và trọn P53-01–05 local/synthetic; [task/authority](tasks/CHURCH-P5.3.md). Code/wiring toàn gói trước tests; một handoff rồi dừng P5.4. Không publication/realdata/mainDBread/init/restart3443. Giữ P5.2HUMAN_ACCEPTED/E51-01USER_WAIVED/UI-POSTP8-01_AFTER_P8; không sửa alignment hay troubleshoot E51-01. Các ghi nhận planning-only phía dưới là chronology.
+
+
+## Nghiệm thu P5.2-r1; mở planning P5.3 — 2026-11-17
+
+Theo Khiêm, P52-01–05 **HUMAN_ACCEPTED đủ5/5 local/synthetic**; [acceptance và note UI](tasks/CHURCH-P5.2.md#ui-postp8-01). **UI-POSTP8-01**: nút canh giữa với Field làm nút/ô nhập nhìn lệch; ghi lại để xử lý **sau P8**, không sửa trong lượt này. Đây là deferred UI followup, không mở lại acceptance P5.2. Giữ E51-01 USER_WAIVED, không recovered/troubleshoot tiếp.
+
+P5.3 Đề xuất và phê duyệt chi chỉ **PLANNING_ONLY trong chat** để chốt C53/quyền/workflow/ASCII trước coding; chưa application/schema/tests/implementation P5.3 hoặc UI alignment fix. Không publication/realdata/mainDBread/init/restart3443; giữ technical receipts/journals/source/dist và UNKNOWN/NOT_RUN. Trạng thái hiện hành duy nhất tại project-state.
+
+
+## P5.2-r1 — source hoàn tất, bàn giao local/synthetic — 2026-11-17
+
+[Task/checklist năm mục](tasks/CHURCH-P5.2.md), [contracts](engineering/P5.2-income.md), [verification](../output/p5.2/verification.json). P52-01–05: nguồn hoàn chỉnh, behavior PASS local/synthetic; human acceptance và release là gates riêng. Giữ phạm vi/điểm dừng P5.3; không suy quyền từ technical PASS. Snapshot hiện có 1386 file giữ đúng hash; E51-01 USER_WAIVED, không recovered. Chi tiết kết quả ở task; live status duy nhất ở project-state.
+
+
+## P5.2 — authority implementation — 2026-11-17
+
+Khiêm: **“Duyệt P5.2-plan-r1, C52-01–03 và ASCII. Cho phép triển khai trọn P52-01–05 local/synthetic, bàn giao rồi dừng trước P5.3. Giữ ngoại lệ E51-01 đã bỏ qua.”** [Task/C52/ASCII/checklist](tasks/CHURCH-P5.2.md). Theo roadmap P5; một gói P52-01–05, code/wiring trước tests. Không mở P5.3/publication/commit/push/deploy/real data/main DB read/init/restart3443. E51-01 USER_WAIVED, không troubleshoot lại; giữ records cũ. Quyền planning-only P5.2 trong các ghi nhận lịch sử phía dưới đã được thay bằng approval này. Trạng thái hiện hành duy nhất tại project-state.
+
+
 Cập nhật theo planning và phê duyệt trong chat ngày 2026-11-10. Chi tiết và lịch sử thay thế: [hồ sơ P0](tasks/CHURCH-P0.md). Trạng thái hiện hành: [project-state](project-state.md).
 
 ## Mục tiêu và lựa chọn đã chốt
@@ -188,3 +273,19 @@ Policy18 owner tenant/pastor/secretary, deny lead/treasurer/member cả metadata
 ## P4.6 — giao thức kiểm chứng và phục hồi tổng hợp
 
 C46-01–03 giữ ownership/contracts P4.1–P4.5, bổ sung public cross-package workflows và qualification riêng. Backup local phải chặn request mới và drain trước fingerprint/dump, restore namespace sang UUID DB rỗng, compare toàn collections/docs/binaries/options/indexes trước revoke sessions/purge certificate_previews/rotate synthetic key. Giữ operation ledger/resource ACL và immutable histories; không auto replay qua backup cut line hoặc Redis restore/flush. P4preview digest actor/source/day không tự mất hiệu lực khi rotate key; runbook yêu cầu bỏ pending client cũ, fresh authorized receipt trước preview/confirm mới. Không recovery epoch/newproductUI/API/schema/policy hoặc production RPO/RTO/PITR. [Contracts/runbook](engineering/P4.6-qualification.md), [task](tasks/CHURCH-P4.6.md); outcomes ở project-plan, live state chỉ project-state. Đóng P4/mở P5 và publication/main maintenance cần chỉ dẫn riêng.
+
+
+## Roadmap P5 đã duyệt
+
+Ngày 2026-11-16 Khiêm duyệt P5-plan-r1: **P5.1 Quỹ và quyền tài chính → P5.2 Thu và dâng hiến → P5.3 Đề xuất và phê duyệt chi → P5.4 Phiếu chi và sổ thu chi → P5.5 Khóa sổ và điều chỉnh → P5.6 Tổng hợp và kiểm chứng tài chính**. [Danh mục/phụ thuộc/điểm dừng](tasks/CHURCH-P5.md). Mỗi gói là luồng xuyên UI/API/dữ liệu/callers, cần contracts/quyền/ASCII được duyệt trước coding và nghiệm thu/quyền mở gói sau. Định hướng Finance sở hữu dữ liệu tài chính, dùng public Members read port định danh tối thiểu và contracts Operations/Audit; bảo vệ kỳ/ghi đồng thời từ P5.2. O-D2 tiếp tục áp dụng; duyệt danh mục không chốt mapping quyền, tự duyệt, số dư, sửa sai/mở kỳ hoặc schema/API chi tiết. Thiết kế từng gói chỉ ghi sau approval tương ứng; outcomes ở project-plan, trạng thái hiện hành duy nhất ở project-state. Không tự mở P6 hoặc publication/real data/main operations.
+
+
+## P5.1 — ranh giới Finance
+
+Theo P5.1-plan-r1/C51-01–03/ASCII đã duyệt: Finance sở hữu finance_settings/funds/history; không gộp vào Organization hoặc mở money/proposals. Policy19 pastor quản lý, treasurer chỉ xem, owner/secretary/lead/member deny Finance. Config proposerRoles secretary/treasurer/lead, approverRole pastor/secretary/treasurer; không defaults/auto-init; quyền tương lai chưa endpoint. Quỹ NFC/normalized name unique trong tenant kể cả inactive, immutable ID, active↔inactive reason/CAS/history, không hard-delete. Data/history/safe audit/operation atomic; fresh auth/resource replay/receipt; general audit không name/config/reason. W12 compose theo capability; namespace pending tách riêng nhưng global intent chặn mutation mới, reauth không auto replay. W13 configured projection chỉ người có Finance ACL; static matrix không lộ live config. [Contracts/runbook](engineering/P5.1-finance.md), [task](tasks/CHURCH-P5.1.md); outcomes ở project-plan, live state chỉ project-state. Main maintenance/P5.2/publication cần authority riêng.
+
+## Nghiệm thu P5.5-r2; mở planning P5.6 — 2026-11-18
+
+Khiêm: **“nghiệm thu. mở P5.6”**. P5.5-r2 P55-01–05/UI55-01–04 HUMAN_ACCEPTED local/synthetic, đủ năm mục checklist; [task/acceptance](tasks/CHURCH-P5.5.md). Giữ E51-01 USER_WAIVED, E55-01 OPEN_NOT_WAIVED/audit FAIL, UI-POSTP8-01 AFTER_P8. Technical snapshots/manifest/journals r1/r2 không rewrite; source/dependencies/dist không đổi và không chạy lại tests/runtime.
+
+P5.6 Tổng hợp và kiểm chứng tài chính chỉ **PLANNING_ONLY trong chat**: trình C56/quyền/công thức/restore/ASCII trước coding. Chưa duyệt contracts/schema/API/UI/implementation hoặc tạo task/contract/planning journal P5.6. P5 chưa đóng/P6 chưa mở; không publication/realdata/main operations/worktree/delegation. Physical/Safari/UAT/mainruntime/production/independent review và prior UNKNOWN giữ nguyên. Trạng thái hiện hành duy nhất ở project-state; phần dưới giữ chronology.

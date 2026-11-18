@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import type { ChurchRef } from "./access-context";
 import { ApiError } from "./api";
 import { DataExchangePanel } from "./data-exchange";
+import { MemberGiving } from "./finance-income";
 import { isCardIntent, MemberCards } from "./member-cards";
 import { MemberCertificates } from "./member-certificates";
 import { MemberForm } from "./member-form";
@@ -46,6 +47,7 @@ import {
   PaginationControl,
   SectionHeader,
   Select,
+  Stack,
   TableFrame,
   Tabs,
   TextArea,
@@ -479,7 +481,7 @@ export function MembersManagement({
       {error && <Feedback tone="error">{error}</Feedback>}
       {notice && <Feedback>{notice}</Feedback>}
       {currentPending && (
-        <Card>
+        <Card spacing="content">
           <SectionHeader title="Thao tác chưa được đối soát" />
           <p>Giữ nguyên thao tác. Kiểm tra kết quả trước khi thử hoặc rời trang.</p>
           {currentPending.principalKey !== principalKey && ctx && (
@@ -1018,8 +1020,14 @@ export function MembersManagement({
                 Xem thành viên cùng hộ
               </Button>
             )}
-            <SectionHeader title="Dâng hiến" />
-            <p className="muted">Chưa khả dụng.</p>
+            {realm === "church" && ctx?.capabilities.includes("finance:receipts:read") && (
+              <MemberGiving
+                key={`giving:${selected.id}`}
+                churchId={churchId}
+                memberId={selected.id}
+                onAuthError={onAuthError}
+              />
+            )}
             {ctx?.capabilities.includes("cards:read") && (
               <MemberCards
                 key={selected.id}
@@ -1056,11 +1064,13 @@ export function MembersManagement({
                       })}{" "}
                       · {h.actorKind === "owner" ? "Nhà cung cấp" : "Người dùng Hội Thánh"}
                     </div>
-                    <p>
-                      Hiệu lực: {dayLabel(h.effectiveOn)}
-                      {h.eventDate ? ` · Ngày sự kiện: ${dayLabel(h.eventDate)}` : ""}
-                    </p>
-                    {h.reason && <p>{h.reason}</p>}
+                    <Stack space="compact">
+                      <p>
+                        Hiệu lực: {dayLabel(h.effectiveOn)}
+                        {h.eventDate ? ` · Ngày sự kiện: ${dayLabel(h.eventDate)}` : ""}
+                      </p>
+                      {h.reason && <p>{h.reason}</p>}
+                    </Stack>
                     {onFamily &&
                       typeof h.before?.familyId === "string" &&
                       typeof h.after.familyId === "string" &&

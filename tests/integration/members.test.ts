@@ -10,6 +10,7 @@ import { Database, initialize } from "../../api/infrastructure/database";
 import { RateLimit } from "../../api/infrastructure/rate-limit";
 import { businessDay } from "../../api/members/dates";
 import { Members } from "../../api/members/service";
+import { writeEvidence } from "../evidence";
 
 const conf = {
   ...config(),
@@ -858,7 +859,7 @@ describe("P2.2 real Mongo/HTTP contracts", () => {
       .explain("executionStats");
     expect(explain.executionStats.totalDocsExamined).toBe(1);
     expect(explain.executionStats.nReturned).toBe(1);
-    await Bun.write(
+    await writeEvidence(
       "output/p2.2/member-query-plan.json",
       JSON.stringify(
         { source: "302 synthetic rows; code equality only, not production SLA", plan: explain },

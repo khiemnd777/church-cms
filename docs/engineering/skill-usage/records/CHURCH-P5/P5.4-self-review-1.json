@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "event_id": "CHURCH-P5/P5.4/self-review/1",
+  "event_type": "evaluation",
+  "task_id": "CHURCH-P5",
+  "scope_id": "P5.4",
+  "recorded_at": "2026-11-17T15:25:03.167541+07:00",
+  "reported_by": "delivery_owner",
+  "source_kind": "agent_self_report",
+  "subject_event_id": "CHURCH-P5/P5.4/implementation/1",
+  "assessment_source": "agent_self_review",
+  "review_attempt": 1,
+  "decision": "PASS",
+  "findings": [],
+  "resolved_findings": [
+    {
+      "category": "IMPLEMENTATION_DEFECT",
+      "description": "Payment preview focus, paid success tone, approved timestamp and explicit cancel aligned to approved ASCII; verified with final Firefox capture.",
+      "skill_attribution": null
+    },
+    {
+      "category": "TEST_DEFECT",
+      "description": "Replay200/idempotency_operations fixture; new paid KPI/filter expectations; row/option selector ambiguity and changed P54 waiting message; uncertain assertion waits for actual committed response. Valid invariants retained.",
+      "skill_attribution": null
+    },
+    {
+      "category": "ENVIRONMENT",
+      "description": "Initial stopped Mongo/sandbox network prevented setup; restarted local Mongo/Redis under approval and ran UUID suites with cleanup.",
+      "skill_attribution": null
+    }
+  ],
+  "limits": [
+    "Self-review only; independent review NOT_RUN.",
+    "No human acceptance/release authority inferred from PASS."
+  ],
+  "evidence_refs": [
+    "docs/tasks/CHURCH-P5.4.md",
+    "docs/engineering/P5.4-payments.md",
+    "output/p5.4/verification.json",
+    "output/p5.4/preservation.json",
+    "output/p5.4/source-manifest.json"
+  ]
+}

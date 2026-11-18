@@ -5,6 +5,7 @@ import type { Config } from "../api/config";
 import { Identity } from "../api/identity/service";
 import { Database, initialize } from "../api/infrastructure/database";
 import { RateLimit } from "../api/infrastructure/rate-limit";
+import { assertComposition } from "./browser-composition";
 import { localTls } from "./local-tls";
 import { check, SyntheticClient, syntheticOwner } from "./p2-fixtures";
 import { p46Workflow } from "./p46-workflow";
@@ -62,6 +63,7 @@ async function capture(page: Page, name: string) {
     await page.emulateMedia({ colorScheme: theme });
     for (const width of [1440, 901, 900, 560, 390]) {
       await page.setViewportSize({ width, height: 1000 });
+      await assertComposition(page, `${name}-${theme}-${width}`, assert, evidence);
       await page.evaluate(async () => {
         await document.fonts.ready;
         window.scrollTo(0, 0);
