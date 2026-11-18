@@ -159,3 +159,9 @@ publication or release.
 Mọi task UI dùng [docs/ui-system.md](docs/ui-system.md) và `web/ui/components`. HTML gốc là chuẩn style; feature CSS chỉ bố trí nội dung. Không tự đặt palette/font/breakpoint hoặc override component. Chạy `bun run ui:check` cùng checks UI; đối chiếu light/dark/responsive và ghi giới hạn. Thay đổi đáng kể ngoài chuẩn cần duyệt lại phạm vi trước coding.
 
 Menu `AppShell` luôn hiển thị icon + tên mục trên desktop và drawer mobile; tooltip/aria-label không thay nhãn hiển thị. Đây là điều chỉnh đã duyệt sau phản hồi mất text UI-STD-r1.
+
+## Bố trí nội dung dùng chung — UI-COMPOSITION-r1
+
+Theo P5.5-ui-r2-plan-r1 đã duyệt, mọi UI task phải dùng spacing có chủ sở hữu: `Stack`/`ContentSection`, `Card spacing`, hoặc layout hiện hữu đã kiểm chứng. Nhóm nghiệp vụ độc lập18px, tiêu đề/nội dung12px, dòng thông tin cùng nhóm6px, theo tokens hiện có. Fragment/conditional không tạo layout; Card chỉ có padding không bảo đảm gap. Stack reset margin-block của con trực tiếp để container sở hữu khoảng cách dọc; không sửa margin ngang hoặc bố cục nội bộ. Modal/Drawer dùng content stack chung; caller nhóm metadata/actions có chủ đích, không bù bằng br/nbsp/margin rải rác.
+
+Khi thêm/sửa màn: kiểm tra trạng thái thường/loading/empty/error/pending/preview/history liên quan, đo gap giữa phần tử hiển thị thực (không chỉ computed style/overflow), xem ảnh desktop/mobile/light/dark. Chạy `bun run ui:check` và browser phù hợp. PASS chức năng không thay review thị giác. Không tự đổi source CSS/palette/font/breakpoint, không sửa Toolbar/Field alignment deferred sau P8. Chi tiết và ngoại lệ bố cục tại docs/ui-system.md#ui-composition-r1.

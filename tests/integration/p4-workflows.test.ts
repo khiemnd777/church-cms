@@ -189,19 +189,21 @@ describe("P4.6 real cross-package workflows", () => {
       expect(JSON.stringify(p.queryPlanner.winningPlan)).toContain(index);
       plans.push({ collection, plan: p.queryPlanner.winningPlan, stats: p.executionStats });
     }
-    await Bun.write(
-      "output/p4.6/history-plans.json",
-      JSON.stringify(
-        {
-          status: "PASS",
-          plans,
-          limits: [
-            "Small current source-linked histories; not deep history saturation or all filters",
-          ],
-        },
-        null,
-        2,
-      ),
-    );
+    // Evidence is opt-in and scoped by the caller; regression tests must not overwrite accepted receipts.
+    if (process.env.CHURCH_EVIDENCE_DIR)
+      await Bun.write(
+        `${process.env.CHURCH_EVIDENCE_DIR}/p4-history-plans.json`,
+        JSON.stringify(
+          {
+            status: "PASS",
+            plans,
+            limits: [
+              "Small current source-linked histories; not deep history saturation or all filters",
+            ],
+          },
+          null,
+          2,
+        ),
+      );
   });
 });

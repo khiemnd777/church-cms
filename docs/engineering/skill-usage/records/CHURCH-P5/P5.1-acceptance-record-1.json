@@ -1,0 +1,91 @@
+{
+  "schema_version": 1,
+  "event_id": "CHURCH-P5/P5.1-acceptance-record/implementation/1",
+  "event_type": "phase_handoff",
+  "task_id": "CHURCH-P5",
+  "scope_id": "P5.1-acceptance-record",
+  "recorded_at": "2026-11-16T10:01:02.510000+07:00",
+  "reported_by": "delivery_owner",
+  "source_kind": "agent_self_report",
+  "phase": "implementation",
+  "handoff_index": 1,
+  "classification": {
+    "delivery": "roadmap",
+    "complexity": "bounded_acceptance_record",
+    "ui": false
+  },
+  "authority": {
+    "approval": "Nghiệm thu P5.1-r2 theo năm mục trong checklist, giữ ngoại lệ E51-01 đã bỏ qua. Mở kế hoạch chi tiết P5.2 để duyệt trước coding.",
+    "scope": "Human accept five items of P5.1-r2 local/synthetic with E51-01 waived; open P5.2 PLANNING_ONLY in chat for approval before coding. No P5.2 implementation or P5.3+ authority/publication/main operations."
+  },
+  "skills": [
+    {
+      "skill_id": "documentation-and-adrs",
+      "contribution_summary": "Ghi nghiệm thu P51-01–05/P5.1-r2, giữ ngoại lệ E51-01 và mở P5.2 planning-only; cập nhật task/plan/state, giữ receipts/journals và snapshot bytes/hashes.",
+      "contribution_percent_estimate": 100,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/documentation-and-adrs/SKILL.md",
+        "version": null,
+        "sha256": "f3199cfec5d6fdfa6533f180b1e6cbee584cd6175d8eb25c0d186c833120609c",
+        "fingerprint_basis": "Đã đọc và áp dụng trong lượt ghi nhận acceptance; không claim native invocation."
+      }
+    }
+  ],
+  "outcome": {
+    "delivery_status": "COMPLETED",
+    "verification_level": "DOCUMENT_RECORD_AND_HASH_VALIDATION_ONLY",
+    "human_acceptance": "NOT_APPLICABLE",
+    "limitations": [
+      "No source/runtime/test changes or reruns; historical receipts and FAIL/waiver history preserved.",
+      "P5.2 contracts/ASCII/domain rules remain proposals only in chat until approved.",
+      "No release, commit/push/deploy/real data/main DB read/init/restart3443 or reopening E51-01."
+    ]
+  },
+  "measurements": {
+    "elapsed_seconds": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có counters cho acceptance record; không suy từ nội dung."
+    },
+    "tool_calls": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có counters cho acceptance record; không suy từ nội dung."
+    },
+    "input_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có counters cho acceptance record; không suy từ nội dung."
+    },
+    "output_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có counters cho acceptance record; không suy từ nội dung."
+    },
+    "cached_input_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có counters cho acceptance record; không suy từ nội dung."
+    },
+    "reasoning_output_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có counters cho acceptance record; không suy từ nội dung."
+    },
+    "client": null,
+    "model": null,
+    "effort": null,
+    "missing_context_reason": "Không có measured source cho context counters."
+  },
+  "evidence_refs": [
+    "current_chat:P5.1-r2 acceptance and P5.2 planning authorization",
+    "docs/tasks/CHURCH-P5.1.md",
+    "docs/tasks/CHURCH-P5.md",
+    "docs/project-state.md",
+    "output/p5.1/verification-r2.json",
+    "output/p5.1/evidence-integrity-disposition-r2.json",
+    "docs/engineering/skill-usage/records/CHURCH-P5/P5.1-human-acceptance-1.json"
+  ]
+}

@@ -1,4 +1,4 @@
-import { type ClientSession, type Db, MongoClient, MongoError } from "mongodb";
+import { type ClientSession, type Db, Decimal128, MongoClient, MongoError } from "mongodb";
 import { attendanceIndexes, attendanceSchemas } from "../attendance/schema";
 import { cardIndexes, cardSchemas } from "../cards/schema";
 import { careIndexes, careSchemas } from "../care/schema";
@@ -7,6 +7,11 @@ import type { Config } from "../config";
 import { exchangeIndexes, exchangeSchemas } from "../data-exchange/schema";
 import { AppError } from "../errors";
 import { familyHistorySchema, familyIndexes, familySchema } from "../families/schema";
+import { expenseIndexes, expenseSchemas } from "../finance/expenses-schema";
+import { paymentIndexes, paymentSchemas } from "../finance/payments-schema";
+import { periodIndexes, periodSchemas } from "../finance/periods-schema";
+import { financeIndexes, financeSchemas } from "../finance/schema";
+import { transactionIndexes, transactionSchemas } from "../finance/transactions-schema";
 import type { AuditEvent, Credential, Owner, Session } from "../identity/models";
 import { memberIndexes, memberSchemas } from "../members/schema";
 import { organizationSchemas } from "../organization/schema";
@@ -156,6 +161,11 @@ const common = {
   updatedAt: date,
 };
 const definitions = {
+  ...financeSchemas,
+  ...expenseSchemas,
+  ...paymentSchemas,
+  ...periodSchemas,
+  ...transactionSchemas,
   ...prayerSchemas,
   ...careSchemas,
   ...visitationSchemas,
@@ -486,6 +496,11 @@ const indexes: Record<
     partialFilterExpression?: Record<string, unknown>;
   }[]
 > = {
+  ...financeIndexes,
+  ...expenseIndexes,
+  ...paymentIndexes,
+  ...periodIndexes,
+  ...transactionIndexes,
   ...prayerIndexes,
   ...careIndexes,
   ...visitationIndexes,
@@ -611,6 +626,203 @@ export async function initialize(
   for (const [name, schema] of Object.entries(definitions)) {
     const validator = {
       $jsonSchema: { bsonType: "object", ...schema },
+      ...(name === "finance_expense_proposals"
+        ? {
+            $expr: {
+              $and: [
+                { $gte: ["$amount", Decimal128.fromString("1")] },
+                { $lte: ["$amount", Decimal128.fromString("999999999999999999")] },
+                { $eq: ["$amount", { $trunc: "$amount" }] },
+                {
+                  $cond: [
+                    { $eq: ["$state", "pending"] },
+                    {
+                      $and: [
+                        { $eq: ["$decision", null] },
+                        { $eq: ["$version", 1] },
+                        { $eq: [{ $type: "$payment" }, "missing"] },
+                      ],
+                    },
+                    {
+                      $and: [
+                        { $ne: ["$decision", null] },
+                        {
+                          $eq: [
+                            "$version",
+                            {
+                              $cond: [
+                                { $eq: ["$state", "paid"] },
+                                3,
+                                { $cond: [{ $eq: ["$state", "payment_voided"] }, 4, 2] },
+                              ],
+                            },
+                          ],
+                        },
+                        { $ne: ["$decision.actorId", "$createdBy"] },
+                        {
+                          $eq: [
+                            "$decision.action",
+                            {
+                              $cond: [
+                                { $in: ["$state", ["paid", "payment_voided"]] },
+                                "approved",
+                                "$state",
+                              ],
+                            },
+                          ],
+                        },
+                        {
+                          $cond: [
+                            { $in: ["$state", ["paid", "payment_voided"]] },
+                            {
+                              $and: [
+                                { $eq: [{ $type: "$payment.id" }, "objectId"] },
+                                { $eq: [{ $type: "$payment.code" }, "string"] },
+                                { $eq: [{ $type: "$payment.businessDate" }, "string"] },
+                                {
+                                  $eq: [
+                                    { $type: "$payment.voidedAt" },
+                                    {
+                                      $cond: [
+                                        { $eq: ["$state", "payment_voided"] },
+                                        "date",
+                                        "missing",
+                                      ],
+                                    },
+                                  ],
+                                },
+                              ],
+                            },
+                            { $eq: [{ $type: "$payment" }, "missing"] },
+                          ],
+                        },
+                        { $eq: ["$decision.contentHash", "$contentHash"] },
+                        { $eq: ["$decision.proposalVersion", 1] },
+                        {
+                          $cond: [
+                            { $eq: ["$state", "rejected"] },
+                            { $gt: [{ $strLenCP: { $ifNull: ["$decision.reason", ""] } }, 0] },
+                            true,
+                          ],
+                        },
+                      ],
+                    },
+                  ],
+                },
+              ],
+            },
+          }
+        : {}),
+      ...(name === "finance_payments"
+        ? {
+            $expr: {
+              $and: [
+                { $gte: ["$amount", Decimal128.fromString("1")] },
+                { $lte: ["$amount", Decimal128.fromString("999999999999999999")] },
+                { $eq: ["$amount", { $trunc: "$amount" }] },
+                { $eq: ["$period", { $substrBytes: ["$businessDate", 0, 7] }] },
+                { $eq: ["$decision.action", "approved"] },
+                { $eq: ["$decision.contentHash", "$contentHash"] },
+                {
+                  $cond: [
+                    { $eq: [{ $ifNull: ["$state", "posted"] }, "voided"] },
+                    {
+                      $and: [
+                        { $eq: ["$version", 2] },
+                        { $eq: [{ $type: "$voidedAt" }, "date"] },
+                        { $eq: [{ $type: "$voidedBy" }, "objectId"] },
+                        { $eq: [{ $type: "$voidHash" }, "string"] },
+                        { $eq: [{ $type: "$voidedName" }, "string"] },
+                        { $gt: [{ $strLenCP: { $ifNull: ["$voidReason", ""] } }, 0] },
+                      ],
+                    },
+                    {
+                      $and: [
+                        { $eq: ["$version", 1] },
+                        { $eq: [{ $type: "$voidedAt" }, "missing"] },
+                        { $eq: [{ $type: "$voidedBy" }, "missing"] },
+                        { $eq: [{ $type: "$voidHash" }, "missing"] },
+                        { $eq: [{ $type: "$voidReason" }, "missing"] },
+                        { $eq: [{ $type: "$voidedName" }, "missing"] },
+                      ],
+                    },
+                  ],
+                },
+                { $eq: ["$decision.proposalVersion", 1] },
+              ],
+            },
+          }
+        : {}),
+      ...(name === "finance_receipts"
+        ? {
+            $expr: {
+              $and: [
+                { $gte: ["$total", Decimal128.fromString("1")] },
+                { $lte: ["$total", Decimal128.fromString("999999999999999999")] },
+                { $eq: ["$total", { $trunc: "$total" }] },
+                { $eq: ["$period", { $substrBytes: ["$businessDate", 0, 7] }] },
+                {
+                  $cond: [
+                    { $eq: ["$mode", "aggregate"] },
+                    { $eq: [{ $size: "$lines" }, 0] },
+                    {
+                      $and: [
+                        { $gt: [{ $size: "$lines" }, 0] },
+                        { $eq: ["$total", { $sum: "$lines.amount" }] },
+                        {
+                          $allElementsTrue: {
+                            $map: {
+                              input: "$lines",
+                              as: "l",
+                              in: {
+                                $and: [
+                                  { $gte: ["$$l.amount", Decimal128.fromString("1")] },
+                                  {
+                                    $lte: [
+                                      "$$l.amount",
+                                      Decimal128.fromString("999999999999999999"),
+                                    ],
+                                  },
+                                  { $eq: ["$$l.amount", { $trunc: "$$l.amount" }] },
+                                ],
+                              },
+                            },
+                          },
+                        },
+                      ],
+                    },
+                  ],
+                },
+                {
+                  $cond: [
+                    { $eq: ["$state", "posted"] },
+                    { $and: [{ $eq: ["$voidReason", null] }, { $eq: ["$voidedAt", null] }] },
+                    { $and: [{ $ne: ["$voidReason", null] }, { $ne: ["$voidedAt", null] }] },
+                  ],
+                },
+              ],
+            },
+          }
+        : {}),
+      ...(name === "finance_ledger"
+        ? {
+            $expr: {
+              $and: [
+                { $eq: ["$amount", { $trunc: "$amount" }] },
+                { $gte: [{ $abs: "$amount" }, Decimal128.fromString("1")] },
+                { $lte: [{ $abs: "$amount" }, Decimal128.fromString("999999999999999999")] },
+                {
+                  $cond: [
+                    { $in: ["$kind", ["receipt", "payment_void"]] },
+                    { $gt: ["$amount", Decimal128.fromString("0")] },
+                    { $lt: ["$amount", Decimal128.fromString("0")] },
+                  ],
+                },
+                { $eq: ["$period", { $substrBytes: ["$businessDate", 0, 7] }] },
+              ],
+            },
+          }
+        : {}),
       ...(name === "schedule_occurrences"
         ? {
             $expr: {

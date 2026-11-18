@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "event_id": "CHURCH-P5/P5.5/human-approval/1",
+  "event_type": "evaluation",
+  "task_id": "CHURCH-P5",
+  "scope_id": "P5.5",
+  "recorded_at": "2026-11-18T08:50:38.335091+07:00",
+  "reported_by": "delivery_owner",
+  "source_kind": "human_feedback",
+  "subject_event_id": "current_chat:P5.5-plan-r1",
+  "assessment_source": "human",
+  "review_attempt": 1,
+  "decision": "ACCEPTED",
+  "findings": [],
+  "authority": {
+    "approval": "duyệt P5.5-plan-r1, C55-01–03 và ASCII, cho phép trọn P55-01–05 local/synthetic, bàn giao rồi dừng trước P5.6",
+    "scope": "P55-01–05 local/synthetic; stop before P5.6; no main/realdata/publication; E51-01 waived/UI afterP8 preserved."
+  },
+  "evidence_refs": [
+    "docs/tasks/CHURCH-P5.5.md",
+    "current_chat:P5.5-plan-r1/C55/ASCII approved"
+  ]
+}

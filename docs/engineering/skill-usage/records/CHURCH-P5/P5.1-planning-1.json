@@ -1,0 +1,113 @@
+{
+  "schema_version": 1,
+  "task_id": "CHURCH-P5",
+  "scope_id": "P5.1",
+  "recorded_at": "2026-11-16T09:40:25.648237+07:00",
+  "reported_by": "delivery_owner",
+  "event_id": "CHURCH-P5/P5.1/planning/1",
+  "event_type": "phase_handoff",
+  "source_kind": "agent_self_report",
+  "phase": "planning",
+  "handoff_index": 1,
+  "classification": {
+    "delivery": "roadmap",
+    "complexity": "financial_access_and_configuration",
+    "ui": true
+  },
+  "authority": {
+    "approval": "Duyệt P5.1-plan-r1, C51-01–03 và ASCII, cho phép triển khai trọn P51-01–05 local/synthetic, bàn giao rồi dừng trước P5.2.",
+    "scope": "P51-01–05 local/synthetic; code/wiring toàn gói trước tests; một handoff rồi dừng P5.2; không publication/real data/main DB read/init/restart3443/worktree/delegation."
+  },
+  "skills": [
+    {
+      "skill_id": "planning-and-task-breakdown",
+      "contribution_summary": "Chốt P51-01–05 trong roadmap, thứ tự code/wiring→tests, nghiệm thu và điểm dừng P5.2.",
+      "contribution_percent_estimate": 50,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/planning-and-task-breakdown/SKILL.md",
+        "version": null,
+        "sha256": "fb768e0a3d3a77f733eb613c078fb61dde0845a438c65cc095fc6448dc166d4c",
+        "fingerprint_basis": "Đã đọc và áp dụng trong planning của chat; ghi bằng thời điểm hiện tại, không bịa thời điểm quá khứ hoặc native invocation."
+      }
+    },
+    {
+      "skill_id": "spec-driven-development",
+      "contribution_summary": "Cụ thể C51-01–03: mapping quyền hiện tại/tương lai, lifecycle quỹ, cấu hình tường minh, contracts và ASCII.",
+      "contribution_percent_estimate": 35,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/spec-driven-development/SKILL.md",
+        "version": null,
+        "sha256": "c6cfb5c766c45243290d4dcfc7eb3857dbfb77556355c7960a4411762764858b",
+        "fingerprint_basis": "Đã đọc và áp dụng trong planning của chat; ghi bằng thời điểm hiện tại, không bịa thời điểm quá khứ hoặc native invocation."
+      }
+    },
+    {
+      "skill_id": "documentation-and-adrs",
+      "contribution_summary": "Ghi nhận approval task/context/plan/state; tách source, verification, acceptance và release.",
+      "contribution_percent_estimate": 15,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/documentation-and-adrs/SKILL.md",
+        "version": null,
+        "sha256": "f3199cfec5d6fdfa6533f180b1e6cbee584cd6175d8eb25c0d186c833120609c",
+        "fingerprint_basis": "Đã đọc và áp dụng trong planning của chat; ghi bằng thời điểm hiện tại, không bịa thời điểm quá khứ hoặc native invocation."
+      }
+    }
+  ],
+  "outcome": {
+    "delivery_status": "COMPLETED",
+    "verification_level": "SOURCE_REVIEW_AND_CHAT_PLAN_ONLY",
+    "human_acceptance": "ACCEPTED",
+    "limitations": [
+      "Plan/C51/ASCII được duyệt, không phải runtime acceptance/release.",
+      "Không tự mở P5.2 hoặc public/main operations."
+    ]
+  },
+  "measurements": {
+    "elapsed_seconds": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có đo counters cho planning scope; không ước lượng từ contribution."
+    },
+    "tool_calls": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có đo counters cho planning scope; không ước lượng từ contribution."
+    },
+    "input_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có đo counters cho planning scope; không ước lượng từ contribution."
+    },
+    "output_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có đo counters cho planning scope; không ước lượng từ contribution."
+    },
+    "cached_input_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có đo counters cho planning scope; không ước lượng từ contribution."
+    },
+    "reasoning_output_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có đo counters cho planning scope; không ước lượng từ contribution."
+    },
+    "client": null,
+    "model": null,
+    "effort": null,
+    "missing_context_reason": "Không có measured source cho client/model/effort."
+  },
+  "evidence_refs": [
+    "current_chat:P5.1-plan-r1/C51-01–03/ASCII",
+    "current_chat:P5.1 approval 2026-11-16",
+    "docs/tasks/CHURCH-P5.1.md",
+    "docs/engineering/P5.1-finance.md"
+  ]
+}

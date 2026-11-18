@@ -1,0 +1,133 @@
+{
+  "schema_version": 1,
+  "event_id": "CHURCH-P5/P5.5/implementation/2",
+  "event_type": "phase_handoff",
+  "task_id": "CHURCH-P5",
+  "scope_id": "P5.5",
+  "recorded_at": "2026-11-18T10:09:47.399583+07:00",
+  "reported_by": "delivery_owner",
+  "source_kind": "agent_self_report",
+  "phase": "implementation",
+  "handoff_index": 2,
+  "classification": {
+    "delivery": "roadmap",
+    "complexity": "UI composition correction and shared preventive gates after human review",
+    "ui": true
+  },
+  "authority": {
+    "approval": "Duyệt P5.5-ui-r2-plan-r1 và ASCII. Triển khai trọn UI55-01–04 local/synthetic, bổ sung rule dùng chung, rà và sửa các màn cùng lỗi, bàn giao P5.5-r2 rồi dừng trước P5.6. Giữ E51-01, E55-01 và canh nút sau P8 như đã ghi.",
+    "scope": "UI55-01–04 local/synthetic. No P5.6/main/realdata/publication/dependencies/delegation/worktree. E51-01 waived/E55-01 open/UI-POSTP8-01 deferred."
+  },
+  "skills": [
+    {
+      "skill_id": "frontend-ui-engineering",
+      "contribution_summary": "Nối primitive/semantic sections, migrate22featurefiles và shared dialog; giữ controls/logic/standard.",
+      "contribution_percent_estimate": 40,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/frontend-ui-engineering/SKILL.md",
+        "version": null,
+        "sha256": "b5c47fed383892428172bf0b9c1ed1aeab50066ff9421a87a6c344f746386495",
+        "fingerprint_basis": "Read/applied in current approved UI repair; actual bytes; no measured time/token claim."
+      }
+    },
+    {
+      "skill_id": "test-driven-development",
+      "contribution_summary": "Code/wiring trước tests; AST regression, measured gaps/negative control và browser suites thực với synthetic DB/private CA.",
+      "contribution_percent_estimate": 30,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/test-driven-development/SKILL.md",
+        "version": null,
+        "sha256": "48d85b44f5e6286ba2a7a43550083609f299aa4001391768e9da126d2db86742",
+        "fingerprint_basis": "Read/applied in current approved UI repair; actual bytes; no measured time/token claim."
+      }
+    },
+    {
+      "skill_id": "code-review-and-quality",
+      "contribution_summary": "Self-review source/caller/spacing, sửa Stats margin và preconditions/selectors stale; không independent review.",
+      "contribution_percent_estimate": 15,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/code-review-and-quality/SKILL.md",
+        "version": null,
+        "sha256": "045ed6d37f590d7ad3b2ee47c1e66ada4bbff1e9d5d232c20a4eeaa5694e39f6",
+        "fingerprint_basis": "Read/applied in current approved UI repair; actual bytes; no measured time/token claim."
+      }
+    },
+    {
+      "skill_id": "documentation-and-adrs",
+      "contribution_summary": "Rule chung, authority/state/checklist/receipts/journals/preservation/manifest và giới hạn.",
+      "contribution_percent_estimate": 15,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/documentation-and-adrs/SKILL.md",
+        "version": null,
+        "sha256": "f3199cfec5d6fdfa6533f180b1e6cbee584cd6175d8eb25c0d186c833120609c",
+        "fingerprint_basis": "Read/applied in current approved UI repair; actual bytes; no measured time/token claim."
+      }
+    }
+  ],
+  "outcome": {
+    "delivery_status": "COMPLETED",
+    "covered_scope": "UI55-01–04 only; full P5.5 dependency gate remains open",
+    "verification_level": "PASS_UI_LOCAL_SYNTHETIC",
+    "human_acceptance": "PENDING_REVIEW",
+    "limitations": [
+      "Local/synthetic Firefox/private CA only; physical/Safari/UAT/mainruntime/pilot/remoteCI/production/multi-replica/independent review NOT_RUN.",
+      "P5.5-r2 human acceptance PENDING_REVIEW; P5.6 NOT_OPENED; no publication/commit/push/deploy/main DB read/init/restart3443/realdata/dependencies/worktree/delegation.",
+      "E51-01 USER_WAIVED/original not recovered; E55-01 OPEN_NOT_WAIVED audit finding retained, no audit PASS claim; Toolbar/Field alignment UI-POSTP8-01 AFTER_P8 unchanged.",
+      "Backend466/full, Finance82 and13plans/32journeys from r1 reused, not rerun or counted as new r2 measurements; backend/integration and request/mutation calls unchanged.",
+      "Source guard checks known structural failure shapes, not every possible UX or CSS defect; rendered gap checks and visual review remain required.",
+      "Main schema/index/Policy23 not applied; index migration/maintenance and restore/P5.6 need separate authority; no production capacity/RPO/RTO claim."
+    ]
+  },
+  "measurements": {
+    "elapsed_seconds": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có measured counters cho toàn phase; không suy time/token từ logs hoặc contribution."
+    },
+    "tool_calls": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có measured counters cho toàn phase; không suy time/token từ logs hoặc contribution."
+    },
+    "input_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có measured counters cho toàn phase; không suy time/token từ logs hoặc contribution."
+    },
+    "output_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có measured counters cho toàn phase; không suy time/token từ logs hoặc contribution."
+    },
+    "cached_input_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có measured counters cho toàn phase; không suy time/token từ logs hoặc contribution."
+    },
+    "reasoning_output_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có measured counters cho toàn phase; không suy time/token từ logs hoặc contribution."
+    },
+    "client": null,
+    "model": null,
+    "effort": null,
+    "missing_context_reason": "Không có measured source cho client/model/effort."
+  },
+  "evidence_refs": [
+    "docs/tasks/CHURCH-P5.5.md",
+    "docs/ui-system.md",
+    "output/p5.5/r2/verification.json",
+    "output/p5.5/r2/composition-audit.json",
+    "output/p5.5/r2/preservation.json",
+    "output/p5.5/r2/source-manifest.json"
+  ]
+}

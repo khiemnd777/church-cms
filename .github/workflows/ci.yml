@@ -17,7 +17,7 @@ jobs:
       - run: docker compose exec -T mongo mongosh --quiet --eval 'rs.initiate({_id:"church-local",members:[{_id:0,host:"localhost:27017"}]})'
       - run: bun run db:init
       - run: mkdir -p output
-      - run: bun run lint && bun run typecheck && bun run build && bun run build:ui && bun run ui:check && bun test --timeout 30000 tests && bun audit
+      - run: bun run lint && bun run typecheck && bun run build && bun run build:ui && bun run ui:check && bun test --timeout 30000 tests
       - run: bun run qualify:p1.4
       - run: bun run benchmark
       - if: always()

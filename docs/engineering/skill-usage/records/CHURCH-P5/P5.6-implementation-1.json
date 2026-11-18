@@ -1,0 +1,161 @@
+{
+  "schema_version": 1,
+  "event_id": "CHURCH-P5/P5.6/implementation/1",
+  "event_type": "phase_handoff",
+  "task_id": "CHURCH-P5",
+  "scope_id": "P5.6",
+  "recorded_at": "2026-11-18T11:07:32.940105+07:00",
+  "reported_by": "delivery_owner",
+  "source_kind": "agent_self_report",
+  "phase": "implementation",
+  "handoff_index": 1,
+  "classification": {
+    "delivery": "roadmap",
+    "complexity": "Finance summary/exact reporting, permissions, UI, crossflow qualification and quiesced restore",
+    "ui": true
+  },
+  "authority": {
+    "approval": "duyệt P5.6-plan-r1, C56-01–03 và ASCII để cho phép triển khai trọn P56-01–05 local/synthetic, bàn giao rồi dừng trước đóng P5/mở P6.",
+    "scope": "P56-01–05 only; no main/realdata/publication/dependencies/worktree/delegation. Keep E51-01/E55-01/UI-POSTP8-01."
+  },
+  "skills": [
+    {
+      "skill_id": "incremental-implementation",
+      "contribution_summary": "Hoàn tất P56 xuyên API/ledger/UI trước tests; giữ gói và điểm dừng.",
+      "contribution_percent_estimate": 20,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/incremental-implementation/SKILL.md",
+        "version": null,
+        "sha256": "4663b276ac0d2f38be6f14a23d792783a255efe714710726af21c0f52c873359",
+        "fingerprint_basis": "Read/applied in current approved P56 implementation; actual read-only repo skill bytes; no measured efficiency claim."
+      }
+    },
+    {
+      "skill_id": "api-and-interface-design",
+      "contribution_summary": "Summary DTO/quyền/fresh fence/exact Decimal128 và source totals dùng chung.",
+      "contribution_percent_estimate": 20,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/api-and-interface-design/SKILL.md",
+        "version": null,
+        "sha256": "2550ac99404f1d52566cdd95fd809e0984eb29f1174132a864fb7beb9f688f79",
+        "fingerprint_basis": "Read/applied in current approved P56 implementation; actual read-only repo skill bytes; no measured efficiency claim."
+      }
+    },
+    {
+      "skill_id": "frontend-ui-engineering",
+      "contribution_summary": "W09 chart/chi tiết, W01 đúng quyền, shared spacing và mobile keyboard scroll.",
+      "contribution_percent_estimate": 25,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/frontend-ui-engineering/SKILL.md",
+        "version": null,
+        "sha256": "b5c47fed383892428172bf0b9c1ed1aeab50066ff9421a87a6c344f746386495",
+        "fingerprint_basis": "Read/applied in current approved P56 implementation; actual read-only repo skill bytes; no measured efficiency claim."
+      }
+    },
+    {
+      "skill_id": "test-driven-development",
+      "contribution_summary": "Regression11reporting/93Finance/full483, browser4061checks,19plans/32journeys và restore61collections.",
+      "contribution_percent_estimate": 20,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/test-driven-development/SKILL.md",
+        "version": null,
+        "sha256": "48d85b44f5e6286ba2a7a43550083609f299aa4001391768e9da126d2db86742",
+        "fingerprint_basis": "Read/applied in current approved P56 implementation; actual read-only repo skill bytes; no measured efficiency claim."
+      }
+    },
+    {
+      "skill_id": "code-review-and-quality",
+      "contribution_summary": "Self-review baseline delta/privacy/precision/focus và giới hạn; không independent review.",
+      "contribution_percent_estimate": 10,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/code-review-and-quality/SKILL.md",
+        "version": null,
+        "sha256": "045ed6d37f590d7ad3b2ee47c1e66ada4bbff1e9d5d232c20a4eeaa5694e39f6",
+        "fingerprint_basis": "Read/applied in current approved P56 implementation; actual read-only repo skill bytes; no measured efficiency claim."
+      }
+    },
+    {
+      "skill_id": "documentation-and-adrs",
+      "contribution_summary": "Contracts/runbook/task/current-state/receipts/journals/manifest và preservation.",
+      "contribution_percent_estimate": 5,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/documentation-and-adrs/SKILL.md",
+        "version": null,
+        "sha256": "f3199cfec5d6fdfa6533f180b1e6cbee584cd6175d8eb25c0d186c833120609c",
+        "fingerprint_basis": "Read/applied in current approved P56 implementation; actual read-only repo skill bytes; no measured efficiency claim."
+      }
+    }
+  ],
+  "outcome": {
+    "delivery_status": "COMPLETED",
+    "verification_level": "BEHAVIOR_VERIFIED_WITH_OPEN_DEPENDENCY_GATE",
+    "human_acceptance": "PENDING_REVIEW",
+    "limitations": [
+      "Local/synthetic Firefox/private CA only; physical/Safari/UAT/mainruntime/pilot/remoteCI/production/multi-replica/independent review NOT_RUN.",
+      "P5.6-r1 PENDING_REVIEW; P5 not closed/P6 not opened; no commit/push/deploy/main DB read/init/restart3443/realdata/dependencies/worktree/delegation.",
+      "E51-01 USER_WAIVED/original not recovered; E55-01 OPEN_NOT_WAIVED/audit high retained; UI-POSTP8-01 AFTER_P8 unchanged.",
+      "Policy24/main schema/index not applied; historical payment-ledger index replacement requires separate approved maintenance/backup/activation.",
+      "Full483 suite ran after core backend/reporting/UI wiring, before final mobile rendering repair/test-fixture serialization; final93 Finance and final browser/static cover affected code. No claim full suite rerun after those changes.",
+      "Workload one church per journey; 2/10/20 measured cases at1/5/10 workers, lower-quantile floor((n-1)*q), excludes account/payment setup; no production SLA/capacity or RPO/RTO/PITR claim.",
+      "One earlier P54 concurrent fixture setup returned409 before the intended payment race; exact cause not established. Only fixture preparation serialized; concurrent payments and all money assertions unchanged. Earlier failed log retained; no production write behavior repair claimed.",
+      "P3.4/P4.2 prior race causes remain UNKNOWN. Source composition guard/geometry checks do not prove all UX defects absent.",
+      "Restore exact comparison before session revocation/signing-key rotation; post-cut absence remains UNKNOWN and must not cause automatic money replay.",
+      "Native tall element screenshots may include the existing sticky header during capture; full-page screenshots and isolated W01/mobile-chart images provide additional visual evidence."
+    ]
+  },
+  "measurements": {
+    "elapsed_seconds": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có measured counter cho toàn phase; không suy time/token từ logs/contribution."
+    },
+    "tool_calls": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có measured counter cho toàn phase; không suy time/token từ logs/contribution."
+    },
+    "input_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có measured counter cho toàn phase; không suy time/token từ logs/contribution."
+    },
+    "output_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có measured counter cho toàn phase; không suy time/token từ logs/contribution."
+    },
+    "cached_input_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có measured counter cho toàn phase; không suy time/token từ logs/contribution."
+    },
+    "reasoning_output_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có measured counter cho toàn phase; không suy time/token từ logs/contribution."
+    },
+    "client": null,
+    "model": null,
+    "effort": null,
+    "missing_context_reason": "Không có measured source cho client/model/effort."
+  },
+  "evidence_refs": [
+    "docs/tasks/CHURCH-P5.6.md",
+    "docs/engineering/P5.6-reporting.md",
+    "output/p5.6/verification.json",
+    "output/p5.6/preservation.json",
+    "output/p5.6/source-manifest.json"
+  ]
+}

@@ -1,0 +1,159 @@
+{
+  "schema_version": 1,
+  "task_id": "CHURCH-P5",
+  "scope_id": "P5.1",
+  "recorded_at": "2026-11-16T09:44:25.390392+07:00",
+  "reported_by": "delivery_owner",
+  "event_id": "CHURCH-P5/P5.1/implementation/1",
+  "event_type": "phase_handoff",
+  "source_kind": "agent_self_report",
+  "phase": "implementation",
+  "handoff_index": 1,
+  "classification": {
+    "delivery": "roadmap",
+    "complexity": "financial_access_and_configuration",
+    "ui": true
+  },
+  "authority": {
+    "approval": "Duyệt P5.1-plan-r1/C51-01–03/ASCII; trọn P51-01–05 local/synthetic, dừng trước P5.2.",
+    "scope": "No publication/deploy/real data/main DB read/init/restart3443/worktree/delegation."
+  },
+  "skills": [
+    {
+      "skill_id": "incremental-implementation",
+      "contribution_summary": "Hoàn chỉnh Finance domain/API/schema/transport/context và UI/callers trước testphase; giữ boundary P5.1/P5.2.",
+      "contribution_percent_estimate": 20,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/incremental-implementation/SKILL.md",
+        "version": null,
+        "sha256": "4663b276ac0d2f38be6f14a23d792783a255efe714710726af21c0f52c873359",
+        "fingerprint_basis": "Read/applied in current approved package; actual file bytes at recording; no native discovery/invocation claim."
+      }
+    },
+    {
+      "skill_id": "api-and-interface-design",
+      "contribution_summary": "Contracts settings/quỹ/history/receipt, tenant/role/fresh fences, CAS/unique và atomic operations.",
+      "contribution_percent_estimate": 20,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/api-and-interface-design/SKILL.md",
+        "version": null,
+        "sha256": "2550ac99404f1d52566cdd95fd809e0984eb29f1174132a864fb7beb9f688f79",
+        "fingerprint_basis": "Read/applied in current approved package; actual file bytes at recording; no native discovery/invocation claim."
+      }
+    },
+    {
+      "skill_id": "frontend-ui-engineering",
+      "contribution_summary": "W12 composition, readonly treasurer, W13, forms/history/pending/reauth, sửa namespace defect và rendered verification.",
+      "contribution_percent_estimate": 25,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/frontend-ui-engineering/SKILL.md",
+        "version": null,
+        "sha256": "b5c47fed383892428172bf0b9c1ed1aeab50066ff9421a87a6c344f746386495",
+        "fingerprint_basis": "Read/applied in current approved package; actual file bytes at recording; no native discovery/invocation claim."
+      }
+    },
+    {
+      "skill_id": "test-driven-development",
+      "contribution_summary": "Unit/integration/rollback/concurrency/tenant/expiry, browser/regression/query/workload và repair test output isolation sau sự cố.",
+      "contribution_percent_estimate": 25,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/test-driven-development/SKILL.md",
+        "version": null,
+        "sha256": "48d85b44f5e6286ba2a7a43550083609f299aa4001391768e9da126d2db86742",
+        "fingerprint_basis": "Read/applied in current approved package; actual file bytes at recording; no native discovery/invocation claim."
+      }
+    },
+    {
+      "skill_id": "code-review-and-quality",
+      "contribution_summary": "Self-review coherent diff và evidence integrity; ghi E51-01 còn mở, không self-accept.",
+      "contribution_percent_estimate": 5,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/code-review-and-quality/SKILL.md",
+        "version": null,
+        "sha256": "045ed6d37f590d7ad3b2ee47c1e66ada4bbff1e9d5d232c20a4eeaa5694e39f6",
+        "fingerprint_basis": "Read/applied in current approved package; actual file bytes at recording; no native discovery/invocation claim."
+      }
+    },
+    {
+      "skill_id": "documentation-and-adrs",
+      "contribution_summary": "Task/contracts/runbook/state/journal/receipts và incident minh bạch; chưa đóng gate bảo toàn.",
+      "contribution_percent_estimate": 5,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/documentation-and-adrs/SKILL.md",
+        "version": null,
+        "sha256": "f3199cfec5d6fdfa6533f180b1e6cbee584cd6175d8eb25c0d186c833120609c",
+        "fingerprint_basis": "Read/applied in current approved package; actual file bytes at recording; no native discovery/invocation claim."
+      }
+    }
+  ],
+  "outcome": {
+    "delivery_status": "INCOMPLETE",
+    "verification_level": "LOCAL_SYNTHETIC_VERIFIED_WITH_EVIDENCE_INTEGRITY_FAILURE",
+    "human_acceptance": "PENDING_REVIEW",
+    "limitations": [
+      "P51-05 incomplete because accepted P4.6 history-plans original was overwritten by legacy test and not recovered.",
+      "New regression evidence does not restore old accepted evidence; original SHA256 recorded in incident.",
+      "P5.2–P5.6 not opened; no future money/giving/approval/payment/close commands enabled.",
+      "Main Finance schemas/indexes/Policy19 not applied; no main DB read/init or restart3443/publication/real data.",
+      "Physical/native Word/Safari/UAT/pilot/remoteCI/production/multi-replica/independent review NOT_RUN.",
+      "P3.4 race/P4.2 fast-fill prior exact causes UNKNOWN remain.",
+      "Workload local is not SLA/capacity/RPO/RTO/PITR; aggregate P5 restore remains P5.6.",
+      "ACL is application-level; not cryptographic isolation from infrastructure/credential administrators."
+    ]
+  },
+  "measurements": {
+    "elapsed_seconds": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "No measured counters for complete implementation phase; no estimates from contribution or content."
+    },
+    "tool_calls": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "No measured counters for complete implementation phase; no estimates from contribution or content."
+    },
+    "input_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "No measured counters for complete implementation phase; no estimates from contribution or content."
+    },
+    "output_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "No measured counters for complete implementation phase; no estimates from contribution or content."
+    },
+    "cached_input_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "No measured counters for complete implementation phase; no estimates from contribution or content."
+    },
+    "reasoning_output_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "No measured counters for complete implementation phase; no estimates from contribution or content."
+    },
+    "client": null,
+    "model": null,
+    "effort": null,
+    "missing_context_reason": "No authoritative measured source for phase client/model/effort counters."
+  },
+  "evidence_refs": [
+    "docs/tasks/CHURCH-P5.1.md",
+    "docs/engineering/P5.1-finance.md",
+    "output/p5.1/verification.json",
+    "output/p5.1/source-manifest.json",
+    "output/p5.1/evidence-integrity-incident.json"
+  ]
+}

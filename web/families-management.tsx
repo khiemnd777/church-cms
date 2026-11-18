@@ -37,6 +37,7 @@ import {
   PaginationControl,
   SectionHeader,
   Select,
+  Stack,
   TableFrame,
   TextInput,
   Toolbar,
@@ -396,7 +397,7 @@ export function FamiliesManagement({
       {!ctx && !error && <Loading />}
       {ctx && (
         <div className="family-section">
-          <Card>
+          <Card spacing="content">
             <SectionHeader title="Gia đình Hội Thánh">
               {canWrite && (
                 <IconButton
@@ -622,12 +623,16 @@ export function FamiliesManagement({
             {history?.items.map((h) => (
               <div className="family-history-item" key={h.id}>
                 <strong>{familyEventLabels[h.event] ?? "Thay đổi gia đình"}</strong>
-                <p className="small muted">
-                  {new Date(h.occurredAt).toLocaleString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" })}{" "}
-                  · {h.actorKind === "owner" ? "Nhà cung cấp" : "Người dùng Hội Thánh"} · Hiệu lực{" "}
-                  {dayLabel(h.effectiveOn)}
-                </p>
-                {h.reason && <p>{h.reason}</p>}
+                <Stack space="compact">
+                  <p className="small muted">
+                    {new Date(h.occurredAt).toLocaleString("vi-VN", {
+                      timeZone: "Asia/Ho_Chi_Minh",
+                    })}{" "}
+                    · {h.actorKind === "owner" ? "Nhà cung cấp" : "Người dùng Hội Thánh"} · Hiệu lực{" "}
+                    {dayLabel(h.effectiveOn)}
+                  </p>
+                  {h.reason && <p>{h.reason}</p>}
+                </Stack>
                 {familyHistoryChanges(h).map((line) => (
                   <p className="small" key={line}>
                     {line}
@@ -736,13 +741,15 @@ export function FamiliesManagement({
       >
         {preview && (
           <div className="family-section">
-            <p>
-              Hội Thánh {ctx?.church.name} · {ctx?.church.code}
-            </p>
-            <p>
-              Hộ nguồn: <strong>{preview.data.source.code}</strong> ·{" "}
-              {preview.data.source.areaName ?? "Chưa phân khu vực"}
-            </p>
+            <Stack space="compact">
+              <p>
+                Hội Thánh {ctx?.church.name} · {ctx?.church.code}
+              </p>
+              <p>
+                Hộ nguồn: <strong>{preview.data.source.code}</strong> ·{" "}
+                {preview.data.source.areaName ?? "Chưa phân khu vực"}
+              </p>
+            </Stack>
             {preview.data.target && (
               <p>
                 Hộ đích: <strong>{preview.data.target.code}</strong> ·{" "}

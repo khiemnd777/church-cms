@@ -13,6 +13,7 @@ import { Database, initialize } from "../../api/infrastructure/database";
 import { RateLimit } from "../../api/infrastructure/rate-limit";
 import { businessDay } from "../../api/members/dates";
 import { resourceCode } from "../../api/resource-code";
+import { writeEvidence } from "../evidence";
 
 const conf = {
   ...config(),
@@ -834,7 +835,7 @@ describe("P2.5 real Mongo/HTTP import-export", () => {
     const downloaded = await owner.call(`${xp(c)}/exports/${file.json.data.export.id}/download`);
     expect(downloaded.status).toBe(200);
     expect(csvRows(downloaded.bytes as Uint8Array, 5000).length).toBe(5001);
-    await Bun.write(
+    await writeEvidence(
       "output/p2.5/export-boundary.json",
       JSON.stringify(
         {

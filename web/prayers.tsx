@@ -37,6 +37,7 @@ import {
   PaginationControl,
   SectionHeader,
   Select,
+  Stack,
   TextInput,
   Toolbar,
 } from "./ui/components";
@@ -565,13 +566,15 @@ export function PrayersView(props: Props) {
                 updatedAt: "",
               }}
             />
-            <p>
-              {preview.visibility === "pastoral"
-                ? "Chỉ Mục sư hợp lệ trong Hội Thánh được xem."
-                : "Owner, Mục sư và Thư ký có quyền trong Hội Thánh được xem."}{" "}
-              Phạm vi khóa sau khi lưu.
-            </p>
-            {preview.reason && <p>Lý do: {preview.reason}</p>}
+            <Stack space="compact">
+              <p>
+                {preview.visibility === "pastoral"
+                  ? "Chỉ Mục sư hợp lệ trong Hội Thánh được xem."
+                  : "Owner, Mục sư và Thư ký có quyền trong Hội Thánh được xem."}{" "}
+                Phạm vi khóa sau khi lưu.
+              </p>
+              {preview.reason && <p>Lý do: {preview.reason}</p>}
+            </Stack>
             {preview.before && (
               <details>
                 <summary>Trước thay đổi</summary>

@@ -11,6 +11,7 @@ import { Database, initialize } from "../../api/infrastructure/database";
 import { RateLimit } from "../../api/infrastructure/rate-limit";
 import { Operations } from "../../api/operations/service";
 import { Tenancy } from "../../api/tenancy/service";
+import { writeEvidence } from "../evidence";
 
 const conf = {
   ...config(),
@@ -946,7 +947,7 @@ describe("P1.3 Accounts and church realm — real Mongo/Redis", () => {
         millis: plan.executionStats.executionTimeMillis,
       });
     }
-    await Bun.write(
+    await writeEvidence(
       "output/p1.4/accounts-query-explain.json",
       JSON.stringify(
         {

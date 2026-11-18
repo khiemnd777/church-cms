@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "event_id": "CHURCH-P5/P5.5/human-review/1",
+  "event_type": "evaluation",
+  "task_id": "CHURCH-P5",
+  "scope_id": "P5.5",
+  "recorded_at": "2026-11-18T09:31:01.652736+07:00",
+  "reported_by": "delivery_owner",
+  "source_kind": "human_feedback",
+  "subject_event_id": "CHURCH-P5/P5.5/implementation/1",
+  "assessment_source": "human",
+  "review_attempt": 1,
+  "decision": "CHANGES_REQUESTED",
+  "findings": [
+    {
+      "id": "UI-P55-SECTION-01",
+      "status": "OPEN",
+      "description": "User rejects cramped section composition; investigate and propose general UI/UX rule, shared layout and rendered gap regression.",
+      "image": "output/p5.5/review-1/user-section-spacing.png"
+    }
+  ],
+  "prior_open_findings": [
+    "E55-01 dependency audit high, not waived"
+  ],
+  "limits": [
+    "P5.5 not accepted; P5.6 NOT_OPENED.",
+    "Systemic UI adaptation requires amended UI plan/ASCII approval before code/rule edits.",
+    "E51-01 USER_WAIVED and UI-POSTP8-01 AFTER_P8 unchanged; section gap is a separate current defect."
+  ],
+  "evidence_refs": [
+    "output/p5.5/verification.json",
+    "output/p5.5/source-manifest.json",
+    "output/p5.5/preservation.json",
+    "docs/engineering/skill-usage/records/CHURCH-P5/P5.5-implementation-1.json",
+    "docs/engineering/skill-usage/records/CHURCH-P5/P5.5-self-review-1.json",
+    "current_chat:user_rejects_P5.5_section_spacing"
+  ]
+}

@@ -1,0 +1,66 @@
+{
+  "schema_version": 1,
+  "event_id": "CHURCH-P5/P5.3/self-review/1",
+  "event_type": "evaluation",
+  "task_id": "CHURCH-P5",
+  "scope_id": "P5.3",
+  "recorded_at": "2026-11-17T14:53:24.988046+07:00",
+  "reported_by": "delivery_owner",
+  "source_kind": "agent_self_report",
+  "subject_event_id": "CHURCH-P5/P5.3/implementation/1",
+  "assessment_source": "agent_self_review",
+  "review_attempt": 1,
+  "decision": "PASS",
+  "findings": [],
+  "resolved_findings": [
+    {
+      "category": "IMPLEMENTATION_DEFECT",
+      "description": "Ops namespace/fresh GET receipt ACL, cursor dynamic config/scope, private view narrowing and fresh-context query ordering, KPI mobile wrapping/grid order, native shell entry/missing availability guard repaired.",
+      "evidence": [
+        "output/p5.3/integration-r2.log",
+        "output/p5.3/finance-final.log",
+        "output/p5.3/browser/browser-results.json",
+        "output/p5.3/attempts"
+      ],
+      "skill_attribution": null
+    },
+    {
+      "category": "TEST_DEFECT",
+      "description": "Setup hook timeout, wrong Account DTO, login after revoked session and unverified raw logout actor-switch fixtures corrected; assertions retained and actor identity verified.",
+      "evidence": [
+        "output/p5.3/integration-r1.log",
+        "output/p5.3/finance-final.log",
+        "output/p5.3/failed-hook-cleanup.json",
+        "output/p5.3/browser/browser-results.json"
+      ],
+      "skill_attribution": null
+    },
+    {
+      "category": "REQUIREMENT_CHANGE",
+      "description": "W13 expectations now reflect approved Expense actions and current scope; owner masking/income restrictions/payment unavailability remain asserted.",
+      "evidence": [
+        "tests/integration/finance.test.ts",
+        "scripts/browser-finance.ts",
+        "output/p5.3/regression/configuration/browser-results.json"
+      ],
+      "skill_attribution": null
+    }
+  ],
+  "limits": [
+    "Local/synthetic only; source complete and verified behavior are not human acceptance or release.",
+    "No P5.4+ implementation, payment command, publication/commit/push/deploy/real data/main DB read/init/restart3443.",
+    "Main schema/indexes/Policy21 not applied. Activation needs separate authorized maintenance.",
+    "Physical/Safari/UAT/mainruntime/pilot/remoteCI/production/multi-replica/independent review NOT_RUN; restore belongs to P5.6.",
+    "E51-01 USER_WAIVED; original not recovered or further troubleshot. UI-POSTP8-01 alignment remains for after P8.",
+    "Prior P3.4 race/P4.2 fast-fill exact cause UNKNOWN remain unchanged.",
+    "Bounded local workload with hot church/config/fund fences and explicit retries is not a production SLA/capacity/RPO/RTO claim.",
+    "No revocation push; current authorization is checked on requests/transactions/replay, and UI clears data on observed permission narrowing."
+  ],
+  "evidence_refs": [
+    "docs/tasks/CHURCH-P5.3.md",
+    "docs/engineering/P5.3-expenses.md",
+    "output/p5.3/verification.json",
+    "output/p5.3/preservation.json",
+    "output/p5.3/source-manifest.json"
+  ]
+}

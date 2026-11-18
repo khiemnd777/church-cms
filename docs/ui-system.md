@@ -112,3 +112,18 @@ Theo P3.1-plan-r1 đã duyệt: header/buổi/count/progress/list giữ source W
 ## P4.4 — native list semantics
 
 Theo ASCII P4.4 đã duyệt, `ContentList` dùng nguyên pattern `.list/.li/.t` của HTML nguồn, chuyển div thành ul/li cho semantics. Adapter `.ui-content-list` chỉ reset margin/padding/list-style mặc định của ul để giữ geometry; không đổi tokens/base/patterns, palette hoặc font. Visibility dùng `Choice` radio theo ASCII; feature CSS chỉ bố trí nội dung/actions. Bằng chứng UI thuộc task P4.4, chưa là human acceptance hoặc release.
+
+## UI-COMPOSITION-r1
+
+Khiêm duyệt trong P5.5-ui-r2-plan-r1/ASCII. Đây là adaptation chung cho composition, không đổi HTML source hash/tokens/base/patterns. Shared paragraph/heading margin0 vẫn giữ; container chịu trách nhiệm khoảng cách.
+
+- `Stack` mặc định `space="section"`:18px giữa các nhóm nghiệp vụ. `space="content"`:12px giữa các khối trong nhóm. `space="compact"`:6px giữa các dòng metadata. Dùng token có sẵn, không thêm số spacing riêng ở feature.
+- Stack sở hữu toàn bộ vertical rhythm: reset margin-block của con trực tiếp, giữ margin ngang và bố cục bên trong component. Điều này tránh cộng dồn gap với margin standalone của Stats/progress/header/actions; bên ngoài Stack các component giữ contract cũ.
+- `ContentSection title` tạo semantic section/heading,12px heading→body và content stack. Nhóm metadata bên trong dùng Stack compact.
+- `Card spacing="content|compact|section"` chọn layout rõ ràng cho card nhiều khối. Card có SectionHeader + một body layout hiện hữu giữ12px header/body; card KPI/source pattern, AuthCard (brand/heading/form, gap16 đã có) và grid/table/KeyValueList giữ layout chuyên biệt. Không tự gán gap cho mọi card hay dùng margin đại trà.
+- Modal/Drawer dùng shared `ui-dialog-content` Stack section cho các trạng thái/nội dung độc lập. Caller nhóm các dòng mô tả liên quan bằng Stack compact; nhóm hành động dùng DialogActions/layout actions hiện có. Form trong dialog đã có gap12. Heading dialog giữ contract riêng, không đổi Toolbar/Field alignment AFTER_P8.
+- Không coi Fragment, conditional, map hoặc một wrapper rỗng là layout. Không dùng br, nbsp hoặc margin theo từng dòng để che lỗi. Không dựng nested Card chỉ để thêm gap.
+
+Gate source sẽ kiểm Card nhiều khối thiếu spacing/layout rõ ràng; exceptions phải có cấu trúc/layout thực và lý do, không blanket disable. Modal/Drawer được bảo đảm ở renderer chung. Gate áp dụng cả shared components/reference; EmptyState có action dùng content gap12 và nhóm action riêng, còn EmptyState không có action giữ markup trước đó. Source guard không hiểu đầy đủ ý nghĩa của mọi nhóm; gate rendered phải đo khoảng cách thật giữa các phần tử đang hiển thị và xem ảnh, bao gồm các nhánh conditional của luồng được thay đổi. Source/functional PASS không là visual acceptance.
+
+Mỗi UI handoff nêu các vùng/states đã đo, actual gaps, ảnh desktop/mobile/light/dark và giới hạn chưa kiểm tra. Giữ technical receipts lịch sử; không rewrite PASS cũ thành bằng chứng cho revision mới.

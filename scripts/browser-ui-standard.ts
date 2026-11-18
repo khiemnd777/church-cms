@@ -2,6 +2,7 @@ import { createHash } from "node:crypto";
 import { mkdir, readdir, readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { firefox, type Page } from "@playwright/test";
+import { assertComposition } from "./browser-composition";
 import { localTls } from "./local-tls";
 
 const evidence = process.env.CHURCH_EVIDENCE_DIR ?? "output/p1.3";
@@ -212,7 +213,56 @@ try {
       `${width}-standalone-Field-label-control-source-gap5`,
     );
   }
+  for (const theme of ["light", "dark"] as const) {
+    await actual.emulateMedia({ colorScheme: theme });
+    for (const width of [1440, 901, 900, 560, 390]) {
+      await actual.setViewportSize({ width, height: 1000 });
+      const measured = await assertComposition(
+        actual,
+        `reference-${theme}-${width}`,
+        assert,
+        evidence,
+      );
+      const emptyGeometry = await actual
+        .locator(".empty")
+        .filter({ hasText: "Chưa có dữ liệu Hội Thánh để hiển thị." })
+        .evaluate((el) => {
+          const message = el.querySelector("p"),
+            actions = el.querySelector(".ui-empty-actions"),
+            button = actions?.querySelector("button");
+          if (!message || !actions || !button) return null;
+          const m = message.getBoundingClientRect(),
+            a = actions.getBoundingClientRect(),
+            b = button.getBoundingClientRect();
+          return {
+            gap: a.top - m.bottom,
+            centered: Math.abs((b.left + b.right) / 2 - (a.left + a.right) / 2) < 1,
+          };
+        });
+      assert(
+        !!emptyGeometry && Math.abs(emptyGeometry.gap - 12) < 1 && emptyGeometry.centered,
+        `reference-${theme}-${width}-empty-action-gap12-and-centered`,
+      );
+      assert(
+        [6, 12, 18].every((gap) => measured.gaps.some((g) => g.expected === gap)),
+        `reference-${theme}-${width}-all-spacing-levels-nonvacuous`,
+      );
+    }
+  }
+  const badSpacing = await actual.addStyleTag({
+    content: '[data-ui="composition-reference"].ui-stack { gap: 0 !important; }',
+  });
+  const negative = await assertComposition(
+    actual,
+    "negative-zero-gap",
+    () => {},
+    `${evidence}/negative-control`,
+  );
+  assert(negative.issues.length > 0, "composition-negative-control-detects-zero-gap");
+  await badSpacing.evaluate((node) => node.parentNode?.removeChild(node));
+  await assertComposition(actual, "reference-restored", assert, evidence);
   await actual.setViewportSize({ width: 1440, height: 1000 });
+  await actual.emulateMedia({ colorScheme: "light" });
   const light = await style(actual, "body", ["background-color", "color"]);
   await actual.emulateMedia({ colorScheme: "dark" });
   const dark = await style(actual, "body", ["background-color", "color"]);

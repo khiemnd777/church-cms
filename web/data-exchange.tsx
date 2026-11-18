@@ -30,6 +30,7 @@ import {
   Loading,
   SectionHeader,
   Select,
+  Stack,
   TableFrame,
   TextArea,
   TextInput,
@@ -258,8 +259,12 @@ export function DataExchangePanel(props: Props) {
             {currentPending && (
               <Feedback tone="warning">
                 <div className="exchange-section">
-                  <p>Thao tác chưa được đối soát. Kiểm tra kết quả trước khi thử hoặc rời trang.</p>
-                  {!pendingMatches && <p>Phiên hiện tại không khớp người đã tạo thao tác.</p>}
+                  <Stack space="compact">
+                    <p>
+                      Thao tác chưa được đối soát. Kiểm tra kết quả trước khi thử hoặc rời trang.
+                    </p>
+                    {!pendingMatches && <p>Phiên hiện tại không khớp người đã tạo thao tác.</p>}
+                  </Stack>
                   <Button
                     disabled={busy || readBusy || !pendingMatches}
                     onClick={() => void mutation.execute(currentPending, true)}
@@ -343,25 +348,27 @@ export function DataExchangePanel(props: Props) {
                 <details>
                   <summary>Hướng dẫn mẫu nhập</summary>
                   <div className="exchange-section">
-                    <p>
-                      Mẫu chứa một hồ sơ synthetic. Thay dòng mẫu trước khi nhập. externalId là mã
-                      ổn định trong nguồn, không phải mã thuộc viên do hệ thống cấp.
-                    </p>
-                    <p>
-                      type: believer / visitor. membership (believer): member / preparatory / child;
-                      visitor để trống. gender: male / female / unknown. householdRole: head /
-                      spouse / child / relative / other.
-                    </p>
-                    <p>
-                      consent: true khi đã có căn cứ đồng ý; participation: active. baptismStatus:
-                      unknown / not_baptized / baptized. visitorStage: new / exploring / believed.
-                      assignmentMode: auto / manual; auto để trống ageMinistries.
-                    </p>
-                    <p>
-                      Gắn hộ cũ bằng familyCode; tạo hộ mới bằng familyKey chung với metadata giống
-                      nhau, tối đa một head. Không ghi đè hồ sơ/hộ hiện hữu. Chuyển trạng thái hoặc
-                      gia đình dùng màn nghiệp vụ tương ứng.
-                    </p>
+                    <Stack space="compact">
+                      <p>
+                        Mẫu chứa một hồ sơ synthetic. Thay dòng mẫu trước khi nhập. externalId là mã
+                        ổn định trong nguồn, không phải mã thuộc viên do hệ thống cấp.
+                      </p>
+                      <p>
+                        type: believer / visitor. membership (believer): member / preparatory /
+                        child; visitor để trống. gender: male / female / unknown. householdRole:
+                        head / spouse / child / relative / other.
+                      </p>
+                      <p>
+                        consent: true khi đã có căn cứ đồng ý; participation: active. baptismStatus:
+                        unknown / not_baptized / baptized. visitorStage: new / exploring / believed.
+                        assignmentMode: auto / manual; auto để trống ageMinistries.
+                      </p>
+                      <p>
+                        Gắn hộ cũ bằng familyCode; tạo hộ mới bằng familyKey chung với metadata
+                        giống nhau, tối đa một head. Không ghi đè hồ sơ/hộ hiện hữu. Chuyển trạng
+                        thái hoặc gia đình dùng màn nghiệp vụ tương ứng.
+                      </p>
+                    </Stack>
                   </div>
                 </details>
                 <details>
@@ -726,11 +733,13 @@ export function DataExchangePanel(props: Props) {
             )}
             {mode === "export" && canExport && (
               <>
-                <p>
-                  Áp dụng bộ lọc hiện tại trên server, tối đa 5.000 hồ sơ và 5 MiB. Không chỉ xuất
-                  trang đang hiển thị.
-                </p>
-                <p>Bộ lọc: {props.filterSummary || "Mặc định danh sách hiện tại"}</p>
+                <Stack space="compact">
+                  <p>
+                    Áp dụng bộ lọc hiện tại trên server, tối đa 5.000 hồ sơ và 5 MiB. Không chỉ xuất
+                    trang đang hiển thị.
+                  </p>
+                  <p>Bộ lọc: {props.filterSummary || "Mặc định danh sách hiện tại"}</p>
+                </Stack>
                 <Field label="Định dạng xuất">
                   <Select
                     value={format}

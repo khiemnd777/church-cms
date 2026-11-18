@@ -838,7 +838,7 @@ function RitesLedger({
                 <Loading />
               ) : (
                 history.items.map((h) => (
-                  <Card key={h.id}>
+                  <Card spacing="content" key={h.id}>
                     <SectionHeader
                       title={`${h.event === "profile_baptism_changed" ? "Thông tin hồ sơ thay đổi" : h.event === "created" ? "Tạo bản ghi" : "Đính chính"} · ${new Date(h.occurredAt).toLocaleString("vi-VN")}`}
                     />

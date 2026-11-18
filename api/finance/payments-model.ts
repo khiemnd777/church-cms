@@ -1,0 +1,31 @@
+import type { Decimal128, ObjectId } from "mongodb";
+import type { ExpenseDecision } from "./expenses-model";
+export interface Payment {
+  _id: ObjectId;
+  churchId: ObjectId;
+  code: string;
+  proposalId: ObjectId;
+  proposalCode: string;
+  proposalVersion: number;
+  contentHash: string;
+  submissionId: string;
+  payloadHash: string;
+  actorId: ObjectId;
+  actorName: string;
+  businessDate: string;
+  period: string;
+  fundId: ObjectId;
+  fundName: string;
+  fundNameAtPayment: string;
+  amount: Decimal128;
+  purpose: string;
+  decision: ExpenseDecision;
+  createdAt: Date;
+  version: number;
+  state?: "posted" | "voided";
+  voidReason?: string;
+  voidedAt?: Date;
+  voidedBy?: ObjectId;
+  voidedName?: string;
+  voidHash?: string;
+}

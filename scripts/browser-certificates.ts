@@ -8,6 +8,7 @@ import { Identity } from "../api/identity/service";
 import { Database, initialize } from "../api/infrastructure/database";
 import { RateLimit } from "../api/infrastructure/rate-limit";
 import type { Member } from "../api/members/models";
+import { assertComposition } from "./browser-composition";
 import { localTls } from "./local-tls";
 import { seedP2 } from "./p2-fixtures";
 import { certificateFixture, riteFixture } from "./p35-fixtures";
@@ -101,6 +102,7 @@ async function capture(name: string, subject = page) {
     await subject.emulateMedia({ colorScheme: theme });
     for (const width of [1440, 901, 900, 560, 390]) {
       await subject.setViewportSize({ width, height: 1000 });
+      await assertComposition(subject, `${name}-${theme}-${width}`, assert, evidence);
       await subject.evaluate(async () => {
         await document.fonts.ready;
         window.scrollTo(0, 0);

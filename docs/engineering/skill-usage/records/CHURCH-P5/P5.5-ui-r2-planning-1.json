@@ -1,0 +1,127 @@
+{
+  "schema_version": 1,
+  "event_id": "CHURCH-P5/P5.5-ui-r2/planning/1",
+  "event_type": "phase_handoff",
+  "task_id": "CHURCH-P5",
+  "scope_id": "P5.5-ui-r2",
+  "recorded_at": "2026-11-18T09:49:25.845725+07:00",
+  "reported_by": "delivery_owner",
+  "source_kind": "agent_self_report",
+  "phase": "planning",
+  "handoff_index": 1,
+  "classification": {
+    "delivery": "roadmap",
+    "complexity": "systemic UI composition correction within P5.5 human review",
+    "ui": true
+  },
+  "authority": {
+    "approval": "Duyệt P5.5-ui-r2-plan-r1 và ASCII. Triển khai trọn UI55-01–04 local/synthetic, bổ sung rule dùng chung, rà và sửa các màn cùng lỗi, bàn giao P5.5-r2 rồi dừng trước P5.6. Giữ E51-01, E55-01 và canh nút sau P8 như đã ghi.",
+    "scope": "UI55-01–04 local/synthetic. No P5.6/main/realdata/publication/dependencies/delegation/worktree. E51-01 waived/E55-01 open/UI-POSTP8-01 deferred."
+  },
+  "skills": [
+    {
+      "skill_id": "debugging-and-error-recovery",
+      "contribution_summary": "Xác minh Card/paragraph reset và gap thiếu; phân biệt gate cũ với visual acceptance.",
+      "contribution_percent_estimate": 35,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/debugging-and-error-recovery/SKILL.md",
+        "version": null,
+        "sha256": "9f42e9d582ae78e42e1b4e65ef2c4848f4debed2f2a9092037387d572ea5d358",
+        "fingerprint_basis": "Read/applied during current UI repair plan; recorded after explicit approval, no earlier timestamp or measured-cost claim."
+      }
+    },
+    {
+      "skill_id": "frontend-ui-engineering",
+      "contribution_summary": "Đề xuất Stack/ContentSection, token6/12/18 và ASCII đã duyệt.",
+      "contribution_percent_estimate": 35,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/frontend-ui-engineering/SKILL.md",
+        "version": null,
+        "sha256": "b5c47fed383892428172bf0b9c1ed1aeab50066ff9421a87a6c344f746386495",
+        "fingerprint_basis": "Read/applied during current UI repair plan; recorded after explicit approval, no earlier timestamp or measured-cost claim."
+      }
+    },
+    {
+      "skill_id": "planning-and-task-breakdown",
+      "contribution_summary": "UI55-01–04, migration cùng lỗi, phạm vi/acceptance/điểm dừng P5.6.",
+      "contribution_percent_estimate": 20,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/planning-and-task-breakdown/SKILL.md",
+        "version": null,
+        "sha256": "fb768e0a3d3a77f733eb613c078fb61dde0845a438c65cc095fc6448dc166d4c",
+        "fingerprint_basis": "Read/applied during current UI repair plan; recorded after explicit approval, no earlier timestamp or measured-cost claim."
+      }
+    },
+    {
+      "skill_id": "documentation-and-adrs",
+      "contribution_summary": "Ghi nhận CHANGES_REQUESTED và nguồn rule/state đúng quyền.",
+      "contribution_percent_estimate": 10,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/documentation-and-adrs/SKILL.md",
+        "version": null,
+        "sha256": "f3199cfec5d6fdfa6533f180b1e6cbee584cd6175d8eb25c0d186c833120609c",
+        "fingerprint_basis": "Read/applied during current UI repair plan; recorded after explicit approval, no earlier timestamp or measured-cost claim."
+      }
+    }
+  ],
+  "outcome": {
+    "delivery_status": "COMPLETED",
+    "verification_level": "SOURCE_INVESTIGATION_AND_APPROVED_ASCII",
+    "human_acceptance": "ACCEPTED",
+    "limitations": [
+      "Acceptance here is approval of UI repair plan, not product acceptance/release.",
+      "Record written now after approval; read-only planning stayed in chat until approval.",
+      "E51-01 waived/E55-01 open/UI-POSTP8-01 AFTER_P8; P5.6 NOT_OPENED."
+    ]
+  },
+  "measurements": {
+    "elapsed_seconds": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có measured counters cho toàn phase; không suy time/token từ logs hoặc contribution."
+    },
+    "tool_calls": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có measured counters cho toàn phase; không suy time/token từ logs hoặc contribution."
+    },
+    "input_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có measured counters cho toàn phase; không suy time/token từ logs hoặc contribution."
+    },
+    "output_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có measured counters cho toàn phase; không suy time/token từ logs hoặc contribution."
+    },
+    "cached_input_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có measured counters cho toàn phase; không suy time/token từ logs hoặc contribution."
+    },
+    "reasoning_output_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có measured counters cho toàn phase; không suy time/token từ logs hoặc contribution."
+    },
+    "client": null,
+    "model": null,
+    "effort": null,
+    "missing_context_reason": "Không có measured source cho client/model/effort."
+  },
+  "evidence_refs": [
+    "docs/tasks/CHURCH-P5.5.md",
+    "docs/engineering/skill-usage/records/CHURCH-P5/P5.5-human-review-1.json",
+    "docs/engineering/skill-usage/records/CHURCH-P5/P5.5-ui-r2-human-approval-1.json",
+    "output/p5.5/r2/composition-audit.json"
+  ]
+}

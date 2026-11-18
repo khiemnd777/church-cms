@@ -2,10 +2,20 @@ import { useEffect, useState } from "react";
 import type { OverviewDto, OverviewTarget } from "../api/overview/contracts";
 import type { ChurchRef } from "./access-context";
 import { ApiError } from "./api";
+import { FinanceOverview } from "./finance-summary";
 import { dayLabel } from "./members-api";
 import { dateLabel, riteNames } from "./rites-api";
 import { authErrorCodes, type TenantRealm, tenantRequest } from "./tenant-mutation";
-import { Badge, Button, Card, Feedback, IconButton, Loading, SectionHeader } from "./ui/components";
+import {
+  Badge,
+  Button,
+  Card,
+  Feedback,
+  IconButton,
+  Loading,
+  SectionHeader,
+  Stack,
+} from "./ui/components";
 import {
   OverviewBar,
   OverviewHero,
@@ -199,6 +209,15 @@ export function OverviewView({
               </div>
             </Card>
           </section>
+          {realm === "church" && (
+            <FinanceOverview
+              key={churchId}
+              churchId={churchId}
+              refresh={reload}
+              fail={onAuthError}
+              onOpen={() => onNavigate({ kind: "giving" })}
+            />
+          )}
           <section className="grid g2">
             <Card>
               <SectionHeader title="Thân hữu">
@@ -366,7 +385,7 @@ export function OverviewView({
             </div>
           </Card>
           <section className="grid g-73">
-            <Card>
+            <Card spacing="content">
               <SectionHeader title="Hiện diện thờ phượng 12 Chúa nhật gần nhất" />
               <AttendanceChart
                 value={value.attendance}
@@ -398,15 +417,17 @@ export function OverviewView({
                   <b>{value.classes.enrollments}</b> lượt ghi danh đang học
                 </p>
                 {link("Mở lớp dự bị", () => onNavigate({ kind: "rites", tab: "class" }))}
-                <p>
-                  Lời cầu thay đang theo dõi được phép xem: <b>{value.prayers?.active ?? "—"}</b>
-                </p>
-                <p>
-                  Đề nghị chăm sóc chờ duyệt: <b>{value.care?.pending ?? "—"}</b> ·{" "}
-                  {value.care?.lastEvaluatedAt
-                    ? `Đánh giá lần cuối: ${new Date(value.care.lastEvaluatedAt).toLocaleString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" })}${value.care.complete ? "" : " · Chưa xong các lô"}`
-                    : "Chưa đánh giá nguồn"}
-                </p>
+                <Stack space="compact">
+                  <p>
+                    Lời cầu thay đang theo dõi được phép xem: <b>{value.prayers?.active ?? "—"}</b>
+                  </p>
+                  <p>
+                    Đề nghị chăm sóc chờ duyệt: <b>{value.care?.pending ?? "—"}</b> ·{" "}
+                    {value.care?.lastEvaluatedAt
+                      ? `Đánh giá lần cuối: ${new Date(value.care.lastEvaluatedAt).toLocaleString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" })}${value.care.complete ? "" : " · Chưa xong các lô"}`
+                      : "Chưa đánh giá nguồn"}
+                  </p>
+                </Stack>
                 {link("Mở đề nghị chăm sóc", () =>
                   onNavigate({ kind: "care", section: "suggestions" }),
                 )}
@@ -453,7 +474,7 @@ export function OverviewView({
                 </p>
               </div>
             </Card>
-            <Card>
+            <Card spacing="content">
               <SectionHeader title="Lễ nghi gần đây" />
               {!value.rites.recent.length && <p>Chưa có lễ đã ghi nhận.</p>}
               <div className="list">

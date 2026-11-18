@@ -6,6 +6,8 @@
     "Wordless W01–W18 and owner mockups",
     "Native dialog accessibility, source appearance preserved",
     "Unavailable counters compact; unavailable actions secondary",
-    "Local font files; no demo controls or demo business logic"
+    "Local font files; no demo controls or demo business logic",
+    "UI-COMPOSITION-r1: explicit Stack/ContentSection/Card spacing and shared Modal/Drawer content; approved P5.5-ui-r2-plan-r1; original source CSS/hash unchanged",
+    "P5.6-plan-r1: source W09 monthly income chart adapted to exact real summary data and accessible details; no source stylesheet/hash change"
   ]
 }

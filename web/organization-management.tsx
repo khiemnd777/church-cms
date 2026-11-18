@@ -27,6 +27,7 @@ import {
   PaginationControl,
   SectionHeader,
   Select,
+  Stack,
   TableFrame,
   TextArea,
   TextInput,
@@ -111,7 +112,12 @@ export function OrganizationManagement({
       setRefresh((v) => v + 1);
     },
   });
-  const currentPending = pending?.churchId === churchId && pending.realm === realm ? pending : null;
+  const currentPending =
+    pending?.churchId === churchId &&
+    pending.realm === realm &&
+    (pending.path === base || pending.path.startsWith(`${base}/`))
+      ? pending
+      : null;
   const locked = busy || !!pending;
   useEffect(() => {
     const controller = new AbortController();
@@ -198,7 +204,7 @@ export function OrganizationManagement({
       {error && <Feedback tone="error">{error}</Feedback>}
       {notice && <Feedback>{notice}</Feedback>}
       {currentPending && (
-        <Card>
+        <Card spacing="content">
           <SectionHeader title="Thao tác chưa được đối soát" />
           <p>Giữ nguyên thao tác. Kiểm tra kết quả trước khi thử hoặc rời trang.</p>
           {currentPending.principalKey !== principalKey && ctx && (
@@ -353,10 +359,6 @@ export function OrganizationManagement({
               />
             </>
           )}
-          <Card>
-            <SectionHeader title="Quỹ / Đề xuất chi & phê duyệt" />
-            <p className="muted">Chưa khả dụng.</p>
-          </Card>
         </>
       )}
       <Modal
@@ -387,13 +389,15 @@ export function OrganizationManagement({
         >
           {form?.status ? (
             <>
-              <p>
-                Hội Thánh: {ctx?.church.name} · {ctx?.church.code}
-              </p>
-              <p>
-                Ban/Khu vực: <strong>{form.unit?.name}</strong>
-              </p>
-              <p>Giữ dữ liệu và lịch sử. Mục ngừng sử dụng không nhận liên kết mới.</p>
+              <Stack space="compact">
+                <p>
+                  Hội Thánh: {ctx?.church.name} · {ctx?.church.code}
+                </p>
+                <p>
+                  Ban/Khu vực: <strong>{form.unit?.name}</strong>
+                </p>
+                <p>Giữ dữ liệu và lịch sử. Mục ngừng sử dụng không nhận liên kết mới.</p>
+              </Stack>
               <Field label="Lý do" error={fields.reason}>
                 <TextArea
                   required

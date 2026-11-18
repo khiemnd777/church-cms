@@ -1,6 +1,7 @@
 import { createHash } from "node:crypto";
 import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
+import { compositionIssues } from "./ui-composition-check";
 
 // Deliberately small guard for this standard, not a general CSS linter.
 const root = join(import.meta.dir, ".."),
@@ -43,6 +44,9 @@ const features = walk(join(root, "web")).filter(
 for (const path of features) {
   const text = readFileSync(path, "utf8");
   if (path.endsWith(".tsx")) {
+    const composition = compositionIssues(path, text);
+    if (composition.length)
+      throw new Error(`${path}: UI-COMPOSITION-r1 ${JSON.stringify(composition)}`);
     if (/<(button|input|select|textarea|dialog|svg)\b/.test(text))
       throw new Error(`${path}: use the shared control primitives`);
     if (/style=|#[a-fA-F\d]{3,8}\b|rgba?\(|font-family|font-size/.test(text))
@@ -61,6 +65,10 @@ for (const path of features) {
         throw new Error(`${path}: breakpoint outside source standard`);
   }
 }
+for (const path of walk(join(root, "web/ui")).filter((p) => p.endsWith(".tsx"))) {
+  const issues = compositionIssues(path, readFileSync(path, "utf8"));
+  if (issues.length) throw new Error(`${path}: shared UI-COMPOSITION-r1 ${JSON.stringify(issues)}`);
+}
 console.info(
-  `UI-STD-r1 PASS: source SHA256 ${hash}; CSS tokens/base/patterns unchanged; ${features.length} feature files use the shared standard.`,
+  `UI-STD-r1 PASS: source SHA256 ${hash}; CSS tokens/base/patterns unchanged; ${features.length} feature files use the shared standard; UI-COMPOSITION-r1 structure checked.`,
 );

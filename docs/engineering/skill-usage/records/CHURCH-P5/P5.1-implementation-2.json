@@ -1,0 +1,109 @@
+{
+  "schema_version": 1,
+  "task_id": "CHURCH-P5",
+  "scope_id": "P5.1",
+  "recorded_at": "2026-11-16T09:55:00.968867+07:00",
+  "reported_by": "delivery_owner",
+  "event_id": "CHURCH-P5/P5.1/implementation/2",
+  "event_type": "phase_handoff",
+  "source_kind": "agent_self_report",
+  "phase": "implementation",
+  "handoff_index": 2,
+  "previous_event_id": "CHURCH-P5/P5.1/implementation/1",
+  "classification": {
+    "delivery": "roadmap",
+    "complexity": "bounded_evidence_search_and_user_waiver",
+    "ui": false
+  },
+  "authority": {
+    "approval": "Tìm bản sao gốc khớp hash để khôi phục P51-05; sau tìm kiếm Khiêm chỉ dẫn: không có backup, nếu không tìm thấy thì bỏ qua issue này, không cần troubleshoot.",
+    "scope": "User stops further troubleshooting and waives E51-01 recovery requirement. No claim original restored; no full P5.1 acceptance/P5.2/publication/main operations."
+  },
+  "skills": [
+    {
+      "skill_id": "debugging-and-error-recovery",
+      "contribution_summary": "Tìm exact-hash trong evidence, lịch sử/objects/checkpoints Git, scoped chat/editor/temp/archive backups; dừng theo user waiver, không tái tạo artifact.",
+      "contribution_percent_estimate": 70,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/debugging-and-error-recovery/SKILL.md",
+        "version": null,
+        "sha256": "9f42e9d582ae78e42e1b4e65ef2c4848f4debed2f2a9092037387d572ea5d358",
+        "fingerprint_basis": "Đã đọc/áp dụng trong lượt search/disposition; hash bytes tại thời điểm lưu; không claim native invocation."
+      }
+    },
+    {
+      "skill_id": "documentation-and-adrs",
+      "contribution_summary": "Ghi waiver riêng, giữ r1 FAIL/incident, lập r2 receipt và cập nhật state/task/plan; phân biệt waiver với recovery/acceptance.",
+      "contribution_percent_estimate": 30,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/documentation-and-adrs/SKILL.md",
+        "version": null,
+        "sha256": "f3199cfec5d6fdfa6533f180b1e6cbee584cd6175d8eb25c0d186c833120609c",
+        "fingerprint_basis": "Đã đọc/áp dụng trong lượt search/disposition; hash bytes tại thời điểm lưu; không claim native invocation."
+      }
+    }
+  ],
+  "outcome": {
+    "delivery_status": "COMPLETED",
+    "verification_level": "SOURCE_HASH_VALIDATION_AND_USER_WAIVER_RUNTIME_EVIDENCE_REUSED",
+    "human_acceptance": "PENDING_REVIEW",
+    "limitations": [
+      "E51-01 waived by Khiem; original accepted P4.6 history-plans bytes remain unavailable. Preservation is waived, not PASS/restored. No further troubleshooting requested.",
+      "New regression evidence does not restore old accepted evidence; original SHA256 recorded in incident.",
+      "P5.2–P5.6 not opened; no future money/giving/approval/payment/close commands enabled.",
+      "Main Finance schemas/indexes/Policy19 not applied; no main DB read/init or restart3443/publication/real data.",
+      "Physical/native Word/Safari/UAT/pilot/remoteCI/production/multi-replica/independent review NOT_RUN.",
+      "P3.4 race/P4.2 fast-fill prior exact causes UNKNOWN remain.",
+      "Workload local is not SLA/capacity/RPO/RTO/PITR; aggregate P5 restore remains P5.6.",
+      "ACL is application-level; not cryptographic isolation from infrastructure/credential administrators."
+    ]
+  },
+  "measurements": {
+    "elapsed_seconds": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có measured counters cho toàn phase recovery/disposition; không ước lượng từ nội dung/tỷ lệ skills."
+    },
+    "tool_calls": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có measured counters cho toàn phase recovery/disposition; không ước lượng từ nội dung/tỷ lệ skills."
+    },
+    "input_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có measured counters cho toàn phase recovery/disposition; không ước lượng từ nội dung/tỷ lệ skills."
+    },
+    "output_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có measured counters cho toàn phase recovery/disposition; không ước lượng từ nội dung/tỷ lệ skills."
+    },
+    "cached_input_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có measured counters cho toàn phase recovery/disposition; không ước lượng từ nội dung/tỷ lệ skills."
+    },
+    "reasoning_output_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có measured counters cho toàn phase recovery/disposition; không ước lượng từ nội dung/tỷ lệ skills."
+    },
+    "client": null,
+    "model": null,
+    "effort": null,
+    "missing_context_reason": "Không có nguồn counters cho phase."
+  },
+  "evidence_refs": [
+    "current_chat:E51-01 search request and user waiver",
+    "output/p5.1/recovery/search-and-waiver-1.json",
+    "output/p5.1/evidence-integrity-disposition-r2.json",
+    "output/p5.1/verification-r2.json",
+    "docs/tasks/CHURCH-P5.1.md",
+    "docs/project-state.md"
+  ]
+}

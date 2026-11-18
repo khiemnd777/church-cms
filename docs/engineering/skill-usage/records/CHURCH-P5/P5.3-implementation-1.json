@@ -1,0 +1,159 @@
+{
+  "schema_version": 1,
+  "event_id": "CHURCH-P5/P5.3/implementation/1",
+  "event_type": "phase_handoff",
+  "task_id": "CHURCH-P5",
+  "scope_id": "P5.3",
+  "recorded_at": "2026-11-17T14:53:24.988046+07:00",
+  "reported_by": "delivery_owner",
+  "source_kind": "agent_self_report",
+  "phase": "implementation",
+  "handoff_index": 1,
+  "classification": {
+    "delivery": "roadmap",
+    "complexity": "financial proposal approval and dynamic authorization",
+    "ui": true
+  },
+  "authority": {
+    "approval": "Duyệt P5.3-plan-r1, C53-01–03 và ASCII, phạm vi là trọn P53-01–05 local/synthetic, bàn giao rồi dừng trước P5.4.",
+    "scope": "P53-01–05 local/synthetic; full code/wiring before tests; no P5.4+, publication, main/realdata operations or alignment fix. E51-01 USER_WAIVED and UI-POSTP8-01 AFTER_P8 remain."
+  },
+  "skills": [
+    {
+      "skill_id": "incremental-implementation",
+      "contribution_summary": "Nối trọn Expense/Identity/Finance/Ops/Audit/UI/context/callers, code/wiring trước tests.",
+      "contribution_percent_estimate": 20,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/incremental-implementation/SKILL.md",
+        "version": null,
+        "sha256": "4663b276ac0d2f38be6f14a23d792783a255efe714710726af21c0f52c873359",
+        "fingerprint_basis": "Read/applied in current approved package; actual file bytes at recording; no native invocation or measured-cost claim."
+      }
+    },
+    {
+      "skill_id": "api-and-interface-design",
+      "contribution_summary": "Dynamic resource ACL, exact money/snapshots/preview/CAS/durable dedupe và cursor config/effective-scope binding.",
+      "contribution_percent_estimate": 20,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/api-and-interface-design/SKILL.md",
+        "version": null,
+        "sha256": "2550ac99404f1d52566cdd95fd809e0984eb29f1174132a864fb7beb9f688f79",
+        "fingerprint_basis": "Read/applied in current approved package; actual file bytes at recording; no native invocation or measured-cost claim."
+      }
+    },
+    {
+      "skill_id": "frontend-ui-engineering",
+      "contribution_summary": "W10/W16 shared UI, real KPI/own scope, decisions/history/reauth/reconciliation/permission narrowing/deeplink.",
+      "contribution_percent_estimate": 25,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/frontend-ui-engineering/SKILL.md",
+        "version": null,
+        "sha256": "b5c47fed383892428172bf0b9c1ed1aeab50066ff9421a87a6c344f746386495",
+        "fingerprint_basis": "Read/applied in current approved package; actual file bytes at recording; no native invocation or measured-cost claim."
+      }
+    },
+    {
+      "skill_id": "test-driven-development",
+      "contribution_summary": "Role/tenant/self-decision/role-change/race/rollback/replay/query/validator tests, Firefox và HTTPS qualification/regression.",
+      "contribution_percent_estimate": 20,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/test-driven-development/SKILL.md",
+        "version": null,
+        "sha256": "48d85b44f5e6286ba2a7a43550083609f299aa4001391768e9da126d2db86742",
+        "fingerprint_basis": "Read/applied in current approved package; actual file bytes at recording; no native invocation or measured-cost claim."
+      }
+    },
+    {
+      "skill_id": "code-review-and-quality",
+      "contribution_summary": "Self-review phát hiện/sửa Ops namespace+ACL, cursor scope, stale UI query, KPI geometry và native entry, không claim independent review.",
+      "contribution_percent_estimate": 10,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/code-review-and-quality/SKILL.md",
+        "version": null,
+        "sha256": "045ed6d37f590d7ad3b2ee47c1e66ada4bbff1e9d5d232c20a4eeaa5694e39f6",
+        "fingerprint_basis": "Read/applied in current approved package; actual file bytes at recording; no native invocation or measured-cost claim."
+      }
+    },
+    {
+      "skill_id": "documentation-and-adrs",
+      "contribution_summary": "Task/contracts/runbook/state/receipts/manifest/journals, preserve prior evidence và user stops.",
+      "contribution_percent_estimate": 5,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/documentation-and-adrs/SKILL.md",
+        "version": null,
+        "sha256": "f3199cfec5d6fdfa6533f180b1e6cbee584cd6175d8eb25c0d186c833120609c",
+        "fingerprint_basis": "Read/applied in current approved package; actual file bytes at recording; no native invocation or measured-cost claim."
+      }
+    }
+  ],
+  "outcome": {
+    "delivery_status": "COMPLETED",
+    "verification_level": "LOCAL_SYNTHETIC_MONGO_REDIS_HTTPS_FIREFOX",
+    "human_acceptance": "PENDING_REVIEW",
+    "limitations": [
+      "Local/synthetic only; source complete and verified behavior are not human acceptance or release.",
+      "No P5.4+ implementation, payment command, publication/commit/push/deploy/real data/main DB read/init/restart3443.",
+      "Main schema/indexes/Policy21 not applied. Activation needs separate authorized maintenance.",
+      "Physical/Safari/UAT/mainruntime/pilot/remoteCI/production/multi-replica/independent review NOT_RUN; restore belongs to P5.6.",
+      "E51-01 USER_WAIVED; original not recovered or further troubleshot. UI-POSTP8-01 alignment remains for after P8.",
+      "Prior P3.4 race/P4.2 fast-fill exact cause UNKNOWN remain unchanged.",
+      "Bounded local workload with hot church/config/fund fences and explicit retries is not a production SLA/capacity/RPO/RTO claim.",
+      "No revocation push; current authorization is checked on requests/transactions/replay, and UI clears data on observed permission narrowing."
+    ]
+  },
+  "measurements": {
+    "elapsed_seconds": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có measured counters của toàn phase; không suy từ tests/time logs/contribution."
+    },
+    "tool_calls": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có measured counters của toàn phase; không suy từ tests/time logs/contribution."
+    },
+    "input_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có measured counters của toàn phase; không suy từ tests/time logs/contribution."
+    },
+    "output_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có measured counters của toàn phase; không suy từ tests/time logs/contribution."
+    },
+    "cached_input_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có measured counters của toàn phase; không suy từ tests/time logs/contribution."
+    },
+    "reasoning_output_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có measured counters của toàn phase; không suy từ tests/time logs/contribution."
+    },
+    "client": null,
+    "model": null,
+    "effort": null,
+    "missing_context_reason": "Không có measured source cho client/model/effort."
+  },
+  "evidence_refs": [
+    "docs/tasks/CHURCH-P5.3.md",
+    "docs/engineering/P5.3-expenses.md",
+    "output/p5.3/verification.json",
+    "output/p5.3/preservation.json",
+    "output/p5.3/source-manifest.json"
+  ]
+}

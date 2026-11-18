@@ -130,7 +130,14 @@ export class Operations {
     authorizeReplay?: (tx: ClientSession, op: Operation) => Promise<void>,
   ) {
     requireCondition(grant.canWrite, 403, "FORBIDDEN");
-    if (routeKey.startsWith("prayers/") || routeKey.startsWith("care/"))
+    if (
+      routeKey.startsWith("prayers/") ||
+      routeKey.startsWith("care/") ||
+      routeKey.startsWith("finance/") ||
+      routeKey.startsWith("expense-proposals/") ||
+      routeKey.startsWith("finance-payments/") ||
+      routeKey.startsWith("finance-periods/")
+    )
       requireCondition(authorizeReplay, 403, "FORBIDDEN");
     return this.executeScoped(
       grant,
@@ -255,7 +262,11 @@ export class Operations {
       | "programs"
       | "visitation"
       | "prayers"
-      | "care",
+      | "care"
+      | "finance"
+      | "expense-proposals"
+      | "finance-payments"
+      | "finance-periods",
     authorizeResource?: (tx: ClientSession, op: Operation) => Promise<void>,
   ) {
     requireCondition(grant.canWrite, 403, "FORBIDDEN");
@@ -281,6 +292,10 @@ export class Operations {
         "FORBIDDEN",
       );
       if (
+        namespace === "finance" ||
+        namespace === "expense-proposals" ||
+        namespace === "finance-payments" ||
+        namespace === "finance-periods" ||
         namespace === "care" ||
         namespace === "prayers" ||
         namespace === "visitation" ||

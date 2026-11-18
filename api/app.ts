@@ -29,12 +29,21 @@ import { DataExchange } from "./data-exchange/service";
 import { AppError, requireCondition } from "./errors";
 import { FamilyApplication } from "./families/application";
 import { Families } from "./families/service";
+import { Expenses } from "./finance/expenses";
+import type { ExpenseGrant } from "./finance/expenses-model";
+import type { FinanceGrant } from "./finance/models";
+import { Payments } from "./finance/payments";
+import { FinancePeriods } from "./finance/periods";
+import { FinanceReporting } from "./finance/reporting";
+import { Finance } from "./finance/service";
+import { FinanceTransactions } from "./finance/transactions";
 import { readFileBody, readJson } from "./http";
 import { objectId } from "./http-validation";
 import { Accounts } from "./identity/accounts";
-import { ChurchIdentity } from "./identity/church-service";
+import { type ChurchAuthContext, ChurchIdentity } from "./identity/church-service";
 import type { Realm } from "./identity/models";
 import { cookie, cookieName, type Identity, type SessionResult } from "./identity/service";
+import { FinanceMembers } from "./members/finance";
 import { Members } from "./members/service";
 import { Operations } from "./operations/service";
 import type { OrganizationGrant } from "./organization/grant";
@@ -65,6 +74,46 @@ export interface RequestInfo {
   ip: string;
 }
 const messages: Record<string, string> = {
+  EXPENSE_SELF_DECISION: "Không được tự duyệt hoặc từ chối đề xuất của chính account này.",
+  EXPENSE_ALREADY_DECIDED: "Đề xuất đã có quyết định. Tải lại để đối soát.",
+  EXPENSE_FUND_UNAVAILABLE:
+    "Quỹ đã ngừng hoặc không khả dụng. Chọn lại quỹ; đề xuất chờ vẫn có thể bị từ chối đúng quyền.",
+  EXPENSE_PREVIEW_STALE:
+    "Bản xem trước hết hạn hoặc nguồn đã thay đổi. Xem trước lại trước khi xác nhận.",
+  EXPENSE_SUBMISSION_CONFLICT:
+    "Lần gửi này đã có nội dung hoặc người gửi khác. Đối soát đề xuất hiện có.",
+  FINANCE_FUTURE_PERIOD: "Không được khóa kỳ tương lai.",
+  FINANCE_ALREADY_CLOSED: "Mốc này đã khóa. Đối soát biên bản hiện có.",
+  FINANCE_RECONCILIATION_FAILED: "Phiếu và sổ chưa khớp. Chưa thể khóa; xem kết quả đối chiếu.",
+  PERIOD_PREVIEW_STALE: "Dữ liệu sổ hoặc mốc khóa đã thay đổi. Đối chiếu và xem trước lại.",
+  PAYMENT_ALREADY_VOIDED: "Phiếu chi đã hủy. Đối soát phiếu và đối ứng hiện có.",
+  PAYMENT_PROPOSAL_CONFLICT: "Phiếu, đề xuất và sổ chưa khớp; không ghi đối ứng.",
+  PAYMENT_NOT_APPROVED: "Đề xuất chưa ở trạng thái được duyệt, chờ chi. Tải lại để đối soát.",
+  PAYMENT_ALREADY_POSTED: "Đề xuất hoặc ý định đã có phiếu chi. Đối soát phiếu hiện có.",
+  PAYMENT_PREVIEW_STALE: "Ngày, kỳ hoặc nguồn đã thay đổi; hãy xem trước lại.",
+  FINANCE_INSUFFICIENT_BALANCE: "Số dư sổ của quỹ không đủ. Thao tác này không được làm số dư âm.",
+  FINANCE_AMOUNT_INVALID:
+    "Số tiền và tổng phiếu phải là VND nguyên đồng trong giới hạn 1–999999999999999999.",
+  FINANCE_FUTURE_DAY: "Ngày thu không được sau ngày hiện tại tại Việt Nam.",
+  FINANCE_GIVING_EXISTS: "Người này đã có mã dâng hiến. Tìm cả mã đã ngừng để đối soát.",
+  FINANCE_MEMBER_UNAVAILABLE: "Chỉ cấp mã cho người đang sinh hoạt hoặc vắng lâu trong Hội Thánh.",
+  FINANCE_SOURCE_UNAVAILABLE: "Quỹ, mã hoặc hồ sơ nguồn không còn khả dụng. Chọn lại và xem trước.",
+  FINANCE_SOURCE_STALE: "Nguồn đã thay đổi. Xem trước lại trước khi xác nhận.",
+  FINANCE_PREVIEW_STALE:
+    "Bản xem trước đã hết hạn hoặc nguồn đã thay đổi. Quay lại và xem trước lại.",
+  FINANCE_PERIOD_CLOSED: "Kỳ gốc đã đóng. Không thể ghi hoặc hủy phiếu trong kỳ này.",
+  FINANCE_SOURCE_EXISTS:
+    "Nguồn tham chiếu đã được dùng, kể cả phiếu đã hủy. Đối soát phiếu hiện có.",
+  FINANCE_SUBMISSION_CONFLICT:
+    "Lần gửi này đã có nội dung hoặc người nhập khác. Đối soát phiếu hiện có.",
+  FINANCE_REPLACEMENT_INVALID: "Phiếu gốc phải đã hủy và thuộc cùng Hội Thánh.",
+  FINANCE_REPLACEMENT_EXISTS: "Phiếu đã hủy đã có phiếu thay thế. Đối soát phiếu hiện có.",
+  FINANCE_ALREADY_VOIDED: "Phiếu đã hủy. Tải lại để đối soát.",
+  FINANCE_ALREADY_CONFIGURED: "Tài chính đã được cấu hình. Tải bản hiện hành để đối soát.",
+  FINANCE_NOT_CONFIGURED: "Tài chính chưa được cấu hình.",
+  FINANCE_FUND_NAME_EXISTS: "Tên quỹ đã tồn tại, kể cả quỹ đang ngừng dùng.",
+  FINANCE_STATUS_UNCHANGED: "Trạng thái đã thay đổi. Tải lại để đối soát.",
+
   VISIT_TARGET_UNAVAILABLE:
     "Đối tượng/gia đình không còn phù hợp để ghi nghiệp vụ mới. Giữ hồ sơ để đối soát, hoàn tất hoặc hủy có lý do.",
   VISIT_ASSIGNEE_UNAVAILABLE:
@@ -282,6 +331,32 @@ export function createApp(
     conf.csrfKey,
     identity.now,
   );
+  const finance = new Finance(identity.db, operations, identity.audit, conf.csrfKey, identity.now);
+  const income = new FinanceTransactions(
+    identity.db,
+    operations,
+    finance,
+    new FinanceMembers(identity.db),
+    conf.csrfKey,
+    identity.now,
+  );
+  const reporting = new FinanceReporting(identity.db, identity.now);
+  const periods = new FinancePeriods(identity.db, operations, finance, conf.csrfKey, identity.now);
+  const payments = new Payments(identity.db, operations, finance, conf.csrfKey, identity.now);
+  const expenses = new Expenses(identity.db, operations, finance, conf.csrfKey, identity.now);
+  const expenseGrant = (ctx: ChurchAuthContext): ExpenseGrant => {
+    const auth = churchIdentity.grant(ctx);
+    return {
+      actorKind: "church_user",
+      actorId: ctx.account._id,
+      churchId: ctx.account.churchId,
+      role: ctx.account.role,
+      actorName: ctx.account.displayName,
+      canWrite: ctx.account.role !== "member",
+      policyContext: `${policyVersion}:${ctx.account.version}`,
+      fence: (tx) => auth.fence(tx),
+    };
+  };
   const accounts = new Accounts(
     identity.db,
     access,
@@ -508,6 +583,495 @@ export function createApp(
             csrfToken: result.csrfToken,
             expiresAt: result.session.absoluteExpiresAt,
           });
+        } else if (/^\/api\/v1\/(?:owner\/)?churches\/[^/]+\/finance\/summary$/.test(path)) {
+          const parts = path.split("/"),
+            isOwner = parts[3] === "owner",
+            churchId = objectId(parts[isOwner ? 5 : 4] as string);
+          requestRealm = isOwner ? "owner" : "church";
+          route = `P56.${requestRealm}.summary`;
+          targetChurchId = churchId;
+          if (isOwner) {
+            await identity.authorize(ownerToken, "owner", false, true);
+            throw new AppError(403, "FORBIDDEN");
+          }
+          const ctx = await churchIdentity.authorize(churchToken, false, false);
+          actorId = ctx.account._id;
+          actorChurchId = ctx.account.churchId;
+          requireCondition(churchId.equals(actorChurchId), 403, "FORBIDDEN");
+          requireCondition(
+            ctx.account.role === "pastor" || ctx.account.role === "treasurer",
+            403,
+            "FORBIDDEN",
+          );
+          const auth = churchIdentity.grant(ctx);
+          auth.require("finance:summary:read");
+          requireCondition(req.method === "GET", 405, "METHOD_NOT_ALLOWED");
+          response = json(
+            await reporting.summary(
+              {
+                actorKind: "church_user",
+                actorId,
+                churchId,
+                actorName: ctx.account.displayName,
+                financeRole: ctx.account.role,
+                canWrite: false,
+                policyContext: `${policyVersion}:${ctx.account.version}`,
+                fence: (tx) => auth.fence(tx),
+              },
+              url.searchParams,
+            ),
+          );
+        } else if (
+          /^\/api\/v1\/(?:owner\/)?churches\/[^/]+\/finance\/(?:periods\/(?:operations\/[^/]+|[^/]+(?:\/(?:funds|close-preview|close))?)|period-closures\/[^/]+(?:\/history)?)$/.test(
+            path,
+          )
+        ) {
+          const parts = path.split("/"),
+            isOwner = parts[3] === "owner",
+            offset = isOwner ? 1 : 0,
+            churchId = objectId(parts[4 + offset] as string),
+            section = parts[6 + offset],
+            id = parts[7 + offset] as string,
+            action = parts[8 + offset];
+          requestRealm = isOwner ? "owner" : "church";
+          targetChurchId = churchId;
+          route = `P55.${requestRealm}.${section}.${action ?? id}.${req.method}`;
+          if (isOwner) {
+            await identity.authorize(ownerToken, "owner", false, true);
+            throw new AppError(403, "FORBIDDEN");
+          }
+          const ctx = await churchIdentity.authorize(churchToken, false, false);
+          actorId = ctx.account._id;
+          actorChurchId = ctx.account.churchId;
+          requireCondition(churchId.equals(actorChurchId), 403, "FORBIDDEN");
+          requireCondition(
+            ctx.account.role === "pastor" || ctx.account.role === "treasurer",
+            403,
+            "FORBIDDEN",
+          );
+          const auth = churchIdentity.grant(ctx),
+            write = action === "close-preview" || action === "close";
+          auth.require(write ? "finance:periods:close" : "finance:periods:read");
+          const grant: FinanceGrant = {
+            actorKind: "church_user",
+            actorId,
+            churchId,
+            financeRole: ctx.account.role,
+            actorName: ctx.account.displayName,
+            canWrite: ctx.account.role === "treasurer",
+            policyContext: `${policyVersion}:${ctx.account.version}`,
+            fence: (tx) => auth.fence(tx),
+          };
+          requireCondition(req.method === (write ? "POST" : "GET"), 405, "METHOD_NOT_ALLOWED");
+          if (write) {
+            requireCondition(!url.search, 400, "INVALID_REQUEST");
+            requireCondition(req.headers.get("origin") === conf.origin, 403, "CSRF_FAILED");
+            await identity.csrfSession(churchToken, "church", req.headers.get("x-csrf-token"));
+            const body = await readJson(req);
+            if (action === "close-preview") response = json(await periods.preview(grant, id, body));
+            else {
+              const result = await periods.close(
+                grant,
+                id,
+                body,
+                req.headers.get("idempotency-key"),
+                requestId,
+              );
+              headers.set("ETag", `"${result.data.version}"`);
+              response = json(result.data, result.status, { replayed: result.replayed });
+            }
+          } else if (action === "funds")
+            response = json(await periods.funds(grant, id, url.searchParams));
+          else if (section === "period-closures" && action === "history")
+            response = json(await periods.history(grant, id, url.searchParams));
+          else {
+            requireCondition(!url.search, 400, "INVALID_REQUEST");
+            response = json(
+              id === "operations"
+                ? await periods.operation(grant, action as string)
+                : section === "period-closures"
+                  ? await periods.closure(grant, id)
+                  : await periods.get(grant, id),
+            );
+          }
+        } else if (
+          /^\/api\/v1\/(?:owner\/)?churches\/[^/]+\/finance\/(?:expense-proposals\/[^/]+\/(?:payment-preview|payment)|payments\/(?:operations\/[^/]+|[^/]+(?:\/(?:history|void-preview|void))?))$/.test(
+            path,
+          )
+        ) {
+          const parts = path.split("/"),
+            isOwner = parts[3] === "owner",
+            offset = isOwner ? 1 : 0,
+            churchId = objectId(parts[4 + offset] as string),
+            section = parts[6 + offset],
+            id = parts[7 + offset] as string,
+            action = parts[8 + offset];
+          requestRealm = isOwner ? "owner" : "church";
+          targetChurchId = churchId;
+          route = `P54.${requestRealm}.${section}.${action ?? "root"}.${req.method}`;
+          if (isOwner) {
+            await identity.authorize(ownerToken, "owner", false, true);
+            throw new AppError(403, "FORBIDDEN");
+          }
+          const ctx = await churchIdentity.authorize(churchToken, false, false);
+          actorId = ctx.account._id;
+          actorChurchId = ctx.account.churchId;
+          requireCondition(churchId.equals(actorChurchId), 403, "FORBIDDEN");
+          requireCondition(
+            ctx.account.role === "pastor" || ctx.account.role === "treasurer",
+            403,
+            "FORBIDDEN",
+          );
+          const auth = churchIdentity.grant(ctx),
+            write =
+              section === "expense-proposals" || action === "void-preview" || action === "void";
+          auth.require(
+            write
+              ? section === "payments"
+                ? "finance:payments:void"
+                : "finance:payments:manage"
+              : "finance:payments:read",
+          );
+          const grant: FinanceGrant = {
+            actorKind: "church_user",
+            actorId,
+            churchId,
+            financeRole: ctx.account.role,
+            actorName: ctx.account.displayName,
+            canWrite: ctx.account.role === "treasurer",
+            policyContext: `${policyVersion}:${ctx.account.version}`,
+            fence: (tx) => auth.fence(tx),
+          };
+          requireCondition(req.method === (write ? "POST" : "GET"), 405, "METHOD_NOT_ALLOWED");
+          if (write) {
+            requireCondition(!url.search, 400, "INVALID_REQUEST");
+            requireCondition(req.headers.get("origin") === conf.origin, 403, "CSRF_FAILED");
+            await identity.csrfSession(churchToken, "church", req.headers.get("x-csrf-token"));
+            const body = await readJson(req);
+            if (action === "payment-preview")
+              response = json(await payments.preview(grant, id, body, req.headers.get("if-match")));
+            else if (action === "void-preview")
+              response = json(
+                await payments.previewVoid(grant, id, body, req.headers.get("if-match")),
+              );
+            else {
+              const result = await (action === "void"
+                ? payments.void.bind(payments)
+                : payments.post.bind(payments))(
+                grant,
+                id,
+                body,
+                req.headers.get("idempotency-key"),
+                req.headers.get("if-match"),
+                requestId,
+              );
+              headers.set("ETag", `"${result.data.version}"`);
+              response = json(result.data, result.status, { replayed: result.replayed });
+            }
+          } else if (id === "operations") {
+            requireCondition(!url.search, 400, "INVALID_REQUEST");
+            response = json(await payments.operation(grant, action as string));
+          } else if (action === "history")
+            response = json(await payments.history(grant, id, url.searchParams));
+          else {
+            requireCondition(!url.search, 400, "INVALID_REQUEST");
+            const result = await payments.get(grant, id);
+            headers.set("ETag", `"${result.version}"`);
+            response = json(result);
+          }
+        } else if (
+          /^\/api\/v1\/(?:owner\/)?churches\/[^/]+\/finance\/expense-proposals(?:\/(?:context|funds|preview|operations\/[^/]+|[^/]+(?:\/(?:history|preview|decision))?))?$/.test(
+            path,
+          )
+        ) {
+          const parts = path.split("/"),
+            isOwner = parts[3] === "owner",
+            offset = isOwner ? 1 : 0,
+            churchId = objectId(parts[4 + offset] as string),
+            id = parts[7 + offset],
+            action = parts[8 + offset];
+          requestRealm = isOwner ? "owner" : "church";
+          targetChurchId = churchId;
+          route = `P53.${requestRealm}.${id ? "detail" : "root"}.${action ?? "root"}.${req.method}`;
+          if (isOwner) {
+            await identity.authorize(ownerToken, "owner", false, true);
+            throw new AppError(403, "FORBIDDEN");
+          }
+          const ctx = await churchIdentity.authorize(churchToken, false, false);
+          actorId = ctx.account._id;
+          actorChurchId = ctx.account.churchId;
+          requireCondition(churchId.equals(actorChurchId), 403, "FORBIDDEN");
+          requireCondition(ctx.account.role !== "member", 403, "FORBIDDEN");
+          const g = expenseGrant(ctx),
+            write = req.method !== "GET",
+            rootOnly = !id,
+            creatingPreview = id === "preview",
+            decisionPreview = action === "preview";
+          const methods = rootOnly
+            ? ["GET", "POST"]
+            : creatingPreview || decisionPreview || action === "decision"
+              ? ["POST"]
+              : ["GET"];
+          requireCondition(methods.includes(req.method), 405, "METHOD_NOT_ALLOWED");
+          if (write) {
+            requireCondition(!url.search, 400, "INVALID_REQUEST");
+            requireCondition(req.headers.get("origin") === conf.origin, 403, "CSRF_FAILED");
+            await identity.csrfSession(churchToken, "church", req.headers.get("x-csrf-token"));
+            const body = await readJson(req);
+            if (creatingPreview) response = json(await expenses.previewSubmit(g, body));
+            else if (decisionPreview)
+              response = json(
+                await expenses.previewDecision(g, id as string, body, req.headers.get("if-match")),
+              );
+            else {
+              const r = rootOnly
+                ? await expenses.submit(g, body, req.headers.get("idempotency-key"), requestId)
+                : await expenses.decide(
+                    g,
+                    id as string,
+                    body,
+                    req.headers.get("idempotency-key"),
+                    req.headers.get("if-match"),
+                    requestId,
+                  );
+              headers.set("ETag", `"${r.data.version}"`);
+              response = json(r.data, r.status, { replayed: r.replayed });
+            }
+          } else if (rootOnly) response = json(await expenses.list(g, url.searchParams));
+          else if (id === "context") {
+            requireCondition(!url.search, 400, "INVALID_REQUEST");
+            response = json(await expenses.context(g));
+          } else if (id === "funds") response = json(await expenses.funds(g, url.searchParams));
+          else if (id === "operations") {
+            requireCondition(!url.search, 400, "INVALID_REQUEST");
+            response = json(await expenses.operation(g, action as string));
+          } else if (action === "history")
+            response = json(await expenses.history(g, id as string, url.searchParams));
+          else {
+            requireCondition(!url.search, 400, "INVALID_REQUEST");
+            const r = await expenses.get(g, id as string);
+            headers.set("ETag", `"${r.version}"`);
+            response = json(r);
+          }
+        } else if (
+          /^\/api\/v1\/(?:owner\/)?churches\/[^/]+\/finance\/(?:member-options|giving-codes(?:\/[^/]+\/(?:status|history))?|receipts(?:\/(?:preview|[^/]+(?:\/(?:void|history))?))?|ledger)$/.test(
+            path,
+          )
+        ) {
+          const parts = path.split("/"),
+            isOwner = parts[3] === "owner",
+            offset = isOwner ? 1 : 0,
+            churchId = objectId(parts[4 + offset] as string),
+            section = parts[6 + offset],
+            id = parts[7 + offset],
+            action = parts[8 + offset];
+          requestRealm = isOwner ? "owner" : "church";
+          targetChurchId = churchId;
+          route = `P52.${requestRealm}.${section}.${action ?? id ?? "root"}.${req.method}`;
+          if (isOwner) {
+            await identity.authorize(ownerToken, "owner", false, true);
+            throw new AppError(403, "FORBIDDEN");
+          }
+          const ctx = await churchIdentity.authorize(churchToken, false, false);
+          actorId = ctx.account._id;
+          actorChurchId = ctx.account.churchId;
+          requireCondition(churchId.equals(actorChurchId), 403, "FORBIDDEN");
+          requireCondition(
+            ctx.account.role === "pastor" || ctx.account.role === "treasurer",
+            403,
+            "FORBIDDEN",
+          );
+          const auth = churchIdentity.grant(ctx),
+            write = req.method !== "GET";
+          auth.require(
+            write
+              ? section === "giving-codes"
+                ? "finance:codes:manage"
+                : "finance:receipts:manage"
+              : "finance:receipts:read",
+          );
+          const grant: FinanceGrant = {
+            actorKind: "church_user",
+            actorId,
+            churchId,
+            financeRole: ctx.account.role,
+            actorName: ctx.account.displayName,
+            canWrite: ctx.account.role === "treasurer",
+            policyContext: `${policyVersion}:${ctx.account.version}`,
+            fence: (tx) => auth.fence(tx),
+          };
+          const allowed =
+            section === "giving-codes"
+              ? action === "status"
+                ? ["PATCH"]
+                : action === "history"
+                  ? ["GET"]
+                  : ["GET", "POST"]
+              : section === "receipts"
+                ? id === "preview" || action === "void"
+                  ? ["POST"]
+                  : action === "history" || id
+                    ? ["GET"]
+                    : ["GET", "POST"]
+                : ["GET"];
+          requireCondition(allowed.includes(req.method), 405, "METHOD_NOT_ALLOWED");
+          if (write) {
+            requireCondition(!url.search, 400, "INVALID_REQUEST");
+            requireCondition(req.headers.get("origin") === conf.origin, 403, "CSRF_FAILED");
+            await identity.csrfSession(churchToken, "church", req.headers.get("x-csrf-token"));
+            const body = await readJson(req);
+            if (id === "preview") response = json(await income.preview(grant, body));
+            else {
+              const result =
+                section === "giving-codes"
+                  ? await income.codeWrite(
+                      grant,
+                      id ?? null,
+                      body,
+                      req.headers.get("idempotency-key"),
+                      req.headers.get("if-match"),
+                      requestId,
+                    )
+                  : action === "void"
+                    ? await income.void(
+                        grant,
+                        id as string,
+                        body,
+                        req.headers.get("idempotency-key"),
+                        req.headers.get("if-match"),
+                        requestId,
+                      )
+                    : await income.post(grant, body, req.headers.get("idempotency-key"), requestId);
+              headers.set("ETag", `"${result.data.version}"`);
+              response = json(result.data, result.status, { replayed: result.replayed });
+            }
+          } else if (action === "history")
+            response = json(
+              await income.history(
+                grant,
+                section === "receipts" ? "receipt" : "giving_code",
+                id as string,
+                url.searchParams,
+              ),
+            );
+          else if (section === "member-options")
+            response = json(await income.memberOptions(grant, url.searchParams));
+          else if (section === "giving-codes")
+            response = json(await income.codeList(grant, url.searchParams));
+          else if (section === "receipts" && id) {
+            requireCondition(!url.search, 400, "INVALID_REQUEST");
+            const result = await income.get(grant, id);
+            headers.set("ETag", `"${result.version}"`);
+            response = json(result);
+          } else response = json(await income.list(grant, url.searchParams, section === "ledger"));
+        } else if (
+          /^\/api\/v1\/(?:owner\/)?churches\/[^/]+\/finance\/(?:settings(?:\/history)?|funds(?:\/[^/]+(?:\/(?:status|history))?)?|operations\/[^/]+)$/.test(
+            path,
+          )
+        ) {
+          const parts = path.split("/"),
+            isOwner = parts[3] === "owner",
+            offset = isOwner ? 1 : 0,
+            churchId = objectId(parts[4 + offset] as string),
+            section = parts[6 + offset],
+            id = parts[7 + offset],
+            action = parts[8 + offset],
+            history = section === "settings" ? id === "history" : action === "history";
+          requestRealm = isOwner ? "owner" : "church";
+          targetChurchId = churchId;
+          route = `P51.${requestRealm}.${section}.${history ? "history" : (action ?? (id ? "detail" : "root"))}.${req.method}`;
+          if (isOwner) {
+            await identity.authorize(ownerToken, "owner", false, true);
+            throw new AppError(403, "FORBIDDEN");
+          }
+          const ctx = await churchIdentity.authorize(churchToken, false, false);
+          actorId = ctx.account._id;
+          actorChurchId = ctx.account.churchId;
+          requireCondition(churchId.equals(ctx.account.churchId), 403, "FORBIDDEN");
+          requireCondition(
+            ctx.account.role === "pastor" || ctx.account.role === "treasurer",
+            403,
+            "FORBIDDEN",
+          );
+          const auth = churchIdentity.grant(ctx),
+            write = req.method !== "GET";
+          auth.require(
+            write
+              ? section === "settings"
+                ? "finance:settings:manage"
+                : "finance:funds:manage"
+              : "finance:funds:read",
+          );
+          const grant: FinanceGrant = {
+            actorKind: "church_user",
+            actorId,
+            churchId,
+            financeRole: ctx.account.role,
+            actorName: ctx.account.displayName,
+            canWrite: true,
+            policyContext: `${policyVersion}:${ctx.account.version}`,
+            fence: (tx) => auth.fence(tx),
+          };
+          const methods =
+            history || section === "operations"
+              ? ["GET"]
+              : section === "settings"
+                ? ["GET", "POST", "PATCH"]
+                : action === "status"
+                  ? ["PATCH"]
+                  : id
+                    ? ["GET", "PATCH"]
+                    : ["GET", "POST"];
+          requireCondition(methods.includes(req.method), 405, "METHOD_NOT_ALLOWED");
+          if (!(section === "funds" && !id && !write) && !history)
+            requireCondition(!url.search, 400, "INVALID_REQUEST");
+          if (write) {
+            requireCondition(req.headers.get("origin") === conf.origin, 403, "CSRF_FAILED");
+            await identity.csrfSession(churchToken, "church", req.headers.get("x-csrf-token"));
+            const body = await readJson(req),
+              key = req.headers.get("idempotency-key"),
+              match = req.headers.get("if-match");
+            const result =
+              section === "settings"
+                ? await finance.writeSettings(
+                    grant,
+                    body,
+                    req.method === "POST",
+                    key,
+                    match,
+                    requestId,
+                  )
+                : await finance.writeFund(
+                    grant,
+                    id ?? null,
+                    action === "status",
+                    body,
+                    key,
+                    match,
+                    requestId,
+                  );
+            headers.set("ETag", `"${result.data.version}"`);
+            response = json(result.data, result.status, { replayed: result.replayed });
+          } else if (section === "operations")
+            response = json(await income.operation(grant, id as string));
+          else if (history)
+            response = json(
+              await finance.historyPage(
+                grant,
+                section === "settings" ? "settings" : "fund",
+                section === "settings" ? churchId.toHexString() : (id as string),
+                url.searchParams,
+              ),
+            );
+          else if (section === "settings") {
+            const result = await finance.getSettings(grant);
+            if (result.settings) headers.set("ETag", `"${result.settings.version}"`);
+            response = json(result);
+          } else if (id) {
+            const result = await finance.getFund(grant, id);
+            headers.set("ETag", `"${result.version}"`);
+            response = json(result);
+          } else response = json(await finance.list(grant, url.searchParams));
         } else if (path === "/api/v1/owner/audit-events") {
           route = "F23";
           requireCondition(req.method === "GET", 405, "METHOD_NOT_ALLOWED");
@@ -2392,7 +2956,18 @@ export function createApp(
           requireCondition(church.status === "active", 403, "CHURCH_SUSPENDED");
           if (matrix) {
             requireCondition(!url.search, 400, "INVALID_REQUEST");
-            response = json(policyMatrix());
+            let result = policyMatrix();
+            if (!isOwner) {
+              const ctx = await churchIdentity.authorize(churchToken, false, false);
+              if (ctx.account.role === "pastor" || ctx.account.role === "treasurer")
+                result = await finance.matrix(
+                  { ...grant, financeRole: ctx.account.role, actorName: ctx.account.displayName },
+                  result,
+                );
+              if (ctx.account.role !== "member")
+                result = await expenses.matrix(expenseGrant(ctx), result);
+            }
+            response = json(result);
           } else if (req.method === "GET") {
             if (section === "overview")
               response = json(await organizationRuntime.overview(grant, url.searchParams));
@@ -2704,7 +3279,19 @@ export function createApp(
           actorId = ctx.account._id;
           actorChurchId = ctx.account.churchId;
           const id = objectId(path.split("/")[4] as string).toHexString();
-          response = json(churchIdentity.context(ctx, id));
+          const context = churchIdentity.context(ctx, id);
+          if (ctx.account.role !== "member") {
+            const expense = await expenses.context(expenseGrant(ctx));
+            response = json({
+              ...context,
+              capabilities: [...context.capabilities, ...expense.capabilities],
+              expense,
+              availability: {
+                ...context.availability,
+                expense: expense.canReadAll || expense.canReadOwn ? "available" : "not_available",
+              },
+            });
+          } else response = json(context);
         } else if (path.startsWith("/api/v1/auth/")) {
           requestRealm = "church";
           const endpoint = path.slice("/api/v1/auth/".length);
@@ -2906,7 +3493,7 @@ export function createApp(
               /^\/owner\/churches\/[a-f0-9]{24}(?:\/(?:accounts|manage|config|members|families|bans|roles|overview|attendance|rites|forms|worship|care))?$/i.test(
                 path,
               ) ||
-              /^\/h\/[a-z0-9-]{1,100}(?:\/(?:login|change-password|support|config|members|families|bans|roles|overview|access|attendance|rites|forms|worship|care))?$/i.test(
+              /^\/h\/[a-z0-9-]{1,100}(?:\/(?:login|change-password|support|config|members|families|bans|roles|overview|access|attendance|rites|forms|worship|care|giving|expense))?$/i.test(
                 path,
               ),
             404,

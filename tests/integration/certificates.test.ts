@@ -19,6 +19,7 @@ import {
   syntheticUser,
 } from "../../scripts/p2-fixtures";
 import { certificateFixture, createCertificateRite, riteFixture } from "../../scripts/p35-fixtures";
+import { writeEvidence } from "../evidence";
 
 const conf = {
   ...config(),
@@ -172,9 +173,9 @@ describe("P3.5 Certificates real Mongo Redis and real DOCX/PDF", () => {
       const print = await raw(c, `editions/${eid}/print?version=1`);
       expect(print.status).toBe(200);
       expect(await print.text()).toContain("ui-certificate-page");
-      await Bun.write(`output/p3.5/documents/${kind}.pdf`, pb);
-      await Bun.write(`output/p3.5/documents/${kind}.docx`, wb);
-      await Bun.write(`output/p3.5/documents/${kind}.json`, JSON.stringify(e, null, 2));
+      await writeEvidence(`output/p3.5/documents/${kind}.pdf`, pb);
+      await writeEvidence(`output/p3.5/documents/${kind}.docx`, wb);
+      await writeEvidence(`output/p3.5/documents/${kind}.json`, JSON.stringify(e, null, 2));
     }
   }, 60000);
   test("long Vietnamese source, twenty guardians and long signers paginate without losing text", async () => {
@@ -221,9 +222,9 @@ describe("P3.5 Certificates real Mongo Redis and real DOCX/PDF", () => {
               .match(/\/Type \/Page\b/g) ?? []
           ).length,
         ).toBe(e.pages.length);
-      await Bun.write(`output/p3.5/documents/long-dedication.${format}`, bytes);
+      await writeEvidence(`output/p3.5/documents/long-dedication.${format}`, bytes);
     }
-    await Bun.write("output/p3.5/documents/long-dedication.json", JSON.stringify(e, null, 2));
+    await writeEvidence("output/p3.5/documents/long-dedication.json", JSON.stringify(e, null, 2));
     const tooLarge = {
       ...e.snapshot.content,
       paragraphs: [{ style: "body" as const, text: "Nội dung dài ".repeat(15000) }],

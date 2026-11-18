@@ -7,6 +7,7 @@ import { OwnerOperations } from "../../api/identity/owner-operations";
 import { cookieName, Identity } from "../../api/identity/service";
 import { Database, initialize } from "../../api/infrastructure/database";
 import { RateLimit } from "../../api/infrastructure/rate-limit";
+import { writeEvidence } from "../evidence";
 
 const conf = {
   ...config(),
@@ -397,7 +398,7 @@ describe("P1.4 F23 real MongoDB/Redis", () => {
       expect((await a.call(path)).response.status).toBe(404);
     }
     expect(new Set(observed.map((e) => e.id)).size).toBe(28);
-    await Bun.write(
+    await writeEvidence(
       "output/p1.4/route-inventory.json",
       JSON.stringify(
         {
