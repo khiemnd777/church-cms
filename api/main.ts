@@ -1,5 +1,6 @@
 import { createApp } from "./app";
 import { config } from "./config";
+import { expenseImageLimit } from "./finance/expense-image";
 import { Identity } from "./identity/service";
 import { Database } from "./infrastructure/database";
 import { RateLimit } from "./infrastructure/rate-limit";
@@ -23,9 +24,16 @@ const server = Bun.serve({
   hostname: "127.0.0.1",
   port: conf.port,
   tls: { cert: Bun.file(conf.cert), key: Bun.file(conf.key) },
-  maxRequestBodySize: 16384,
+  maxRequestBodySize: expenseImageLimit,
   idleTimeout: 15,
-  fetch: (req, server) => app(req, { ip: server.requestIP(req)?.address ?? "unknown" }),
+  fetch: (req, server) => {
+    if (
+      req.method === "POST" &&
+      /^\/api\/v1\/churches\/[^/]+\/rites\/baptism-ocr$/.test(new URL(req.url).pathname)
+    )
+      server.timeout(req, 45);
+    return app(req, { ip: server.requestIP(req)?.address ?? "unknown" });
+  },
 });
 console.info(`Church CMS listening at ${conf.origin}`);
 async function stop() {

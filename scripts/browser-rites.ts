@@ -32,6 +32,7 @@ conf.key = tls.key;
 const db = new Database(conf),
   rate = new RateLimit(conf.redisUrl, conf.csrfKey);
 let server: ReturnType<typeof Bun.serve> | undefined;
+let loseOcrResponse = false;
 await mkdir("/tmp/church-firefox", { recursive: true });
 for (const command of [
   ["certutil", "-N", "--empty-password", "-d", "sql:/tmp/church-firefox"],
@@ -182,7 +183,27 @@ try {
   const identity = new Identity(db, rate, conf);
   await identity.initialize();
   const logs: object[] = [];
-  const app = createApp(identity, conf, { log: (r) => logs.push(r) });
+  const app = createApp(identity, conf, {
+    log: (r) => logs.push(r),
+    baptismOcrRunner: async () => ({
+      status: "ok",
+      elapsed: 0.1,
+      rows: [
+        [
+          { text: "Nguyễn An", score: 0.96 },
+          { text: "12/…/2004", score: 0.82 },
+          { text: "Huế", score: 0.91 },
+          { text: "", score: 0 },
+        ],
+        [
+          { text: "Trần Minh", score: 0.91 },
+          { text: "01/08/2004", score: 0.96 },
+          { text: "", score: 0 },
+          { text: "", score: 0 },
+        ],
+      ],
+    }),
+  });
   const sourceName = (await readdir("reference")).find(
     (n) => n.normalize("NFC") === "Quản lý Hội Thánh Tin Lành(1).html",
   );
@@ -204,10 +225,25 @@ try {
     hostname: "127.0.0.1",
     port: conf.port,
     tls: { cert: Bun.file(conf.cert), key: Bun.file(conf.key) },
-    fetch: (req) =>
-      new URL(req.url).pathname === "/__p34_source"
-        ? new Response(sourceHtml, { headers: { "content-type": "text/html; charset=utf-8" } })
-        : app(req, { ip: "browser-p34" }),
+    fetch: async (req) => {
+      const path = new URL(req.url).pathname;
+      if (path === "/__p34_source")
+        return new Response(sourceHtml, {
+          headers: { "content-type": "text/html; charset=utf-8" },
+        });
+      const response = await app(req, { ip: "browser-p34" });
+      if (loseOcrResponse && path.endsWith("/rows/1/record") && response.status === 201) {
+        loseOcrResponse = false;
+        return Response.json(
+          {
+            error: { code: "OUTCOME_UNKNOWN", message: "Chưa rõ kết quả ghi." },
+            meta: {},
+          },
+          { status: 503 },
+        );
+      }
+      return response;
+    },
   });
   await mkdir(evidence, { recursive: true });
   const fixture = await new OwnerOperations(db).create({
@@ -561,6 +597,80 @@ try {
     "secretary-confirms-factual-record",
   );
   await capture("secretary-communion", userPage);
+  await userPage.goto(`${conf.origin}/h/${church.code}/rites?tab=bap`);
+  await userPage.getByRole("button", { name: "Nhập từ ảnh sổ cũ", exact: true }).click();
+  const ocr = userPage.getByRole("dialog");
+  const image = await userPage.evaluate(() => {
+    const canvas = document.createElement("canvas");
+    canvas.width = 600;
+    canvas.height = 260;
+    const pen = canvas.getContext("2d");
+    if (!pen) throw Error("Canvas fixture unavailable");
+    pen.fillStyle = "#fff8e8";
+    pen.fillRect(0, 0, 600, 260);
+    pen.fillStyle = "#293247";
+    pen.font = "24px sans-serif";
+    pen.fillText("SỔ BÁP-TÊM · SYNTHETIC", 25, 38);
+    pen.font = "17px sans-serif";
+    pen.fillText("Họ tên                Ngày                  Nơi", 25, 79);
+    pen.fillText("Nguyễn An          12/…/2004           Huế", 25, 121);
+    pen.fillText("Trần Minh           01/08/2004", 25, 164);
+    for (const y of [52, 90, 133, 178]) {
+      pen.beginPath();
+      pen.moveTo(15, y);
+      pen.lineTo(570, y);
+      pen.stroke();
+    }
+    return canvas.toDataURL("image/png").split(",")[1];
+  });
+  await ocr.getByLabel("Tệp ảnh trang sổ", { exact: true }).setInputFiles({
+    name: "so-bap-tem-synthetic.png",
+    mimeType: "image/png",
+    buffer: Buffer.from(image ?? "", "base64"),
+  });
+  await ocr.getByRole("button", { name: "Đọc ảnh", exact: true }).click();
+  await ocr.getByRole("heading", { name: "Dòng 1 / 2", exact: true }).waitFor();
+  await ocr.getByRole("img", { name: "Ảnh trang sổ Báp-têm", exact: true }).waitFor();
+  assert(
+    await ocr.getByRole("button", { name: "Xem trước", exact: true }).isDisabled(),
+    "P74-no-auto-linked-member",
+  );
+  await capture("p74-review", userPage);
+  await ocr.getByRole("button", { name: `${first.fullName} · ${first.code}`, exact: true }).click();
+  await ocr.getByLabel("Ngày chưa rõ", { exact: true }).check();
+  await ocr.getByRole("button", { name: "Xem trước", exact: true }).click();
+  await ocr.getByRole("button", { name: "Xem bản đã ghi", exact: true }).waitFor();
+  assert(true, "P74-ocr-detects-duplicate-recorded-member");
+  await ocr.getByRole("button", { name: "Dòng tiếp", exact: true }).click();
+  const candidate = people[1];
+  if (!candidate) throw Error("Missing synthetic participant");
+  await ocr
+    .getByRole("button", { name: `${candidate.fullName} · ${candidate.code}`, exact: true })
+    .click();
+  await ocr.getByLabel("Ngày chưa rõ", { exact: true }).check();
+  await ocr.getByRole("button", { name: "Xem trước", exact: true }).click();
+  await ocr.getByRole("heading", { name: "Xem trước ghi nhận Báp-têm", exact: true }).waitFor();
+  await capture("p74-preview", userPage);
+  loseOcrResponse = true;
+  await ocr.getByRole("button", { name: "Xác nhận ghi nhận", exact: true }).click();
+  await ocr.getByRole("button", { name: "Đối soát kết quả", exact: true }).click();
+  assert(!loseOcrResponse, "P74-unknown-response-after-server-commit");
+  await ocr.getByRole("button", { name: "Xem bản đã ghi", exact: true }).click();
+  await userPage.getByRole("heading", { name: "Chi tiết Báp-têm", exact: true }).waitFor();
+  const selectedOcrId = new URL(userPage.url()).searchParams.get("riteId");
+  const ocrRecord = await api(
+    `churches/${church.id}/rites/records/${selectedOcrId}`,
+    undefined,
+    undefined,
+    "church",
+    userPage,
+  );
+  assert(
+    ocrRecord.payload.data.record.historical &&
+      ocrRecord.payload.data.record.date === null &&
+      ocrRecord.payload.data.record.payload.person.memberId === candidate._id.toHexString(),
+    "P74-browser-confirms-only-selected-record",
+  );
   await userPage.close();
   assert(errors.length === 0, "no-browser-script-errors");
   await Bun.write(

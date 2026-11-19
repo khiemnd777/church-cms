@@ -5,10 +5,12 @@ import { Audit } from "../../api/audit/service";
 import { config } from "../../api/config";
 import { importFields } from "../../api/data-exchange/contracts";
 import { makeFile } from "../../api/data-exchange/files";
+import { AppError } from "../../api/errors";
 import { Identity } from "../../api/identity/service";
 import { Database, initialize } from "../../api/infrastructure/database";
 import { RateLimit } from "../../api/infrastructure/rate-limit";
 import { businessDay, shiftDay } from "../../api/members/dates";
+import { localBaptismRunner } from "../../api/rites/baptism-ocr";
 import { Rites } from "../../api/rites/service";
 import type { RiteCommand } from "../../api/rites/validation";
 import {
@@ -30,6 +32,7 @@ if (!["localhost", "127.0.0.1"].includes(new URL(conf.mongoUrl).hostname))
 const db = new Database(conf),
   rate = new RateLimit(conf.redisUrl, conf.csrfKey);
 let app: ReturnType<typeof createApp>, owner: SyntheticClient, ownerId: string;
+let ocrMode: "mock" | "timeout" | "real" = "mock";
 const client = (realm: "owner" | "church" = "owner") => {
   const ip = crypto.randomUUID();
   return new SyntheticClient(realm, conf.origin, (req) => app(req, { ip }));
@@ -132,7 +135,35 @@ beforeAll(async () => {
   await rate.connect();
   const identity = new Identity(db, rate, conf);
   await identity.initialize();
-  app = createApp(identity, conf, { log: () => {} });
+  app = createApp(identity, conf, {
+    log: () => {},
+    baptismOcrRunner: async (bytes) => {
+      if (ocrMode === "timeout") throw new AppError(503, "BAPTISM_OCR_TIMEOUT");
+      if (ocrMode === "real") {
+        const runner = localBaptismRunner();
+        if (!runner) throw Error("Missing real local runner");
+        return runner(bytes);
+      }
+      return {
+        status: "ok",
+        elapsed: 0.1,
+        rows: [
+          [
+            { text: "Nguyễn An", score: 0.96 },
+            { text: "12/…/2004", score: 0.99 },
+            { text: "Huế", score: 0.91 },
+            { text: "", score: 0 },
+          ],
+          [
+            { text: "Trần Minh", score: 0.92 },
+            { text: "01/02/2004", score: 0.94 },
+            { text: "", score: 0 },
+            { text: "Đặng Văn An", score: 0.91 },
+          ],
+        ],
+      };
+    },
+  });
   owner = client();
   ownerId = (await syntheticOwner(db, owner)).id;
 });
@@ -844,4 +875,208 @@ describe("P3.4 Rites real Mongo Redis", () => {
     marriage.record.payload.announcements.push({ date: day(), state: "planned", note: null });
     expect((await preview(c, marriage)).status).toBe(422);
   });
+});
+
+describe("P7.4 baptism OCR integration", () => {
+  const path = (church: { id: string }) => `churches/${church.id}/rites/baptism-ocr`;
+  const headers = { "content-type": "image/png" };
+  const makePng = async () => {
+    const { default: sharp } = await import("sharp");
+    return sharp({ create: { width: 300, height: 240, channels: 3, background: "#fff8dd" } })
+      .png()
+      .toBuffer();
+  };
+
+  test("74-02/03: permissions, preview, changed source, row concurrency, duplicate and expiry", async () => {
+    const c = await fixture(),
+      other = await fixture();
+    const secretary = client("church"),
+      otherSecretary = client("church"),
+      pastor = client("church");
+    await syntheticUser(owner, secretary, c, "secretary");
+    const revokedAccount = await syntheticUser(owner, otherSecretary, c, "secretary");
+    await syntheticUser(owner, pastor, c, "pastor");
+    const png = await makePng();
+    expect((await pastor.call(path(c), png, { headers })).status).toBe(403);
+    expect((await owner.call(`owner/${path(c)}`, png, { headers })).status).toBe(403);
+    expect((await secretary.call(path(other), png, { headers })).status).toBe(404);
+    expect(
+      (await secretary.call(path(c), png, { headers: { ...headers, "x-csrf-token": "wrong" } }))
+        .status,
+    ).toBe(403);
+    expect((await secretary.call(path(c), new Uint8Array([1, 2, 3]), { headers })).status).toBe(
+      422,
+    );
+    expect(
+      (await secretary.call(path(c), new Uint8Array(5 * 1024 * 1024 + 1), { headers })).status,
+    ).toBe(413);
+    ocrMode = "timeout";
+    try {
+      const timedOut = await secretary.call(path(c), png, { headers });
+      expect(timedOut.status).toBe(503);
+      expect(timedOut.payload.error.code).toBe("BAPTISM_OCR_TIMEOUT");
+      expect(
+        await db.db.collection("rite_baptism_ocr").countDocuments({ churchId: new ObjectId(c.id) }),
+      ).toBe(0);
+    } finally {
+      ocrMode = "mock";
+    }
+
+    const staged = await secretary.call(path(c), png, { headers });
+    expect(staged.status).toBe(201);
+    const scan = staged.payload.data;
+    expect(scan.rows).toHaveLength(2);
+    expect(scan.rows[0].date).toBeNull();
+    expect(scan.rows[1].date).toBe("2004-02-01");
+    expect(scan.rows[0]).not.toHaveProperty("memberId");
+    expect(Date.parse(scan.expiresAt) - Date.now()).toBeGreaterThan(86_390_000);
+    expect(
+      await db.db.collection("rite_records").countDocuments({ churchId: new ObjectId(c.id) }),
+    ).toBe(0);
+    const root = `${path(c)}/${scan.id}`;
+    const row0 = `${root}/rows/0`,
+      row1 = `${root}/rows/1`;
+    const memberData = (i: number) => ({
+      memberId: member(c, i).memberId,
+      date: null,
+      place: "Huế",
+      officiant: null,
+      preview: null,
+    });
+    expect((await otherSecretary.call(`${row0}/preview`, memberData(0))).status).toBe(404);
+    expect(
+      (
+        await secretary.call(`${row0}/preview`, {
+          ...memberData(0),
+          memberId: member(other).memberId,
+        })
+      ).status,
+    ).toBe(404);
+    const readImage = (who: SyntheticClient) =>
+      app(
+        new Request(`${conf.origin}/api/v1/${root}/image`, {
+          headers: { cookie: who.cookie() },
+        }),
+        { ip: crypto.randomUUID() },
+      );
+    const served = await readImage(secretary);
+    expect(served.status).toBe(200);
+    expect(served.headers.get("cache-control")).toBe("no-store");
+    expect((await served.arrayBuffer()).byteLength).toBeGreaterThan(0);
+    expect((await readImage(otherSecretary)).status).toBe(404);
+    expect((await readImage(pastor)).status).toBe(403);
+    const first = await secretary.call(`${row0}/preview`, memberData(0));
+    expect(first.status).toBe(200);
+    expect(first.payload.data.existing).toBeNull();
+    expect(first.payload.data.preview.after.record.date).toBeNull();
+    expect((await secretary.call(`${row0}/record`, memberData(0))).status).toBe(412);
+    const userSubjectId = new ObjectId(member(c, 0).memberId);
+    await db.db.collection("members").updateOne({ _id: userSubjectId }, { $inc: { version: 1 } });
+    expect(
+      (
+        await secretary.call(`${row0}/record`, {
+          ...memberData(0),
+          preview: first.payload.data.preview.context,
+        })
+      ).status,
+    ).toBe(412);
+
+    const candidates = await Promise.all(
+      [0, 1].map(async (i) => {
+        const data = memberData(i);
+        const preview = await secretary.call(`${row0}/preview`, data);
+        expect(preview.status).toBe(200);
+        return {
+          key: crypto.randomUUID(),
+          body: { ...data, preview: preview.payload.data.preview.context },
+        };
+      }),
+    );
+    const results = await Promise.all(
+      candidates.map((candidate) =>
+        secretary.call(`${row0}/record`, candidate.body, { key: candidate.key }),
+      ),
+    );
+    expect(results.map((r) => r.status).sort()).toEqual([201, 409]);
+    const winner = results.findIndex((r) => r.status === 201);
+    const result = results[winner];
+    const candidate = candidates[winner];
+    if (!result || !candidate) throw Error("Missing winning intent");
+    expect(
+      await db.db
+        .collection("rite_records")
+        .countDocuments({ churchId: new ObjectId(c.id), kind: "baptism" }),
+    ).toBe(1);
+    const replay = await secretary.call(`${row0}/record`, candidate.body, { key: candidate.key });
+    expect(replay.payload.data.riteId).toBe(result.payload.data.riteId);
+    expect(
+      (await secretary.call(`${row1}/preview`, memberData(winner))).payload.data.existing,
+    ).toBe(result.payload.data.riteId);
+    const committed = await get(c, result.payload.data.riteId, secretary);
+    expect(committed.record.date).toBeNull();
+    expect(committed.record.historical).toBe(true);
+
+    const receipt = await db.db.collection("idempotency_operations").findOne({
+      churchId: new ObjectId(c.id),
+      "safeResult.riteId": result.payload.data.riteId,
+    });
+    await db.db
+      .collection("rite_baptism_ocr")
+      .updateOne({ _id: new ObjectId(scan.id) }, { $set: { expiresAt: new Date(0) } });
+    expect((await readImage(secretary)).status).toBe(404);
+    expect((await secretary.call(`${row1}/preview`, memberData(2))).status).toBe(404);
+    const reconciled = await secretary.call(
+      `churches/${c.id}/rites/operations/${receipt?._id.toHexString()}`,
+    );
+    expect(reconciled.payload.data.safeResult.riteId).toBe(result.payload.data.riteId);
+    const ttl = (await db.db.collection("rite_baptism_ocr").listIndexes().toArray()).find(
+      (i) => i.name === "rite_baptism_ocr_expiry",
+    );
+    expect(ttl?.expireAfterSeconds).toBe(0);
+    const revocable = await otherSecretary.call(path(c), png, { headers });
+    expect(revocable.status).toBe(201);
+    const revokedRoute = `${path(c)}/${revocable.payload.data.id}/rows/0/preview`;
+    expect((await otherSecretary.call(revokedRoute, memberData(2))).status).toBe(200);
+    await db.db
+      .collection("accounts")
+      .updateOne(
+        { _id: new ObjectId(revokedAccount.id) },
+        { $set: { role: "pastor" }, $inc: { version: 1 } },
+      );
+    expect([401, 403]).toContain((await otherSecretary.call(revokedRoute, memberData(2))).status);
+    const until = performance.now() + 75_000;
+    const expired = { _id: new ObjectId(scan.id) };
+    while (await db.db.collection("rite_baptism_ocr").countDocuments(expired)) {
+      if (performance.now() >= until) throw new Error("Mongo did not collect the expired OCR data");
+      await Bun.sleep(1000);
+    }
+    expect(
+      await db.db
+        .collection("rite_records")
+        .countDocuments({ _id: new ObjectId(result.payload.data.riteId) }),
+    ).toBe(1);
+  }, 90_000);
+
+  test.skipIf(!process.env.CHURCH_P74_REAL_IMAGE)(
+    "real offline PaddleOCR through the Rites HTTP handler",
+    async () => {
+      const source = process.env.CHURCH_P74_REAL_IMAGE;
+      if (!source) throw new Error("Missing synthetic image");
+      const c = await fixture();
+      const s = client("church");
+      await syntheticUser(owner, s, c, "secretary");
+      ocrMode = "real";
+      try {
+        const out = await s.call(path(c), new Uint8Array(await Bun.file(source).arrayBuffer()), {
+          headers: { "content-type": "image/jpeg" },
+        });
+        expect(out.status, out.payload?.error?.code).toBe(201);
+        expect(out.payload.data.rows).toHaveLength(8);
+        expect(out.payload.data.rows.some((r: { date: string | null }) => r.date)).toBe(true);
+      } finally {
+        ocrMode = "mock";
+      }
+    },
+    60_000,
+  );
 });

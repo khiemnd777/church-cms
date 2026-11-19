@@ -71,6 +71,12 @@ import { ProgramSources } from "./programs/sources";
 import { reportLimits } from "./reporting/contracts";
 import { type ReportGrant, Reports } from "./reporting/service";
 import { ReportSource } from "./reporting/source";
+import {
+  BaptismOcr,
+  type BaptismOcrRunner,
+  baptismImageLimit,
+  localBaptismRunner,
+} from "./rites/baptism-ocr";
 import type { RiteGrant } from "./rites/models";
 import { PortalRites } from "./rites/portal";
 import { RiteReporting } from "./rites/reporting";
@@ -216,6 +222,14 @@ const messages: Record<string, string> = {
     "Thông tin Báp-têm sau ghi nhận phải khớp ngày/nơi lễ. Chọn cập nhật theo lễ hoặc đính chính trước.",
   RITE_PREVIEW_STALE:
     "Dữ liệu đã thay đổi hoặc chưa xem preview. Tải lại và kiểm tra trước khi xác nhận.",
+  BAPTISM_OCR_UNAVAILABLE: "Bộ đọc ảnh local chưa khả dụng. Vui lòng thử lại.",
+  BAPTISM_OCR_TIMEOUT: "Đọc ảnh quá thời gian. Hãy thử lại với ảnh rõ hơn.",
+  BAPTISM_OCR_BUSY: "Đang đọc một trang khác. Vui lòng chờ rồi thử lại.",
+  BAPTISM_OCR_IMAGE: "Chọn ảnh JPEG hoặc PNG hợp lệ, tối đa 5 MiB.",
+  BAPTISM_OCR_LAYOUT: "Không nhận ra bảng sổ. Hãy chụp lại cả trang, gồm đường kẻ và tiêu đề.",
+  BAPTISM_OCR_EXPIRED:
+    "Ảnh tạm không còn khả dụng. Nếu đã xác nhận, đối soát sổ trước khi nhập lại.",
+  BAPTISM_OCR_ROW_RECORDED: "Dòng đã ghi nhận. Hãy đối soát sổ.",
   RITE_BAPTISM_EXISTS: "Hồ sơ đã có một bản Báp-têm được ghi nhận. Mở bản hiện có để đính chính.",
   PREP_COURSE_STATE: "Khóa không ở trạng thái cho phép thao tác. Tải lại để kiểm tra.",
   PREP_PLAN_LOCKED:
@@ -344,7 +358,7 @@ function cookies(req: Request) {
 export function createApp(
   identity: Identity,
   conf: Config,
-  options: { log?: (row: object) => void; dist?: string } = {},
+  options: { log?: (row: object) => void; dist?: string; baptismOcrRunner?: BaptismOcrRunner } = {},
 ) {
   const operations = new Operations(identity.db, identity.now);
   const auditReader = new AuditReader(identity.db, conf.csrfKey, identity.now);
@@ -521,6 +535,12 @@ export function createApp(
     identity.now,
   );
   members.bindBaptismLedger(rites.baptismChanged);
+  const baptismOcr = new BaptismOcr(
+    identity.db,
+    rites,
+    options.baptismOcrRunner ?? localBaptismRunner(),
+    identity.now,
+  );
   const certificates = new Certificates(
     identity.db,
     new CertificateSources(
@@ -2542,7 +2562,7 @@ export function createApp(
             }
           }
         } else if (
-          /^\/api\/v1\/(?:owner\/)?churches\/[^/]+\/(?:members\/[^/]+\/rites|rites\/(?:people|baptism-facts|operations\/[^/]+|records(?:\/preview|\/[^/]+(?:\/(?:history|preview))?)?))$/.test(
+          /^\/api\/v1\/(?:owner\/)?churches\/[^/]+\/(?:members\/[^/]+\/rites|rites\/(?:baptism-ocr(?:\/[a-f0-9]{24}(?:\/image|\/rows\/(?:[0-9]|1[0-9])\/(?:preview|record)))?|people|baptism-facts|operations\/[^/]+|records(?:\/preview|\/[^/]+(?:\/(?:history|preview))?)?))$/.test(
             path,
           )
         ) {
@@ -2559,9 +2579,15 @@ export function createApp(
             preview =
               section === "records" &&
               (parts[7 + offset] === "preview" || parts[8 + offset] === "preview"),
-            history = parts[8 + offset] === "history";
-          const methods =
-            memberRead || section !== "records" || history
+            history = parts[8 + offset] === "history",
+            ocr = section === "baptism-ocr",
+            ocrId = parts[7 + offset],
+            ocrAction = parts[8 + offset];
+          const methods = ocr
+            ? ocrAction === "image"
+              ? ["GET"]
+              : ["POST"]
+            : memberRead || section !== "records" || history
               ? ["GET"]
               : preview
                 ? ["POST"]
@@ -2572,12 +2598,13 @@ export function createApp(
           requestRealm = isOwner ? "owner" : "church";
           targetChurchId = churchId;
           const writing = req.method !== "GET",
-            capability = writing || section === "operations" ? "rites:manage" : "rites:read";
+            capability = writing || ocr || section === "operations" ? "rites:manage" : "rites:read";
           route = `P34.${requestRealm}.${section}.${preview ? "preview" : history ? "history" : "root"}.${req.method}`;
           let grant: RiteGrant;
           if (isOwner) {
             const ctx = await identity.authorize(ownerToken, "owner", false, true);
             actorId = ctx.owner._id;
+            requireCondition(!ocr, 403, "FORBIDDEN");
             const auth = identity.ownerGrant(ctx, capability);
             grant = {
               actorKind: "owner",
@@ -2597,6 +2624,7 @@ export function createApp(
             actorId = ctx.account._id;
             actorChurchId = ctx.account.churchId;
             requireCondition(churchId.equals(ctx.account.churchId), 404, "NOT_FOUND");
+            requireCondition(!ocr || ctx.account.role === "secretary", 403, "FORBIDDEN");
             const auth = churchIdentity.grant(ctx);
             auth.require(capability);
             grant = {
@@ -2612,7 +2640,46 @@ export function createApp(
               fence: (tx) => auth.fence(tx),
             };
           }
-          if (!writing) {
+          if (ocr) {
+            requireCondition(!url.search, 400, "INVALID_REQUEST");
+            if (writing) {
+              requireCondition(req.headers.get("origin") === conf.origin, 403, "CSRF_FAILED");
+              await identity.csrfSession(churchToken, "church", req.headers.get("x-csrf-token"));
+            }
+            if (!ocrId) {
+              const type = req.headers.get("content-type");
+              requireCondition(
+                type === "image/jpeg" || type === "image/png",
+                415,
+                "BAPTISM_OCR_IMAGE",
+              );
+              response = json(
+                await baptismOcr.scan(grant, type, () => readFileBody(req, baptismImageLimit)),
+                201,
+              );
+            } else if (ocrAction === "image") {
+              const image = await baptismOcr.image(grant, ocrId);
+              response = new Response(image.bytes, {
+                headers: { ...security, "Content-Type": image.type },
+              });
+            } else {
+              const index = Number(parts[9 + offset]);
+              const body = await readJson(req);
+              if (parts[10 + offset] === "preview")
+                response = json(await baptismOcr.preview(grant, ocrId, index, body));
+              else {
+                const result = await baptismOcr.record(
+                  grant,
+                  ocrId,
+                  index,
+                  body,
+                  req.headers.get("idempotency-key"),
+                  requestId,
+                );
+                response = json(result.data, result.status, { replayed: result.replayed });
+              }
+            }
+          } else if (!writing) {
             if (memberRead)
               response = json(
                 await rites.list(grant, url.searchParams, parts[6 + offset] as string),
@@ -3615,7 +3682,13 @@ export function createApp(
             const expense = await expenses.context(expenseGrant(ctx));
             response = json({
               ...context,
-              capabilities: [...context.capabilities, ...expense.capabilities],
+              capabilities: [
+                ...context.capabilities,
+                ...expense.capabilities,
+                ...(ctx.account.role === "secretary" && baptismOcr.enabled
+                  ? ["rites:baptism-ocr"]
+                  : []),
+              ],
               expense,
               availability: {
                 ...context.availability,

@@ -285,6 +285,22 @@ export class Rites {
       };
     });
   }
+  async recordedBaptism(g: RiteGrant, memberId: string) {
+    this.staff(g, true);
+    return this.db.readSnapshot(g.churchId.toHexString(), async (tx) => {
+      await g.fence(tx);
+      const r = await this.rows.findOne(
+        {
+          churchId: g.churchId,
+          subjectMemberId: objectId(memberId),
+          kind: "baptism",
+          state: "recorded",
+        },
+        { projection: { _id: 1 }, session: tx },
+      );
+      return r?._id.toHexString() ?? null;
+    });
+  }
   async save(
     g: RiteGrant,
     id: string | null,
@@ -292,6 +308,8 @@ export class Rites {
     key: string | null,
     match: string | null,
     requestId: string,
+    onRecord?: (tx: ClientSession, riteId: ObjectId) => Promise<void>,
+    operationSuffix = "",
   ) {
     this.staff(g, true);
     const body = parse(commandInput, raw),
@@ -308,7 +326,7 @@ export class Rites {
       return await this.ops.executeTenant(
         guarded,
         id ? "PATCH" : "POST",
-        `rites/${g.churchId}/records${id ? `/${objectId(id)}` : ""}`,
+        `rites/${g.churchId}/records${id ? `/${objectId(id)}` : ""}${operationSuffix}`,
         key,
         body,
         expected,
@@ -366,6 +384,7 @@ export class Rites {
             );
             requireCondition(saved.matchedCount, 412, "VERSION_CONFLICT");
           } else await this.rows.insertOne(r, { session: tx });
+          if (onRecord) await onRecord(tx, r._id);
           await this.history(
             g,
             r,

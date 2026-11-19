@@ -68,6 +68,16 @@ const payload = {
   ],
 };
 export const riteSchemas = {
+  rite_baptism_ocr: object({
+    _id: oid,
+    churchId: oid,
+    actorId: oid,
+    image: { bsonType: "binData" },
+    type: { enum: ["image/jpeg", "image/png"] },
+    rows: { bsonType: "array", minItems: 1, maxItems: 20 },
+    recorded: { bsonType: "object" },
+    expiresAt: date,
+  }),
   rite_records: object({
     _id: oid,
     churchId: oid,
@@ -120,9 +130,13 @@ export const riteIndexes: Record<
     key: Record<string, 1 | -1>;
     name: string;
     unique?: boolean;
+    expireAfterSeconds?: number;
     partialFilterExpression?: object;
   }[]
 > = {
+  rite_baptism_ocr: [
+    { key: { expiresAt: 1 }, name: "rite_baptism_ocr_expiry", expireAfterSeconds: 0 },
+  ],
   rite_records: [
     { key: { churchId: 1, kind: 1, "input.date": -1, _id: -1 }, name: "rites_page" },
     { key: { churchId: 1, memberIds: 1, "input.date": -1, _id: -1 }, name: "rites_member" },

@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import type { RiteCommand } from "../api/rites/validation";
 import type { ChurchRef } from "./access-context";
 import { ApiError } from "./api";
+import { BaptismOcrDialog } from "./baptism-ocr";
 import { PrepClassesView } from "./prep-classes";
 import {
   dateLabel,
@@ -223,7 +224,7 @@ function RitesLedger({
     [cursor, setCursor] = useState<string | null>(null),
     [factCursor, setFactCursor] = useState<string | null>(null),
     [refresh, setRefresh] = useState(0),
-    [dialog, setDialog] = useState<"form" | "history" | null>(null),
+    [dialog, setDialog] = useState<"form" | "history" | "ocr" | null>(null),
     [creating, setCreating] = useState(false),
     [seed, setSeed] = useState<RitePeople["items"][number] | null>(null),
     [history, setHistory] = useState<RiteHistory | null>(null),
@@ -427,6 +428,19 @@ function RitesLedger({
   return (
     <div className="rites-section">
       <SectionHeader title="Sổ lễ nghi">
+        {tab === "bap" &&
+          realm === "church" &&
+          identity?.capabilities.includes("rites:baptism-ocr") && (
+            <Button
+              disabled={locked || loading}
+              onClick={() => {
+                dialogTrigger.current = document.activeElement as HTMLElement;
+                setDialog("ocr");
+              }}
+            >
+              Nhập từ ảnh sổ cũ
+            </Button>
+          )}
         {canManage && (
           <Button
             variant="primary"
@@ -443,6 +457,21 @@ function RitesLedger({
         items={riteTabs.map((t) => ({ ...t, disabled: locked }))}
         onChange={onTab}
       />
+      {dialog === "ocr" && identity?.capabilities.includes("rites:baptism-ocr") && (
+        <BaptismOcrDialog
+          churchId={churchId}
+          principalKey={identity.key}
+          pending={pending}
+          onPending={onPending}
+          onAuthError={fail}
+          onClose={() => setDialog(null)}
+          onOpenRecord={(id) => {
+            setDialog(null);
+            select(id);
+          }}
+          onRecorded={() => setRefresh((n) => n + 1)}
+        />
+      )}
       <section
         role="tabpanel"
         id={`rites-panel-${tab}`}
@@ -732,7 +761,7 @@ function RitesLedger({
           </Card>
         )}
       </section>
-      {dialog && (
+      {(dialog === "form" || dialog === "history") && (
         <Modal
           open
           locked={locked}

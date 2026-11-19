@@ -125,3 +125,5 @@ Khiêm quyết định hoãn tính năng OCR sổ Báp-têm viết tay vì chưa
 Giữ lại kết quả r1, r2 và nghiệm thu riêng 74-02, 74-03 ở phạm vi local/synthetic. P7.4 chưa phát hành. P7.5 chưa mở. Khi có nhu cầu, Khiêm quyết định mở lại P7.4 và chốt phạm vi tiếp theo.
 
 **Note nhắc lại khi rà soát roadmap P7/P8.** Nhắc Khiêm rằng OCR sổ Báp-têm đang hoãn, 74-01 còn mở và có thể xem lại hồ sơ này nếu phát sinh nhu cầu nhập sổ cũ. Đây là mục để nhắc lại trong lần rà soát, chưa phải điều kiện mở P7.5.
+
+**Vị trí lưu mã thử nghiệm.** Checkout local này lưu mã OCR r1/r2 trên nhánh `feat/p74-ocr-local-archive`. Trọng số và báo cáo đo local nằm trong `.local/` và `output/`. Khi Khiêm quyết định mở lại 74-01, dùng nhánh này để đối chiếu mã và báo cáo trước khi chọn phạm vi làm tiếp.
