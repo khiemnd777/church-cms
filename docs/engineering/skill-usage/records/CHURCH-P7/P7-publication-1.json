@@ -1,0 +1,96 @@
+{
+  "schema_version": 1,
+  "event_id": "CHURCH-P7/P7/publication/1",
+  "event_type": "phase_handoff",
+  "task_id": "CHURCH-P7",
+  "scope_id": "P7-publication",
+  "recorded_at": "2026-11-19T17:55:48.792631+07:00",
+  "reported_by": "delivery_owner",
+  "source_kind": "agent_self_report",
+  "phase": "implementation",
+  "handoff_index": 1,
+  "classification": {
+    "delivery": "roadmap",
+    "complexity": "Tách phạm vi phát hành và mở PR cho P7",
+    "ui": false
+  },
+  "authority": {
+    "approval": "Khiêm yêu cầu chốt P7, commit, push và mở PR vào main.",
+    "scope": "P7.1–P7.3 và hồ sơ hoãn P7.4–P7.5."
+  },
+  "skills": [
+    {
+      "skill_id": "git-workflow",
+      "contribution_summary": "Kiểm phạm vi, tách OCR khỏi index, kiểm bản staged và chuẩn bị PR.",
+      "contribution_percent_estimate": 100,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "host_skill",
+        "path": "git-workflow/SKILL.md",
+        "version": null,
+        "sha256": "fae3c6e8c1994066b751a2405c0278e979e0589048d4ced3ae43b324fe9c4f87",
+        "fingerprint_basis": "SHA-256 file skill đã đọc."
+      }
+    }
+  ],
+  "outcome": {
+    "delivery_status": "COMPLETED",
+    "verification_level": "LOCAL_STAGED_CHECKS",
+    "human_acceptance": "NOT_APPLICABLE",
+    "limitations": [
+      "Bản ghi phạm vi trước publication. Trạng thái PR/CI theo GitHub.",
+      "Mã OCR thử nghiệm giữ local."
+    ]
+  },
+  "measurements": {
+    "elapsed_seconds": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có số đo xác thực riêng cho pha."
+    },
+    "tool_calls": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có số đo xác thực riêng cho pha."
+    },
+    "input_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có số đo xác thực riêng cho pha."
+    },
+    "output_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có số đo xác thực riêng cho pha."
+    },
+    "cached_input_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có số đo xác thực riêng cho pha."
+    },
+    "reasoning_output_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có số đo xác thực riêng cho pha."
+    },
+    "client": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có số đo xác thực riêng cho pha."
+    },
+    "model": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có số đo xác thực riêng cho pha."
+    },
+    "effort": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có số đo xác thực riêng cho pha."
+    }
+  },
+  "evidence_refs": [
+    "docs/engineering/skill-usage/records/CHURCH-P7/P7-closure-1.json",
+    "docs/tasks/CHURCH-P7.md"
+  ]
+}

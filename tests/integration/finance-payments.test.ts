@@ -645,3 +645,278 @@ describe("P54 payment/book public contracts", () => {
     ).toBe(1);
   });
 });
+
+describe("P7.3 approval threshold", () => {
+  async function configure(threshold: object | null | undefined, approverRole = "pastor") {
+    const path = `${financeRoot(c)}/settings`;
+    const before = (await p.call(path)).payload.data.settings;
+    const r = await p.call(
+      path,
+      {
+        approverRole,
+        proposerRoles: ["ministry_lead", "treasurer"],
+        ...(threshold === undefined ? {} : { approvalThreshold: threshold }),
+      },
+      { method: "PATCH", version: before.version },
+    );
+    expect(r.status).toBe(200);
+    return (await p.call(path)).payload.data.settings;
+  }
+  const scope = (who: SyntheticClient, view = "review", extra = "") =>
+    who.call(`${root()}?scope=${view}${extra}`);
+  const data = async (who: SyntheticClient, id: string) =>
+    (await who.call(`${root()}/${id}`)).payload.data;
+
+  test("73-01–03: versioned routing, case ACL, atomic decision and attached payment", async () => {
+    await configure(null);
+    const fundId = await newFund();
+    const filter = `&fundId=${fundId}`;
+    const base = { fundId };
+    await receipt("30000000", fundId);
+    const legacy = await submit(l, { ...base, amount: "123" });
+    const stale = draft({ ...base, amount: "4999999" });
+    const oldPreview = (await l.call(`${root()}/preview`, stale)).payload.data.previewToken;
+    const threshold = { amount: "5000000", belowRole: "secretary", atOrAboveRole: "pastor" };
+    const config = await configure(threshold);
+    const settingsPath = `${financeRoot(c)}/settings`;
+    for (const [amount, belowRole] of [
+      ["0", "secretary"],
+      ["2.5", "secretary"],
+      ["5000000", "owner"],
+    ]) {
+      expect(
+        (
+          await p.call(
+            settingsPath,
+            {
+              approverRole: "pastor",
+              proposerRoles: ["ministry_lead"],
+              approvalThreshold: { ...threshold, amount, belowRole },
+            },
+            { method: "PATCH", version: config.version },
+          )
+        ).status,
+      ).toBe(422);
+    }
+    expect(
+      (
+        await t.call(
+          settingsPath,
+          {
+            approverRole: "pastor",
+            proposerRoles: [],
+            approvalThreshold: threshold,
+          },
+          { method: "PATCH", version: config.version },
+        )
+      ).status,
+    ).toBe(403);
+    expect((await l.call(root(), { proposal: stale, previewToken: oldPreview })).status).toBe(409);
+
+    const { default: sharp } = await import("sharp");
+    const image = await sharp({
+      create: {
+        width: 120,
+        height: 80,
+        channels: 3,
+        background: "#fff5dc",
+      },
+    })
+      .png()
+      .toBuffer();
+    const upload = await l.call(`${root()}/attachments`, image, {
+      headers: { "content-type": "image/png" },
+    });
+    expect(upload.status).toBe(201);
+    const below = await submit(l, {
+      ...base,
+      amount: "4999999",
+      attachmentId: upload.payload.data.id,
+    });
+    const exact = await submit(l, { ...base, amount: "5000000" });
+    const above = await submit(l, {
+      ...base,
+      amount: "5000001",
+      attachmentId: (
+        await l.call(`${root()}/attachments`, image, { headers: { "content-type": "image/png" } })
+      ).payload.data.id,
+    });
+    for (const [id, band, approver] of [
+      [below.id, "below", "secretary"],
+      [exact.id, "at_or_above", "pastor"],
+      [above.id, "at_or_above", "pastor"],
+    ] as const) {
+      const row = await data(p, id);
+      expect(row.approvalBand).toBe(band);
+      expect(row.currentApproverRole).toBe(approver);
+      expect(row.approvalRuleVersion).toBe(config.version);
+    }
+    const only = await s.call(`${root()}/context`);
+    expect(only.payload.data).toMatchObject({
+      canReadAll: false,
+      canReadOwn: false,
+      canDecide: true,
+      canSubmit: false,
+    });
+    const queue = await scope(s, "review", filter);
+    expect(queue.payload.data.items.map((r: { id: string }) => r.id)).toEqual([below.id]);
+    expect(queue.payload.data.summary.pending).toEqual({ count: 1, total: "4999999" });
+    expect((await scope(s, "all", filter)).status).toBe(403);
+    expect((await s.call(`${root()}/funds`)).status).toBe(403);
+    expect(
+      (await scope(s, "review", `${filter}&q=${(await data(p, above.id)).code}`)).payload.data
+        .items,
+    ).toEqual([]);
+    expect((await s.call(`${root()}/${above.id}`)).status).toBe(404);
+    expect((await s.call(`${root()}/${above.id}/history`)).status).toBe(404);
+    expect((await s.call(`${root()}/${above.id}/attachment`)).status).toBe(404);
+    const allowed = await app(
+      new Request(`${conf.origin}/api/v1/${root()}/${below.id}/attachment`, {
+        headers: { cookie: s.cookie() },
+      }),
+      { ip: crypto.randomUUID() },
+    );
+    expect(allowed.status).toBe(200);
+    expect(allowed.headers.get("content-type")).toBe("image/png");
+    expect(new Uint8Array(await allowed.arrayBuffer()).length).toBeGreaterThan(0);
+
+    const self = await submit(p, { ...base, amount: "5000000" });
+    const decision = { decision: "approved", reason: "" };
+    const selfResult = await p.call(`${root()}/${self.id}/preview`, decision, { version: 1 });
+    expect(selfResult.payload.error.code).toBe("EXPENSE_SELF_DECISION");
+    expect(
+      (await scope(p, "review", filter)).payload.data.items.some(
+        (r: { id: string }) => r.id === self.id,
+      ),
+    ).toBe(false);
+    expect((await p.call(`${root()}/${below.id}/preview`, decision, { version: 1 })).status).toBe(
+      403,
+    );
+
+    const next = { amount: "9007199254740993", belowRole: "treasurer", atOrAboveRole: "pastor" };
+    const changed = await configure(next, "secretary");
+    expect(changed.version).toBeGreaterThan(config.version);
+    expect((await data(s, legacy.id)).currentApproverRole).toBe("secretary");
+    expect((await data(s, below.id)).currentApproverRole).toBe("secretary");
+    expect((await s.call(`${root()}/${exact.id}`)).status).toBe(404);
+    expect(
+      (await scope(s, "all", filter)).payload.data.items.map((r: { id: string }) => r.id).sort(),
+    ).toEqual([legacy.id, below.id].sort());
+    expect((await configure(undefined, "treasurer")).approvalThreshold).toEqual(next);
+    for (const [amount, role] of [
+      ["9007199254740992", "treasurer"],
+      ["9007199254740993", "pastor"],
+    ]) {
+      const v = await l.call(`${root()}/preview`, draft({ ...base, amount }));
+      expect(v.payload.data.approverRole).toBe(role);
+    }
+    const unfunded = await submit(l, { ...base, amount: "40000000" });
+    expect((await decide(unfunded.id, "approved", t)).r.status).toBe(200);
+    expect((await previewPay(unfunded.id)).r.payload.error.code).toBe(
+      "FINANCE_INSUFFICIENT_BALANCE",
+    );
+    const fresh = await submit(l, { ...base, amount: "90" });
+    expect((await data(t, fresh.id)).currentApproverRole).toBe("treasurer");
+    await configure(null, "pastor");
+    const off = await submit(l, { ...base, amount: "91" });
+    expect(await data(p, off.id)).toMatchObject({
+      approvalRuleVersion: null,
+      currentApproverRole: "pastor",
+    });
+    expect((await data(s, below.id)).currentApproverRole).toBe("secretary");
+    expect((await data(t, fresh.id)).currentApproverRole).toBe("treasurer");
+
+    const revoker = client();
+    const removed = await syntheticUser(owner, revoker, c, "secretary");
+    const revokePreview = (
+      await revoker.call(`${root()}/${below.id}/preview`, decision, { version: 1 })
+    ).payload.data.previewToken;
+    await db.db.collection("accounts").updateOne(
+      { _id: new ObjectId(removed.id) },
+      {
+        $set: { role: "ministry_lead", scope: { kind: "assigned_units", unitIds: [c.unitId] } },
+        $inc: { version: 1 },
+      },
+    );
+    expect(
+      (
+        await revoker.call(
+          `${root()}/${below.id}/decision`,
+          {
+            decision,
+            previewToken: revokePreview,
+          },
+          { version: 1 },
+        )
+      ).status,
+    ).toBeGreaterThanOrEqual(400);
+    expect((await data(p, below.id)).state).toBe("pending");
+
+    const previews = await Promise.all(
+      [s, s2].map((who) => who.call(`${root()}/${below.id}/preview`, decision, { version: 1 })),
+    );
+    expect(previews.every(({ status }) => status === 200)).toBe(true);
+    const decided = await Promise.all(
+      [s, s2].map((who, i) =>
+        who.call(
+          `${root()}/${below.id}/decision`,
+          {
+            decision,
+            previewToken: previews[i]?.payload.data.previewToken,
+          },
+          { version: 1 },
+        ),
+      ),
+    );
+    expect(decided.map(({ status }) => status).sort()).toEqual([200, 412]);
+    expect((await data(s, below.id)).decision.actorRole).toBe("secretary");
+    expect((await scope(s, "review", filter)).payload.data.summary.pending.count).toBe(0);
+
+    const payment = await pay(below.id);
+    expect(payment.r.status).toBe(201);
+    expect(
+      (
+        await t.call(`${root()}/${below.id}/payment`, payment.body, {
+          version: 2,
+          key: payment.key,
+        })
+      ).status,
+    ).toBe(200);
+    const pid = new ObjectId(payment.r.payload.data.paymentId);
+    expect(
+      await db.db
+        .collection("finance_payments")
+        .countDocuments({ proposalId: new ObjectId(below.id) }),
+    ).toBe(1);
+    const row = await db.db.collection("finance_ledger").findOne({ paymentId: pid });
+    expect(row?.amount.toString()).toBe("-4999999");
+    const ledger = await t.call(`${financeRoot(c)}/ledger?fundId=${fundId}&kind=payment`);
+    expect(ledger.status).toBe(200);
+    expect(ledger.payload.data.items).toHaveLength(1);
+    expect(ledger.payload.data.items[0].proposalId).toBe(below.id);
+    expect(ledger.payload.data.netExpense).toBe("4999999");
+    expect(ledger.payload.data.closingBalance).toBe("25000001");
+    expect((await data(l, below.id)).hasAttachment).toBe(true);
+    expect((await data(l, below.id)).state).toBe("paid");
+    expect((await decide(fresh.id, "approved", t)).r.status).toBe(200);
+    const month = (await data(p, fresh.id)).businessDate.slice(0, 7);
+    await db.db
+      .collection("finance_periods")
+      .updateOne({ _id: `${c.id}:${month}` as never }, { $set: { state: "closed" } });
+    expect((await previewPay(fresh.id)).r.payload.error.code).toBe("FINANCE_PERIOD_CLOSED");
+    await db.db
+      .collection("finance_periods")
+      .updateOne({ _id: `${c.id}:${month}` as never }, { $set: { state: "open" } });
+    const currentFund = (await p.call(`${financeRoot(c)}/funds/${fundId}`)).payload.data;
+    expect(
+      (
+        await p.call(
+          `${financeRoot(c)}/funds/${fundId}/status`,
+          { status: "inactive", reason: "Kiểm thử P7.3" },
+          { method: "PATCH", version: currentFund.version },
+        )
+      ).status,
+    ).toBe(200);
+    expect((await previewPay(fresh.id)).r.payload.error.code).toBe("FINANCE_SOURCE_UNAVAILABLE");
+  });
+});

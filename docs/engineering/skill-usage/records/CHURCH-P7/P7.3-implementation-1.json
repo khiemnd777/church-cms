@@ -1,0 +1,151 @@
+{
+  "schema_version": 1,
+  "event_id": "CHURCH-P7/P7.3/implementation/1",
+  "event_type": "phase_handoff",
+  "task_id": "CHURCH-P7",
+  "scope_id": "P7.3",
+  "recorded_at": "2026-11-19T15:06:03.293514+07:00",
+  "reported_by": "delivery_owner",
+  "source_kind": "agent_self_report",
+  "phase": "implementation",
+  "handoff_index": 1,
+  "classification": {
+    "delivery": "roadmap",
+    "complexity": "Định tuyến đề xuất theo hạn mức, ACL từng dòng và hồi quy phiếu chi",
+    "ui": true
+  },
+  "authority": {
+    "approval": "Khiêm nghiệm thu P7.2-r1 và mở P7.3 theo C73, ASCII.",
+    "scope": "P7.3 local/synthetic, bàn giao rồi dừng trước P7.4."
+  },
+  "skills": [
+    {
+      "skill_id": "api-and-interface-design",
+      "contribution_summary": "Hợp đồng bật/tắt, version đã áp, tương thích P5 và phạm vi review",
+      "contribution_percent_estimate": 25,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/api-and-interface-design/SKILL.md",
+        "version": null,
+        "sha256": "2550ac99404f1d52566cdd95fd809e0984eb29f1174132a864fb7beb9f688f79",
+        "fingerprint_basis": "SHA-256 của file skill trong checkout dùng cho chặng."
+      }
+    },
+    {
+      "skill_id": "security-and-hardening",
+      "contribution_summary": "Quyền từng đề xuất trước danh sách, KPI, lịch sử, ảnh và quyết định",
+      "contribution_percent_estimate": 25,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/security-and-hardening/SKILL.md",
+        "version": null,
+        "sha256": "4549688254258d5d6836a0f2d8cf606460a9baf426e9c644d3244a9973778ad3",
+        "fingerprint_basis": "SHA-256 của file skill trong checkout dùng cho chặng."
+      }
+    },
+    {
+      "skill_id": "test-driven-development",
+      "contribution_summary": "Kiểm ngưỡng, thu hồi quyền, CAS, thanh toán và hồi quy",
+      "contribution_percent_estimate": 25,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/test-driven-development/SKILL.md",
+        "version": null,
+        "sha256": "48d85b44f5e6286ba2a7a43550083609f299aa4001391768e9da126d2db86742",
+        "fingerprint_basis": "SHA-256 của file skill trong checkout dùng cho chặng."
+      }
+    },
+    {
+      "skill_id": "frontend-ui-engineering",
+      "contribution_summary": "Cấu hình/xem trước W12, hàng chờ W10 và kiểm Firefox",
+      "contribution_percent_estimate": 20,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/frontend-ui-engineering/SKILL.md",
+        "version": null,
+        "sha256": "b5c47fed383892428172bf0b9c1ed1aeab50066ff9421a87a6c344f746386495",
+        "fingerprint_basis": "SHA-256 của file skill trong checkout dùng cho chặng."
+      }
+    },
+    {
+      "skill_id": "documentation-and-adrs",
+      "contribution_summary": "Ghi nghiệm thu P7.2, contract và giới hạn bàn giao P7.3",
+      "contribution_percent_estimate": 5,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/documentation-and-adrs/SKILL.md",
+        "version": null,
+        "sha256": "f3199cfec5d6fdfa6533f180b1e6cbee584cd6175d8eb25c0d186c833120609c",
+        "fingerprint_basis": "SHA-256 của file skill trong checkout dùng cho chặng."
+      }
+    }
+  ],
+  "outcome": {
+    "delivery_status": "COMPLETED",
+    "verification_level": "LOCAL_SYNTHETIC_SCOPED",
+    "human_acceptance": "PENDING_REVIEW",
+    "limitations": [
+      "Kiểm local/synthetic. Thiết bị thật, Safari, toàn bộ test suite, UAT, main runtime, pilot, remote CI và production NOT_RUN.",
+      "Cấu hình thử là fixture. Kích hoạt schema/index hoặc đặt hạn mức cho Hội Thánh thật cần quyết định riêng.",
+      "P7.3 chờ nghiệm thu. P7.4 chưa mở."
+    ]
+  },
+  "measurements": {
+    "elapsed_seconds": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có số đo xác thực riêng cho pha."
+    },
+    "tool_calls": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có số đo xác thực riêng cho pha."
+    },
+    "input_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có số đo xác thực riêng cho pha."
+    },
+    "output_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có số đo xác thực riêng cho pha."
+    },
+    "cached_input_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có số đo xác thực riêng cho pha."
+    },
+    "reasoning_output_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có số đo xác thực riêng cho pha."
+    },
+    "client": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có số đo xác thực riêng cho pha."
+    },
+    "model": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có số đo xác thực riêng cho pha."
+    },
+    "effort": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có số đo xác thực riêng cho pha."
+    }
+  },
+  "evidence_refs": [
+    "docs/tasks/CHURCH-P7.3.md",
+    "output/p7.3/verification.json",
+    "output/p7.3/browser/browser-results.json",
+    "output/p7.3/payments/browser-results.json"
+  ]
+}

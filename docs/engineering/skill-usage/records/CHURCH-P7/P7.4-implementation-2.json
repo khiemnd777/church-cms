@@ -1,0 +1,127 @@
+{
+  "schema_version": 1,
+  "event_id": "CHURCH-P7/P7.4/implementation/2",
+  "event_type": "phase_handoff",
+  "task_id": "CHURCH-P7",
+  "scope_id": "P7.4",
+  "recorded_at": "2026-11-19T17:29:52.081135+07:00",
+  "reported_by": "delivery_owner",
+  "source_kind": "agent_self_report",
+  "phase": "implementation",
+  "handoff_index": 2,
+  "classification": {
+    "delivery": "roadmap",
+    "complexity": "Thay bộ đọc ô tiếng Việt và cổng kiểm định độc lập",
+    "ui": false
+  },
+  "authority": {
+    "approval": "Khiêm duyệt P7.4-plan-r2 với tập 28 trang hỗn hợp.",
+    "scope": "74-01 local/synthetic. Nguồn người viết do Khiêm chốt. Dừng trước P7.5."
+  },
+  "skills": [
+    {
+      "skill_id": "incremental-implementation",
+      "contribution_summary": "Huấn luyện, export, khóa model và nối worker với Rites",
+      "contribution_percent_estimate": 50,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/incremental-implementation/SKILL.md",
+        "version": null,
+        "sha256": "4663b276ac0d2f38be6f14a23d792783a255efe714710726af21c0f52c873359",
+        "fingerprint_basis": "SHA-256 file skill checkout."
+      }
+    },
+    {
+      "skill_id": "test-driven-development",
+      "contribution_summary": "Bộ chấm exact, cổng dữ liệu độc lập, hồi quy và smoke qua API",
+      "contribution_percent_estimate": 35,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/test-driven-development/SKILL.md",
+        "version": null,
+        "sha256": "48d85b44f5e6286ba2a7a43550083609f299aa4001391768e9da126d2db86742",
+        "fingerprint_basis": "SHA-256 file skill checkout."
+      }
+    },
+    {
+      "skill_id": "source-driven-development",
+      "contribution_summary": "Đối chiếu model, artifact và điều kiện nguồn trọng số/phông",
+      "contribution_percent_estimate": 15,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/source-driven-development/SKILL.md",
+        "version": null,
+        "sha256": "ea9d93de7dbddafa9c79afe456400c46145e0c6b2361f83aad79137c0a717008",
+        "fingerprint_basis": "SHA-256 file skill checkout."
+      }
+    }
+  ],
+  "outcome": {
+    "delivery_status": "INCOMPLETE",
+    "verification_level": "LOCAL_SYNTHETIC_DEVELOPMENT",
+    "human_acceptance": "PENDING_REVIEW",
+    "limitations": [
+      "74-01 FAIL cổng phát triển.",
+      "Tập 28 trang độc lập, nguồn người viết và kiểm W06 với model đạt ngưỡng NOT_RUN.",
+      "Rites smoke chỉ chứng minh worker local đã nối đúng API.",
+      "P7.5 chưa mở. Main runtime, UAT, production và phát hành NOT_RUN."
+    ]
+  },
+  "measurements": {
+    "elapsed_seconds": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có số đo xác thực riêng cho pha."
+    },
+    "tool_calls": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có số đo xác thực riêng cho pha."
+    },
+    "input_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có số đo xác thực riêng cho pha."
+    },
+    "output_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có số đo xác thực riêng cho pha."
+    },
+    "cached_input_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có số đo xác thực riêng cho pha."
+    },
+    "reasoning_output_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có số đo xác thực riêng cho pha."
+    },
+    "client": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có số đo xác thực riêng cho pha."
+    },
+    "model": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có số đo xác thực riêng cho pha."
+    },
+    "effort": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có số đo xác thực riêng cho pha."
+    }
+  },
+  "evidence_refs": [
+    "docs/tasks/CHURCH-P7.4.md",
+    "output/p7.4-r2/verification.json",
+    "output/p7.4-r2/dev-vi.json",
+    "output/p7.4-r2/regression-r1.json",
+    "output/p7.4-r2/real-worker-api.log"
+  ]
+}

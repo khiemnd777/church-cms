@@ -14,6 +14,12 @@
   align-items: center;
   gap: 12px;
 }
+.schedule-reader-actions {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
 @media (max-width: 560px) {
   .schedule-grid {
     grid-template-columns: minmax(0, 1fr);

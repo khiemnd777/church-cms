@@ -10,6 +10,7 @@ import {
   historyLabels,
   type SettingsReply,
 } from "./finance-api";
+import { vnd } from "./finance-income-api";
 import { authErrorCodes, type TenantIntent, useTenantMutation } from "./tenant-mutation";
 import {
   Badge,
@@ -33,6 +34,14 @@ import {
 } from "./ui/components";
 import "./finance.css";
 
+const expenseApprovers = ["pastor", "secretary", "treasurer"] as const;
+type Approver = FinanceSettingsBody["approverRole"];
+const emptyThreshold = {
+  amount: "",
+  belowRole: "" as Approver | "",
+  atOrAboveRole: "" as Approver | "",
+};
+
 export function FinanceConfiguration({
   churchId,
   context,
@@ -55,6 +64,8 @@ export function FinanceConfiguration({
       proposerRoles: FinanceSettingsBody["proposerRoles"];
       approverRole: FinanceSettingsBody["approverRole"] | "";
     }>({ proposerRoles: [], approverRole: "" }),
+    [threshold, setThreshold] = useState<typeof emptyThreshold | null>(null),
+    [settingsPreview, setSettingsPreview] = useState<FinanceSettingsBody | null>(null),
     [q, setQ] = useState(""),
     [search, setSearch] = useState(""),
     [status, setStatus] = useState("active"),
@@ -90,6 +101,8 @@ export function FinanceConfiguration({
       setDialog(null);
       setHistoryTarget(null);
       setBody({ proposerRoles: [], approverRole: "" });
+      setThreshold(null);
+      setSettingsPreview(null);
       setName("");
       setReason("");
       setAccessLost(true);
@@ -126,6 +139,7 @@ export function FinanceConfiguration({
       .then((r) => {
         if (abort.signal.aborted || accessLostRef.current) return;
         setSettings(r.data);
+        setThreshold(r.data.settings?.approvalThreshold ?? null);
         setBody(
           r.data.settings
             ? {
@@ -198,11 +212,26 @@ export function FinanceConfiguration({
   }
   const ownPending =
     pending?.resource?.kind === "finance" && pending.churchId === churchId ? pending : null;
+  const previewThreshold = !!threshold || !!settings?.settings?.approvalThreshold;
+  function saveSettings(next: FinanceSettingsBody) {
+    if (locked || !settings) return;
+    setSettingsPreview(null);
+    mutation.send(
+      `${base}/settings`,
+      settings.configured ? "PATCH" : "POST",
+      next,
+      settings.settings?.version,
+    );
+  }
   const snapshotText = (value: object | null) => {
     if (!value) return "Chưa có";
     const v = value as Partial<FundDto & FinanceSettingsBody>;
     if (typeof v.name === "string")
       return `${v.name} · ${v.status === "active" ? "Đang dùng" : "Ngừng dùng"}`;
+    if (v.approvalThreshold) {
+      const t = v.approvalThreshold;
+      return `Dưới ${vnd(t.amount)}: ${roleLabels[t.belowRole]}. Từ ${vnd(t.amount)}: ${roleLabels[t.atOrAboveRole]}.`;
+    }
     return `Đề xuất: ${v.proposerRoles?.map((r) => roleLabels[r]).join(", ") || "Chỉ vai trò duyệt"}; Duyệt: ${v.approverRole ? roleLabels[v.approverRole] : "Chưa cấu hình"}`;
   };
   return (
@@ -375,13 +404,22 @@ export function FinanceConfiguration({
             className="finance-layout"
             onSubmit={(e) => {
               e.preventDefault();
-              if (!body.approverRole) return;
-              mutation.send(
-                `${base}/settings`,
-                settings.configured ? "PATCH" : "POST",
-                body,
-                settings.settings?.version,
-              );
+              if (!body.approverRole || locked) return;
+              if (threshold && (!threshold.belowRole || !threshold.atOrAboveRole)) return;
+              const next: FinanceSettingsBody = {
+                ...body,
+                approverRole: body.approverRole,
+                approvalThreshold:
+                  threshold?.belowRole && threshold.atOrAboveRole
+                    ? {
+                        amount: threshold.amount,
+                        belowRole: threshold.belowRole,
+                        atOrAboveRole: threshold.atOrAboveRole,
+                      }
+                    : null,
+              };
+              if (previewThreshold) setSettingsPreview(next);
+              else saveSettings(next);
             }}
           >
             {!settings.configured && (
@@ -412,7 +450,11 @@ export function FinanceConfiguration({
                 ))}
               </div>
             </section>
-            <Field label="Vai trò phê duyệt" error={mutation.fields.approverRole}>
+            <Field
+              label="Vai trò phê duyệt"
+              hint={threshold ? "Dùng cho đề xuất theo quy tắc cũ." : undefined}
+              error={mutation.fields.approverRole}
+            >
               <Select
                 required
                 value={body.approverRole}
@@ -425,17 +467,58 @@ export function FinanceConfiguration({
                 }
               >
                 <option value="">Chọn vai trò…</option>
-                {(["pastor", "secretary", "treasurer"] as const).map((r) => (
+                {expenseApprovers.map((r) => (
                   <option key={r} value={r}>
                     {roleLabels[r]}
                   </option>
                 ))}
               </Select>
             </Field>
-            <p>
-              Vai trò duyệt được lập đề xuất. Không được duyệt đề xuất do chính mình tạo. Nghiệp vụ
-              gửi/duyệt và thu/chi chưa mở.
-            </p>
+            <Stack space="content">
+              <Field label="Duyệt theo hạn mức">
+                <Select
+                  disabled={!canWrite || locked}
+                  value={threshold ? "on" : "off"}
+                  onChange={(e) => setThreshold(e.target.value === "on" ? emptyThreshold : null)}
+                >
+                  <option value="off">Tắt</option>
+                  <option value="on">Bật</option>
+                </Select>
+              </Field>
+              {threshold && (
+                <Stack space="content">
+                  <Field label="Ngưỡng VND">
+                    <TextInput
+                      required
+                      inputMode="numeric"
+                      pattern="[1-9][0-9]{0,17}"
+                      maxLength={18}
+                      value={threshold.amount}
+                      disabled={!canWrite || locked}
+                      onChange={(e) => setThreshold({ ...threshold, amount: e.target.value })}
+                    />
+                  </Field>
+                  {(["belowRole", "atOrAboveRole"] as const).map((field) => (
+                    <Field key={field} label={field === "belowRole" ? "Dưới ngưỡng" : "Từ ngưỡng"}>
+                      <Select
+                        required
+                        disabled={!canWrite || locked}
+                        value={threshold[field]}
+                        onChange={(e) => setThreshold({ ...threshold, [field]: e.target.value })}
+                      >
+                        <option value="">Chọn vai trò…</option>
+                        {expenseApprovers.map((role) => (
+                          <option key={role} value={role}>
+                            {roleLabels[role]}
+                          </option>
+                        ))}
+                      </Select>
+                    </Field>
+                  ))}
+                </Stack>
+              )}
+            </Stack>
+            <p>Người lập đề xuất không được tự duyệt.</p>
             <DialogActions>
               {settings.configured && (
                 <Button
@@ -453,7 +536,7 @@ export function FinanceConfiguration({
                     Tải bản hiện hành
                   </Button>
                   <Button variant="primary" type="submit" disabled={locked || !body.approverRole}>
-                    Lưu
+                    {previewThreshold ? "Xem trước" : "Lưu"}
                   </Button>
                 </>
               )}
@@ -461,6 +544,32 @@ export function FinanceConfiguration({
           </form>
         )}
       </Card>
+      <Modal
+        open={!!settingsPreview}
+        title="Xem trước cấu hình duyệt chi"
+        locked={locked}
+        onClose={() => setSettingsPreview(null)}
+      >
+        {settingsPreview && (
+          <>
+            <Stack space="compact">
+              <p>Duyệt theo hạn mức: {settingsPreview.approvalThreshold ? "Bật" : "Tắt"}</p>
+              <p>{snapshotText(settingsPreview)}</p>
+              <p>Hạn mức áp dụng cho đề xuất gửi sau khi lưu cấu hình.</p>
+            </Stack>
+            <DialogActions>
+              <Button onClick={() => setSettingsPreview(null)}>Quay lại</Button>
+              <Button
+                variant="primary"
+                disabled={locked}
+                onClick={() => saveSettings(settingsPreview)}
+              >
+                Lưu
+              </Button>
+            </DialogActions>
+          </>
+        )}
+      </Modal>
       <Modal
         open={!!dialog}
         locked={locked}

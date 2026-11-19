@@ -4,6 +4,7 @@ export const expenseDraft = z.strictObject({
   submissionId: z.uuid().transform((s) => s.toLowerCase()),
   fundId: idSchema.transform((s) => s.toLowerCase()),
   amount: z.string().regex(/^[1-9]\d{0,17}$/),
+  attachmentId: idSchema.transform((s) => s.toLowerCase()).optional(),
   purpose: z.string().normalize("NFC").trim().min(1).max(500),
 });
 export const expenseDecision = z

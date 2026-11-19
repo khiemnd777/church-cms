@@ -55,13 +55,19 @@ export class RateLimit {
     }
   }
   async qrResolution(churchId: string, actorKind: string, actorId: string) {
-    const bucket = `qlht:qr-resolution:${sign(this.key, `${actorKind}:${churchId}:${actorId}`)}`;
+    return this.consumeMinute("qr-resolution", `${actorKind}:${churchId}:${actorId}`, 120);
+  }
+  async expenseAttachment(churchId: string, actorId: string) {
+    return this.consumeMinute("expense-attachment", `${churchId}:${actorId}`, 12);
+  }
+  private async consumeMinute(name: string, scope: string, limit: number) {
+    const bucket = `qlht:${name}:${sign(this.key, scope)}`;
     try {
       const r = (await this.client.eval(
         "local n=redis.call('INCR',KEYS[1]); if n==1 then redis.call('EXPIRE',KEYS[1],60) end; return {n,redis.call('TTL',KEYS[1])}",
         { keys: [bucket], arguments: [] },
       )) as number[];
-      if ((r[0] ?? 0) > 120)
+      if ((r[0] ?? 0) > limit)
         throw new AppError(429, "RATE_LIMITED", undefined, Math.max(1, r[1] ?? 60));
     } catch (e) {
       if (e instanceof AppError) throw e;

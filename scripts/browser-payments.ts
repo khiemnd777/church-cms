@@ -86,7 +86,9 @@ async function login(
   await p.getByLabel("Mật khẩu", { exact: true }).fill(account.password);
   await p.getByRole("button", { name: "Đăng nhập", exact: true }).click();
   try {
-    await p.getByRole("button", { name: "Thông tin truy cập", exact: true }).waitFor();
+    if (openExpense)
+      await p.getByRole("button", { name: "Thông tin truy cập", exact: true }).waitFor();
+    else await p.getByRole("heading", { name: "Cổng tín hữu", exact: true }).waitFor();
   } catch (error) {
     await Bun.write(
       `${evidence}/login-diagnostic.json`,
@@ -215,6 +217,7 @@ try {
       await ps.call(`${finance}/settings`, {
         proposerRoles: ["secretary", "treasurer", "ministry_lead"],
         approverRole: "pastor",
+        approvalThreshold: { amount: "1", belowRole: "treasurer", atOrAboveRole: "pastor" },
       })
     ).status === 201,
     "explicit-config",
@@ -265,7 +268,14 @@ try {
       ).status === 200,
       "public-approval",
     );
-    return (await ss.call(`${base}/${id}`)).payload.data;
+    const proposal = (await ss.call(`${base}/${id}`)).payload.data;
+    assert(
+      proposal.approvalBand === "at_or_above" &&
+        proposal.approvalRuleVersion === 1 &&
+        proposal.decision.actorRole === "pastor",
+      "P73-payment-fixture-is-threshold-approved",
+    );
+    return proposal;
   }
   const first = await approved("Mục đích chi riêng synthetic", "9007199254740993"),
     second = await approved("Chi uncertain synthetic"),
@@ -385,11 +395,12 @@ try {
   await capture(page, "pastor-readonly");
   await login(page, c, member, false);
   await page.goto(`${conf.origin}/h/${c.code}/expense`);
-  await expect(
-    page
-      .getByText("Vai trò hiện tại chưa được cấp quyền đề xuất hoặc duyệt chi.", { exact: true })
-      .first(),
-  ).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Cổng tín hữu", exact: true })).toBeVisible();
+  assert(
+    new URL(page.url()).pathname.endsWith("/portal"),
+    "member-expense-deeplink-returns-to-portal",
+  );
+  assert((await ms.call(base)).status === 403, "member-expense-api-denied");
   assert((await page.getByRole("table").count()) === 0, "member-no-financial-data");
   await capture(page, "member-denied");
   assert(errors.length === 0, "no-page-errors");

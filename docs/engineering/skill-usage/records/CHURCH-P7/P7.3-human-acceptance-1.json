@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "event_id": "CHURCH-P7/P7.3/human-acceptance/1",
+  "event_type": "evaluation",
+  "task_id": "CHURCH-P7",
+  "scope_id": "P7.3",
+  "recorded_at": "2026-11-19T15:21:07.022228+07:00",
+  "reported_by": "delivery_owner",
+  "source_kind": "human_feedback",
+  "subject_event_id": "CHURCH-P7/P7.3/implementation/1",
+  "assessment_source": "human",
+  "review_attempt": 1,
+  "decision": "ACCEPTED",
+  "findings": [],
+  "evidence_refs": [
+    "docs/tasks/CHURCH-P7.3.md",
+    "output/p7.3/verification.json"
+  ],
+  "accepted_checklist": [
+    "73-01",
+    "73-02",
+    "73-03"
+  ],
+  "authority": "Khiêm nghiệm thu P7.3-r1 đủ ba mục và mở kế hoạch chi tiết P7.4 để duyệt trước coding."
+}

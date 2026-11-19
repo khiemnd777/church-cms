@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "event_id": "CHURCH-P7/P7.4/partial-acceptance/1",
+  "event_type": "evaluation",
+  "task_id": "CHURCH-P7",
+  "scope_id": "P7.4",
+  "recorded_at": "2026-11-19T17:12:26.635479+07:00",
+  "reported_by": "delivery_owner",
+  "source_kind": "human_feedback",
+  "subject_event_id": "CHURCH-P7/P7.4/implementation/1",
+  "assessment_source": "human",
+  "review_attempt": 1,
+  "decision": "PENDING",
+  "findings": [],
+  "accepted_checklist": [
+    "74-02",
+    "74-03"
+  ],
+  "open_checklist": [
+    "74-01"
+  ],
+  "evidence_refs": [
+    "docs/tasks/CHURCH-P7.4.md",
+    "output/p7.4/verification.json"
+  ],
+  "authority": "Khiêm nghiệm thu riêng 74-02 và 74-03 của P7.4-r1 local/synthetic. Giữ 74-01 mở, chưa sang P7.5. Chỉ trình kế hoạch bổ sung để duyệt trước coding."
+}

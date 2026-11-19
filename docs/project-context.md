@@ -1,5 +1,17 @@
 # Bối cảnh Church CMS
 
+## P7.3 — Cấp duyệt theo hạn mức
+
+Finance giữ quy tắc hạn mức có phiên bản. Đề xuất theo hạn mức giữ cấp duyệt đã áp lúc gửi. Quyền theo đề xuất kiểm vai trò hiện hành trước khi đọc, tải ảnh hoặc xử lý quyết định. Đề xuất cũ và cấu hình tắt dùng quy tắc P5. [C73 và hợp đồng](tasks/CHURCH-P7.3.md).
+
+## P7.2 — Vòng đời ảnh chứng từ
+
+Finance lưu ảnh chuẩn hóa trong collection riêng. Ảnh tạm ràng buộc actor/tenant và TTL. Gửi đề xuất chuyển ảnh sang trạng thái cố định cùng giao dịch và dấu vết P5. Quyền của chính đề xuất quyết định phép xem/tải. [Contract và vận hành local](tasks/CHURCH-P7.2.md).
+
+## P7.1 — Chế độ đọc lịch giảng
+
+W07 mở màn chữ lớn chỉ đọc cho buổi đã xếp lịch. Scheduling sở hữu dữ liệu và phép đọc chi tiết theo tenant/role/ban. Chế độ đọc giữ URL và bộ lọc của W07, yêu cầu đọc mới khi tải lại. [C71 và ranh giới năm chặng](tasks/CHURCH-P7.md).
+
 ## P6.5 — Cầu thay riêng từ cổng tín hữu
 
 Prayers tiếp nhận yêu cầu riêng cho Mục sư trong cùng Hội Thánh. Mỗi yêu cầu từ cổng lưu account gửi, thuộc viên tại lúc gửi và khóa chống trùng. Phép đọc self khớp cả account gửi lẫn liên kết hiện hành. Người gửi theo dõi trạng thái công khai. [Contract](engineering/P6.5-personal-prayers.md).

@@ -1,0 +1,120 @@
+{
+  "schema_version": 1,
+  "event_id": "CHURCH-P7/P7.4-plan-r2/planning/1",
+  "event_type": "phase_handoff",
+  "task_id": "CHURCH-P7",
+  "scope_id": "P7.4-plan-r2",
+  "recorded_at": "2026-11-19T17:24:32.972903+07:00",
+  "reported_by": "delivery_owner",
+  "source_kind": "agent_self_report",
+  "phase": "planning",
+  "handoff_index": 1,
+  "classification": {
+    "delivery": "roadmap",
+    "complexity": "Khắc phục nhận dạng và đo độc lập 74-01",
+    "ui": false
+  },
+  "authority": {
+    "approval": "Khiêm duyệt P7.4-plan-r2 28 trang hỗn hợp.",
+    "scope": "Local/synthetic. Nguồn người viết chỉ do Khiêm chốt. Dừng trước P7.5."
+  },
+  "skills": [
+    {
+      "skill_id": "planning-and-task-breakdown",
+      "contribution_summary": "Thứ tự chọn model, nghiệm thu độc lập và W06",
+      "contribution_percent_estimate": 35,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/planning-and-task-breakdown/SKILL.md",
+        "version": null,
+        "sha256": "fb768e0a3d3a77f733eb613c078fb61dde0845a438c65cc095fc6448dc166d4c",
+        "fingerprint_basis": "SHA-256 file skill trong checkout đã đọc."
+      }
+    },
+    {
+      "skill_id": "spec-driven-development",
+      "contribution_summary": "Ngưỡng r1, quy tắc chấm và các điều kiện",
+      "contribution_percent_estimate": 35,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/spec-driven-development/SKILL.md",
+        "version": null,
+        "sha256": "c6cfb5c766c45243290d4dcfc7eb3857dbfb77556355c7960a4411762764858b",
+        "fingerprint_basis": "SHA-256 file skill trong checkout đã đọc."
+      }
+    },
+    {
+      "skill_id": "source-driven-development",
+      "contribution_summary": "Từ điển artifact local và tài liệu PaddleOCR",
+      "contribution_percent_estimate": 30,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/source-driven-development/SKILL.md",
+        "version": null,
+        "sha256": "ea9d93de7dbddafa9c79afe456400c46145e0c6b2361f83aad79137c0a717008",
+        "fingerprint_basis": "SHA-256 file skill trong checkout đã đọc."
+      }
+    }
+  ],
+  "outcome": {
+    "delivery_status": "COMPLETED",
+    "verification_level": "APPROVED_PLAN",
+    "human_acceptance": "ACCEPTED",
+    "limitations": [
+      "Chỉ là nghiệm thu kế hoạch. 74-01 còn mở."
+    ]
+  },
+  "measurements": {
+    "elapsed_seconds": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có số đo xác thực riêng cho pha."
+    },
+    "tool_calls": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có số đo xác thực riêng cho pha."
+    },
+    "input_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có số đo xác thực riêng cho pha."
+    },
+    "output_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có số đo xác thực riêng cho pha."
+    },
+    "cached_input_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có số đo xác thực riêng cho pha."
+    },
+    "reasoning_output_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có số đo xác thực riêng cho pha."
+    },
+    "client": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có số đo xác thực riêng cho pha."
+    },
+    "model": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có số đo xác thực riêng cho pha."
+    },
+    "effort": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có số đo xác thực riêng cho pha."
+    }
+  },
+  "evidence_refs": [
+    "docs/tasks/CHURCH-P7.4.md"
+  ]
+}

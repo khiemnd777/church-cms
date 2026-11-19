@@ -62,6 +62,7 @@ export const settingsDto = (s: FinanceSettings) => ({
   version: s.version,
   proposerRoles: s.proposerRoles,
   approverRole: s.approverRole,
+  approvalThreshold: s.approvalThreshold ?? null,
   createdAt: s.createdAt.toISOString(),
   updatedAt: s.updatedAt.toISOString(),
 });

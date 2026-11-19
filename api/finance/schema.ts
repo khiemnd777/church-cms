@@ -3,7 +3,7 @@ const oid = { bsonType: "objectId" },
   text = { bsonType: "string" };
 const object = (properties: Record<string, unknown>) => ({
   required: Object.keys(properties).filter(
-    (k) => k !== "financeWriteFence" && k !== "expenseWriteFence",
+    (k) => !["financeWriteFence", "expenseWriteFence", "approvalThreshold"].includes(k),
   ),
   additionalProperties: false,
   properties,
@@ -25,6 +25,19 @@ export const financeSchemas = {
       items: { enum: ["secretary", "treasurer", "ministry_lead"] },
     },
     approverRole: { enum: ["pastor", "secretary", "treasurer"] },
+    approvalThreshold: {
+      anyOf: [
+        { bsonType: "null" },
+        {
+          bsonType: "object",
+          ...object({
+            amount: { ...text, pattern: "^[1-9][0-9]{0,17}$" },
+            belowRole: { enum: ["pastor", "secretary", "treasurer"] },
+            atOrAboveRole: { enum: ["pastor", "secretary", "treasurer"] },
+          }),
+        },
+      ],
+    },
   }),
   finance_funds: object({
     _id: oid,

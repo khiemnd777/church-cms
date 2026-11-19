@@ -11,7 +11,7 @@ import { businessDay, shiftDay } from "../api/members/dates";
 import type { ScheduleCommand } from "../api/scheduling/validation";
 import { assertComposition } from "./browser-composition";
 import { localTls } from "./local-tls";
-import { SyntheticClient, seedP2, syntheticUser } from "./p2-fixtures";
+import { SyntheticClient, seedP2, syntheticChurch, syntheticUser } from "./p2-fixtures";
 
 const evidence = process.env.CHURCH_EVIDENCE_DIR ?? "output/p4.1";
 // Only executed in the disposable browser container; CA trust is private to its Firefox profile.
@@ -397,6 +397,110 @@ try {
     await page.getByRole("button", { name: "Sửa lịch", exact: true }).isVisible(),
     "deep-link-opens-occurrence",
   );
+  const accessReader = page.getByRole("region", { name: "Màn chữ lớn" });
+  const readerButton = page.getByRole("button", { name: "Chữ lớn", exact: true });
+  await readerButton.focus();
+  await page.keyboard.press("Enter");
+  await accessReader.getByRole("heading", { name: "Đề tài synthetic" }).waitFor();
+  const readerUrl = page.url();
+  assert(new URL(readerUrl).searchParams.get("view") === "large-text", "reader-deep-link");
+  await page.reload();
+  await accessReader.getByRole("heading", { name: "Đề tài synthetic" }).waitFor();
+  assert(await accessReader.getByText("Giăng 15:1–8").isVisible(), "reader-scripture");
+  assert(
+    await accessReader.getByText("Người giảng · Người giảng synthetic").isVisible(),
+    "reader-speaker",
+  );
+  await page.setViewportSize({ width: 1024, height: 768 });
+  await page.emulateMedia({ colorScheme: "light" });
+  await page.screenshot({ path: `${evidence}/p71-reader-tablet.png` });
+  const readerHeading = "Niềm hy vọng và đức tin ".repeat(10).trim();
+  const updateReader = {
+    ...seed,
+    input: { ...first.input, theme: readerHeading, scripture: null },
+    reason: "Chỉnh chủ đề synthetic",
+  };
+  const readerPreview = await api(
+    `${prefix}/${first.id}/preview`,
+    updateReader,
+    first.version,
+    "owner",
+    page,
+    "POST",
+  );
+  assert(readerPreview.status === 200, "reader-update-preview");
+  assert(
+    (
+      await api(
+        `${prefix}/${first.id}`,
+        { ...updateReader, preview: readerPreview.payload.data.context },
+        first.version,
+      )
+    ).status === 200,
+    "reader-update-saved",
+  );
+  await accessReader.getByRole("button", { name: "Tải lại" }).click();
+  await accessReader.getByRole("heading", { name: readerHeading }).waitFor();
+  assert(
+    await accessReader.getByText("—", { exact: true }).isVisible(),
+    "reader-missing-scripture",
+  );
+  for (const theme of ["light", "dark"] as const) {
+    await page.emulateMedia({ colorScheme: theme });
+    for (const [width, height] of [
+      [1440, 1000],
+      [1024, 768],
+      [768, 1024],
+      [390, 844],
+    ] as const) {
+      await page.setViewportSize({ width, height });
+      const name = `p71-reader-${theme}-${width}x${height}`;
+      await assertComposition(page, name, assert, evidence);
+      const geometry = await accessReader.evaluate((node) => {
+        const [actions, reader] = Array.from(node.children);
+        if (!actions || !reader) throw new Error("Thiếu khối màn chữ lớn");
+        const [date, topic, speaker] = Array.from(reader.children);
+        if (!date || !topic || !speaker) throw new Error("Thiếu nội dung màn chữ lớn");
+        const [heading, scripture] = Array.from(topic.children);
+        if (!heading || !scripture) throw new Error("Thiếu chủ đề hoặc tham chiếu Kinh Thánh");
+        const gap = (a: Element, b: Element) =>
+          b.getBoundingClientRect().top - a.getBoundingClientRect().bottom;
+        return {
+          overflow: document.documentElement.scrollWidth > innerWidth,
+          gaps: [
+            gap(actions, reader),
+            gap(date, topic),
+            gap(topic, speaker),
+            gap(heading, scripture),
+          ],
+        };
+      });
+      spacingEvidence.push({ name, ...geometry });
+      assert(!geometry.overflow, `${name}-no-overflow`);
+      assert(
+        geometry.gaps.every((gap, i) => Math.abs(gap - (i === 3 ? 12 : 18)) < 1),
+        `${name}-rendered-gaps`,
+      );
+      await page.screenshot({ path: `${evidence}/${name}.png`, fullPage: true });
+    }
+  }
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await page.emulateMedia({ colorScheme: "light" });
+  await accessReader.getByRole("button", { name: "Quay lại" }).focus();
+  await page.keyboard.press("Tab");
+  assert(
+    await accessReader
+      .getByRole("button", { name: "Tải lại" })
+      .evaluate((e) => e === document.activeElement),
+    "reader-keyboard-controls",
+  );
+  await accessReader.getByRole("button", { name: "Quay lại" }).click();
+  await page.getByRole("dialog").getByText(readerHeading, { exact: true }).waitFor();
+  assert(
+    new URL(page.url()).searchParams.get("from") === sunday &&
+      new URL(page.url()).searchParams.get("week") === sunday,
+    "reader-back-preserves-calendar-filters",
+  );
   await page.keyboard.press("Escape");
   await page.getByRole("dialog").waitFor({ state: "hidden" });
   assert(true, "escape-closes-dialog");
@@ -422,6 +526,53 @@ try {
   await userPage.getByRole("button", { name: "Chi tiết Thờ phượng synthetic" }).first().waitFor();
   await capture("secretary-w07", userPage);
   assert(true, "church-realm-W07");
+  const staffReaderUrl = `${conf.origin}/h/${church.code}/worship?from=${sunday}&week=${sunday}&view=large-text&occurrenceId=${first.id}`;
+  await userPage.goto(staffReaderUrl);
+  await userPage.getByRole("heading", { name: readerHeading }).waitFor();
+  const otherChurch = await syntheticChurch(ownerClient, "Hội Thánh P71 cách ly synthetic");
+  const otherPrefix = `owner/churches/${otherChurch.id}/scheduling/occurrences`;
+  const otherPreview = await ownerClient.call(`${otherPrefix}/preview`, seed);
+  assert(otherPreview.status === 200, "reader-other-tenant-fixture-preview");
+  const otherOccurrence = await ownerClient.call(otherPrefix, {
+    ...seed,
+    preview: otherPreview.payload.data.context,
+  });
+  assert(otherOccurrence.status === 201, "reader-other-tenant-fixture-commit");
+  await userPage.goto(
+    `${conf.origin}/h/${church.code}/worship?view=large-text&occurrenceId=${otherOccurrence.payload.data.occurrenceId}`,
+  );
+  await userPage.getByText("Buổi giảng không còn khả dụng.", { exact: true }).waitFor();
+  assert(
+    (await userPage.getByRole("heading", { name: "Đề tài synthetic" }).count()) === 0,
+    "reader-cross-tenant-ui-denied",
+  );
+  const cross = await api(
+    `churches/${otherChurch.id}/scheduling/occurrences/${first.id}`,
+    undefined,
+    undefined,
+    "church",
+    userPage,
+  );
+  assert([403, 404].includes(cross.status), "reader-cross-tenant-api-denied");
+  await userPage.goto(staffReaderUrl);
+  await userPage.getByRole("heading", { name: readerHeading }).waitFor();
+  await db.sessions.updateMany(
+    { principalId: new ObjectId(sec.id) },
+    { $set: { lastActivityAt: new Date(Date.now() - 16 * 60000) } },
+  );
+  await userPage.getByRole("button", { name: "Tải lại", exact: true }).click();
+  await userPage.getByLabel("Mật khẩu", { exact: true }).waitFor();
+  assert(
+    (await userPage.getByRole("heading", { name: readerHeading }).count()) === 0,
+    "reader-session-expired-clears-data",
+  );
+  await userPage.getByLabel("Mật khẩu", { exact: true }).fill(sec.password);
+  await userPage.getByRole("button", { name: "Tiếp tục", exact: true }).click();
+  await userPage.getByRole("heading", { name: readerHeading }).waitFor();
+  await userPage.getByRole("button", { name: "Quay lại", exact: true }).click();
+  await userPage.getByRole("dialog").waitFor();
+  await userPage.keyboard.press("Escape");
+  await userPage.getByRole("dialog").waitFor({ state: "hidden" });
   // Real-commit response loss: browser receives a transport abort after the server committed.
   await userPage.route(`**/api/v1/churches/${church.id}/scheduling/occurrences`, async (route) => {
     if (route.request().method() === "POST") {
@@ -616,8 +767,65 @@ try {
       (await userPage.getByRole("button", { name: "Lịch sử", exact: true }).count()) === 0,
     "lead-no-management-history-controls",
   );
-  await userPage.keyboard.press("Escape");
+  await userPage.getByRole("button", { name: "Chữ lớn", exact: true }).click();
+  const leadReader = userPage.getByRole("region", { name: "Màn chữ lớn" });
+  await leadReader.getByRole("heading", { name: "Đề tài synthetic" }).waitFor();
+  await db.db
+    .collection("organization_units")
+    .updateOne(
+      { _id: new ObjectId(unitId) },
+      { $set: { status: "inactive" }, $inc: { version: 1 } },
+    );
+  await leadReader.getByRole("button", { name: "Tải lại", exact: true }).click();
+  await leadReader.getByText("Buổi giảng không còn khả dụng.", { exact: true }).waitFor();
+  assert(
+    (await leadReader.getByRole("heading", { name: "Đề tài synthetic" }).count()) === 0,
+    "reader-lost-unit-scope-clears-data",
+  );
+  await userPage.goto(
+    `${conf.origin}/h/${church.code}/worship?view=large-text&occurrenceId=${first.id}`,
+  );
+  await userPage.getByText("Buổi giảng không còn khả dụng.", { exact: true }).waitFor();
+  assert(
+    (await userPage.getByText(readerHeading, { exact: true }).count()) === 0,
+    "reader-out-of-scope-hides-data",
+  );
   await userPage.close();
+  await page.goto(readerUrl);
+  await accessReader.getByRole("heading", { name: readerHeading }).waitFor();
+  const currentReader = (await api(`${prefix}/${first.id}`)).payload.data;
+  const cancelReader = {
+    ...updateReader,
+    input: currentReader.input,
+    state: "cancelled",
+    reason: "Hủy buổi giảng synthetic",
+  };
+  const cancelPreview = await api(
+    `${prefix}/${first.id}/preview`,
+    cancelReader,
+    currentReader.version,
+    "owner",
+    page,
+    "POST",
+  );
+  assert(cancelPreview.status === 200, "reader-cancellation-preview");
+  assert(
+    (
+      await api(
+        `${prefix}/${first.id}`,
+        { ...cancelReader, preview: cancelPreview.payload.data.context },
+        currentReader.version,
+      )
+    ).status === 200,
+    "reader-cancellation-saved",
+  );
+  await accessReader.getByRole("button", { name: "Tải lại" }).click();
+  await accessReader.getByText("Buổi giảng đã hủy.", { exact: true }).waitFor();
+  assert(
+    (await accessReader.getByText(readerHeading, { exact: true }).count()) === 0,
+    "reader-cancelled-clears-data",
+  );
+  await page.screenshot({ path: `${evidence}/p71-reader-cancelled.png` });
   await page.goto(`${conf.origin}/owner/churches/${church.id}/overview`);
   await page.getByRole("button", { name: "Lịch giảng & sinh hoạt", exact: true }).click();
   await page.getByRole("heading", { name: "Phân công sáu Chúa nhật", exact: true }).waitFor();
