@@ -100,6 +100,8 @@ W06 > Báp-têm > [Nhập từ ảnh sổ cũ]
 
 **Note nhắc lại khi rà soát roadmap P7/P8.** Nhắc Khiêm về hai luồng đang hoãn. Khi có nhu cầu mở lại, xem lại kênh phù hợp ở Việt Nam, kể cả Zalo, cùng chi phí, điều kiện nhà cung cấp và phạm vi thử nghiệm.
 
+**Nhánh dành cho P7.4 và P7.5.** Khi Khiêm cho mở lại P7.5, dùng nhánh local `feat/p74-p75-deferred`. 75-01–75-03 vẫn chờ duyệt trước triển khai.
+
 **C75.** Hai luồng có kiểm soát. W08 nhắc lịch thăm viếng cho người phụ trách đã xác minh kênh và có quyền mở hồ sơ. Tin chứa lời nhắc chung và liên kết yêu cầu đăng nhập. W01 dùng nguồn sinh nhật Members và quy tắc 29/2 hiện hành. Người phụ trách xem trước và xác nhận từng lời chúc cho người đã đồng ý nhận. Mỗi luồng tối đa một kênh khi mở chặng, Zalo/email cho nhắc việc, Zalo/SMS cho lời chúc. Chốt nhà cung cấp, quyền liên hệ, mẫu tin, lịch theo Asia/Ho_Chi_Minh, chi phí và dữ liệu chuyển đi. [Visitation](../engineering/P4.3-visitation.md) · [Members](../engineering/P2.2-members.md).
 
 Mỗi lượt có định danh bền vững theo việc hoặc dịp sinh nhật, người nhận và kênh. Kiểm lại lịch, người nhận, quyền và trạng thái liên hệ trước khi gọi kênh. Nguồn đổi trước bước gửi thì hủy lượt chờ cũ. Kênh tiếp nhận là trạng thái chấp nhận yêu cầu. Nếu mất phản hồi, ghi **Chưa xác định** và đối soát trước khi thử lại. Khi restore giữ tiến trình gửi tắt cho tới khi đối soát quanh mốc backup.
