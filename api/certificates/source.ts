@@ -7,7 +7,15 @@ import { canonical } from "../operations/service";
 import type { CertificateClasses } from "../prep-classes/certificates";
 import type { CertificateRites } from "../rites/certificates";
 import type { Tenancy } from "../tenancy/service";
-import { type CertificateSnapshot, type DocumentContent, templateVersion, titles } from "./models";
+import type { CertificateVisits } from "../visitation/certificates";
+import {
+  type CertificateGrant,
+  type CertificateSnapshot,
+  type DocumentContent,
+  expandedTemplateVersion,
+  templateVersion,
+  titles,
+} from "./models";
 import type { CertificateInput } from "./validation";
 export const labelDay = (s: string | null) =>
   s ? s.split("-").reverse().join("/") : "[Chưa bổ sung]";
@@ -18,16 +26,126 @@ export class CertificateSources {
     private classes: CertificateClasses,
     private tenancy: Tenancy,
     private now: () => Date,
+    private visits: CertificateVisits,
   ) {}
   memberIdentity(g: TenantGrant, id: string, tx: ClientSession) {
     return this.members.identity(g, id, tx);
   }
+  visitOptions(g: CertificateGrant, q: URLSearchParams) {
+    requireCondition(g.canReadVisitCertificates, 403, "FORBIDDEN");
+    return this.visits.options(g, q);
+  }
+  private async captureAdditional(
+    g: CertificateGrant,
+    input: CertificateInput,
+    tx: ClientSession,
+    fence: boolean,
+  ) {
+    const church = await this.tenancy.certificateIdentity(g.churchId, tx);
+    const paragraphs: DocumentContent["paragraphs"] = [];
+    const missing: string[] = [];
+    const memberIds: string[] = [];
+    let sources: CertificateSnapshot["sources"];
+    if (input.kind === "visit") {
+      requireCondition(g.canReadVisitCertificates, 403, "FORBIDDEN");
+      requireCondition(input.visitId, 422, "CERT_SOURCE_REQUIRED");
+      const visit = await this.visits.read(g, input.visitId, tx, fence);
+      sources = { church, visit };
+      if (visit.target.kind === "member") memberIds.push(visit.target.id);
+      paragraphs.push(
+        { text: visit.target.name, style: "name" },
+        {
+          text: `Đối tượng: ${visit.target.kind === "family" ? "Hộ gia đình" : "Cá nhân"} · Hồ sơ: ${visit.code}`,
+          style: "body",
+        },
+        {
+          text: `Ngày dự kiến: ${visit.plannedOn ? labelDay(visit.plannedOn) : "………………"}`,
+          style: "body",
+        },
+        { text: `Người phụ trách: ${visit.assignee ?? "………………"}`, style: "body" },
+        {
+          text: "Kết quả (điền ngoài hệ thống):\n……………………………………………………\n……………………………………………………",
+          style: "body",
+        },
+      );
+    } else {
+      requireCondition(input.memberId, 422, "CERT_SOURCE_REQUIRED");
+      const member = await this.members.certificateMembership(g, input.memberId, tx);
+      requireCondition(
+        member.type === "believer" && ["active", "long_absent"].includes(member.participation),
+        422,
+        "CERT_MEMBER_NOT_ELIGIBLE",
+      );
+      if (fence) await this.members.fence(g, member.id, member.version, tx);
+      sources = { church, member };
+      memberIds.push(member.id);
+      const membership =
+        member.membership &&
+        { member: "Tín hữu chính thức", preparatory: "Tín hữu dự bị", child: "Thiếu nhi" }[
+          member.membership
+        ];
+      if (input.kind === "transfer" && !input.destination) missing.push("Hội Thánh tiếp nhận");
+      paragraphs.push(
+        {
+          text:
+            input.kind === "transfer"
+              ? `Kính gửi Ban Chấp sự ${input.destination ?? "[Chưa chọn Hội Thánh tiếp nhận]"}`
+              : "Hội Thánh xác nhận",
+          style: "body",
+        },
+        { text: member.fullName, style: "name" },
+        {
+          text: `Mã thuộc viên: ${member.code}. Tư cách: ${membership ?? "Chưa xác định"}. Sinh hoạt: ${member.participation === "active" ? "Đang sinh hoạt" : "Vắng lâu"}.`,
+          style: "body",
+        },
+      );
+      if (member.baptism.status === "baptized")
+        paragraphs.push({
+          text: `Đã chịu Báp-têm${member.baptism.date ? ` ngày ${labelDay(member.baptism.date)}` : ""}${member.baptism.place ? ` tại ${member.baptism.place}` : ""}.`,
+          style: "body",
+        });
+      else if (member.baptism.status === "not_baptized")
+        paragraphs.push({ text: "Chưa chịu Báp-têm theo hồ sơ.", style: "body" });
+      if (input.kind === "transfer")
+        paragraphs.push({ text: "Xin quý Hội Thánh tiếp nhận và chăm sóc.", style: "body" });
+    }
+    return {
+      snapshot: {
+        templateVersion: expandedTemplateVersion,
+        templateFingerprint: "",
+        input,
+        content: {
+          reference: "",
+          title: titles[input.kind],
+          kind: input.kind,
+          churchName: church.name,
+          affiliation: input.affiliation,
+          issuedOn: input.issuedOn,
+          paragraphs,
+          signatures: [
+            { label: "Thư ký", name: input.signers.secretary },
+            { label: "Mục sư", name: input.signers.pastor },
+          ],
+        },
+        sources,
+        supplements: {},
+        missing,
+        conflicts: [],
+        differences: [],
+      },
+      memberIds,
+    };
+  }
   async capture(
-    g: TenantGrant,
+    g: CertificateGrant,
     input: CertificateInput,
     tx: ClientSession,
     fence = false,
   ): Promise<{ snapshot: CertificateSnapshot; memberIds: string[] }> {
+    if (input.kind === "membership" || input.kind === "transfer" || input.kind === "visit") {
+      requireCondition(input.issuedOn <= businessDay(this.now()), 422, "CERT_DATE_INVALID");
+      return this.captureAdditional(g, input, tx, fence);
+    }
     const church = await this.tenancy.certificateIdentity(g.churchId, tx);
     const rite = input.riteId ? await this.rites.get(g, input.riteId, tx) : null;
     const primary =

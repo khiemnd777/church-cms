@@ -71,7 +71,7 @@ function table(name: string, values: string[][]): SheetData {
   return { name, headers, rows };
 }
 // Count actual expanded bytes before ExcelJS sees the ZIP. Never trust advertised sizes.
-function inspectZip(bytes: Uint8Array) {
+export function inspectZip(bytes: Uint8Array, allowPart?: (name: string) => boolean) {
   let total = 0,
     count = 0,
     finished = 0;
@@ -87,6 +87,7 @@ function inspectZip(bytes: Uint8Array) {
       "FILE_LIMIT",
     );
     names.add(file.name);
+    requireCondition(!allowPart || allowPart(file.name), 422, "FILE_UNSAFE");
     requireCondition(
       !/vbaProject|externalLinks|embeddings|activex/i.test(file.name),
       422,

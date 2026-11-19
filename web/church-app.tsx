@@ -10,6 +10,7 @@ import { ExpensesView } from "./expenses";
 import type { ExpenseContext } from "./expenses-api";
 import { FamiliesManagement } from "./families-management";
 import { FinanceIncomeView } from "./finance-income";
+import { PortalView } from "./member-portal";
 import { MembersManagement } from "./members-management";
 import { OrganizationRuntimeView } from "./organization-runtime";
 import { OverviewView } from "./overview";
@@ -43,6 +44,23 @@ interface User {
   version?: number;
 }
 type Screen = "loading" | "login" | "change" | "reauth" | "home" | "support" | "mismatch";
+const currentPortalSection = () => {
+  const view = new URLSearchParams(location.search).get("view");
+  return view === "prayers"
+    ? "portal-prayers"
+    : view === "rites"
+      ? "portal-rites"
+      : view === "giving"
+        ? "portal-giving"
+        : "portal";
+};
+const portalSuffix = (section: string) => {
+  if (section === "portal") return "/portal";
+  if (section === "portal-rites") return "/portal?view=rites";
+  if (section === "portal-giving") return "/portal?view=giving";
+  if (section === "portal-prayers") return "/portal?view=prayers";
+  return null;
+};
 export function ChurchApp() {
   const code = decodeURIComponent(location.pathname.split("/")[2] ?? "").toUpperCase();
   const [screen, setScreen] = useState<Screen>(
@@ -60,64 +78,68 @@ export function ChurchApp() {
     [context, setContext] = useState(""),
     [reload, setReload] = useState(0);
   const [section, setSection] = useState(
-    location.pathname.endsWith("/expense")
-      ? "expense"
-      : location.pathname.endsWith("/giving")
-        ? "giving"
-        : location.pathname.endsWith("/care")
-          ? "care"
-          : location.pathname.endsWith("/worship")
-            ? "worship"
-            : location.pathname.endsWith("/forms")
-              ? "forms"
-              : location.pathname.endsWith("/rites")
-                ? "rites"
-                : location.pathname.endsWith("/attendance")
-                  ? "attendance"
-                  : location.pathname.endsWith("/overview")
-                    ? "overview"
-                    : location.pathname.endsWith("/bans")
-                      ? "bans"
-                      : location.pathname.endsWith("/roles")
-                        ? "roles"
-                        : location.pathname.endsWith("/config")
-                          ? "config"
-                          : location.pathname.endsWith("/members")
-                            ? "members"
-                            : location.pathname.endsWith("/families")
-                              ? "families"
-                              : "access",
+    location.pathname.endsWith("/portal")
+      ? currentPortalSection()
+      : location.pathname.endsWith("/expense")
+        ? "expense"
+        : location.pathname.endsWith("/giving")
+          ? "giving"
+          : location.pathname.endsWith("/care")
+            ? "care"
+            : location.pathname.endsWith("/worship")
+              ? "worship"
+              : location.pathname.endsWith("/forms")
+                ? "forms"
+                : location.pathname.endsWith("/rites")
+                  ? "rites"
+                  : location.pathname.endsWith("/attendance")
+                    ? "attendance"
+                    : location.pathname.endsWith("/overview")
+                      ? "overview"
+                      : location.pathname.endsWith("/bans")
+                        ? "bans"
+                        : location.pathname.endsWith("/roles")
+                          ? "roles"
+                          : location.pathname.endsWith("/config")
+                            ? "config"
+                            : location.pathname.endsWith("/members")
+                              ? "members"
+                              : location.pathname.endsWith("/families")
+                                ? "families"
+                                : "access",
   );
   useEffect(() => {
     const back = () =>
       setSection(
-        location.pathname.endsWith("/expense")
-          ? "expense"
-          : location.pathname.endsWith("/giving")
-            ? "giving"
-            : location.pathname.endsWith("/care")
-              ? "care"
-              : location.pathname.endsWith("/worship")
-                ? "worship"
-                : location.pathname.endsWith("/forms")
-                  ? "forms"
-                  : location.pathname.endsWith("/rites")
-                    ? "rites"
-                    : location.pathname.endsWith("/attendance")
-                      ? "attendance"
-                      : location.pathname.endsWith("/overview")
-                        ? "overview"
-                        : location.pathname.endsWith("/bans")
-                          ? "bans"
-                          : location.pathname.endsWith("/roles")
-                            ? "roles"
-                            : location.pathname.endsWith("/config")
-                              ? "config"
-                              : location.pathname.endsWith("/members")
-                                ? "members"
-                                : location.pathname.endsWith("/families")
-                                  ? "families"
-                                  : "access",
+        location.pathname.endsWith("/portal")
+          ? currentPortalSection()
+          : location.pathname.endsWith("/expense")
+            ? "expense"
+            : location.pathname.endsWith("/giving")
+              ? "giving"
+              : location.pathname.endsWith("/care")
+                ? "care"
+                : location.pathname.endsWith("/worship")
+                  ? "worship"
+                  : location.pathname.endsWith("/forms")
+                    ? "forms"
+                    : location.pathname.endsWith("/rites")
+                      ? "rites"
+                      : location.pathname.endsWith("/attendance")
+                        ? "attendance"
+                        : location.pathname.endsWith("/overview")
+                          ? "overview"
+                          : location.pathname.endsWith("/bans")
+                            ? "bans"
+                            : location.pathname.endsWith("/roles")
+                              ? "roles"
+                              : location.pathname.endsWith("/config")
+                                ? "config"
+                                : location.pathname.endsWith("/members")
+                                  ? "members"
+                                  : location.pathname.endsWith("/families")
+                                    ? "families"
+                                    : "access",
       );
     window.addEventListener("popstate", back);
     return () => window.removeEventListener("popstate", back);
@@ -126,6 +148,7 @@ export function ChurchApp() {
     [memberToOpen, setMemberToOpen] = useState<string | null>(null);
   const [pendingIntent, setPendingIntent] = useState<TenantIntent | null>(null);
   usePendingNavigation(pendingIntent);
+  const portalPrincipal = user && `church_user:${user.accountId}:${user.churchId}:${user.version}`;
   const [expenseAccess, setExpenseAccess] = useState<ExpenseContext | null>(null);
   useEffect(() => {
     if (!user || screen !== "home" || user.role === "member") {
@@ -195,6 +218,13 @@ export function ChurchApp() {
         "Quyền đã thay đổi. Nội dung tài chính đang chờ đã được xóa; người có quyền cần đối soát kết quả.",
       );
     }
+    if (
+      pendingIntent?.resource?.kind === "personal_prayer" &&
+      (user.role !== "member" || pendingIntent.principalKey !== portalPrincipal)
+    ) {
+      setPendingIntent(null);
+      setNotice("Liên kết hoặc quyền đã thay đổi. Hãy kiểm tra yêu cầu đã gửi trước khi gửi lại.");
+    }
     const current = JSON.stringify([user.accountId, user.churchId, user.version, user.role]),
       previous = prayerIdentity.current;
     prayerIdentity.current = current;
@@ -219,7 +249,7 @@ export function ChurchApp() {
     history.pushState(
       null,
       "",
-      `/h/${code}${next === "expense" || next === "giving" || next === "care" || next === "worship" || next === "forms" || next === "rites" || next === "attendance" || next === "overview" || next === "access" || next === "config" || next === "members" || next === "families" || next === "bans" || next === "roles" ? `/${next}` : ""}${query?.size ? `?${query}` : ""}`,
+      `/h/${code}${portalSuffix(next) ?? (next === "expense" || next === "giving" || next === "care" || next === "worship" || next === "forms" || next === "rites" || next === "attendance" || next === "overview" || next === "access" || next === "config" || next === "members" || next === "families" || next === "bans" || next === "roles" ? `/${next}` : "")}${query?.size ? `?${query}` : ""}`,
     );
     if (next === "access") setReload((x) => x + 1);
   }
@@ -238,11 +268,12 @@ export function ChurchApp() {
     history.replaceState(
       null,
       "",
-      `/h/${code}${next === "home" || next === "reauth" ? (selectedSection === "expense" || selectedSection === "giving" || selectedSection === "care" || selectedSection === "worship" || selectedSection === "forms" || selectedSection === "rites" || selectedSection === "attendance" || selectedSection === "overview" || selectedSection === "access" || selectedSection === "config" || selectedSection === "members" || selectedSection === "families" || selectedSection === "bans" || selectedSection === "roles" ? `/${selectedSection}${location.search}` : "") : next === "change" ? "/change-password" : next === "support" ? "/support" : "/login"}`,
+      `/h/${code}${next === "home" || next === "reauth" ? (portalSuffix(selectedSection) ?? (selectedSection === "expense" || selectedSection === "giving" || selectedSection === "care" || selectedSection === "worship" || selectedSection === "forms" || selectedSection === "rites" || selectedSection === "attendance" || selectedSection === "overview" || selectedSection === "access" || selectedSection === "config" || selectedSection === "members" || selectedSection === "families" || selectedSection === "bans" || selectedSection === "roles" ? `/${selectedSection}${location.search}` : "")) : next === "change" ? "/change-password" : next === "support" ? "/support" : "/login"}`,
     );
   }
   function accept(identity: User) {
     if (identity.churchCode.toUpperCase() !== code) {
+      discardPersonalPrayerIntent();
       setUser(null);
       setContext("");
       setError("");
@@ -254,12 +285,21 @@ export function ChurchApp() {
     setError("");
     const entry = /^\/h\/[^/]+(?:\/(?:login|change-password))?$/.test(location.pathname);
     const nextSection =
-      entry && !pendingIntent && ["pastor", "secretary"].includes(identity.role ?? "")
-        ? "overview"
-        : section;
+      identity.role === "member"
+        ? location.pathname.endsWith("/portal")
+          ? currentPortalSection()
+          : "portal"
+        : (entry || location.pathname.endsWith("/portal")) &&
+            !pendingIntent &&
+            ["pastor", "secretary"].includes(identity.role ?? "")
+          ? "overview"
+          : section;
     if (nextSection !== section) setSection(nextSection);
     navigate(identity.sessionState === "password_change" ? "change" : "home", nextSection);
     return true;
+  }
+  function discardPersonalPrayerIntent() {
+    setPendingIntent((intent) => (intent?.resource?.kind === "personal_prayer" ? null : intent));
   }
   function fail(e: unknown) {
     if (e instanceof ApiError) {
@@ -276,6 +316,7 @@ export function ChurchApp() {
           "PASSWORD_CHANGE_REQUIRED",
         ].includes(e.code)
       ) {
+        discardPersonalPrayerIntent();
         setUser(null);
         setContext("");
         navigate("login");
@@ -290,6 +331,7 @@ export function ChurchApp() {
       if (accept(me)) await refreshChurchCsrf();
     } catch (e) {
       if (e instanceof ApiError && ["SESSION_EXPIRED", "SESSION_REVOKED"].includes(e.code)) {
+        discardPersonalPrayerIntent();
         setUser(null);
         navigate("login");
       } else fail(e);
@@ -469,6 +511,7 @@ export function ChurchApp() {
       selectSection("members", q);
     } else {
       const q = new URLSearchParams();
+      if (target.kind === "forms" && target.report) q.set("report", "1");
       if (target.kind === "care" && target.section) q.set("careSection", target.section);
       if (target.kind === "attendance" && target.sessionId) q.set("sessionId", target.sessionId);
       if (target.kind === "rites") {
@@ -485,6 +528,79 @@ export function ChurchApp() {
       {notice && <Feedback>{notice}</Feedback>}
     </>
   );
+  if (screen === "home" && user?.role === "member") {
+    const kind =
+      section === "portal-prayers"
+        ? "prayers"
+        : section === "portal-rites"
+          ? "rites"
+          : section === "portal-giving"
+            ? "giving"
+            : "profile";
+    const pending =
+      pendingIntent?.resource?.kind === "personal_prayer" &&
+      pendingIntent.principalKey === portalPrincipal
+        ? pendingIntent
+        : null;
+    return (
+      <AppShell
+        title="Cổng tín hữu"
+        context={user.churchCode}
+        activeId={kind === "profile" ? "portal" : section}
+        identity={user}
+        busy={busy || !!pending}
+        onLogout={() => void logout()}
+        items={[
+          {
+            id: "portal",
+            label: "Hồ sơ",
+            icon: "users",
+            disabled: !!pending,
+            onSelect: () => selectSection("portal"),
+          },
+          {
+            id: "portal-rites",
+            label: "Lễ nghi",
+            icon: "drop",
+            disabled: !!pending,
+            onSelect: () => selectSection("portal-rites"),
+          },
+          {
+            id: "portal-giving",
+            label: "Dâng hiến",
+            icon: "wallet",
+            disabled: !!pending,
+            onSelect: () => selectSection("portal-giving"),
+          },
+          {
+            id: "portal-prayers",
+            label: "Cầu thay",
+            icon: "pray",
+            disabled: !!pending,
+            onSelect: () => selectSection("portal-prayers"),
+          },
+        ]}
+      >
+        {feedback}
+        <PortalView
+          key={`${user.accountId}:${user.churchId}:${user.version}:${kind}`}
+          churchId={user.churchId}
+          kind={kind}
+          onAuthError={fail}
+          onSupport={() => navigate("support")}
+          prayerAccess={
+            portalPrincipal
+              ? {
+                  principalKey: portalPrincipal,
+                  pending,
+                  onPending: setPendingIntent,
+                }
+              : undefined
+          }
+        />
+      </AppShell>
+    );
+  }
   if (screen === "home" && user)
     return (
       <AppShell

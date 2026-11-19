@@ -1,6 +1,8 @@
-import { type ClientSession, type Filter, ObjectId } from "mongodb";
+import { type ClientSession, type Filter, MongoServerError, ObjectId } from "mongodb";
+import { z } from "zod";
 import type { Audit } from "../audit/service";
-import { requireCondition } from "../errors";
+import type { TenantGrant } from "../authorization/tenant-grant";
+import { AppError, requireCondition } from "../errors";
 import { objectId, parse, version } from "../http-validation";
 import { digest } from "../identity/crypto";
 import type { Database } from "../infrastructure/database";
@@ -18,7 +20,16 @@ import {
   prayerDto,
   type RequesterSnapshot,
 } from "./models";
-import { categories, commandInput, type PrayerCommand } from "./validation";
+import { categories, commandInput, type PrayerCommand, personalPrayerInput } from "./validation";
+
+interface PortalPrayerGrant extends TenantGrant {
+  actorKind: "church_user";
+  memberId: ObjectId;
+}
+
+const personalPrayerStatus = (state: Prayer["state"]): "sent" | "closed" | "cancelled" =>
+  state === "closed" ? "closed" : state === "cancelled" ? "cancelled" : "sent";
+
 export class Prayers {
   private query: TenantQueries;
   constructor(
@@ -181,6 +192,7 @@ export class Prayers {
           p.requester.kind === "member" ? await this.members.person(g, p.requester.id, tx) : null;
       return {
         ...prayerDto(p),
+        ...(p.portalSubmission ? { fromPortal: true } : {}),
         source:
           p.requester.kind === "member"
             ? {
@@ -203,6 +215,11 @@ export class Prayers {
       !old || ["open", "shared"].includes(old.state) || b.action === "correct",
       409,
       "PRAYER_CLOSED",
+    );
+    requireCondition(
+      !old?.portalSubmission || b.action === "close" || b.action === "cancel",
+      422,
+      b.action === "share" ? "PRAYER_PRIVATE_SHARE" : "PRAYER_PORTAL_IMMUTABLE",
     );
     if (b.action !== "create") requireCondition(b.reason, 422, "REASON_REQUIRED");
     const visibility = old?.visibility ?? (b.action === "create" ? b.visibility : "shared");
@@ -348,6 +365,7 @@ export class Prayers {
               ? b.reason
               : (before?.closeReason ?? null),
             closedAt: ["close", "cancel"].includes(b.action) ? now : (before?.closedAt ?? null),
+            ...(before?.portalSubmission ? { portalSubmission: before.portalSubmission } : {}),
             createdAt: before?.createdAt ?? now,
             updatedAt: now,
           };
@@ -359,39 +377,7 @@ export class Prayers {
           );
           requireCondition(saved.matchedCount, 412, "VERSION_CONFLICT");
         } else await this.rows.insertOne(prayer, { session: tx });
-        await this.histories.insertOne(
-          {
-            _id: new ObjectId(),
-            churchId: g.churchId,
-            prayerId: prayer._id,
-            event: b.action,
-            operationId: op,
-            reason: b.reason,
-            before: before ? prayerDto(before) : null,
-            after: prayerDto(prayer),
-            actorId: g.actorId,
-            actorKind: g.actorKind,
-            occurredAt: now,
-          },
-          { session: tx },
-        );
-        await this.audit.organization(
-          `prayer.${b.action}`,
-          requestId,
-          {
-            kind: g.actorKind,
-            id: g.actorId,
-            churchId: g.actorKind === "owner" ? null : g.churchId,
-          },
-          g.churchId,
-          "prayer_request",
-          prayer._id,
-          [b.action],
-          op,
-          tx,
-          `prayer.${b.action}`,
-          prayer.visibility === "pastoral" ? "pastoral" : "general",
-        );
+        await this.recordChange(g, prayer, before, b.action, b.reason, op, requestId, tx);
         return {
           safeResult: {
             prayerId: prayer._id.toHexString(),
@@ -405,6 +391,205 @@ export class Prayers {
       (tx, op) => this.authorizeOperation(g, op, tx),
     );
   }
+  private async recordChange(
+    g: TenantGrant,
+    prayer: Prayer,
+    before: Prayer | null,
+    action: PrayerCommand["action"],
+    reason: string | null,
+    op: ObjectId,
+    requestId: string,
+    tx: ClientSession,
+  ) {
+    await this.histories.insertOne(
+      {
+        _id: new ObjectId(),
+        churchId: g.churchId,
+        prayerId: prayer._id,
+        event: action,
+        operationId: op,
+        reason,
+        before: before ? prayerDto(before) : null,
+        after: prayerDto(prayer),
+        actorId: g.actorId,
+        actorKind: g.actorKind,
+        occurredAt: prayer.updatedAt,
+      },
+      { session: tx },
+    );
+    await this.audit.organization(
+      `prayer.${action}`,
+      requestId,
+      {
+        kind: g.actorKind,
+        id: g.actorId,
+        churchId: g.actorKind === "owner" ? null : g.churchId,
+      },
+      g.churchId,
+      "prayer_request",
+      prayer._id,
+      [action],
+      op,
+      tx,
+      `prayer.${action}`,
+      prayer.visibility === "pastoral" ? "pastoral" : "general",
+    );
+  }
+
+  async personalPage(
+    churchId: ObjectId,
+    accountId: ObjectId,
+    memberId: ObjectId,
+    afterId: string | null,
+    limit: number,
+    tx: ClientSession,
+  ) {
+    return (
+      await this.rows
+        .find(
+          {
+            churchId,
+            visibility: "pastoral",
+            "portalSubmission.accountId": accountId,
+            "portalSubmission.memberId": memberId,
+            ...(afterId ? { _id: { $lt: objectId(afterId) } } : {}),
+          },
+          {
+            session: tx,
+            maxTimeMS: 3000,
+            projection: { code: 1, category: 1, content: 1, createdAt: 1, state: 1 },
+          },
+        )
+        .sort({ _id: -1 })
+        .limit(limit)
+        .toArray()
+    ).map((row) => ({
+      id: row._id.toHexString(),
+      code: row.code,
+      category: row.category,
+      content: row.content,
+      submittedAt: row.createdAt.toISOString(),
+      status: personalPrayerStatus(row.state),
+    }));
+  }
+
+  async sendPersonal(g: PortalPrayerGrant, raw: unknown, rawKey: string | null, requestId: string) {
+    const b = parse(personalPrayerInput, raw);
+    requireCondition(b.confirmed, 422, "PRAYER_CONFIRMATION_REQUIRED");
+    const parsedKey = z.uuid().safeParse(rawKey);
+    requireCondition(parsedKey.success, 400, "INVALID_REQUEST");
+    const key = parsedKey.data.toLowerCase(),
+      payloadHash = digest(canonical(b));
+    const intent: Filter<Prayer> = {
+      churchId: g.churchId,
+      visibility: "pastoral",
+      "portalSubmission.accountId": g.actorId,
+      "portalSubmission.key": key,
+    };
+    const sameIntent = (row: Prayer) => {
+      requireCondition(
+        row.portalSubmission?.memberId.equals(g.memberId) &&
+          row.portalSubmission.payloadHash === payloadHash,
+        409,
+        "IDEMPOTENCY_CONFLICT",
+      );
+      return row;
+    };
+    const receipt = (row: Prayer) => ({ code: row.code, status: "sent" as const });
+    try {
+      const result = await this.ops.executeTenant(
+        g,
+        "POST",
+        `prayers/${g.churchId}/portal-submission`,
+        key,
+        b,
+        null,
+        async (tx, op) => {
+          const existing = await this.rows.findOne(intent, { session: tx });
+          if (existing) {
+            sameIntent(existing);
+            return {
+              safeResult: { ...receipt(existing), reconciled: true },
+              resourceRefs: [{ type: "prayer_request", id: existing._id.toHexString() }],
+            };
+          }
+          const subject = await this.members.person(g, g.memberId.toHexString(), tx);
+          requireCondition(subject?.available, 403, "PORTAL_LINK_REQUIRED");
+          const now = this.now();
+          const prayer: Prayer = {
+            _id: new ObjectId(),
+            churchId: g.churchId,
+            code: resourceCode("CT"),
+            version: 1,
+            content: b.content,
+            category: b.category,
+            receivedOn: businessDay(now),
+            requester: { kind: "member", id: subject.id },
+            requesterSnapshot: {
+              kind: "member",
+              id: subject.id,
+              code: subject.code,
+              name: subject.fullName,
+            },
+            requesterNameKey: searchName(subject.fullName),
+            contentKey: searchName(b.content),
+            visibility: "pastoral",
+            state: "open",
+            sharedOn: null,
+            closeReason: null,
+            closedAt: null,
+            createdAt: now,
+            updatedAt: now,
+            portalSubmission: { accountId: g.actorId, memberId: g.memberId, key, payloadHash },
+          };
+          await this.rows.insertOne(prayer, { session: tx });
+          await this.recordChange(g, prayer, null, "create", null, op, requestId, tx);
+          return {
+            safeResult: receipt(prayer),
+            resourceRefs: [{ type: "prayer_request", id: prayer._id.toHexString() }],
+          };
+        },
+        201,
+        async (tx, op) => {
+          const ref = op.resourceRefs[0];
+          requireCondition(
+            op.resourceRefs.length === 1 && ref?.type === "prayer_request",
+            404,
+            "NOT_FOUND",
+          );
+          const row = await this.rows.findOne(
+            { ...intent, _id: objectId(ref.id) },
+            { session: tx },
+          );
+          requireCondition(row, 404, "NOT_FOUND");
+          sameIntent(row);
+        },
+      );
+      const replayed = result.replayed || result.data.reconciled === true;
+      return {
+        data: { code: result.data.code as string, status: "sent" as const },
+        status: replayed ? 200 : result.status,
+        replayed,
+      };
+    } catch (e) {
+      // Durable uniqueness outlives the generic operation's replay window.
+      if (
+        (e instanceof AppError && e.code === "IDEMPOTENCY_EXPIRED") ||
+        (e instanceof MongoServerError &&
+          e.code === 11000 &&
+          e.keyPattern?.["portalSubmission.key"])
+      ) {
+        return this.db.readSnapshot(g.churchId.toHexString(), async (tx) => {
+          await g.fence(tx);
+          const row = await this.rows.findOne(intent, { session: tx });
+          requireCondition(row, 409, "OPERATION_IN_PROGRESS");
+          return { data: receipt(sameIntent(row)), status: 200, replayed: true };
+        });
+      }
+      throw e;
+    }
+  }
+
   async history(g: PrayerGrant, id: string, q: URLSearchParams) {
     this.authorized(g);
     this.query.allow(q, ["limit", "cursor"]);

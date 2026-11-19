@@ -1,5 +1,25 @@
 # Bối cảnh Church CMS
 
+## P6.5 — Cầu thay riêng từ cổng tín hữu
+
+Prayers tiếp nhận yêu cầu riêng cho Mục sư trong cùng Hội Thánh. Mỗi yêu cầu từ cổng lưu account gửi, thuộc viên tại lúc gửi và khóa chống trùng. Phép đọc self khớp cả account gửi lẫn liên kết hiện hành. Người gửi theo dõi trạng thái công khai. [Contract](engineering/P6.5-personal-prayers.md).
+
+## P6.4 — Quyền xem dâng hiến cá nhân
+
+Finance sở hữu phép đọc chỉ trả phần thuộc viên lưu trên phiếu chi tiết trong Hội Thánh của phiên hiện hành. Cổng tín hữu dùng quyền self và liên kết đã kiểm qua P6.3. Tổng tháng tính các khoản còn hiệu lực và không bao gồm phiếu tổng hợp. [Contract](engineering/P6.4-personal-giving.md).
+
+## P6.3 — Quyền xem hồ sơ và lễ nghi cá nhân
+
+Cổng tín hữu suy subject từ account member/self đã liên kết. Identity sở hữu vòng đời liên kết và thu hồi phiên, Members/Rites cung cấp projection cá nhân. Hồ sơ mất điều kiện cần xác nhận lại kể cả sau khi phục hồi. [Contract](engineering/P6.3-member-portal.md).
+
+## P6.2 — Mẫu và báo cáo nội bộ theo Hội Thánh
+
+Reporting giữ mẫu đã kiểm tra, một lựa chọn hiện hành theo tenant, snapshot và file bản chốt. Thư ký và Mục sư tải mẫu XLSX, chỉ Mục sư đổi lựa chọn. Mỗi bố cục dùng mã chỉ tiêu để điền số từ các module nguồn, rồi renderer đóng dấu BÁO CÁO NỘI BỘ lên Excel/PDF. [Contract](engineering/P6.2-church-reports.md).
+
+## P6.1 — thiết kế bảy biểu mẫu nội bộ
+
+Certificates dùng chung vòng đời và renderer P3.5. Ba mẫu mới đọc tín hữu hiện hành hoặc hồ sơ thăm viếng đang mở qua public ports; phiên bản chốt giữ snapshot và binaries. Mẫu thăm viếng cần quyền Visitation và chỉ lấy các trường in đã duyệt. [Contract](engineering/P6.1-certificates.md); trạng thái tại project-state.
+
 ## Đóng P5 và ranh giới planning P6
 
 P5 có sáu gói đã nghiệm thu local/synthetic; [biên bản closure](tasks/CHURCH-P5.md#đóng-p5) không là release hoặc main activation. Năng lực Finance/Policy24/reporting/restore tiếp tục theo contracts đã bàn giao; không waive E55-01, không phục hồi E51-01 hoặc sửa canh nút deferred sau P8. P6 vẫn là phạm vi định hướng biểu mẫu/báo cáo/định dạng và cổng tín hữu từ P0/roadmap; quyền mới chỉ lập kế hoạch chi tiết trong conversation riêng, không tạo contract/implementation khi chưa duyệt. Trạng thái và chat tiếp nhận xem project-state.

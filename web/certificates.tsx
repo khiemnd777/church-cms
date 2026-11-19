@@ -13,6 +13,7 @@ import {
   certificateStates,
 } from "./certificates-api";
 import { CertificateForm } from "./certificates-forms";
+import { ChurchReport } from "./church-report";
 import {
   authErrorCodes,
   type TenantIntent,
@@ -42,10 +43,10 @@ const catalog = [
   { kind: "baptism", name: "Giấy chứng nhận Báp-têm" },
   { kind: "dedication", name: "Giấy chứng nhận Dâng con" },
   { kind: "marriage", name: "Chứng thư Thành hôn" },
-  { kind: null, name: "Thư giới thiệu chuyển sinh hoạt" },
-  { kind: null, name: "Giấy xác nhận tín hữu" },
+  { kind: "transfer", name: "Thư giới thiệu chuyển sinh hoạt" },
+  { kind: "membership", name: "Giấy xác nhận tín hữu" },
   { kind: "application", name: "Đơn xin chịu Báp-têm" },
-  { kind: null, name: "Phiếu thăm viếng" },
+  { kind: "visit", name: "Phiếu thăm viếng" },
   { kind: null, name: "Báo cáo thống kê gửi Tổng Liên Hội" },
 ] as const;
 export function CertificatesView({
@@ -80,11 +81,16 @@ export function CertificatesView({
     [draftId, setDraftId] = useState(query.get("draftId") ?? ""),
     [editionId, setEditionId] = useState(query.get("editionId") ?? ""),
     [kind, setKind] = useState<CertificateKind>(
-      seedKind && seedKind in certificateNames ? (seedKind as CertificateKind) : "baptism",
+      seedKind && Object.hasOwn(certificateNames, seedKind)
+        ? (seedKind as CertificateKind)
+        : "baptism",
     ),
     [dialog, setDialog] = useState<
       "draft" | "preview" | "edition" | "history" | "revoke" | "revise" | null
-    >(seedKind && seedKind in certificateNames ? "draft" : null),
+    >(seedKind && Object.hasOwn(certificateNames, seedKind) ? "draft" : null),
+    [reportOpen, setReportOpen] = useState(
+      query.get("report") === "1" || Boolean(pending?.path.startsWith(`${base}/reports/`)),
+    ),
     [creating, setCreating] = useState(!!seedKind),
     [loading, setLoading] = useState(true),
     [refresh, setRefresh] = useState(0),
@@ -99,6 +105,8 @@ export function CertificatesView({
     [draftCursor, setDraftCursor] = useState<string | null>(null);
   const epoch = useRef(0),
     trigger = useRef<HTMLElement | null>(null),
+    reportTrigger = useRef<HTMLElement | null>(null),
+    canReport = !!identity?.caps.includes("reports:use"),
     canManage = !!identity?.caps.includes("certificates:manage");
   useEffect(() => {
     if (!dialog) {
@@ -136,7 +144,7 @@ export function CertificatesView({
     churchId,
     principalKey: identity?.key ?? "",
     canWrite: canManage,
-    pending,
+    pending: pending?.path.startsWith(`${prefix}/`) ? pending : null,
     onPending,
     onAuthError: fail,
     operationPath: `${prefix}/operations`,
@@ -319,7 +327,7 @@ export function CertificatesView({
       if (n === epoch.current) fail(e);
     }
   }
-  const recovery = pending ? (
+  const recovery = pending?.path.startsWith(`${prefix}/`) ? (
     <Feedback tone="warning">
       Thao tác chưa rõ kết quả. Giữ nguyên intent.
       <div className="certificates-actions">
@@ -372,11 +380,25 @@ export function CertificatesView({
           <CertificateTile
             key={c.name}
             label={c.name}
-            unopened={!c.kind}
-            report={c.name.startsWith("Báo cáo")}
-            disabled={!c.kind || !canManage || locked || loading}
+            unopened={!c.kind && !canReport}
+            report={!c.kind}
+            disabled={
+              locked ||
+              loading ||
+              (c.kind
+                ? !canManage || (c.kind === "visit" && !identity?.caps.includes("visitation:read"))
+                : !canReport)
+            }
             onClick={() => {
               if (c.kind) openNew(c.kind);
+              else {
+                reportTrigger.current = document.activeElement as HTMLElement;
+                route("", "");
+                const url = new URL(location.href);
+                url.searchParams.set("report", "1");
+                window.history.replaceState(null, "", url);
+                setReportOpen(true);
+              }
             }}
           />
         ))}
@@ -431,6 +453,23 @@ export function CertificatesView({
           )}
         </div>
       </Card>
+      {reportOpen && identity && canReport && (
+        <ChurchReport
+          open
+          base={base}
+          realm={realm}
+          churchId={churchId}
+          identity={identity}
+          pending={pending}
+          onPending={onPending}
+          onAuthError={fail}
+          onClose={() => {
+            setReportOpen(false);
+            route("", "");
+            requestAnimationFrame(() => reportTrigger.current?.focus());
+          }}
+        />
+      )}
       {dialog && (
         <Modal
           open

@@ -87,6 +87,7 @@ export class Operations {
       operationId: ObjectId,
     ) => Promise<{ safeResult: Record<string, unknown>; resourceRefs: Operation["resourceRefs"] }>,
     status = 200,
+    fencedReplay = false,
   ): Promise<OperationResult> {
     return this.executeScoped(
       grant,
@@ -98,6 +99,7 @@ export class Operations {
       ifMatch,
       mutate,
       status,
+      fencedReplay,
     );
   }
   async executeOrganization(
@@ -258,6 +260,7 @@ export class Operations {
       | "prep-classes"
       | "rites"
       | "certificates"
+      | "church-reports"
       | "scheduling"
       | "programs"
       | "visitation"
@@ -305,6 +308,7 @@ export class Operations {
         namespace === "cards" ||
         namespace === "prep-classes" ||
         namespace === "rites" ||
+        namespace === "church-reports" ||
         namespace === "certificates"
       ) {
         requireCondition(authorizeResource, 403, "FORBIDDEN");

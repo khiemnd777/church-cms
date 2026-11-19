@@ -1,0 +1,12 @@
+/* The uploaded report is one small table. Keep its value columns visible inside W18. */
+.church-report-layout {
+  min-width: 0;
+  table-layout: fixed;
+}
+.church-report-layout td {
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+.church-report-layout[data-columns="2"] td:first-child {
+  width: 65%;
+}

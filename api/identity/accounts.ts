@@ -10,6 +10,7 @@ import type { RateLimit } from "../infrastructure/rate-limit";
 import type { Operations } from "../operations/service";
 import type { UnitScopeValidator } from "../organization/scope";
 import type { ChurchAccess } from "../tenancy/access";
+import { recordSubjectChange, revokeAccountSessions } from "./account-subjects";
 import { AccountCursors } from "./accounts-cursor";
 import { type Account, accountDto, roles } from "./accounts-model";
 import { hashPassword, temporaryPassword } from "./crypto";
@@ -341,27 +342,48 @@ export class Accounts {
           requireCondition(this.units, 503, "DEPENDENCY_UNAVAILABLE");
           await this.units.validateScope(church.id, data.scope, tx);
         }
-        await this.load(church.id, accountId, expected, tx);
+        const prior = await this.load(church.id, accountId, expected, tx);
+        const removeSubject = data.role !== "member" && !!prior.subjectMemberId;
+        const now = this.now();
         const a = await this.collection.findOneAndUpdate(
           { _id: accountId, churchId: church.id, version: expected },
           {
             $set: {
               role: data.role,
               scope: data.scope,
-              updatedAt: this.now(),
+              updatedAt: now,
               updatedBy: grant.actorId,
             },
-            $inc: { version: 1, writeFence: 1 },
+            ...(data.role !== "member"
+              ? { $unset: { subjectMemberId: "", subjectMemberVersion: "" } }
+              : {}),
+            $inc: { version: 1, writeFence: 1, ...(removeSubject ? { authEpoch: 1 } : {}) },
           },
           { session: tx, returnDocument: "after" },
         );
         requireCondition(a, 412, "VERSION_CONFLICT");
+        if (removeSubject) {
+          await revokeAccountSessions(this.db, a, now, tx);
+          await recordSubjectChange(
+            this.db,
+            a,
+            grant.actorId,
+            {
+              before: prior.subjectMemberId ?? null,
+              after: null,
+              reason: "Thu hồi liên kết do đổi vai trò",
+              at: now,
+              operationId: op,
+            },
+            tx,
+          );
+        }
         await this.event(
           "account.permissions_changed",
           requestId,
           grant,
           a,
-          ["role", "scope"],
+          removeSubject ? ["role", "scope", "subjectMemberId"] : ["role", "scope"],
           tx,
           op,
         );

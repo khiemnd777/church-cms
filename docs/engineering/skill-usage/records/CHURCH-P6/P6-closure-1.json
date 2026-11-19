@@ -1,0 +1,94 @@
+{
+  "schema_version": 1,
+  "event_id": "CHURCH-P6/P6/milestone-closure/1",
+  "event_type": "evaluation",
+  "task_id": "CHURCH-P6",
+  "scope_id": "P6",
+  "recorded_at": "2026-11-19T09:51:38.913019+07:00",
+  "reported_by": "delivery_owner",
+  "source_kind": "human_feedback",
+  "assessment_source": "human",
+  "review_attempt": 1,
+  "decision": "ACCEPTED",
+  "subject_event_id": "CHURCH-P6/P6.6/human-acceptance/1",
+  "findings": [],
+  "authority": {
+    "approval": "Nghiệm thu P6.6-r1 đủ 5 mục checklist. Đóng P6 ở phạm vi local/synthetic rồi dừng.",
+    "scope": "Nghiệm thu P6.6-r1 đủ năm mục và đóng P6 local/synthetic, sau đó dừng."
+  },
+  "milestone_closure": {
+    "milestone": "P6",
+    "status": "CLOSED",
+    "scope": "local/synthetic",
+    "released": false,
+    "accepted_packages": [
+      {
+        "package": "P6.1-r1",
+        "event_id": "CHURCH-P6/P6.1/human-acceptance/1",
+        "evidence_ref": "docs/engineering/skill-usage/records/CHURCH-P6/P6.1-human-acceptance-1.json"
+      },
+      {
+        "package": "P6.2-r1",
+        "event_id": "CHURCH-P6/P6.2/human-acceptance/1",
+        "evidence_ref": "docs/engineering/skill-usage/records/CHURCH-P6/P6.2-human-acceptance-1.json"
+      },
+      {
+        "package": "P6.3-r1",
+        "event_id": "CHURCH-P6/P6.3/human-acceptance/1",
+        "evidence_ref": "docs/engineering/skill-usage/records/CHURCH-P6/P6.3-human-acceptance-1.json"
+      },
+      {
+        "package": "P6.4-r1",
+        "event_id": "CHURCH-P6/P6.4/human-acceptance/1",
+        "evidence_ref": "docs/engineering/skill-usage/records/CHURCH-P6/P6.4-human-acceptance-1.json"
+      },
+      {
+        "package": "P6.5-r1",
+        "event_id": "CHURCH-P6/P6.5/human-acceptance/1",
+        "evidence_ref": "docs/engineering/skill-usage/records/CHURCH-P6/P6.5-human-acceptance-1.json"
+      },
+      {
+        "package": "P6.6-r1",
+        "event_id": "CHURCH-P6/P6.6/human-acceptance/1",
+        "evidence_ref": "docs/engineering/skill-usage/records/CHURCH-P6/P6.6-human-acceptance-1.json"
+      }
+    ]
+  },
+  "technical_snapshots_sha256": {
+    "docs/engineering/skill-usage/records/CHURCH-P6/P6.1-implementation-1.json": "e3b625f5af865b2f81c3271b7747e666fbfff3c565609b202b4e0a3e225d1215",
+    "output/p6.1/verification.json": "dfccbe5a798529596873f2054a2c9fa262536b307fc706de9ffaa9cd021f8d3d",
+    "output/p6.2/verification.json": "9802cf2ff07b39c23cfc7be8c42f90722001b4bf4b42260218d5d5b6500d039a",
+    "docs/engineering/skill-usage/records/CHURCH-P6/P6.2-implementation-1.json": "15dfc2e63db244e7f3dbcbc8e8ee96004d454687c89f4a89df5078b0ce4651f4",
+    "output/p6.3/verification.json": "9a33457ec40242614690ce2959812957b20cb3d76482e736e980ac6e9af1e468",
+    "docs/engineering/skill-usage/records/CHURCH-P6/P6.3-implementation-1.json": "80bb858ee212e411924cd36daef38dc3e7a0385cfb0b534eb710a2d6227a383e",
+    "output/p6.4/verification.json": "2ec2ecf6b2bf4c4d192aba06478187cfa4aa12c74b6a124a5e2bad89f8d2bec5",
+    "docs/engineering/skill-usage/records/CHURCH-P6/P6.4-implementation-1.json": "2b263b7a4bf605cbeb8e287580a3563b9872d13ce60d0bff6946e8b180ad503f",
+    "output/p6.5/verification.json": "f779f51305808234f00aaa6d4ce537dccee3e01c2861fa5f25eb58adb79b0a5b",
+    "docs/engineering/skill-usage/records/CHURCH-P6/P6.5-implementation-1.json": "57f356c3f683c54ddbea01fdc2eecce17793db5fd18a3cc2339e04c183706825",
+    "output/p6.6/verification.json": "e6d087d766e09d87acae71f1f22b9d9f8608a90c2b739752b8e6d6386c31030d",
+    "docs/engineering/skill-usage/records/CHURCH-P6/P6.6-qualification-1.json": "3ae89f6a1b8d8f162815fd1059ac6e9f7a9aa805ce7449ab7fb66b92718cba17"
+  },
+  "retained_exceptions": {
+    "E51-01": "USER_WAIVED",
+    "E55-01": "OPEN / USER_DEFERRED_UNTIL_BEFORE_PRODUCTION",
+    "UI-POSTP8-01": "USER_DEFERRED_AFTER_P8"
+  },
+  "limits": [
+    "Hồi quy và restore local/synthetic, chưa phát hành",
+    "Safari, thiết bị thật, Word cài đặt, UAT, main, pilot, remote CI, production, nhiều replica và review độc lập NOT_RUN",
+    "Tải nhỏ, API trong tiến trình và fixture 8 hồ sơ; không suy SLA",
+    "Mẫu trong phạm vi dùng nội bộ có watermark",
+    "E55-01 hoãn trước production; E51-01 USER_WAIVED; UI-POSTP8-01 sau P8"
+  ],
+  "evidence_refs": [
+    "docs/tasks/CHURCH-P6.6.md",
+    "output/p6.6/verification.json",
+    "docs/engineering/skill-usage/records/CHURCH-P6/P6.1-human-acceptance-1.json",
+    "docs/engineering/skill-usage/records/CHURCH-P6/P6.2-human-acceptance-1.json",
+    "docs/engineering/skill-usage/records/CHURCH-P6/P6.3-human-acceptance-1.json",
+    "docs/engineering/skill-usage/records/CHURCH-P6/P6.4-human-acceptance-1.json",
+    "docs/engineering/skill-usage/records/CHURCH-P6/P6.5-human-acceptance-1.json",
+    "docs/engineering/skill-usage/records/CHURCH-P6/P6.6-human-acceptance-1.json",
+    "docs/engineering/skill-usage/records/CHURCH-P6/P6-closure-documentation-1.json"
+  ]
+}

@@ -12,6 +12,7 @@ export interface TenantIntent extends Intent {
     | { kind: "payment-void"; paymentId: string }
     | { kind: "expense"; action: "submit" | "decision" | "payment" }
     | { kind: "member_card"; memberId: string }
+    | { kind: "personal_prayer" }
     | { kind: "prayer_request"; visibility: "shared" | "pastoral" };
   upload?: { file: File; format: "csv" | "xlsx"; source: string };
 }
@@ -54,7 +55,7 @@ export function useTenantMutation({
   pending: TenantIntent | null;
   onPending: (intent: TenantIntent | null) => void;
   onAuthError: (error: unknown) => void;
-  operationPath: string;
+  operationPath?: string;
   prefix: string;
   acceptPath?: (path: string) => boolean;
   intentResource?: TenantIntent["resource"];
@@ -75,7 +76,10 @@ export function useTenantMutation({
   }, []);
   function fail(e: unknown) {
     if (e instanceof ApiError) {
-      if (["FORBIDDEN", "NOT_FOUND", "IDEMPOTENCY_EXPIRED"].includes(e.code)) onAccessLoss?.(e);
+      if (
+        ["FORBIDDEN", "NOT_FOUND", "IDEMPOTENCY_EXPIRED", "PORTAL_LINK_REQUIRED"].includes(e.code)
+      )
+        onAccessLoss?.(e);
       if (authErrorCodes.includes(e.code)) {
         onAuthError(e);
         return;
@@ -114,7 +118,7 @@ export function useTenantMutation({
       onSuccess(data);
     }
     try {
-      if (checking && intent.operationId) {
+      if (checking && intent.operationId && operationPath) {
         try {
           const r = await tenantRequest<{ safeResult: unknown }>(
             realm,
@@ -126,7 +130,7 @@ export function useTenantMutation({
           if (!(e instanceof ApiError && e.code === "NOT_FOUND")) throw e;
         }
       }
-      if (Date.now() - intent.createdAt >= 24 * 60 * 60_000)
+      if (operationPath && Date.now() - intent.createdAt >= 24 * 60 * 60_000)
         throw new ApiError(
           "IDEMPOTENCY_EXPIRED",
           "Đã quá thời hạn thử lại. Đối soát danh sách trước thao tác mới.",

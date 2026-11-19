@@ -1,0 +1,139 @@
+{
+  "schema_version": 1,
+  "event_id": "CHURCH-P6/P6.4/implementation/1",
+  "event_type": "phase_handoff",
+  "task_id": "CHURCH-P6",
+  "scope_id": "P6.4",
+  "recorded_at": "2026-11-19T09:27:23.686646+07:00",
+  "reported_by": "delivery_owner",
+  "source_kind": "agent_self_report",
+  "phase": "implementation",
+  "handoff_index": 1,
+  "classification": {
+    "delivery": "roadmap",
+    "complexity": "Đọc số tiền riêng tư theo liên kết và kỳ, cổng tín hữu",
+    "ui": true
+  },
+  "authority": {
+    "approval": "Duyệt P6.3-r1. Mở P6.4 dừng trước P6.5",
+    "scope": "P6.4 local/synthetic theo kế hoạch đã duyệt, dừng trước P6.5."
+  },
+  "skills": [
+    {
+      "skill_id": "incremental-implementation",
+      "contribution_summary": "Nối nguồn Finance, service cổng tín hữu, API và điều hướng.",
+      "contribution_percent_estimate": 30,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/incremental-implementation/SKILL.md",
+        "version": null,
+        "sha256": "4663b276ac0d2f38be6f14a23d792783a255efe714710726af21c0f52c873359",
+        "fingerprint_basis": "Bytes của skill được đọc và áp dụng trong công việc này."
+      }
+    },
+    {
+      "skill_id": "security-and-hardening",
+      "contribution_summary": "Kiểm quyền self, liên kết và cursor ở mỗi trang, giới hạn projection.",
+      "contribution_percent_estimate": 30,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/security-and-hardening/SKILL.md",
+        "version": null,
+        "sha256": "4549688254258d5d6836a0f2d8cf606460a9baf426e9c644d3244a9973778ad3",
+        "fingerprint_basis": "Bytes của skill được đọc và áp dụng trong công việc này."
+      }
+    },
+    {
+      "skill_id": "frontend-ui-engineering",
+      "contribution_summary": "Dùng bộ chung cho chọn kỳ, tổng, thẻ khoản dâng, tải thêm và các trạng thái.",
+      "contribution_percent_estimate": 20,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/frontend-ui-engineering/SKILL.md",
+        "version": null,
+        "sha256": "b5c47fed383892428172bf0b9c1ed1aeab50066ff9421a87a6c344f746386495",
+        "fingerprint_basis": "Bytes của skill được đọc và áp dụng trong công việc này."
+      }
+    },
+    {
+      "skill_id": "test-driven-development",
+      "contribution_summary": "Kiểm dòng phiếu, tổng chính xác, quyền, bố cục và truy vấn MongoDB.",
+      "contribution_percent_estimate": 20,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/test-driven-development/SKILL.md",
+        "version": null,
+        "sha256": "48d85b44f5e6286ba2a7a43550083609f299aa4001391768e9da126d2db86742",
+        "fingerprint_basis": "Bytes của skill được đọc và áp dụng trong công việc này."
+      }
+    }
+  ],
+  "outcome": {
+    "delivery_status": "COMPLETED",
+    "verification_level": "LOCAL_SYNTHETIC_SCOPED",
+    "human_acceptance": "PENDING_REVIEW",
+    "limitations": [
+      "Full suite NOT_RUN",
+      "Safari, thiết bị thật, UAT, main runtime, pilot, remote CI, production, multi-replica và review độc lập NOT_RUN",
+      "E55-01 hoãn trước production, E51-01 USER_WAIVED, UI-POSTP8-01 hoãn sau P8",
+      "Chỉ mục mới chỉ qua kiểm chứng synthetic, chưa áp main."
+    ]
+  },
+  "measurements": {
+    "elapsed_seconds": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có số đo xác thực riêng cho gói."
+    },
+    "tool_calls": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có số đo xác thực riêng cho gói."
+    },
+    "input_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có số đo xác thực riêng cho gói."
+    },
+    "output_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có số đo xác thực riêng cho gói."
+    },
+    "cached_input_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có số đo xác thực riêng cho gói."
+    },
+    "reasoning_output_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có số đo xác thực riêng cho gói."
+    },
+    "client": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có số đo xác thực riêng cho gói."
+    },
+    "model": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có số đo xác thực riêng cho gói."
+    },
+    "effort": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có số đo xác thực riêng cho gói."
+    }
+  },
+  "evidence_refs": [
+    "docs/tasks/CHURCH-P6.4.md",
+    "output/p6.4/verification.json",
+    "output/p6.4/query-plan-runtime.json",
+    "output/p6.4/browser/browser-results.json"
+  ]
+}

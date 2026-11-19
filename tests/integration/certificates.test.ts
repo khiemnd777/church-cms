@@ -40,7 +40,9 @@ const client = (realm: "owner" | "church" = "owner") => {
 const base = (c: { id: string }, s = owner) =>
   `${s.realm === "owner" ? "owner/" : ""}churches/${c.id}`;
 const cp = (c: { id: string }, s = owner) => `${base(c, s)}/certificates`;
-async function fixture(kind: CertificateKind = "baptism") {
+async function fixture(
+  kind: Extract<CertificateKind, "baptism" | "dedication" | "marriage" | "application"> = "baptism",
+) {
   const c = await syntheticChurch(owner, `Chứng nhận synthetic ${crypto.randomUUID()}`);
   await seedP2(db, c.id, ownerId, 3);
   const member = await db.db.collection("members").findOne({ churchId: new ObjectId(c.id) });
@@ -779,5 +781,167 @@ describe("P3.5 Certificates real Mongo Redis and real DOCX/PDF", () => {
       ).status,
     ).toBe(422);
     expect(JSON.stringify(logs)).not.toContain("Người làm đơn synthetic");
+  });
+});
+
+describe("P6.1 additional internal templates", () => {
+  test("member templates enforce eligibility and recipient, preserve member source and output bytes", async () => {
+    const c = await fixture("application"),
+      members = db.db.collection("members");
+    const key = { churchId: new ObjectId(c.id), _id: new ObjectId(c.memberId) };
+    await members.updateOne(key, {
+      $set: {
+        type: "believer",
+        membership: "member",
+        participation: "transferred",
+        baptism: { status: "unknown", date: null, place: null },
+      },
+    });
+    const makeInput = (kind: "membership" | "transfer"): CertificateInput => ({
+      ...c.input,
+      kind,
+      requestedOn: null,
+      supplementReason: null,
+      supplements: { birthDate: null, eventDate: null, place: null, group: null, parents: null },
+      signers: { ...c.input.signers, applicant: null, guide: null },
+    });
+    expect(
+      (await owner.call(`${cp(c)}/drafts`, { input: makeInput("membership"), reason: null }))
+        .status,
+    ).toBe(422);
+    await members.updateOne(key, { $set: { participation: "long_absent" } });
+    const before = await members.findOne(key);
+    for (const kind of ["membership", "transfer"] as const) {
+      const input = makeInput(kind);
+      if (kind === "transfer") {
+        const incomplete = await prepare(c, await draft(c, input));
+        expect(incomplete.preview.snapshot.missing).toContain("Hội Thánh tiếp nhận");
+        input.destination = "Hội Thánh tiếp nhận synthetic";
+      }
+      const id = await draft(c, input),
+        eid = await issue(c, id),
+        e = await edition(c, eid);
+      expect(e.snapshot.templateVersion).toBe("internal-p61-r1");
+      const text = e.snapshot.content.paragraphs.map((row: { text: string }) => row.text).join(" ");
+      expect(text).toContain("Vắng lâu");
+      expect(text).not.toContain("Đã chịu Báp-têm");
+      if (kind === "transfer") expect(text).toContain(input.destination as string);
+      expect((await raw(c, `editions/${eid}/files/pdf?version=1`)).status).toBe(200);
+      const docx = await raw(c, `editions/${eid}/files/docx?version=1`);
+      expect(docx.status).toBe(200);
+      const xml = strFromU8(
+        unzipSync(new Uint8Array(await docx.arrayBuffer()))["word/document.xml"] as Uint8Array,
+      );
+      expect(xml).toContain("MẪU KIỂM THỬ");
+      expect(xml).toContain("Vắng lâu");
+    }
+    const after = await members.findOne(key);
+    expect(after?.version).toBe(before?.version);
+    expect(after?.participation).toBe(before?.participation);
+  });
+
+  test("visit picker minimizes fields and source edits invalidate preview without mutating visitation", async () => {
+    const c = await fixture("application");
+    await db.db
+      .collection("members")
+      .updateOne(
+        { _id: new ObjectId(c.memberId), churchId: new ObjectId(c.id) },
+        { $set: { participation: "active" } },
+      );
+    const path = `${base(c)}/care/cases`,
+      secret = "Mô tả synthetic không đưa lên phiếu";
+    const create = {
+      action: "create",
+      target: { kind: "member", id: c.memberId },
+      fields: {
+        reasonCode: "other",
+        description: secret,
+        priority: "normal",
+        plannedOn: null,
+        assigneeId: null,
+      },
+      reason: null,
+      preview: null,
+      confirmed: true,
+    };
+    const proposed = await owner.call(`${path}/preview`, create);
+    expect(proposed.status).toBe(200);
+    const created = await owner.call(path, { ...create, preview: proposed.payload.data.context });
+    expect(created.status).toBe(201);
+    const visitId = created.payload.data.caseId;
+    const options = await owner.call(`${cp(c)}/visit-options`);
+    expect(options.status).toBe(200);
+    expect(options.payload.data.items.map((v: { id: string }) => v.id)).toEqual([visitId]);
+    expect(JSON.stringify(options.payload.data)).not.toContain(secret);
+    const other = await syntheticChurch(owner, "Hội Thánh đối chiếu P6.1");
+    expect((await owner.call(`${cp(other)}/visit-options`)).payload.data.items).toEqual([]);
+    const input: CertificateInput = {
+      ...c.input,
+      kind: "visit",
+      memberId: null,
+      visitId,
+      requestedOn: null,
+      supplementReason: null,
+      supplements: { birthDate: null, eventDate: null, place: null, group: null, parents: null },
+      signers: { ...c.input.signers, applicant: null, guide: null },
+    };
+    expect((await owner.call(`${cp(other)}/drafts`, { input, reason: null })).status).toBe(404);
+    const did = await draft(c, input),
+      p = await prepare(c, did);
+    expect(JSON.stringify(p.preview.snapshot)).not.toContain(secret);
+    const casePath = `${path}/${visitId}`,
+      v = (await owner.call(casePath)).payload.data,
+      update = {
+        action: "update",
+        fields: { ...create.fields, plannedOn: shiftDay(businessDay(), 2) },
+        reason: "Đổi ngày synthetic",
+        preview: null,
+        confirmed: true,
+      };
+    const next = await owner.call(`${casePath}/preview`, update, {
+      version: v.version,
+      method: "POST",
+    });
+    expect(next.status).toBe(200);
+    const changed = await owner.call(
+      casePath,
+      { ...update, preview: next.payload.data.context },
+      { version: v.version, method: "PATCH" },
+    );
+    expect(changed.status).toBe(200);
+    const result = await owner.call(
+      `${cp(c)}/drafts/${did}/issue`,
+      {
+        previewId: p.preview.id,
+        context: p.preview.context,
+        confirm: true,
+        faithConfirmed: false,
+        reason: null,
+      },
+      { version: p.draft.version },
+    );
+    expect(result.status).toBe(412);
+    const before = (await owner.call(casePath)).payload.data;
+    const eid = await issue(c, did);
+    const e = await edition(c, eid);
+    expect(e.snapshot.sources.visit.plannedOn).toBe(update.fields.plannedOn);
+    expect(JSON.stringify(e.snapshot)).not.toContain(secret);
+    const docx = await raw(c, `editions/${eid}/files/docx?version=1`);
+    expect(docx.status).toBe(200);
+    const xml = strFromU8(
+      unzipSync(new Uint8Array(await docx.arrayBuffer()))["word/document.xml"] as Uint8Array,
+    );
+    expect(xml).toContain("Kết quả (điền ngoài hệ thống)");
+    expect(xml).not.toContain(secret);
+    expect((await owner.call(casePath)).payload.data).toEqual(before);
+    const secretary = client("church"),
+      treasurer = client("church");
+    await syntheticUser(owner, secretary, c, "secretary");
+    await syntheticUser(owner, treasurer, c, "treasurer");
+    expect((await secretary.call(`${cp(c, secretary)}/visit-options`)).status).toBe(200);
+    expect((await secretary.call(`${cp(other, secretary)}/visit-options`)).status).toBe(404);
+    expect((await treasurer.call(`${cp(c, treasurer)}/visit-options`)).status).toBe(403);
+    expect((await raw(c, `editions/${eid}/files/pdf?version=1`, secretary)).status).toBe(200);
+    expect((await raw(c, `editions/${eid}/files/pdf?version=1`, treasurer)).status).toBe(403);
   });
 });

@@ -31,7 +31,7 @@ export function validateRoleScope(role: Role, scope: Scope) {
     );
 }
 // Only implemented capabilities are advertised; business modules extend this versioned catalogue in P2.
-export const policyVersion = 24;
+export const policyVersion = 26;
 export const churchCapabilities = ["context:read", "policy:read"] as const;
 export const financeReadCapabilities = [
   "finance:funds:read",
@@ -75,6 +75,9 @@ export function capabilitiesFor(role: Role): readonly string[] {
         "attendance:scan",
         "cards:read",
         "cards:manage",
+        "reports:use",
+        "reports:templates:upload",
+        "reports:templates:activate",
         "certificates:read",
         "certificates:manage",
         "rites:read",
@@ -112,6 +115,8 @@ export function capabilitiesFor(role: Role): readonly string[] {
           "attendance:scan",
           "cards:read",
           "cards:manage",
+          "reports:use",
+          "reports:templates:upload",
           "certificates:read",
           "certificates:manage",
           "rites:read",
@@ -146,7 +151,7 @@ export function capabilitiesFor(role: Role): readonly string[] {
               "finance:payments:void",
               "finance:periods:close",
             ]
-          : churchCapabilities;
+          : [...churchCapabilities, "portal:self"];
 }
 export function capabilityAllowed(capability: string, role: Role) {
   return capabilitiesFor(role).includes(capability);
@@ -163,7 +168,9 @@ export function policyMatrix() {
           ? "Toàn bộ: xem/sửa"
           : role === "ministry_lead"
             ? "Ban mình: danh sách rút gọn"
-            : "Chưa mở",
+            : role === "member"
+              ? "Của mình: xem khi đã liên kết"
+              : "Không",
       families: role === "pastor" || role === "secretary" ? "Toàn bộ: xem/sửa" : "Không",
       organization:
         role === "pastor"
@@ -175,7 +182,11 @@ export function policyMatrix() {
               : "Không",
       dataExchange: role === "pastor" || role === "secretary" ? "Nhập/xuất có đối soát" : "Không",
       rites:
-        role === "pastor" || role === "secretary" ? "Sổ lễ nghi và lớp dự bị: quản lý" : "Chưa mở",
+        role === "pastor" || role === "secretary"
+          ? "Sổ lễ nghi và lớp dự bị: quản lý"
+          : role === "member"
+            ? "Lễ nghi của mình: xem khi đã liên kết"
+            : "Không",
       attendance:
         role === "pastor" || role === "secretary"
           ? "Toàn bộ: quản lý/điểm danh"

@@ -43,6 +43,34 @@ export class RiteMembers {
       baptism: m.baptism,
     };
   }
+  async certificateMembership(g: TenantGrant, id: string, tx: ClientSession) {
+    const m = await this.db.db.collection<Member>("members").findOne(
+      { _id: new ObjectId(id), churchId: g.churchId },
+      {
+        session: tx,
+        projection: {
+          fullName: 1,
+          code: 1,
+          type: 1,
+          membership: 1,
+          participation: 1,
+          baptism: 1,
+          version: 1,
+        },
+      },
+    );
+    requireCondition(m, 404, "NOT_FOUND");
+    return {
+      id: m._id.toHexString(),
+      fullName: m.fullName,
+      code: m.code,
+      type: m.type,
+      membership: m.membership,
+      participation: m.participation,
+      baptism: m.baptism,
+      version: m.version,
+    };
+  }
   async fence(g: TenantGrant, id: string, expected: number, tx: ClientSession) {
     const r = await this.db.db
       .collection<Member>("members")

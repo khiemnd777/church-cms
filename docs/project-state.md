@@ -1,8 +1,50 @@
 # Hiện trạng Church CMS
 
+## P6 đã đóng local/synthetic
+
+Khiêm nghiệm thu P6.6-r1 đủ 5 mục và xác nhận đóng P6. Cả sáu gói P6.1–P6.6 đã nghiệm thu ở phạm vi local/synthetic. Chưa phát hành. E51-01 đã được bỏ qua, E55-01 còn mở và hoãn đến trước production, UI-POSTP8-01 hoãn sau P8. Giới hạn kiểm chứng ghi trong biên bản. Phần bên dưới là lịch sử. [Đóng P6](tasks/CHURCH-P6.6.md#nghiệm-thu-p66-và-đóng-p6) · [Biên bản](engineering/skill-usage/records/CHURCH-P6/P6-closure-1.json).
+
+## P6.6-r1 — bàn giao local/synthetic, chờ nghiệm thu trước đóng P6
+
+P6.1–P6.5 đã nghiệm thu. P6.6 có 499 tests/7.356 assertions, Firefox 1.591 checks, luồng xuyên P6 115 checks, 7 cặp DOCX/PDF, 13 chỉ tiêu khớp, 192 lượt đọc và restore 66 collection/4 file khớp trước biến đổi. Đã dọn database thử. [Checklist](tasks/CHURCH-P6.6.md) · [Kiểm chứng](../output/p6.6/verification.json).
+
+P6.6 PENDING_REVIEW, P6 chờ Khiêm nghiệm thu và cho đóng. Chưa phát hành. Giữ E51-01/E55-01/UI-POSTP8-01 và giới hạn NOT_RUN. Phần dưới là lịch sử.
+
+## P6.5-r1 — bàn giao local/synthetic, chờ nghiệm thu
+
+Cổng tín hữu gửi riêng Mục sư và theo dõi yêu cầu do chính account/liên kết gửi. Đối soát cùng khóa sau mất phản hồi hoặc hết hạn receipt giữ một yêu cầu. 95 tests/1.544 assertions, Firefox 497 checks/80 ảnh/846 khoảng cách đạt. PENDING_REVIEW, chưa phát hành. [Checklist](tasks/CHURCH-P6.5.md) · [Kiểm chứng](../output/p6.5/verification.json).
+
+P6.4-r1 đã nghiệm thu 5/5. Dừng trước P6.6 Kiểm chứng tổng hợp. Giữ E51-01/E55-01/UI-POSTP8-01 và giới hạn NOT_RUN. Phần bên dưới là lịch sử. [Biên bản P6.4](engineering/skill-usage/records/CHURCH-P6/P6.4-human-acceptance-1.json).
+
+## P6.4-r1 — bàn giao local/synthetic, chờ nghiệm thu
+
+Cổng tín hữu đọc dâng hiến riêng qua liên kết P6.3. Tổng ròng theo tháng tính đúng đến từng đồng trên dòng đã ghi sổ. 64 tests/1.078 assertions và Firefox 405 checks/64 ảnh/492 khoảng cách đạt. Chỉ mục theo thuộc viên và kỳ đã được đo trên 6.000 phiếu synthetic. PENDING_REVIEW, chưa phát hành. [Checklist](tasks/CHURCH-P6.4.md) · [Kiểm chứng](../output/p6.4/verification.json).
+
+P6.3-r1 đã được Khiêm nghiệm thu 5/5. Dừng trước P6.5 Gửi cầu thay cá nhân. P6.6 Kiểm chứng tổng hợp chưa mở. Giữ E51-01/E55-01/UI-POSTP8-01 và các mục NOT_RUN. Các kết quả bên dưới là lịch sử. [Nghiệm thu P6.3](engineering/skill-usage/records/CHURCH-P6/P6.3-human-acceptance-1.json).
+
 ## E55-01 — hoãn dependency audit đến trước production
 
 Theo chỉ dẫn mới của Khiêm trong chat: bỏ check audit khi tạo PR, xử lý trước production. Đã bỏ `bun audit` khỏi workflow CI tự động; các checks khác giữ nguyên. E55-01 vẫn OPEN, được USER_DEFERRED_UNTIL_BEFORE_PRODUCTION; advisory high picomatch chưa được sửa. Chỉ dẫn mới thay trạng thái NOT_WAIVED ở các snapshot lịch sử bên dưới đối với gate PR; không chứng minh dependency an toàn hoặc cho phép production. Trước production cần chạy lại audit và xử lý finding hoặc có quyết định chấp nhận rủi ro rõ ràng.
+
+## P6.3-r1 — bàn giao local/synthetic, chờ nghiệm thu
+
+Liên kết owner, trạng thái hồ sơ và lễ nghi cá nhân đã nối nguồn và kiểm chứng local/synthetic. 76 tests/1.244 assertions, Firefox 334 checks/52 ảnh/160 khoảng cách. Ca in-flight relink chặn dữ liệu phiên cũ; vai trò riêng hiển thị trên mobile. [Checklist](tasks/CHURCH-P6.3.md) · [Bằng chứng](../output/p6.3/verification.json). PENDING_REVIEW, chưa released. Policy26, validator và index chỉ dùng synthetic. Không mở P6.4; giữ E51-01/E55-01/UI-POSTP8-01 và NOT_RUN trước đó.
+
+## P6.2-r1 đã nghiệm thu 5/5; mở P6.3 local/synthetic — 2026-11-19
+
+Khiêm nghiệm thu P6.2-r1 đủ năm mục local/synthetic và ủy quyền triển khai P6.3 theo kế hoạch đã duyệt. [Biên bản nghiệm thu](engineering/skill-usage/records/CHURCH-P6/P6.2-human-acceptance-1.json). Chỉ triển khai liên kết tài khoản và cổng hồ sơ/lễ nghi. Bàn giao rồi dừng trước P6.4. Chưa phát hành. E51-01, E55-01, UI-POSTP8-01 và các mục NOT_RUN giữ nguyên.
+
+## P6.2-r1 — bàn giao local/synthetic, chờ nghiệm thu
+
+W18 mở từ W11/W01. Mỗi Hội Thánh tải và kích hoạt mẫu riêng. 13 chỉ tiêu, preview/chốt, Excel/PDF có watermark, thay thế giữ file cũ. 57 tests/847 assertions hồi quy; lượt Reporting cuối 5/84 có chồng lấp. Firefox 1.094 checks/64 ảnh/430 khoảng cách; 4 trang PDF và parity Excel/PDF đạt. [Checklist](tasks/CHURCH-P6.2.md) · [Bằng chứng](../output/p6.2/verification.json). PENDING_REVIEW, chưa released. Policy25 và schema/index chỉ ở synthetic. Excel cài đặt, giấy/camera thật, Safari, UAT, main, pilot, remote CI, production, multi-replica và review độc lập NOT_RUN. E51-01/E55-01/UI-POSTP8-01 theo trạng thái đã ghi nhận. Dừng trước P6.3.
+
+## P6.1-r1 đã nghiệm thu; mở kế hoạch chung P6.2–P6.5 — 2026-11-19
+
+Khiêm nghiệm thu P6.1-r1 local/synthetic. [Biên bản](engineering/skill-usage/records/CHURCH-P6/P6.1-human-acceptance-1.json) liên kết bản bàn giao gốc; các mục NOT_RUN và giới hạn nội bộ giữ nguyên, chưa released. P6.2–P6.5 mở chung một kế hoạch để duyệt trước coding. Chưa mở triển khai hoặc P6.6. E51-01 USER_WAIVED, E55-01 OPEN/hoãn trước production, UI-POSTP8-01 hoãn sau P8. Mục chờ nghiệm thu bên dưới là lịch sử.
+
+## P6.1-r1 — bàn giao local/synthetic, chờ nghiệm thu
+
+P61-01–04 source complete. Bảy mẫu nội bộ có watermark, W11/W17 xem trước/chốt/Word/PDF/in; W18 chưa mở. 51 tests/857 assertions, Firefox 924 checks/55 ảnh/60 khoảng cách, 9 trang PDF và 7 DOCX kiểm nội dung. DOCX render độc lập/native Word, giấy/camera thật, Safari, UAT, main runtime, pilot, remote CI, production, multi-replica và independent review NOT_RUN. [Checklist](tasks/CHURCH-P6.1.md) · [Bằng chứng](../output/p6.1/verification.json). Khiêm đã duyệt P6.1-plan-r1, ASCII và bộ mẫu nội bộ; P6.1-r1 PENDING_REVIEW, chưa released. Dừng trước P6.2. E51-01 đã waive, E55-01 theo ghi nhận hiện hành ở trên, UI-POSTP8-01 hoãn sau P8.
 
 ## Đóng P5; mở planning P6 ở conversation khác — 2026-11-18
 
@@ -145,6 +187,10 @@ Khiêm: **“Duyệt P5-plan-r1. Mở kế hoạch chi tiết P5.1 để chốt 
 Chỉ tài liệu approval/state/journal; không code/schema/tests/runtime P5 mới, publication/commit/push/merge/deploy/real data/main DB read/init/restart3443/worktree/delegation. Giữ P4 CLOSED, prior snapshots/journals, P3.4 race/P4.2 fast-fill UNKNOWN và physical/native Word/Safari/UAT/main runtime/pilot/remoteCI/production/multi-replica NOT_RUN; không suy local workload/restore thành production SLA/capacity/RPO/RTO/PITR. Mục PR #5 bên dưới là lần quan sát lịch sử, không được kiểm tra lại trong planning này.
 
 
+
+## PR #5 — GitGuardian false positives, 2026-11-15
+
+Theo phê duyệt hiện hành, incidents `40098315` và `40098316` đã được đánh dấu **Ignored — Not a secret (false positive)** trên GitGuardian. Hai giá trị khớp SHA-256 của log local trong `preserved_sha256`; giữ nguyên hồ sơ P4.6. GitGuardian Security Checks tại `f61322e` đã completed/neutral; PR #5 Open, chưa merged, mergeable=true; hai checks CI còn in_progress tại lần kiểm tra. Bình luận bot cũ vẫn ghi Triggered. [Journal](engineering/skill-usage/records/CHURCH-GITGUARDIAN-001/implementation-1.json). Không đổi ứng dụng, commit/push, rewrite history, merge hoặc deploy trong task này.
 
 ## P4 — đã đóng theo chỉ dẫn Khiêm 2026-11-15
 

@@ -19,7 +19,13 @@ import {
 } from "./models";
 import { renderCertificate, renderFingerprint } from "./renderer";
 import type { CertificateSources } from "./source";
-import { draftInput, issueInput, reasonInput } from "./validation";
+import {
+  type CertificateKind,
+  draftInput,
+  issueInput,
+  kindSchema,
+  reasonInput,
+} from "./validation";
 export class Certificates {
   private query: TenantQueries;
   constructor(
@@ -51,12 +57,20 @@ export class Certificates {
       "FORBIDDEN",
     );
   }
+  private allowKind(g: CertificateGrant, kind: CertificateKind) {
+    requireCondition(kind !== "visit" || g.canReadVisitCertificates, 403, "FORBIDDEN");
+  }
+  visitOptions(g: CertificateGrant, q: URLSearchParams) {
+    this.staff(g);
+    return this.sources.visitOptions(g, q);
+  }
   private async draft(g: CertificateGrant, id: string, tx: ClientSession) {
     const d = await this.drafts.findOne(
       { _id: objectId(id), churchId: g.churchId },
       { session: tx },
     );
     requireCondition(d, 404, "NOT_FOUND");
+    this.allowKind(g, d.input.kind);
     return d;
   }
   private async edition(g: CertificateGrant, id: string, tx: ClientSession, bytes = false) {
@@ -65,6 +79,7 @@ export class Certificates {
       { session: tx, ...(!bytes ? { projection: { pdf: 0, docx: 0 } } : {}) },
     );
     requireCondition(d, 404, "NOT_FOUND");
+    this.allowKind(g, d.snapshot.input.kind);
     return d;
   }
   private async previous(g: CertificateGrant, d: Draft, tx: ClientSession) {
@@ -199,6 +214,7 @@ export class Certificates {
   ) {
     const b = parse(draftInput, raw),
       expected = id ? version(match) : null;
+    this.allowKind(g, b.input.kind);
     return this.command(
       g,
       id,
@@ -222,7 +238,15 @@ export class Certificates {
               old.input.memberId,
               old.input.riteId,
               old.input.courseId,
-            ]) === canonical([b.input.kind, b.input.memberId, b.input.riteId, b.input.courseId]),
+              old.input.visitId ?? null,
+            ]) ===
+              canonical([
+                b.input.kind,
+                b.input.memberId,
+                b.input.riteId,
+                b.input.courseId,
+                b.input.visitId ?? null,
+              ]),
             422,
             "CERT_SOURCE_LOCKED",
           );
@@ -597,24 +621,30 @@ export class Certificates {
     const limit = this.query.limit(q),
       kind = q.get("kind"),
       state = q.get("state");
-    requireCondition(
-      !kind || ["baptism", "dedication", "marriage", "application"].includes(kind),
-      400,
-      "INVALID_REQUEST",
-    );
+    requireCondition(!kind || kindSchema.safeParse(kind).success, 400, "INVALID_REQUEST");
     requireCondition(
       !state || ["issued", "superseded", "revoked"].includes(state),
       400,
       "INVALID_REQUEST",
     );
-    const context = this.query.context(g, "editions", [kind, state, memberId ?? null]);
+    if (kind) this.allowKind(g, kind as CertificateKind);
+    const context = this.query.context(g, "editions", [
+      kind,
+      state,
+      memberId ?? null,
+      g.canReadVisitCertificates,
+    ]);
     return this.db.readSnapshot(g.churchId.toHexString(), async (tx) => {
       await g.fence(tx);
       if (memberId) await this.sources.memberIdentity(g, memberId, tx);
       const f: Filter<Edition> = {
         churchId: g.churchId,
         ...(memberId ? { memberIds: objectId(memberId) } : {}),
-        ...(kind ? { "snapshot.input.kind": kind } : {}),
+        ...(kind
+          ? { "snapshot.input.kind": kind }
+          : g.canReadVisitCertificates
+            ? {}
+            : { "snapshot.input.kind": { $ne: "visit" } }),
         ...(state ? { state: state as Edition["state"] } : {}),
       };
       if (q.has("cursor")) {
@@ -644,10 +674,14 @@ export class Certificates {
     this.staff(g);
     this.query.allow(q, ["limit", "cursor"]);
     const limit = this.query.limit(q),
-      context = this.query.context(g, "drafts", null);
+      context = this.query.context(g, "drafts", g.canReadVisitCertificates);
     return this.db.readSnapshot(g.churchId.toHexString(), async (tx) => {
       await g.fence(tx);
-      const filter: Filter<Draft> = { churchId: g.churchId, state: "draft" };
+      const filter: Filter<Draft> = {
+        churchId: g.churchId,
+        state: "draft",
+        ...(g.canReadVisitCertificates ? {} : { "input.kind": { $ne: "visit" } }),
+      };
       if (q.has("cursor")) {
         const c = this.query.decode(q.get("cursor") as string, context),
           date = new Date(c.key);

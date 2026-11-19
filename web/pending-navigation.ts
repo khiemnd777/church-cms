@@ -5,7 +5,7 @@ export function usePendingNavigation(pending: TenantIntent | null) {
   const locked = !!pending;
   useEffect(() => {
     if (!locked) return;
-    const path = location.pathname;
+    const path = location.pathname + location.search;
     const leave = (event: BeforeUnloadEvent) => {
       event.preventDefault();
       event.returnValue = "";

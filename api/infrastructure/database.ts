@@ -18,6 +18,7 @@ import { organizationSchemas } from "../organization/schema";
 import { prayerIndexes, prayerSchemas } from "../prayers/schema";
 import { classIndexes, classSchemas } from "../prep-classes/schema";
 import { programIndexes, programSchemas } from "../programs/schema";
+import { reportIndexes, reportSchemas } from "../reporting/schema";
 import { riteIndexes, riteSchemas } from "../rites/schema";
 import { scheduleIndexes, scheduleSchemas } from "../scheduling/schema";
 import { visitationIndexes, visitationSchemas } from "../visitation/schema";
@@ -176,6 +177,32 @@ const definitions = {
   ...classSchemas,
   ...riteSchemas,
   ...certificateSchemas,
+  ...reportSchemas,
+  account_subject_history: {
+    additionalProperties: false,
+    required: [
+      "_id",
+      "churchId",
+      "accountId",
+      "actorId",
+      "before",
+      "after",
+      "reason",
+      "at",
+      "operationId",
+    ],
+    properties: {
+      _id: oid,
+      churchId: oid,
+      accountId: oid,
+      actorId: oid,
+      operationId: oid,
+      before: { bsonType: ["objectId", "null"] },
+      after: { bsonType: ["objectId", "null"] },
+      reason: { bsonType: "string", minLength: 1, maxLength: 200 },
+      at: date,
+    },
+  },
   ...exchangeSchemas,
   ...organizationSchemas,
   ...memberSchemas,
@@ -260,6 +287,7 @@ const definitions = {
         ],
       },
       subjectMemberId: oid,
+      subjectMemberVersion: { ...integer, minimum: 1 },
       status: { enum: ["active", "locked"] },
       authEpoch: integer,
     },
@@ -511,6 +539,7 @@ const indexes: Record<
   ...classIndexes,
   ...riteIndexes,
   ...certificateIndexes,
+  ...reportIndexes,
   ...memberIndexes,
   ...exchangeIndexes,
   ...familyIndexes,
@@ -538,7 +567,16 @@ const indexes: Record<
     { key: { status: 1, nameKey: 1, _id: 1 }, name: "status_name" },
     { key: { nameKey: 1, _id: 1 }, name: "name" },
   ],
+  account_subject_history: [
+    { key: { churchId: 1, accountId: 1, at: -1, _id: -1 }, name: "account_subject_history_page" },
+  ],
   accounts: [
+    {
+      key: { churchId: 1, subjectMemberId: 1 },
+      name: "church_subject_unique",
+      unique: true,
+      partialFilterExpression: { subjectMemberId: { $type: "objectId" } },
+    },
     { key: { churchId: 1, emailKey: 1 }, name: "church_email_unique", unique: true },
     { key: { churchId: 1, displayNameKey: 1, _id: 1 }, name: "church_name" },
     { key: { churchId: 1, status: 1, role: 1, _id: 1 }, name: "church_status_role" },

@@ -5,6 +5,48 @@ import type { Database } from "../infrastructure/database";
 import { type RiteRecord, riteDto } from "./models";
 export class RiteReporting {
   constructor(private db: Database) {}
+  async churchReport(g: TenantGrant, tx: ClientSession, from: string, to: string) {
+    requireCondition(!g.unitScope && !g.receiptScope, 403, "FORBIDDEN");
+    const rows = await this.db.db
+      .collection<RiteRecord>("rite_records")
+      .aggregate<{
+        _id: { kind: RiteRecord["kind"]; unknown: boolean };
+        n: number;
+      }>(
+        [
+          {
+            $match: {
+              churchId: g.churchId,
+              state: "recorded",
+              kind: { $in: ["baptism", "dedication", "marriage", "funeral"] },
+              $or: [{ "input.date": { $gte: from, $lte: to } }, { "input.date": null }],
+            },
+          },
+          {
+            $group: {
+              _id: { kind: "$kind", unknown: { $eq: [{ $ifNull: ["$input.date", null] }, null] } },
+              n: { $sum: 1 },
+            },
+          },
+        ],
+        { session: tx, maxTimeMS: 3000 },
+      )
+      .toArray();
+    const count = (kind: RiteRecord["kind"], unknown = false) =>
+      rows.find((row) => row._id.kind === kind && row._id.unknown === unknown)?.n ?? 0;
+    return {
+      baptisms: count("baptism"),
+      dedications: count("dedication"),
+      marriages: count("marriage"),
+      funerals: count("funeral"),
+      unknown: {
+        baptisms: count("baptism", true),
+        dedications: count("dedication", true),
+        marriages: count("marriage", true),
+        funerals: count("funeral", true),
+      },
+    };
+  }
   async read(g: TenantGrant, tx: ClientSession, day: string) {
     requireCondition(!g.unitScope && !g.receiptScope, 403, "FORBIDDEN");
     const rows = this.db.db.collection<RiteRecord>("rite_records"),

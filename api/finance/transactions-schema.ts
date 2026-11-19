@@ -148,6 +148,11 @@ export const transactionIndexes: Record<string, Index[]> = {
       key: { churchId: 1, "lines.givingId": 1, businessDate: -1, _id: -1 },
       name: "finance_person_receipt_page",
     },
+    {
+      key: { churchId: 1, "lines.memberId": 1, period: 1, businessDate: -1, _id: -1 },
+      name: "finance_self_receipt_page",
+      partialFilterExpression: { mode: "itemized" },
+    },
   ],
   finance_periods: [
     { key: { churchId: 1, period: 1 }, name: "finance_period_unique", unique: true },

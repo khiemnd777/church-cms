@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "event_id": "CHURCH-P6/P6.1/human-acceptance/1",
+  "event_type": "evaluation",
+  "task_id": "CHURCH-P6",
+  "scope_id": "P6.1",
+  "recorded_at": "2026-11-19T08:13:04.445410+07:00",
+  "reported_by": "delivery_owner",
+  "source_kind": "human_feedback",
+  "subject_event_id": "CHURCH-P6/P6.1/implementation/1",
+  "assessment_source": "human",
+  "review_attempt": 1,
+  "decision": "ACCEPTED",
+  "findings": [],
+  "accepted_revision": "P6.1-r1",
+  "authority": {
+    "approval": "Nghiệm thu P6.1-r1. Mở P6.2 đến P6.5 trong cùng một kế hoạch.",
+    "scope": "Nghiệm thu local/synthetic; mở một kế hoạch P6.2–P6.5 trước coding."
+  },
+  "retained_evidence_hashes": {
+    "docs/engineering/skill-usage/records/CHURCH-P6/P6.1-implementation-1.json": "e3b625f5af865b2f81c3271b7747e666fbfff3c565609b202b4e0a3e225d1215",
+    "output/p6.1/verification.json": "dfccbe5a798529596873f2054a2c9fa262536b307fc706de9ffaa9cd021f8d3d"
+  },
+  "evidence_refs": [
+    "docs/engineering/skill-usage/records/CHURCH-P6/P6.1-implementation-1.json",
+    "output/p6.1/verification.json",
+    "docs/tasks/CHURCH-P6.1.md"
+  ]
+}

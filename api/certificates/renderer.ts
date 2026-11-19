@@ -3,8 +3,7 @@ import { fileURLToPath } from "node:url";
 import { AppError, requireCondition } from "../errors";
 import { digest } from "../identity/crypto";
 import type { DocumentContent, DocumentPage } from "./models";
-import { templateVersion } from "./models";
-import { CertificateSources } from "./source";
+import { expandedTemplateVersion, templateVersion } from "./models";
 import { isDocumentText } from "./validation";
 
 let active = 0;
@@ -12,7 +11,8 @@ export const renderFingerprint = () =>
   digest(
     JSON.stringify([
       templateVersion,
-      CertificateSources.prototype.capture.toString(),
+      expandedTemplateVersion,
+      readFileSync(new URL("./source.ts", import.meta.url), "utf8"),
       readFileSync(new URL("./render.ts", import.meta.url), "utf8"),
       readFileSync(new URL("./render-process.ts", import.meta.url), "utf8"),
       readFileSync(new URL("./fonts/sources.json", import.meta.url), "utf8"),

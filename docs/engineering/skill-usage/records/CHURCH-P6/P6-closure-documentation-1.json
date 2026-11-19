@@ -1,0 +1,97 @@
+{
+  "schema_version": 1,
+  "event_id": "CHURCH-P6/P6-closure/documentation/1",
+  "event_type": "phase_handoff",
+  "task_id": "CHURCH-P6",
+  "scope_id": "P6-closure",
+  "recorded_at": "2026-11-19T09:51:38.913019+07:00",
+  "reported_by": "delivery_owner",
+  "source_kind": "agent_self_report",
+  "phase": "closure",
+  "handoff_index": 1,
+  "classification": {
+    "delivery": "roadmap",
+    "complexity": "Ghi nghiệm thu và đóng mốc local/synthetic",
+    "ui": false
+  },
+  "authority": {
+    "approval": "Nghiệm thu P6.6-r1 đủ 5 mục checklist. Đóng P6 ở phạm vi local/synthetic rồi dừng.",
+    "scope": "Nghiệm thu P6.6-r1 đủ năm mục và đóng P6 local/synthetic, sau đó dừng."
+  },
+  "skills": [
+    {
+      "skill_id": "documentation-and-adrs",
+      "contribution_summary": "Ghi nghiệm thu, liên kết sáu gói, cập nhật trạng thái và đối chiếu hash bằng chứng gốc.",
+      "contribution_percent_estimate": 100,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/documentation-and-adrs/SKILL.md",
+        "version": null,
+        "sha256": "f3199cfec5d6fdfa6533f180b1e6cbee584cd6175d8eb25c0d186c833120609c",
+        "fingerprint_basis": "Bytes của skill đã đọc và áp dụng."
+      }
+    }
+  ],
+  "outcome": {
+    "delivery_status": "COMPLETED",
+    "verification_level": "DOCUMENTATION_READBACK",
+    "human_acceptance": "ACCEPTED",
+    "limitations": [
+      "Đóng local/synthetic, chưa phát hành. Kiểm chứng kỹ thuật theo bản bàn giao P6.6-r1."
+    ]
+  },
+  "measurements": {
+    "elapsed_seconds": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có số đo xác thực riêng cho gói."
+    },
+    "tool_calls": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có số đo xác thực riêng cho gói."
+    },
+    "input_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có số đo xác thực riêng cho gói."
+    },
+    "output_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có số đo xác thực riêng cho gói."
+    },
+    "cached_input_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có số đo xác thực riêng cho gói."
+    },
+    "reasoning_output_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có số đo xác thực riêng cho gói."
+    },
+    "client": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có số đo xác thực riêng cho gói."
+    },
+    "model": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có số đo xác thực riêng cho gói."
+    },
+    "effort": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có số đo xác thực riêng cho gói."
+    }
+  },
+  "evidence_refs": [
+    "docs/tasks/CHURCH-P6.6.md",
+    "docs/project-state.md",
+    "docs/engineering/skill-usage/records/CHURCH-P6/P6.6-human-acceptance-1.json",
+    "docs/engineering/skill-usage/records/CHURCH-P6/P6-closure-1.json"
+  ]
+}

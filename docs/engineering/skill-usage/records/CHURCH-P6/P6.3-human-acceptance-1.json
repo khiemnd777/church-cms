@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "event_id": "CHURCH-P6/P6.3/human-acceptance/1",
+  "event_type": "evaluation",
+  "task_id": "CHURCH-P6",
+  "scope_id": "P6.3",
+  "recorded_at": "2026-11-19T09:22:12.616144+07:00",
+  "reported_by": "delivery_owner",
+  "source_kind": "human_feedback",
+  "subject_event_id": "CHURCH-P6/P6.3/implementation/1",
+  "assessment_source": "human",
+  "review_attempt": 1,
+  "decision": "ACCEPTED",
+  "findings": [],
+  "accepted_revision": "P6.3-r1",
+  "checklist_result": "5/5 HUMAN_ACCEPTED local/synthetic",
+  "authority": {
+    "approval": "Duyệt P6.3-r1. Mở P6.4 dừng trước P6.5",
+    "scope": "P6.4 local/synthetic theo kế hoạch đã duyệt, dừng trước P6.5."
+  },
+  "retained_evidence_hashes": {
+    "output/p6.3/verification.json": "9a33457ec40242614690ce2959812957b20cb3d76482e736e980ac6e9af1e468",
+    "docs/engineering/skill-usage/records/CHURCH-P6/P6.3-implementation-1.json": "80bb858ee212e411924cd36daef38dc3e7a0385cfb0b534eb710a2d6227a383e"
+  },
+  "evidence_refs": [
+    "docs/tasks/CHURCH-P6.3.md",
+    "output/p6.3/verification.json",
+    "docs/engineering/skill-usage/records/CHURCH-P6/P6.3-implementation-1.json"
+  ]
+}

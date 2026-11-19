@@ -48,3 +48,9 @@ export const commandInput = z.discriminatedUnion("action", [
 export type PrayerCommand = z.infer<typeof commandInput>;
 export type PrayerFields = z.infer<typeof fieldsInput>;
 export type PrayerRequester = z.infer<typeof requesterInput>;
+
+export const personalPrayerInput = z.strictObject({
+  content: fieldsInput.shape.content,
+  category: fieldsInput.shape.category,
+  confirmed: z.boolean(),
+});
