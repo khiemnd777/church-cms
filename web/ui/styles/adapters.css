@@ -809,3 +809,18 @@ a {
 .ui-finance-chart .ui-finance-open rect {
   opacity: 0.45;
 }
+
+/* C71: larger type inside the W07 reading view. */
+.schedule-reader {
+  overflow-wrap: anywhere;
+  font-size: clamp(1.125rem, 2.5vw, 1.75rem);
+  line-height: 1.45;
+}
+.schedule-reader-topic {
+  text-align: center;
+  font-size: clamp(1.375rem, 3vw, 2.25rem);
+}
+.schedule-reader-topic h2 {
+  font-size: clamp(1.75rem, 5vw, 3.5rem);
+  line-height: 1.2;
+}

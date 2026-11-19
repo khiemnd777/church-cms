@@ -1,0 +1,136 @@
+{
+  "schema_version": 1,
+  "event_id": "CHURCH-P7/P7.1/implementation/1",
+  "event_type": "phase_handoff",
+  "task_id": "CHURCH-P7",
+  "scope_id": "P7.1",
+  "recorded_at": "2026-11-19T11:45:30.429932+07:00",
+  "reported_by": "delivery_owner",
+  "source_kind": "agent_self_report",
+  "phase": "implementation",
+  "handoff_index": 1,
+  "classification": {
+    "delivery": "roadmap",
+    "complexity": "Màn đọc W07 và quyền Scheduling hiện hành",
+    "ui": true
+  },
+  "authority": {
+    "approval": "Khiêm duyệt P7-plan-r2 và cho mở P7.1 theo C71 và ASCII.",
+    "scope": "P7.1 local/synthetic, bàn giao rồi dừng trước P7.2."
+  },
+  "skills": [
+    {
+      "skill_id": "frontend-ui-engineering",
+      "contribution_summary": "Màn đọc W07, bàn phím, bố cục tablet/mobile và nhịp 18/12 px",
+      "contribution_percent_estimate": 40,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/frontend-ui-engineering/SKILL.md",
+        "version": null,
+        "sha256": "b5c47fed383892428172bf0b9c1ed1aeab50066ff9421a87a6c344f746386495",
+        "fingerprint_basis": "SHA-256 của file skill trong checkout dùng cho chặng."
+      }
+    },
+    {
+      "skill_id": "incremental-implementation",
+      "contribution_summary": "Nối entry W07, URL và quyền đọc Scheduling hiện hành",
+      "contribution_percent_estimate": 25,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/incremental-implementation/SKILL.md",
+        "version": null,
+        "sha256": "4663b276ac0d2f38be6f14a23d792783a255efe714710726af21c0f52c873359",
+        "fingerprint_basis": "SHA-256 của file skill trong checkout dùng cho chặng."
+      }
+    },
+    {
+      "skill_id": "test-driven-development",
+      "contribution_summary": "Kiểm dữ liệu mới, session, quyền ban, khác tenant, hủy lịch và hồi quy",
+      "contribution_percent_estimate": 25,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/test-driven-development/SKILL.md",
+        "version": null,
+        "sha256": "48d85b44f5e6286ba2a7a43550083609f299aa4001391768e9da126d2db86742",
+        "fingerprint_basis": "SHA-256 của file skill trong checkout dùng cho chặng."
+      }
+    },
+    {
+      "skill_id": "documentation-and-adrs",
+      "contribution_summary": "Lưu kế hoạch năm chặng, trạng thái và bằng chứng bàn giao",
+      "contribution_percent_estimate": 10,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/documentation-and-adrs/SKILL.md",
+        "version": null,
+        "sha256": "f3199cfec5d6fdfa6533f180b1e6cbee584cd6175d8eb25c0d186c833120609c",
+        "fingerprint_basis": "SHA-256 của file skill trong checkout dùng cho chặng."
+      }
+    }
+  ],
+  "outcome": {
+    "delivery_status": "COMPLETED",
+    "verification_level": "LOCAL_SYNTHETIC_SCOPED",
+    "human_acceptance": "PENDING_REVIEW",
+    "limitations": [
+      "Thiết bị thật, Safari, toàn bộ test suite, UAT, main runtime, pilot, remote CI và production NOT_RUN.",
+      "Chờ nghiệm thu P7.1. P7.2 chưa mở."
+    ]
+  },
+  "measurements": {
+    "elapsed_seconds": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có số đo xác thực riêng cho pha."
+    },
+    "tool_calls": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có số đo xác thực riêng cho pha."
+    },
+    "input_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có số đo xác thực riêng cho pha."
+    },
+    "output_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có số đo xác thực riêng cho pha."
+    },
+    "cached_input_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có số đo xác thực riêng cho pha."
+    },
+    "reasoning_output_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có số đo xác thực riêng cho pha."
+    },
+    "client": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có số đo xác thực riêng cho pha."
+    },
+    "model": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có số đo xác thực riêng cho pha."
+    },
+    "effort": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có số đo xác thực riêng cho pha."
+    }
+  },
+  "evidence_refs": [
+    "docs/tasks/CHURCH-P7.1.md",
+    "output/p7.1/verification.json",
+    "output/p7.1/browser-r3/browser-results.json"
+  ]
+}

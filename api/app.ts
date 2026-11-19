@@ -29,6 +29,7 @@ import { DataExchange } from "./data-exchange/service";
 import { AppError, requireCondition } from "./errors";
 import { FamilyApplication } from "./families/application";
 import { Families } from "./families/service";
+import { expenseImageFilename, expenseImageLimit } from "./finance/expense-image";
 import { Expenses } from "./finance/expenses";
 import type { ExpenseGrant } from "./finance/expenses-model";
 import type { FinanceGrant } from "./finance/models";
@@ -239,6 +240,9 @@ const messages: Record<string, string> = {
   ATTENDANCE_STATE: "Buổi không ở trạng thái cho phép thao tác. Tải lại để kiểm tra.",
   FILE_LIMIT:
     "File vượt giới hạn dòng, cột, dung lượng hoặc tài nguyên xử lý. Thu hẹp dữ liệu rồi thử lại.",
+  EXPENSE_IMAGE_INVALID: "Ảnh phải là JPEG hoặc PNG hợp lệ. Vui lòng chọn lại.",
+  EXPENSE_IMAGE_LIMIT: "Ảnh chứng từ vượt 5 MiB. Vui lòng chọn ảnh nhỏ hơn.",
+  EXPENSE_IMAGE_UNAVAILABLE: "Ảnh tạm đã hết hạn hoặc không còn khả dụng. Vui lòng chọn lại ảnh.",
   FILE_INVALID: "File không đúng định dạng CSV UTF-8 hoặc Excel .xlsx theo mẫu.",
   FILE_HEADERS: "Tên cột trống, trùng hoặc ánh xạ không hợp lệ. Kiểm tra lại file.",
   FILE_DATE: "Ô ngày Excel không hợp lệ hoặc có giờ. Dùng ngày YYYY-MM-DD theo mẫu.",
@@ -846,7 +850,7 @@ export function createApp(
             response = json(result);
           }
         } else if (
-          /^\/api\/v1\/(?:owner\/)?churches\/[^/]+\/finance\/expense-proposals(?:\/(?:context|funds|preview|operations\/[^/]+|[^/]+(?:\/(?:history|preview|decision))?))?$/.test(
+          /^\/api\/v1\/(?:owner\/)?churches\/[^/]+\/finance\/expense-proposals(?:\/(?:context|funds|preview|attachments(?:\/[^/]+)?|operations\/[^/]+|[^/]+(?:\/(?:history|preview|decision|attachment))?))?$/.test(
             path,
           )
         ) {
@@ -872,10 +876,11 @@ export function createApp(
             write = req.method !== "GET",
             rootOnly = !id,
             creatingPreview = id === "preview",
-            decisionPreview = action === "preview";
+            decisionPreview = action === "preview",
+            staging = id === "attachments" && !action;
           const methods = rootOnly
             ? ["GET", "POST"]
-            : creatingPreview || decisionPreview || action === "decision"
+            : staging || creatingPreview || decisionPreview || action === "decision"
               ? ["POST"]
               : ["GET"];
           requireCondition(methods.includes(req.method), 405, "METHOD_NOT_ALLOWED");
@@ -883,26 +888,70 @@ export function createApp(
             requireCondition(!url.search, 400, "INVALID_REQUEST");
             requireCondition(req.headers.get("origin") === conf.origin, 403, "CSRF_FAILED");
             await identity.csrfSession(churchToken, "church", req.headers.get("x-csrf-token"));
-            const body = await readJson(req);
-            if (creatingPreview) response = json(await expenses.previewSubmit(g, body));
-            else if (decisionPreview)
-              response = json(
-                await expenses.previewDecision(g, id as string, body, req.headers.get("if-match")),
+            if (staging) {
+              const type = req.headers.get("content-type");
+              requireCondition(
+                type === "image/jpeg" || type === "image/png",
+                415,
+                "EXPENSE_IMAGE_INVALID",
               );
-            else {
-              const r = rootOnly
-                ? await expenses.submit(g, body, req.headers.get("idempotency-key"), requestId)
-                : await expenses.decide(
+              const file = await expenses.uploadAttachment(g, type, async () => {
+                await identity.rate.expenseAttachment(
+                  churchId.toHexString(),
+                  g.actorId.toHexString(),
+                );
+                try {
+                  return await readFileBody(req, expenseImageLimit);
+                } catch (e) {
+                  if (e instanceof AppError && e.code === "FILE_LIMIT")
+                    throw new AppError(413, "EXPENSE_IMAGE_LIMIT");
+                  if (e instanceof AppError && e.code === "FILE_INVALID")
+                    throw new AppError(422, "EXPENSE_IMAGE_INVALID");
+                  throw e;
+                }
+              });
+              response = json(file, 201);
+            } else {
+              const body = await readJson(req);
+              if (creatingPreview) response = json(await expenses.previewSubmit(g, body));
+              else if (decisionPreview)
+                response = json(
+                  await expenses.previewDecision(
                     g,
                     id as string,
                     body,
-                    req.headers.get("idempotency-key"),
                     req.headers.get("if-match"),
-                    requestId,
-                  );
-              headers.set("ETag", `"${r.data.version}"`);
-              response = json(r.data, r.status, { replayed: r.replayed });
+                  ),
+                );
+              else {
+                const r = rootOnly
+                  ? await expenses.submit(g, body, req.headers.get("idempotency-key"), requestId)
+                  : await expenses.decide(
+                      g,
+                      id as string,
+                      body,
+                      req.headers.get("idempotency-key"),
+                      req.headers.get("if-match"),
+                      requestId,
+                    );
+                headers.set("ETag", `"${r.data.version}"`);
+                response = json(r.data, r.status, { replayed: r.replayed });
+              }
             }
+          } else if ((id === "attachments" && action) || action === "attachment") {
+            const draft = id === "attachments";
+            const download = !draft && url.search === "?download=1";
+            requireCondition(!url.search || download, 400, "INVALID_REQUEST");
+            const file = draft
+              ? await expenses.previewAttachment(g, action as string)
+              : await expenses.downloadAttachment(g, id as string);
+            response = new Response(new Uint8Array(file.bytes.value()), {
+              headers: {
+                ...security,
+                "Content-Type": file.type,
+                "Content-Disposition": `${download ? "attachment" : "inline"}; filename="${expenseImageFilename(file.type)}"`,
+              },
+            });
           } else if (rootOnly) response = json(await expenses.list(g, url.searchParams));
           else if (id === "context") {
             requireCondition(!url.search, 400, "INVALID_REQUEST");
@@ -3570,7 +3619,10 @@ export function createApp(
               expense,
               availability: {
                 ...context.availability,
-                expense: expense.canReadAll || expense.canReadOwn ? "available" : "not_available",
+                expense:
+                  expense.canReadAll || expense.canReadOwn || expense.canDecide
+                    ? "available"
+                    : "not_available",
               },
             });
           } else response = json(context);

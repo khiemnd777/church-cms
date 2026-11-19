@@ -1,7 +1,12 @@
+import { createHash } from "node:crypto";
 import { mkdir } from "node:fs/promises";
 import { expect, firefox, type Page } from "@playwright/test";
+import { ObjectId } from "mongodb";
+import sharp from "sharp";
 import { createApp } from "../api/app";
 import type { Config } from "../api/config";
+import { expenseImageLimit } from "../api/finance/expense-image";
+import type { ExpenseAttachment } from "../api/finance/expenses-model";
 import { Identity } from "../api/identity/service";
 import { Database, initialize } from "../api/infrastructure/database";
 import { RateLimit } from "../api/infrastructure/rate-limit";
@@ -86,7 +91,9 @@ async function login(
   await p.getByLabel("Mật khẩu", { exact: true }).fill(account.password);
   await p.getByRole("button", { name: "Đăng nhập", exact: true }).click();
   try {
-    await p.getByRole("button", { name: "Thông tin truy cập", exact: true }).waitFor();
+    if (openExpense)
+      await p.getByRole("button", { name: "Thông tin truy cập", exact: true }).waitFor();
+    else await p.getByRole("heading", { name: "Cổng tín hữu", exact: true }).waitFor();
   } catch (error) {
     await Bun.write(
       `${evidence}/login-diagnostic.json`,
@@ -159,6 +166,7 @@ try {
   await identity.initialize();
   app = createApp(identity, conf, { log: (r) => logs.push(r) });
   server = Bun.serve({
+    maxRequestBodySize: expenseImageLimit,
     hostname: "127.0.0.1",
     port: conf.port,
     tls: { cert: Bun.file(tls.cert), key: Bun.file(tls.key) },
@@ -275,10 +283,43 @@ try {
     await page.evaluate(() => !!document.activeElement?.closest("dialog[open]")),
     "W16-keyboard-focus-contained",
   );
+  const receipt = await sharp(
+    Buffer.from(
+      '<svg xmlns="http://www.w3.org/2000/svg" width="500" height="300"><rect width="500" height="300" fill="#fcf8ef"/><g fill="#24343d" font-family="sans-serif"><text x="28" y="56" font-size="26">CHUNG TU SYNTHETIC</text><text x="28" y="117" font-size="18">Vat tu sinh hoat</text><text x="28" y="168" font-size="18">Tong: 123.000 VND</text><text x="28" y="233" font-size="15">Du lieu kiem thu P7.2</text></g><path d="M28 77H472M28 188H472" stroke="#a89370"/></svg>',
+    ),
+  )
+    .png()
+    .toBuffer();
+  const picker = d.getByLabel("Tệp chứng từ", { exact: true });
+  const selectReceipt = (name: string, buffer: Buffer) =>
+    picker.setInputFiles({ name, mimeType: "image/png", buffer });
+  const [fileChooser] = await Promise.all([
+    page.waitForEvent("filechooser"),
+    d.getByRole("button", { name: "Chọn ảnh", exact: true }).click(),
+  ]);
+  await fileChooser.setFiles({
+    name: "anh-hong.png",
+    mimeType: "image/png",
+    buffer: Buffer.from("invalid"),
+  });
+  await d
+    .getByText("Ảnh phải là JPEG hoặc PNG hợp lệ. Vui lòng chọn lại.", { exact: true })
+    .waitFor();
+  assert(true, "P72-invalid-image-feedback");
+  await selectReceipt("anh-tam.png", receipt);
+  await d.getByText("anh-tam.png", { exact: true }).waitFor();
+  await d.getByRole("button", { name: "Bỏ ảnh", exact: true }).click();
+  await expect(d.getByText("anh-tam.png", { exact: true })).toHaveCount(0);
+  await selectReceipt("hoa-don-synthetic.png", receipt);
+  await d.getByText("hoa-don-synthetic.png", { exact: true }).waitFor();
+  await d.getByRole("button", { name: "Xem ảnh", exact: true }).click();
+  await expect(d.getByRole("img", { name: "Ảnh chứng từ đề xuất chi" })).toBeVisible();
+  assert(true, "P72-stage-remove-reselect-and-view");
   await capture(page, "w16-editor");
   await d.getByRole("button", { name: "Xem trước", exact: true }).click();
   d = page.getByRole("dialog", { name: "Xác nhận gửi đề xuất", exact: true });
   await expect(d.getByText("9.007.199.254.740.993 ₫", { exact: true })).toBeVisible();
+  await d.getByText("Chứng từ: hoa-don-synthetic.png", { exact: true }).waitFor();
   await capture(page, "submit-preview");
   loseNext = true;
   await d.getByRole("button", { name: "Xác nhận gửi", exact: true }).click();
@@ -305,6 +346,24 @@ try {
     (await d.getByRole("button", { name: "Duyệt", exact: true }).count()) === 0,
     "proposer-cannot-approve",
   );
+  await d.getByRole("button", { name: "Xem ảnh", exact: true }).click();
+  await expect(d.getByRole("img", { name: "Ảnh chứng từ đề xuất chi" })).toBeVisible();
+  const [download] = await Promise.all([
+    page.waitForEvent("download"),
+    d.getByRole("button", { name: "Tải ảnh", exact: true }).click(),
+  ]);
+  const attachment = await db.db
+    .collection<ExpenseAttachment>("finance_expense_attachments")
+    .findOne({ proposalId: new ObjectId(first.id) });
+  const path = await download.path();
+  assert(!!path && !!attachment, "P72-one-durable-attachment-after-lost-response");
+  const hash = createHash("sha256")
+    .update(new Uint8Array(await Bun.file(path).arrayBuffer()))
+    .digest("hex");
+  assert(
+    download.suggestedFilename() === "chung-tu.png" && hash === attachment?.hash,
+    "P72-download-matches-checksum",
+  );
   await capture(page, "pending-detail");
   await d.getByRole("button", { name: "Lịch sử đề xuất", exact: true }).click();
   await page
@@ -327,6 +386,11 @@ try {
     (await ss2.call(`${base}/${first.id}`)).status === 404,
     "same-role-other-account-detail-denied",
   );
+  const deniedImage = await page.evaluate(
+    async (path) => (await fetch(path, { cache: "no-store" })).status,
+    `/api/v1/${base}/${first.id}/attachment`,
+  );
+  assert(deniedImage === 404, "P72-direct-image-denied-to-other-proposer");
   await capture(page, "same-role-own-scope");
   await login(page, c, pastor);
   await page.getByRole("button", { name: `Xem ${first.code}`, exact: true }).click();
@@ -456,16 +520,80 @@ try {
     "member-no-expense-menu",
   );
   await page.goto(`${conf.origin}/h/${c.code}/expense`);
-  await expect(
-    page
-      .getByText("Vai trò hiện tại chưa được cấp quyền đề xuất hoặc duyệt chi.", { exact: true })
-      .first(),
-  ).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Cổng tín hữu", exact: true })).toBeVisible();
+  assert(
+    new URL(page.url()).pathname.endsWith("/portal"),
+    "member-expense-deeplink-returns-to-portal",
+  );
+  assert((await ms.call(base)).status === 403, "member-expense-api-denied");
+  assert(
+    (await ms.call(`${base}/${first.id}/attachment`)).status === 403,
+    "P72-member-attachment-api-denied",
+  );
   assert(
     (await page.getByRole("table").count()) === 0,
     "member-deeplink-denied-without-proposal-data",
   );
   await capture(page, "member-denied-deeplink");
+  await login(page, c, pastor);
+  await page.getByRole("button", { name: "Cấu hình", exact: true }).click();
+  const config = page.getByRole("region", { name: "Cấu hình tài chính" });
+  await config.getByLabel("Thư ký Ban Chấp sự", { exact: true }).uncheck();
+  await config.getByLabel("Duyệt theo hạn mức", { exact: true }).selectOption("on");
+  await config.getByLabel("Ngưỡng VND", { exact: true }).fill("5000000");
+  await config.getByLabel("Dưới ngưỡng", { exact: true }).selectOption("secretary");
+  await config.getByLabel("Từ ngưỡng", { exact: true }).selectOption("pastor");
+  await capture(page, "p73-w12-threshold-edit");
+  await config.getByRole("button", { name: "Xem trước", exact: true }).click();
+  const reviewConfig = page.getByRole("dialog", {
+    name: "Xem trước cấu hình duyệt chi",
+    exact: true,
+  });
+  await expect(reviewConfig.getByText("Duyệt theo hạn mức: Bật", { exact: true })).toBeVisible();
+  assert(
+    (await ps.call(`${finance}/settings`)).payload.data.settings.approvalThreshold === null,
+    "P73-W12-preview-does-not-save",
+  );
+  await capture(page, "p73-w12-threshold-preview");
+  await reviewConfig.getByRole("button", { name: "Lưu", exact: true }).click();
+  await expect(page.getByText("Đã lưu.", { exact: true }).first()).toBeVisible();
+  const savedRule = (await ps.call(`${finance}/settings`)).payload.data.settings.approvalThreshold;
+  assert(
+    savedRule.amount === "5000000" &&
+      savedRule.belowRole === "secretary" &&
+      savedRule.atOrAboveRole === "pastor",
+    "P73-W12-saved-two-bands",
+  );
+  const lower = await publicProposal(ls, "P73 dưới ngưỡng synthetic", "4999999");
+  const equal = await publicProposal(ls, "P73 bằng ngưỡng synthetic", "5000000");
+  await login(page, c, secretary);
+  await expect(page.getByLabel("Phạm vi", { exact: true })).toHaveValue("review");
+  await expect(page.getByRole("button", { name: `Xem ${lower.code}`, exact: true })).toBeVisible();
+  assert(
+    (await page.getByRole("button", { name: `Xem ${equal.code}`, exact: true }).count()) === 0 &&
+      (await page.getByRole("button", { name: "Tạo đề xuất chi", exact: true }).count()) === 0,
+    "P73-W10-review-only-role-stays-in-band",
+  );
+  await capture(page, "p73-w10-review-queue");
+  await page.getByRole("button", { name: `Xem ${lower.code}`, exact: true }).click();
+  d = page.getByRole("dialog", { name: "Chi tiết đề xuất chi", exact: true });
+  await expect(
+    d.getByText("Cấp duyệt theo hạn mức: Thư ký Ban Chấp sự", { exact: true }),
+  ).toBeVisible();
+  await capture(page, "p73-w10-assigned-detail");
+  await d.getByRole("button", { name: "Duyệt", exact: true }).click();
+  await page
+    .getByRole("dialog", { name: "Duyệt đề xuất", exact: true })
+    .getByRole("button", { name: "Xem trước", exact: true })
+    .click();
+  await page.getByRole("button", { name: "Xác nhận quyết định", exact: true }).click();
+  await expect(d.getByText("Đã duyệt, chờ chi", { exact: true })).toBeVisible();
+  assert(
+    (await ps.call(`${base}/${lower.id}`)).payload.data.decision.actorRole === "secretary",
+    "P73-W10-decision-uses-assigned-role",
+  );
+  await d.getByRole("button", { name: "Đóng", exact: true }).click();
+  await expect(page.getByRole("button", { name: `Xem ${lower.code}`, exact: true })).toHaveCount(0);
   assert(errors.length === 0, "no-page-errors");
   assert(!secrets.some((s) => JSON.stringify(logs).includes(s)), "logs-no-passwords");
   await Bun.write(

@@ -647,7 +647,8 @@ export function ChurchApp() {
                 },
               ]
             : []),
-          ...(expenseAccess && (expenseAccess.canReadAll || expenseAccess.canReadOwn)
+          ...(expenseAccess &&
+          (expenseAccess.canReadAll || expenseAccess.canReadOwn || expenseAccess.canDecide)
             ? [
                 {
                   id: "expense",

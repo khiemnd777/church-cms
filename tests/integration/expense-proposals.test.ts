@@ -1,10 +1,12 @@
 import { afterAll, beforeAll, describe, expect, spyOn, test } from "bun:test";
+import { createHash } from "node:crypto";
 import { Decimal128, ObjectId } from "mongodb";
+import sharp from "sharp";
 import { createApp } from "../../api/app";
 import { config } from "../../api/config";
 import { AppError } from "../../api/errors";
 import { Expenses } from "../../api/finance/expenses";
-import type { ExpenseProposal } from "../../api/finance/expenses-model";
+import type { ExpenseAttachment, ExpenseProposal } from "../../api/finance/expenses-model";
 import { Finance } from "../../api/finance/service";
 import { Identity } from "../../api/identity/service";
 import { Database, initialize } from "../../api/infrastructure/database";
@@ -705,4 +707,211 @@ describe("P53 real financial proposal transactions", () => {
     }
     expect(await db.db.collection("finance_ledger").countDocuments()).toBe(0);
   });
+});
+
+describe("P7.2 expense attachment", () => {
+  const imageRows = db.db.collection<ExpenseAttachment>("finance_expense_attachments");
+  const sha = (bytes: Uint8Array) => createHash("sha256").update(bytes).digest("hex");
+  const read = (who: SyntheticClient, path: string) =>
+    app(
+      new Request(`${conf.origin}/api/v1/${path}`, {
+        headers: { cookie: who.cookie() },
+      }),
+      { ip: crypto.randomUUID() },
+    );
+  const upload = (who: SyntheticClient, bytes: Uint8Array, type: string, headers = {}) =>
+    who.call(`${root()}/attachments`, bytes, {
+      headers: { "content-type": type, ...headers },
+    });
+  const image = () =>
+    sharp({ create: { width: 128, height: 83, channels: 3, background: "#f4eac8" } })
+      .jpeg()
+      .withMetadata({ orientation: 6 })
+      .toBuffer();
+  let committed: { id: string; hash: string; attachmentId: ObjectId };
+  test("72-01 and 72-02: normalized image, metadata-only list, and fresh owner/tenant/actor ACL", async () => {
+    await setConfig();
+    const bytes = await image();
+    expect((await upload(s, bytes, "image/png")).status).toBe(422);
+    expect((await upload(s, bytes.slice(0, 30), "image/jpeg")).status).toBe(422);
+    expect((await upload(s, new Uint8Array(5 * 1024 * 1024 + 1), "image/jpeg")).status).toBe(413);
+    expect((await upload(s, bytes, "image/svg+xml")).status).toBe(415);
+    expect((await upload(s, bytes, "image/jpeg", { "x-csrf-token": "incorrect" })).status).toBe(
+      403,
+    );
+    const before = await submit(s, { amount: "72" });
+    expect((await s.call(`${root()}/${before.id}`)).payload.data.hasAttachment).toBe(false);
+    expect((await read(s, `${root()}/${before.id}/attachment`)).status).toBe(404);
+    const staged = await upload(s, bytes, "image/jpeg");
+    expect(staged.status).toBe(201);
+    const id = staged.payload.data.id as string;
+    expect((await read(s2, `${root()}/attachments/${id}`)).status).toBe(422);
+    expect((await s2.call(`${root()}/preview`, draft({ attachmentId: id }))).status).toBe(422);
+    const preview = await read(s, `${root()}/attachments/${id}`);
+    expect(preview.status).toBe(200);
+    const previewBytes = new Uint8Array(await preview.arrayBuffer());
+    const metadata = await sharp(previewBytes).metadata();
+    expect(metadata.orientation).toBeUndefined();
+    expect(metadata.exif).toBeUndefined();
+    expect([metadata.width, metadata.height]).toEqual([83, 128]);
+
+    const proposal = await submit(s, { amount: "72", attachmentId: id });
+    committed = { id: proposal.id, hash: sha(previewBytes), attachmentId: new ObjectId(id) };
+    expect((await s.call(`${root()}/${proposal.id}`)).payload.data.hasAttachment).toBe(true);
+    const item = (await s.call(root())).payload.data.items.find(
+      (p: { id: string }) => p.id === proposal.id,
+    );
+    expect(item.hasAttachment).toBe(true);
+    expect(item.attachment).toBeUndefined();
+    expect((await read(s, `${root()}/attachments/${id}`)).status).toBe(422);
+    const path = `${root()}/${proposal.id}/attachment?download=1`;
+    const download = await read(p, path);
+    expect(download.status).toBe(200);
+    expect(download.headers.get("cache-control")).toBe("no-store");
+    expect(download.headers.get("content-type")).toBe("image/jpeg");
+    expect(download.headers.get("content-disposition")).toBe('attachment; filename="chung-tu.jpg"');
+    expect(sha(new Uint8Array(await download.arrayBuffer()))).toBe(committed.hash);
+    expect((await read(s2, path)).status).toBe(404);
+    expect((await read(owner, `owner/${path}`)).status).toBe(403);
+    expect(
+      (await read(s, `${financeRoot(other)}/expense-proposals/${proposal.id}/attachment`)).status,
+    ).toBe(403);
+    await setConfig("pastor", ["treasurer"]);
+    expect((await read(s, path)).status).toBe(403);
+    await setConfig();
+  });
+
+  test("72-03: rollback preserves the staged image, retries attach it once", async () => {
+    const png = await sharp(await image())
+      .png()
+      .toBuffer();
+    const staged = await upload(s, png, "image/png");
+    expect(staged.status).toBe(201);
+    const attachmentId = staged.payload.data.id as string;
+    const b = draft({ amount: "72", attachmentId });
+    const preview = await s.call(`${root()}/preview`, b);
+    expect(preview.status).toBe(200);
+    const body = { proposal: b, previewToken: preview.payload.data.previewToken };
+    const spy = spyOn(Finance.prototype, "append").mockRejectedValueOnce(
+      new AppError(503, "DEPENDENCY_UNAVAILABLE"),
+    );
+    try {
+      expect((await s.call(root(), body)).status).toBe(503);
+    } finally {
+      spy.mockRestore();
+    }
+    const imageId = new ObjectId(attachmentId);
+    expect((await imageRows.findOne({ _id: imageId }))?.expiresAt).toBeInstanceOf(Date);
+    expect((await imageRows.findOne({ _id: imageId }))?.proposalId).toBeUndefined();
+    const key = crypto.randomUUID();
+    const sent = await s.call(root(), body, { key });
+    expect(sent.status).toBe(201);
+    const exact = await s.call(root(), body, { key });
+    const durable = await s.call(root(), body);
+    expect(exact.payload.data.proposalId).toBe(sent.payload.data.proposalId);
+    expect(durable.payload.data.proposalId).toBe(sent.payload.data.proposalId);
+    expect(
+      await db.db
+        .collection("finance_expense_proposals")
+        .countDocuments({ submissionId: b.submissionId }),
+    ).toBe(1);
+    expect(
+      await imageRows.countDocuments({ proposalId: new ObjectId(sent.payload.data.proposalId) }),
+    ).toBe(1);
+    expect((await imageRows.findOne({ _id: imageId }))?.expiresAt).toBeUndefined();
+    const reused = await s.call(`${root()}/preview`, draft({ attachmentId }));
+    expect(reused.status).toBe(422);
+    const another = await upload(s, png, "image/png");
+    expect(another.status).toBe(201);
+    const sharedId = another.payload.data.id as string;
+    const commands = await Promise.all(
+      ["72", "73"].map(async (amount) => {
+        const proposal = draft({ amount, attachmentId: sharedId });
+        const stagePreview = await s.call(`${root()}/preview`, proposal);
+        expect(stagePreview.status).toBe(200);
+        return { proposal, previewToken: stagePreview.payload.data.previewToken };
+      }),
+    );
+    const competing = await Promise.all(commands.map((command) => s.call(root(), command)));
+    expect(competing.map(({ status }) => status).sort()).toEqual([201, 422]);
+    expect(
+      await db.db.collection("finance_expense_proposals").countDocuments({
+        submissionId: { $in: commands.map(({ proposal }) => proposal.submissionId) },
+      }),
+    ).toBe(1);
+  });
+
+  const restoreContainer = process.env.CHURCH_P72_MONGO_TOOLS_CONTAINER;
+  test.skipIf(!restoreContainer)(
+    "72-03: Mongo TTL cleanup and backup/restore preserve the attached file SHA-256",
+    async () => {
+      expect(committed).toBeTruthy();
+      const stage = await upload(s, await image(), "image/jpeg");
+      expect(stage.status).toBe(201);
+      const expired = new ObjectId(stage.payload.data.id);
+      await imageRows.updateOne({ _id: expired }, { $set: { expiresAt: new Date(0) } });
+      expect((await read(s, `${root()}/attachments/${expired}`)).status).toBe(422);
+      const target = `church_cms_test_p72_restore_${crypto.randomUUID().replaceAll("-", "")}`;
+      try {
+        const archive = Bun.spawnSync([
+          "docker",
+          "exec",
+          restoreContainer as string,
+          "mongodump",
+          "--db",
+          conf.database,
+          "--archive",
+          "--gzip",
+        ]);
+        expect(archive.exitCode).toBe(0);
+        const restored = Bun.spawnSync(
+          [
+            "docker",
+            "exec",
+            "-i",
+            restoreContainer as string,
+            "mongorestore",
+            "--archive",
+            "--gzip",
+            "--nsInclude",
+            `${conf.database}.*`,
+            "--nsFrom",
+            `${conf.database}.*`,
+            "--nsTo",
+            `${target}.*`,
+          ],
+          { stdin: archive.stdout },
+        );
+        expect(restored.exitCode).toBe(0);
+        const restoredDb = db.client.db(target);
+        const a = await restoredDb
+          .collection<ExpenseAttachment>("finance_expense_attachments")
+          .findOne({ _id: committed.attachmentId });
+        const proposal = await restoredDb
+          .collection<ExpenseProposal>("finance_expense_proposals")
+          .findOne({ _id: new ObjectId(committed.id) });
+        expect(a?.proposalId?.toHexString()).toBe(committed.id);
+        expect(proposal?.attachment?.id).toEqual(committed.attachmentId);
+        expect(proposal?.attachment?.hash).toBe(committed.hash);
+        expect(a && sha(a.bytes.value())).toBe(committed.hash);
+        expect(a?.expiresAt).toBeUndefined();
+        const indexes = await restoredDb
+          .collection("finance_expense_attachments")
+          .listIndexes()
+          .toArray();
+        expect(
+          indexes.find((i) => i.name === "expense_attachment_expiry")?.expireAfterSeconds,
+        ).toBe(0);
+        const until = performance.now() + 75_000;
+        while (await imageRows.countDocuments({ _id: expired })) {
+          if (performance.now() >= until) throw new Error("TTL chưa dọn ảnh tạm trong 75 giây.");
+          await Bun.sleep(1000);
+        }
+        expect(await imageRows.countDocuments({ _id: committed.attachmentId })).toBe(1);
+      } finally {
+        await db.client.db(target).dropDatabase();
+      }
+    },
+    90_000,
+  );
 });

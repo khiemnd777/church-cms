@@ -698,6 +698,12 @@ export async function initialize(
                         },
                         { $ne: ["$decision.actorId", "$createdBy"] },
                         {
+                          $or: [
+                            { $eq: [{ $type: "$approvalBand" }, "missing"] },
+                            { $eq: ["$decision.actorRole", "$approverRole"] },
+                          ],
+                        },
+                        {
                           $eq: [
                             "$decision.action",
                             {

@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { businessDay, shiftDay, validDay } from "../api/members/dates";
 import type { ChurchRef } from "./access-context";
+import { ApiError } from "./api";
 import { ProgramsView } from "./programs";
 import {
   type ScheduleCommand,
@@ -13,6 +14,7 @@ import {
 } from "./scheduling-api";
 import { newSchedule, ScheduleForm } from "./scheduling-form";
 import {
+  authErrorCodes,
   type TenantIntent,
   type TenantRealm,
   tenantRequest,
@@ -34,6 +36,7 @@ import {
   PaginationControl,
   SectionHeader,
   Select,
+  Stack,
   TableFrame,
   TextInput,
   Toolbar,
@@ -53,6 +56,109 @@ const sunday = (d: string, next = false) => {
   return shiftDay(d, next ? (7 - n) % 7 : -n);
 };
 export function SchedulingView(props: Props) {
+  const [readerId, setReaderId] = useState(() => {
+    const params = new URLSearchParams(location.search);
+    return params.get("view") === "large-text" ? (params.get("occurrenceId") ?? "") : null;
+  });
+  function changeView(id: string | null) {
+    const u = new URL(location.href);
+    if (id === null) {
+      u.searchParams.delete("view");
+      if (!/^[a-f0-9]{24}$/i.test(u.searchParams.get("occurrenceId") ?? ""))
+        u.searchParams.delete("occurrenceId");
+    } else {
+      u.searchParams.set("view", "large-text");
+      u.searchParams.set("occurrenceId", id);
+    }
+    historyReplace(u);
+    setReaderId(id);
+  }
+  if (readerId !== null)
+    return <ScheduleReader {...props} id={readerId} onBack={() => changeView(null)} />;
+  return <ScheduleCalendar {...props} onRead={changeView} />;
+}
+
+function ScheduleReader(props: Props & { id: string; onBack: () => void }) {
+  const [row, setRow] = useState<ScheduleRow | null>(null);
+  const [error, setError] = useState("");
+  const [attempt, setAttempt] = useState(0);
+  const back = useRef<HTMLButtonElement>(null);
+  const tenant = `${props.realm === "owner" ? "owner/" : ""}churches/${props.churchId}`;
+  useEffect(() => back.current?.focus(), []);
+  useEffect(() => {
+    if (!/^[a-f0-9]{24}$/i.test(props.id)) {
+      setError("Buổi giảng không còn khả dụng.");
+      return;
+    }
+    const controller = new AbortController();
+    const options = { signal: controller.signal };
+    void Promise.all([
+      tenantRequest<ScheduleRow>(
+        props.realm,
+        `${tenant}/scheduling/occurrences/${props.id}`,
+        options,
+      ),
+      tenantRequest<{ church: ChurchRef }>(props.realm, `${tenant}/context`, options),
+    ])
+      .then(([detail, context]) => {
+        if (controller.signal.aborted) return;
+        const { church } = context.data;
+        props.onTitle("Thờ phượng & Lịch giảng", `${church.name} · ${church.code}`);
+        props.onChurch?.(church);
+        if (detail.data.state === "scheduled") setRow(detail.data);
+        else {
+          setError(
+            detail.data.state === "cancelled" ? "Buổi giảng đã hủy." : "Buổi giảng chưa xếp lịch.",
+          );
+        }
+      })
+      .catch((e: unknown) => {
+        if (controller.signal.aborted) return;
+        if (e instanceof ApiError && authErrorCodes.includes(e.code)) props.onAuthError(e);
+        setError(
+          e instanceof ApiError && ["FORBIDDEN", "NOT_FOUND"].includes(e.code)
+            ? "Buổi giảng không còn khả dụng."
+            : "Không thể tải buổi giảng. Vui lòng thử lại.",
+        );
+      });
+    return () => controller.abort();
+  }, [props.id, props.realm, tenant, attempt]);
+  const loading = !row && !error;
+  return (
+    <Card aria-label="Màn chữ lớn" spacing="section">
+      <div className="schedule-reader-actions">
+        <Button ref={back} onClick={props.onBack}>
+          Quay lại
+        </Button>
+        <Button
+          aria-disabled={loading}
+          onClick={() => {
+            if (loading) return;
+            setRow(null);
+            setError("");
+            setAttempt((n) => n + 1);
+          }}
+        >
+          Tải lại
+        </Button>
+      </div>
+      {error && <Feedback tone="error">{error}</Feedback>}
+      {loading && <Loading />}
+      {row && (
+        <Stack space="section" className="schedule-reader">
+          <p>{scheduleDate(row.startAt)}</p>
+          <Stack space="content" className="schedule-reader-topic">
+            <h2>{row.input.theme ?? "—"}</h2>
+            <p>{row.input.scripture ?? "—"}</p>
+          </Stack>
+          <p>Người giảng · {row.speakerName ?? "—"}</p>
+        </Stack>
+      )}
+    </Card>
+  );
+}
+
+function ScheduleCalendar(props: Props & { onRead: (id: string) => void }) {
   const params = new URLSearchParams(location.search),
     initial = params.get("from");
   const [from, setFrom] = useState(
@@ -653,28 +759,37 @@ export function SchedulingView(props: Props) {
               Phân công giữ tên tại thời điểm lưu. Lịch dự kiến không xác nhận buổi nhóm hoặc lễ đã
               diễn ra.
             </Feedback>
-            {canWrite && (
+            {(canWrite || row.state === "scheduled") && (
               <DialogActions>
-                <Button
-                  disabled={busy || row.state === "cancelled"}
-                  onClick={() => {
-                    setHistory(null);
-                    setEdit({
-                      input: row.input,
-                      state: row.state,
-                      range: "one",
-                      reason: null,
-                      preview: null,
-                      conflictsConfirmed: false,
-                      exceptionsConfirmed: false,
-                    });
-                  }}
-                >
-                  Sửa lịch
-                </Button>
-                <Button disabled={busy} onClick={() => void viewHistory()}>
-                  Lịch sử
-                </Button>
+                {row.state === "scheduled" && (
+                  <Button disabled={busy} onClick={() => props.onRead(row.id)}>
+                    Chữ lớn
+                  </Button>
+                )}
+                {canWrite && (
+                  <>
+                    <Button
+                      disabled={busy || row.state === "cancelled"}
+                      onClick={() => {
+                        setHistory(null);
+                        setEdit({
+                          input: row.input,
+                          state: row.state,
+                          range: "one",
+                          reason: null,
+                          preview: null,
+                          conflictsConfirmed: false,
+                          exceptionsConfirmed: false,
+                        });
+                      }}
+                    >
+                      Sửa lịch
+                    </Button>
+                    <Button disabled={busy} onClick={() => void viewHistory()}>
+                      Lịch sử
+                    </Button>
+                  </>
+                )}
               </DialogActions>
             )}
             {history && (

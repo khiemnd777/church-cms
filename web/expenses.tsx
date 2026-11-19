@@ -1,7 +1,7 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import type { ExpenseDraft } from "../api/finance/expenses-validation";
 import { roleLabels } from "./accounts-api";
-import { ApiError, churchRequest } from "./api";
+import { ApiError, churchRequest, downloadFile } from "./api";
 import type { SettingsContext } from "./church-settings";
 import {
   type ExpenseContext,
@@ -190,6 +190,51 @@ function ProposalHistory({
     </Modal>
   );
 }
+function ExpenseImage({
+  path,
+  locked,
+  download,
+}: {
+  path: string;
+  locked: boolean;
+  download?: () => void;
+}) {
+  const [shown, setShown] = useState(false);
+  const [status, setStatus] = useState<"loading" | "loaded" | "error">("loading");
+  return (
+    <Stack space="content">
+      <div className="finance-actions">
+        <Button
+          disabled={locked}
+          aria-expanded={shown}
+          onClick={() => {
+            setStatus("loading");
+            setShown(!shown);
+          }}
+        >
+          {shown ? "Ẩn ảnh" : "Xem ảnh"}
+        </Button>
+        {download && (
+          <Button disabled={locked} onClick={download}>
+            Tải ảnh
+          </Button>
+        )}
+      </div>
+      {shown && status === "loading" && <Loading>Đang tải ảnh…</Loading>}
+      {shown && status === "error" && <Feedback tone="error">Ảnh không còn khả dụng.</Feedback>}
+      {shown && status !== "error" && (
+        <img
+          className="expense-attachment-image"
+          src={`/api/v1/${path}`}
+          alt="Ảnh chứng từ đề xuất chi"
+          hidden={status !== "loaded"}
+          onLoad={() => setStatus("loaded")}
+          onError={() => setStatus("error")}
+        />
+      )}
+    </Stack>
+  );
+}
 function ProposalDrawer({
   base,
   id,
@@ -259,9 +304,24 @@ function ProposalDrawer({
               Số tiền: <strong>{vnd(r.amount)}</strong>
             </p>
             <p>
-              Vai trò duyệt hiện tại:{" "}
+              {r.approvalBand ? "Cấp duyệt theo hạn mức: " : "Vai trò duyệt hiện tại: "}
               {r.currentApproverRole ? roleLabels[r.currentApproverRole] : "Chưa cấu hình"}
             </p>
+          </Stack>
+          <Stack space="content">
+            <p>{r.hasAttachment ? "Chứng từ" : "Chưa có chứng từ"}</p>
+            {r.hasAttachment && (
+              <ExpenseImage
+                path={`${base}/${id}/attachment`}
+                locked={locked}
+                download={() => {
+                  void downloadFile(`${base}/${id}/attachment?download=1`).catch((e) => {
+                    setError(e instanceof Error ? e.message : "Không tải được chứng từ.");
+                    fail(e);
+                  });
+                }}
+              />
+            )}
           </Stack>
           {r.decision && (
             <Card spacing="content">
@@ -351,6 +411,7 @@ export function ExpensesView(props: Props) {
     [fund, setFund] = useState<Fund | null>(null),
     [amount, setAmount] = useState(""),
     [purpose, setPurpose] = useState(""),
+    [attachment, setAttachment] = useState<{ id: string; label: string } | null>(null),
     [submission, setSubmission] = useState(""),
     [selected, setSelected] = useState<string | null>(null),
     [paying, setPaying] = useState<ExpenseDetail | null>(null),
@@ -369,6 +430,7 @@ export function ExpensesView(props: Props) {
     >(null),
     [previewBusy, setPreviewBusy] = useState(false),
     [reconcile, setReconcile] = useState(false);
+  const attachmentInputId = useId();
   const paymentConfirmRef = useRef<HTMLButtonElement>(null);
   useEffect(() => {
     if (paymentPreview && !previewBusy) paymentConfirmRef.current?.focus();
@@ -376,7 +438,8 @@ export function ExpensesView(props: Props) {
   const draft = useRef<ExpenseDraft | null>(null),
     decisionBody = useRef<{ decision: "approved" | "rejected"; reason: string } | null>(null),
     access = ctx?.expense,
-    canRead = !!access && (access.canReadAll || access.canReadOwn),
+    canRead = !!access && (access.canReadAll || access.canReadOwn || access.canDecide),
+    currentScope = scope || (access?.canReadAll ? "all" : access?.canReadOwn ? "mine" : "review"),
     ownPending = props.pending?.resource?.kind === "expense" ? props.pending : null;
   function fail(e: unknown) {
     if (
@@ -395,6 +458,7 @@ export function ExpensesView(props: Props) {
       setDecision(null);
       setPreview(null);
       setPicker(null);
+      setAttachment(null);
       draft.current = null;
       decisionBody.current = null;
       if (["FORBIDDEN", "NOT_FOUND"].includes(e.code)) props.onPending(null);
@@ -425,6 +489,7 @@ export function ExpensesView(props: Props) {
       if (lostRef.current) return;
       const d = data as { proposalId: string };
       setSelected(d.proposalId);
+      setAttachment(null);
       setEditor(false);
       setDecision(null);
       setPaying(null);
@@ -480,12 +545,22 @@ export function ExpensesView(props: Props) {
           setEditor(false);
           setDecision(null);
           setPreview(null);
+          setAttachment(null);
           draft.current = null;
           decisionBody.current = null;
         }
         setPage(null);
         setStack([null]);
-        if (!r.data.expense.canReadAll) setScope("");
+        const nextAccess = r.data.expense;
+        setScope((previous) => {
+          if (
+            (previous === "all" && !nextAccess.canReadAll) ||
+            (previous === "mine" && !nextAccess.canReadAll && !nextAccess.canReadOwn) ||
+            (previous === "review" && !nextAccess.canDecide)
+          )
+            return "";
+          return previous;
+        });
         if (
           props.pending?.resource?.kind === "payment-void" &&
           r.data.capabilities.includes("finance:payments:read")
@@ -517,7 +592,11 @@ export function ExpensesView(props: Props) {
   useEffect(() => {
     if (!canRead || !period || contextRevision !== refresh) return;
     const a = new AbortController(),
-      p = new URLSearchParams({ period, state, q: search });
+      p = new URLSearchParams({
+        period,
+        state: currentScope === "review" ? "pending" : state,
+        q: search,
+      });
     if (scope) p.set("scope", scope);
     if (filterFund) p.set("fundId", filterFund.id);
     if (stack.at(-1)) p.set("cursor", stack.at(-1) as string);
@@ -531,22 +610,63 @@ export function ExpensesView(props: Props) {
         if (!a.signal.aborted) fail(e);
       });
     return () => a.abort();
-  }, [base, canRead, period, state, search, scope, filterFund, stack, refresh, contextRevision]);
+  }, [
+    base,
+    canRead,
+    period,
+    state,
+    search,
+    scope,
+    currentScope,
+    filterFund,
+    stack,
+    refresh,
+    contextRevision,
+  ]);
   function start() {
     setEditor(true);
     setFund(null);
     setAmount("");
     setPurpose("");
+    setAttachment(null);
     setSubmission(crypto.randomUUID());
     setPreview(null);
     setError("");
     mutation.setError("");
   }
+  async function uploadAttachment(file: File) {
+    if (locked) return;
+    const type = file.type || (/\.png$/i.test(file.name) ? "image/png" : "image/jpeg");
+    if (!["image/jpeg", "image/png"].includes(type) || file.size > 5 * 1024 * 1024) {
+      setError("Chọn ảnh JPEG hoặc PNG tối đa 5 MiB.");
+      return;
+    }
+    setError("");
+    setPreviewBusy(true);
+    try {
+      const r = await churchRequest<{ id: string }>(`${base}/attachments`, {
+        method: "POST",
+        rawBody: file,
+        headers: { "Content-Type": type },
+      });
+      if (!lostRef.current) setAttachment({ id: r.data.id, label: file.name });
+    } catch (e) {
+      fail(e);
+    } finally {
+      setPreviewBusy(false);
+    }
+  }
   async function previewSubmit() {
     if (locked || !fund) return;
     setPreviewBusy(true);
     setError("");
-    const b = { submissionId: submission, fundId: fund.id, amount, purpose };
+    const b: ExpenseDraft = {
+      submissionId: submission,
+      fundId: fund.id,
+      amount,
+      purpose,
+      ...(attachment ? { attachmentId: attachment.id } : {}),
+    };
     try {
       const r = await churchRequest<ExpenseSubmitPreview>(`${base}/preview`, {
         method: "POST",
@@ -610,8 +730,9 @@ export function ExpensesView(props: Props) {
             <Stack space="compact">
               <p>Đề xuất → Duyệt → Phiếu chi → Vào sổ</p>
               <p>
-                Vai trò duyệt hiện tại:{" "}
-                {access?.approverRole ? roleLabels[access.approverRole] : "Chưa cấu hình"}
+                {access?.usesApprovalThreshold
+                  ? "Duyệt theo hạn mức"
+                  : `Vai trò duyệt hiện tại: ${access?.approverRole ? roleLabels[access.approverRole] : "Chưa cấu hình"}`}
               </p>
             </Stack>
           </Card>
@@ -667,9 +788,11 @@ export function ExpensesView(props: Props) {
                 }}
               />
             </Field>
-            <Button disabled={readLocked} onClick={() => setPicker("filter")}>
-              {filterFund ? `Quỹ: ${filterFund.name}` : "Tất cả quỹ"}
-            </Button>
+            {(access?.canReadAll || access?.canReadOwn) && (
+              <Button disabled={readLocked} onClick={() => setPicker("filter")}>
+                {filterFund ? `Quỹ: ${filterFund.name}` : "Tất cả quỹ"}
+              </Button>
+            )}
             {filterFund && (
               <Button
                 disabled={readLocked}
@@ -683,8 +806,8 @@ export function ExpensesView(props: Props) {
             )}
             <Field label="Trạng thái">
               <Select
-                value={state}
-                disabled={readLocked}
+                value={currentScope === "review" ? "pending" : state}
+                disabled={readLocked || currentScope === "review"}
                 onChange={(e) => {
                   setState(e.target.value);
                   setStack([null]);
@@ -698,18 +821,22 @@ export function ExpensesView(props: Props) {
                 <option value="rejected">Từ chối</option>
               </Select>
             </Field>
-            {access?.canReadAll ? (
+            {access && (access.canReadAll || access.canDecide) ? (
               <Field label="Phạm vi">
                 <Select
-                  value={scope || "all"}
+                  value={currentScope}
                   disabled={readLocked}
                   onChange={(e) => {
                     setScope(e.target.value);
+                    setState("all");
                     setStack([null]);
                   }}
                 >
-                  <option value="all">Toàn bộ đề xuất</option>
-                  <option value="mine">Của mình</option>
+                  {access.canReadAll && <option value="all">Toàn bộ trong phạm vi quyền</option>}
+                  {(access.canReadAll || access.canReadOwn) && (
+                    <option value="mine">Của tôi</option>
+                  )}
+                  {access.canDecide && <option value="review">Cần tôi duyệt</option>}
                 </Select>
               </Field>
             ) : (
@@ -804,7 +931,12 @@ export function ExpensesView(props: Props) {
                           {roleLabels[r.creatorRole]}
                         </td>
                         <td>{r.fundName}</td>
-                        <td>{r.purpose}</td>
+                        <td>
+                          <Stack space="compact">
+                            <span>{r.purpose}</span>
+                            {r.hasAttachment && <span>Có chứng từ</span>}
+                          </Stack>
+                        </td>
                         <td>{vnd(r.amount)}</td>
                         <td>
                           <Badge
@@ -846,6 +978,7 @@ export function ExpensesView(props: Props) {
           locked={busy}
           onClose={() => {
             setEditor(false);
+            setAttachment(null);
             setPreview(null);
           }}
         >
@@ -859,6 +992,7 @@ export function ExpensesView(props: Props) {
                 </p>
                 <p>Quỹ: {preview.data.fundName}</p>
                 <p>Nội dung: {preview.data.purpose}</p>
+                <p>Chứng từ: {preview.data.hasAttachment ? attachment?.label : "Không có"}</p>
                 <p>
                   Số tiền: <strong>{vnd(preview.data.amount)}</strong>
                 </p>
@@ -916,12 +1050,61 @@ export function ExpensesView(props: Props) {
                     onChange={(e) => setPurpose(e.target.value)}
                   />
                 </Field>
+                <Stack space="content">
+                  <Stack space="compact">
+                    <p>Chứng từ (tùy chọn)</p>
+                    <div className="finance-actions">
+                      <Button
+                        aria-describedby={`${attachmentInputId}-hint`}
+                        disabled={locked}
+                        onClick={() => document.getElementById(attachmentInputId)?.click()}
+                      >
+                        {attachment ? "Chọn ảnh khác" : "Chọn ảnh"}
+                      </Button>
+                    </div>
+                    <small className="muted" id={`${attachmentInputId}-hint`}>
+                      JPEG hoặc PNG, tối đa 5 MiB.
+                    </small>
+                  </Stack>
+                  <TextInput
+                    id={attachmentInputId}
+                    aria-label="Tệp chứng từ"
+                    hidden
+                    type="file"
+                    accept="image/jpeg,image/png"
+                    disabled={locked}
+                    onChange={(e) => {
+                      const file = e.currentTarget.files?.[0];
+                      e.currentTarget.value = "";
+                      if (file) void uploadAttachment(file);
+                    }}
+                  />
+                  {attachment && (
+                    <Stack space="compact" key={attachment.id}>
+                      <p className="expense-total">{attachment.label}</p>
+                      <ExpenseImage path={`${base}/attachments/${attachment.id}`} locked={locked} />
+                      <div className="finance-actions">
+                        <Button disabled={locked} onClick={() => setAttachment(null)}>
+                          Bỏ ảnh
+                        </Button>
+                      </div>
+                    </Stack>
+                  )}
+                </Stack>
                 <p>
-                  Người gửi: account hiện tại · Vai trò duyệt:{" "}
-                  {access?.approverRole ? roleLabels[access.approverRole] : "Chưa cấu hình"}
+                  Người gửi: account hiện tại ·{" "}
+                  {access?.usesApprovalThreshold
+                    ? "Cấp duyệt được xác định khi xem trước."
+                    : `Vai trò duyệt: ${access?.approverRole ? roleLabels[access.approverRole] : "Chưa cấu hình"}`}
                 </p>
                 <DialogActions>
-                  <Button disabled={locked} onClick={() => setEditor(false)}>
+                  <Button
+                    disabled={locked}
+                    onClick={() => {
+                      setAttachment(null);
+                      setEditor(false);
+                    }}
+                  >
                     Hủy
                   </Button>
                   <Button type="submit" variant="primary" disabled={locked || !fund}>

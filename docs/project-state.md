@@ -1,5 +1,41 @@
 # Hiện trạng Church CMS
 
+## P7 đã chốt local/synthetic
+
+Khiêm xác nhận chốt P7 với P7.1–P7.3 đã nghiệm thu local/synthetic và P7.4–P7.5 giữ hoãn. Phạm vi PR vào `main` gồm mã P7.1–P7.3 và hồ sơ quyết định. Mã thử nghiệm OCR P7.4 lưu local. Khi rà soát roadmap P7/P8, nhắc lại hai mục hoãn. P8 chưa mở. [Biên bản chốt P7](tasks/CHURCH-P7.md#chốt-p7).
+
+## P7.5 — hoãn nhắc thăm viếng và chúc sinh nhật
+
+Khiêm quyết định hoãn P7.5 vì cần chuẩn bị chi phí và hạ tầng dịch vụ gửi ngoài. P7.5-plan-r1 dừng ở đề xuất, 75-01–75-03 chưa triển khai. [Note nhắc lại khi rà soát P7/P8](tasks/CHURCH-P7.md#p75--nhắc-ngoài-và-lời-chúc-sinh-nhật).
+
+## P7.4 — hoãn OCR sổ Báp-têm theo quyết định của Khiêm
+
+Khiêm quyết định hoãn OCR sổ Báp-têm vì chưa cần cho nhu cầu hiện tại. 74-01 còn mở và hoãn. P7.4-plan-r3 dừng ở đề xuất. Tập nghiệm thu độc lập 28 trang chưa mở. 74-02 và 74-03 giữ nghiệm thu local/synthetic theo r1. P7.5 chưa mở. [Quyết định và bằng chứng P7.4](tasks/CHURCH-P7.4.md#quyết-định-hoãn-p74).
+
+## P7.4-r2 — kết quả trước khi hoãn
+
+P7.3 đã nghiệm thu đủ 73-01–03. Khiêm đã nghiệm thu riêng 74-02 và 74-03 của P7.4-r1 local/synthetic. [P7.4-plan-r2](tasks/CHURCH-P7.4.md#p74-plan-r2--kế-hoạch-bổ-sung-74-01-đã-duyệt) đã chạy một vòng huấn luyện local và đo phát triển. 74-01 còn mở vì model r2 đạt 0/96 họ tên, 34/87 nơi và 0/87 người cử hành. Tập nghiệm thu độc lập 28 trang vẫn chưa mở. [Báo cáo r2](../output/p7.4-r2/dev-vi.json) · [Biên bản nghiệm thu riêng r1](engineering/skill-usage/records/CHURCH-P7/P7.4-partial-acceptance-1.json). P7.5 chưa mở.
+
+Thiết bị thật, Safari, chữ viết tay thật, full suite, UAT, main runtime, pilot, remote CI và production NOT_RUN. Các mục dưới là lịch sử.
+
+## P7.3-r1 — kết quả tại bàn giao
+
+Khiêm nghiệm thu P7.2-r1 đủ 72-01–03 và mở P7.3 theo [P7-plan-r2/C73](tasks/CHURCH-P7.md). [P7.3](tasks/CHURCH-P7.3.md) hoàn tất source và đạt 73-01–03 local/synthetic. 71 tests/1265 assertions và Firefox 1328 checks/124 ảnh/310 lượt đo. Hạn mức và hàng chờ đã chạy qua W12/W10. Phiếu chi từ đề xuất đã duyệt theo hạn mức đã hiển thị trong W09. [Bằng chứng](../output/p7.3/verification.json) · [Nghiệm thu P7.2](engineering/skill-usage/records/CHURCH-P7/P7.2-human-acceptance-1.json). P7.3 PENDING_REVIEW, chưa phát hành. Dừng trước P7.4.
+
+Thiết bị thật, Safari, toàn bộ test suite, UAT, main runtime, pilot, remote CI và production NOT_RUN. E51-01 đã bỏ qua, E55-01 còn mở trước production, UI-POSTP8-01 sau P8. Các mục dưới là lịch sử.
+
+## P7.2-r1 — kết quả tại bàn giao
+
+Khiêm nghiệm thu P7.1-r1 đủ 71-01–03 và mở P7.2 theo [P7-plan-r2/C72](tasks/CHURCH-P7.md). [P7.2](tasks/CHURCH-P7.2.md) hoàn tất source và đạt 72-01–03 local/synthetic. 41 tests/581 assertions, Firefox 646 checks/60 ảnh/150 lượt đo bố cục. Kiểm rollback, cạnh tranh, TTL và restore ảnh khớp SHA-256. [Bằng chứng](../output/p7.2/verification.json) · [Nghiệm thu P7.1](engineering/skill-usage/records/CHURCH-P7/P7.1-human-acceptance-1.json). P7.2 PENDING_REVIEW, chưa phát hành. Dừng trước P7.3.
+
+Thiết bị thật, Safari, toàn bộ test suite, UAT, main runtime, pilot, remote CI và production NOT_RUN. E51-01 đã bỏ qua, E55-01 còn mở trước production, UI-POSTP8-01 sau P8. Các mục dưới là lịch sử.
+
+## P7.1-r1 — kết quả tại bàn giao
+
+Khiêm đã duyệt [P7-plan-r2 cho cả năm chặng](tasks/CHURCH-P7.md). [P7.1](tasks/CHURCH-P7.1.md) hoàn tất source và kiểm chứng local/synthetic theo 71-01–03. Scheduling: 20 tests/297 assertions. Firefox: 568 checks, 34 ảnh và 8 lượt đo bố cục màn đọc. [Bằng chứng](../output/p7.1/verification.json). PENDING_REVIEW, chưa phát hành. Dừng trước P7.2.
+
+Thiết bị thật, Safari, toàn bộ test suite, UAT, main runtime, pilot, remote CI và production NOT_RUN. E51-01 đã bỏ qua, E55-01 còn mở trước production, UI-POSTP8-01 sau P8. Các mục dưới là lịch sử.
+
 ## P6 đã đóng local/synthetic
 
 Khiêm nghiệm thu P6.6-r1 đủ 5 mục và xác nhận đóng P6. Cả sáu gói P6.1–P6.6 đã nghiệm thu ở phạm vi local/synthetic. Chưa phát hành. E51-01 đã được bỏ qua, E55-01 còn mở và hoãn đến trước production, UI-POSTP8-01 hoãn sau P8. Giới hạn kiểm chứng ghi trong biên bản. Phần bên dưới là lịch sử. [Đóng P6](tasks/CHURCH-P6.6.md#nghiệm-thu-p66-và-đóng-p6) · [Biên bản](engineering/skill-usage/records/CHURCH-P6/P6-closure-1.json).

@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "event_id": "CHURCH-P7/P7/milestone-closure/1",
+  "event_type": "evaluation",
+  "task_id": "CHURCH-P7",
+  "scope_id": "P7",
+  "recorded_at": "2026-11-19T17:55:48.792631+07:00",
+  "reported_by": "delivery_owner",
+  "source_kind": "human_feedback",
+  "assessment_source": "human",
+  "review_attempt": 1,
+  "decision": "ACCEPTED",
+  "subject_event_id": "CHURCH-P7/P7.3/human-acceptance/1",
+  "findings": [],
+  "authority": {
+    "approval": "Khiêm chốt P7, commit, push và mở PR vào main.",
+    "scope": "P7.1–P7.3 nghiệm thu local/synthetic. P7.4–P7.5 hoãn."
+  },
+  "milestone_closure": {
+    "milestone": "P7",
+    "status": "CLOSED",
+    "scope": "local/synthetic",
+    "released": false,
+    "accepted_packages": [
+      {
+        "package": "P7.1-r1",
+        "event_id": "CHURCH-P7/P7.1/human-acceptance/1",
+        "evidence_ref": "docs/engineering/skill-usage/records/CHURCH-P7/P7.1-human-acceptance-1.json"
+      },
+      {
+        "package": "P7.2-r1",
+        "event_id": "CHURCH-P7/P7.2/human-acceptance/1",
+        "evidence_ref": "docs/engineering/skill-usage/records/CHURCH-P7/P7.2-human-acceptance-1.json"
+      },
+      {
+        "package": "P7.3-r1",
+        "event_id": "CHURCH-P7/P7.3/human-acceptance/1",
+        "evidence_ref": "docs/engineering/skill-usage/records/CHURCH-P7/P7.3-human-acceptance-1.json"
+      }
+    ],
+    "deferred_packages": [
+      {
+        "package": "P7.4",
+        "note": "74-01 hoãn, 74-02/03 đã nghiệm thu riêng local/synthetic. Mã OCR thử nghiệm giữ local."
+      },
+      {
+        "package": "P7.5",
+        "note": "75-01–75-03 hoãn, dừng ở đề xuất."
+      }
+    ]
+  },
+  "evidence_refs": [
+    "docs/tasks/CHURCH-P7.md",
+    "docs/tasks/CHURCH-P7.4.md",
+    "docs/project-state.md"
+  ]
+}

@@ -1,5 +1,29 @@
 # Kế hoạch Church CMS
 
+**P7 đã chốt local/synthetic.** P7.1–P7.3 đã nghiệm thu. P7.4–P7.5 giữ hoãn. [Biên bản chốt P7](tasks/CHURCH-P7.md#chốt-p7).
+
+P7.4 OCR sổ Báp-têm được hoãn theo quyết định của Khiêm. 74-01 chờ khi có nhu cầu mở lại. P7.5 nhắc thăm viếng và chúc sinh nhật cũng được hoãn vì cần chuẩn bị ngân sách và hạ tầng gửi ngoài. Nhắc lại hai mục khi rà soát roadmap P7/P8. [Note P7.4](tasks/CHURCH-P7.4.md#quyết-định-hoãn-p74) · [Note P7.5](tasks/CHURCH-P7.md#p75--nhắc-ngoài-và-lời-chúc-sinh-nhật).
+
+## P7.4-plan-r2 — Chất lượng OCR local
+
+Khiêm duyệt [kế hoạch bổ sung 74-01](tasks/CHURCH-P7.4.md#p74-plan-r2--kế-hoạch-bổ-sung-74-01-đã-duyệt) với tập nghiệm thu độc lập 28 trang hỗn hợp. Giữ ngưỡng r1. Khiêm chốt nguồn người viết phiếu hư cấu trước khi đo. Bàn giao 74-01 rồi dừng trước P7.5.
+
+## P7.4-plan-r1 — OCR sổ Báp-têm local
+
+Khiêm duyệt [bộ 32 trang synthetic, tiêu chí OCR, TTL 24 giờ và ASCII](tasks/CHURCH-P7.4.md). Chỉ triển khai local/synthetic, bàn giao 74-01–74-03 rồi dừng trước P7.5.
+
+## P7.3 — Chọn cấp duyệt theo hạn mức
+
+Khiêm nghiệm thu P7.2-r1 và mở [P7.3 local/synthetic theo C73](tasks/CHURCH-P7.3.md). Bàn giao rồi dừng trước P7.4.
+
+## P7.2 — Chứng từ đề xuất chi
+
+Khiêm nghiệm thu P7.1-r1 và cho triển khai P7.2 local/synthetic theo C72 và ASCII đã duyệt. [Phạm vi và kiểm chứng P7.2](tasks/CHURCH-P7.2.md). Bàn giao rồi dừng trước P7.3.
+
+## P7-plan-r2 — Năm chặng đã duyệt
+
+P7.1 Màn chữ lớn → P7.2 Chứng từ → P7.3 Duyệt theo hạn mức → P7.4 OCR Báp-têm → P7.5 Nhắc ngoài và sinh nhật. [Phạm vi, ASCII và checklist từng chặng](tasks/CHURCH-P7.md). Khiêm chỉ mở triển khai P7.1 local/synthetic.
+
 ## P6.6 — Kiểm chứng tổng hợp
 
 Khiêm nghiệm thu P6.5-r1 và cho kiểm chứng P6.6 local/synthetic. Ghép luồng P6, đối chiếu file và số liệu, quyền hai Hội Thánh, lỗi/thu hồi, tải có kiểm soát và restore tách biệt trước khi bàn giao. [Task P6.6](tasks/CHURCH-P6.6.md).

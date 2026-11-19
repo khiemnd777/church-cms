@@ -1,4 +1,4 @@
-import { type ClientSession, type Filter, MongoServerError, ObjectId } from "mongodb";
+import { Binary, type ClientSession, type Filter, MongoServerError, ObjectId } from "mongodb";
 import type { policyMatrix } from "../authorization/church-policy";
 import { AppError, requireCondition } from "../errors";
 import { objectId, parse, version } from "../http-validation";
@@ -9,11 +9,14 @@ import { escaped } from "../members/queries";
 import { canonical, type Operation, type Operations } from "../operations/service";
 import { resourceCode } from "../resource-code";
 import { TenantQueries } from "../tenant-queries";
-import type { ExpenseGrant, ExpenseProposal } from "./expenses-model";
+import { type ExpenseImageType, normalizeExpenseImage } from "./expense-image";
+import type { ExpenseAttachment, ExpenseGrant, ExpenseProposal } from "./expenses-model";
 import { expenseDecide, expenseDecision, expenseDraft, expenseSubmit } from "./expenses-validation";
 import type { FinanceHistory, FinanceSettings, Fund } from "./models";
 import { decimalString, moneyDecimal, moneyValue } from "./money";
 import type { Finance } from "./service";
+
+type ExpensePermissions = Awaited<ReturnType<Expenses["permissions"]>>;
 
 export class Expenses {
   constructor(
@@ -23,6 +26,87 @@ export class Expenses {
     private key: string,
     private now: () => Date = () => new Date(),
   ) {}
+  private uploadsInFlight = 0;
+  private get attachments() {
+    return this.db.db.collection<ExpenseAttachment>("finance_expense_attachments");
+  }
+  private stagingFilter(g: ExpenseGrant, id: string) {
+    return {
+      _id: objectId(id),
+      churchId: g.churchId,
+      actorId: g.actorId,
+      expiresAt: { $gt: this.now() },
+      proposalId: { $exists: false },
+    };
+  }
+  private async staged(g: ExpenseGrant, id: string, tx: ClientSession, withBytes = false) {
+    const row = await this.attachments.findOne(this.stagingFilter(g, id), {
+      session: tx,
+      ...(withBytes ? {} : { projection: { bytes: 0 } }),
+    });
+    requireCondition(row, 422, "EXPENSE_IMAGE_UNAVAILABLE");
+    return row;
+  }
+  async uploadAttachment(g: ExpenseGrant, type: ExpenseImageType, read: () => Promise<Uint8Array>) {
+    requireCondition(this.uploadsInFlight < 2, 503, "DEPENDENCY_UNAVAILABLE");
+    this.uploadsInFlight++;
+    try {
+      await this.db.readSnapshot(g.churchId.toHexString(), async (tx) => {
+        await g.fence(tx);
+        requireCondition((await this.permissions(g, tx)).canSubmit, 403, "FORBIDDEN");
+      });
+      const image = await normalizeExpenseImage(await read(), type);
+      const id = new ObjectId();
+      await this.db.transaction(async (tx) => {
+        await g.fence(tx);
+        const p = await this.permissions(g, tx);
+        requireCondition(p.canSubmit && p.settings, 403, "FORBIDDEN");
+        await this.fenceSettings(g, p.settings, tx);
+        await this.attachments.insertOne(
+          {
+            _id: id,
+            actorId: g.actorId,
+            churchId: g.churchId,
+            bytes: new Binary(image.bytes),
+            type,
+            hash: image.hash,
+            expiresAt: new Date(this.now().getTime() + 15 * 60_000),
+          },
+          { session: tx },
+        );
+      });
+      return { id: id.toHexString() };
+    } finally {
+      this.uploadsInFlight--;
+    }
+  }
+  async previewAttachment(g: ExpenseGrant, id: string) {
+    return this.db.readSnapshot(g.churchId.toHexString(), async (tx) => {
+      await g.fence(tx);
+      requireCondition((await this.permissions(g, tx)).canSubmit, 403, "FORBIDDEN");
+      return this.staged(g, id, tx, true);
+    });
+  }
+  async downloadAttachment(g: ExpenseGrant, id: string) {
+    return this.db.readSnapshot(g.churchId.toHexString(), async (tx) => {
+      await g.fence(tx);
+      const p = await this.permissions(g, tx);
+      const proposal = await this.readableRow(p, g, id, tx);
+      requireCondition(proposal.attachment, 404, "NOT_FOUND");
+      const image = await this.attachments.findOne(
+        {
+          _id: proposal.attachment.id,
+          churchId: g.churchId,
+          proposalId: proposal._id,
+          actorId: proposal.createdBy,
+          hash: proposal.attachment.hash,
+        },
+        { session: tx },
+      );
+      requireCondition(image, 404, "NOT_FOUND");
+      return image;
+    });
+  }
   private get proposals() {
     return this.db.db.collection<ExpenseProposal>("finance_expense_proposals");
   }
@@ -34,34 +118,61 @@ export class Expenses {
   }
   private async permissions(g: ExpenseGrant, tx: ClientSession) {
     this.base(g);
-    const settings = await this.settings.findOne({ _id: g.churchId }, { session: tx }),
-      canDecide = settings?.approverRole === g.role,
-      canSubmit = !!settings && (canDecide || settings.proposerRoles.some((r) => r === g.role)),
-      canReadAll = ["pastor", "treasurer"].includes(g.role) || canDecide;
+    const settings = await this.settings.findOne({ _id: g.churchId }, { session: tx });
+    const legacyDecider = settings?.approverRole === g.role;
+    const canSubmit =
+      !!settings && (legacyDecider || settings.proposerRoles.some((r) => r === g.role));
+    const unrestricted = g.role === "pastor" || g.role === "treasurer";
     return {
       settings,
-      configured: !!settings,
-      canDecide,
+      legacyDecider,
+      unrestricted,
       canSubmit,
-      canReadAll,
       canReadOwn: canSubmit,
+      canReadAll: unrestricted || legacyDecider,
     };
   }
-  private requireRead(
-    p: { canReadAll: boolean; canReadOwn: boolean },
-    g: ExpenseGrant,
-    row?: ExpenseProposal,
-  ) {
-    requireCondition(p.canReadAll || p.canReadOwn, 403, "FORBIDDEN");
-    if (row)
-      requireCondition(
-        p.canReadAll || (p.canReadOwn && row.createdBy.equals(g.actorId)),
-        404,
-        "NOT_FOUND",
-      );
+  private approval(settings: FinanceSettings, amount: bigint) {
+    const rule = settings.approvalThreshold;
+    if (!rule) return { role: settings.approverRole, band: null };
+    return amount < BigInt(rule.amount)
+      ? { role: rule.belowRole, band: "below" as const }
+      : { role: rule.atOrAboveRole, band: "at_or_above" as const };
   }
-  private requireDecide(p: { canDecide: boolean }, g: ExpenseGrant, row: ExpenseProposal) {
-    requireCondition(p.canDecide, 403, "FORBIDDEN");
+  private async canReview(p: ExpensePermissions, g: ExpenseGrant, tx: ClientSession) {
+    const rule = p.settings?.approvalThreshold;
+    if (p.legacyDecider || rule?.belowRole === g.role || rule?.atOrAboveRole === g.role)
+      return true;
+    if (g.role !== "secretary" && !p.unrestricted) return false;
+    return !!(await this.proposals.findOne(
+      { churchId: g.churchId, approverRole: g.role, approvalBand: { $exists: true } },
+      { session: tx, projection: { _id: 1 } },
+    ));
+  }
+  private reviews(p: ExpensePermissions, g: ExpenseGrant, row: ExpenseProposal) {
+    return row.approvalBand ? row.approverRole === g.role : p.legacyDecider;
+  }
+  private async requireReader(p: ExpensePermissions, g: ExpenseGrant, tx: ClientSession) {
+    requireCondition(
+      p.canReadAll || p.canReadOwn || (await this.canReview(p, g, tx)),
+      403,
+      "FORBIDDEN",
+    );
+  }
+  private async readableRow(p: ExpensePermissions, g: ExpenseGrant, id: string, tx: ClientSession) {
+    await this.requireReader(p, g, tx);
+    const row = await this.row(g, id, tx);
+    requireCondition(
+      p.unrestricted ||
+        this.reviews(p, g, row) ||
+        (p.canReadOwn && row.createdBy.equals(g.actorId)),
+      404,
+      "NOT_FOUND",
+    );
+    return row;
+  }
+  private requireDecide(p: ExpensePermissions, g: ExpenseGrant, row: ExpenseProposal) {
+    requireCondition(this.reviews(p, g, row), 403, "FORBIDDEN");
     requireCondition(!row.createdBy.equals(g.actorId), 403, "EXPENSE_SELF_DECISION");
   }
   async context(g: ExpenseGrant) {
@@ -69,18 +180,20 @@ export class Expenses {
     return this.db.readSnapshot(g.churchId.toHexString(), async (tx) => {
       await g.fence(tx);
       const p = await this.permissions(g, tx);
+      const canDecide = await this.canReview(p, g, tx);
       return {
-        configured: p.configured,
+        configured: !!p.settings,
         canReadAll: p.canReadAll,
         canReadOwn: p.canReadOwn,
         canSubmit: p.canSubmit,
-        canDecide: p.canDecide,
+        canDecide,
+        usesApprovalThreshold: !!p.settings?.approvalThreshold,
         canPay: g.role === "treasurer",
         approverRole: p.canReadAll || p.canReadOwn ? (p.settings?.approverRole ?? null) : null,
         capabilities: [
-          ...(p.canReadAll || p.canReadOwn ? ["expense:read"] : []),
+          ...(p.canReadAll || p.canReadOwn || canDecide ? ["expense:read"] : []),
           ...(p.canSubmit ? ["expense:submit"] : []),
-          ...(p.canDecide ? ["expense:decide"] : []),
+          ...(canDecide ? ["expense:decide"] : []),
         ],
       };
     });
@@ -90,6 +203,15 @@ export class Expenses {
       await g.fence(tx);
       const p = await this.permissions(g, tx),
         all = ["pastor", "treasurer"].includes(g.role);
+      const assigned = await this.proposals.distinct(
+        "approverRole",
+        {
+          churchId: g.churchId,
+          approvalBand: { $exists: true },
+          ...(all ? {} : { approverRole: g.role }),
+        },
+        { session: tx },
+      );
       return {
         ...m,
         rows: m.rows.map((r) => {
@@ -99,8 +221,15 @@ export class Expenses {
               !!p.settings &&
               (r.role === p.settings.approverRole ||
                 p.settings.proposerRoles.some((role) => role === r.role)),
-            decide = p.settings?.approverRole === r.role,
-            readAll = ["pastor", "treasurer"].includes(r.role) || decide;
+            legacy = p.settings?.approverRole === r.role,
+            threshold = p.settings?.approvalThreshold,
+            band =
+              threshold?.belowRole === r.role ||
+              threshold?.atOrAboveRole === r.role ||
+              assigned.some((role) => role === r.role),
+            decide = legacy || band,
+            readAll = ["pastor", "treasurer"].includes(r.role);
+          const legacyRead = legacy && !threshold;
           return {
             ...r,
             expense: !p.settings
@@ -108,7 +237,13 @@ export class Expenses {
                 ? "Xem toàn bộ; chưa cấu hình gửi/duyệt"
                 : "Chưa được cấp quyền"
               : [
-                  readAll ? "Xem toàn bộ" : submit ? "Xem của mình" : "Không xem",
+                  readAll || legacyRead
+                    ? "Xem toàn bộ trong phạm vi quyền"
+                    : band || legacy
+                      ? "Xem đề xuất thuộc cấp duyệt"
+                      : submit
+                        ? "Xem của mình"
+                        : "Không xem",
                   submit ? "Gửi" : "Không gửi",
                   decide ? "Duyệt/từ chối người khác; cấm tự quyết định" : "Không duyệt",
                   r.role === "treasurer" ? "Lập phiếu chi" : "Không lập phiếu chi",
@@ -132,8 +267,11 @@ export class Expenses {
       fundName: r.fundName,
       amount: decimalString(r.amount),
       purpose: r.purpose,
+      hasAttachment: !!r.attachment,
       state: r.state,
       approverRoleAtSubmission: r.approverRole,
+      approvalBand: r.approvalBand ?? null,
+      approvalRuleVersion: r.approvalBand ? r.settingsVersion : null,
       createdAt: r.createdAt.toISOString(),
       payment: r.payment
         ? {
@@ -286,7 +424,8 @@ export class Expenses {
       after = q.has("cursor") ? query.decode(q.get("cursor") as string, context) : null;
     return this.db.readSnapshot(g.churchId.toHexString(), async (tx) => {
       await g.fence(tx);
-      this.requireRead(await this.permissions(g, tx), g);
+      const p = await this.permissions(g, tx);
+      requireCondition(p.canReadAll || p.canReadOwn, 403, "FORBIDDEN");
       const filter: Filter<Fund> = {
         churchId: g.churchId,
         status: "active",
@@ -326,15 +465,17 @@ export class Expenses {
       const f = await this.fund(g, objectId(b.fundId), tx),
         amount = moneyValue(b.amount),
         day = businessDay(this.now()),
-        sources = [p.settings.version, f.version, day];
+        image = b.attachmentId ? await this.staged(g, b.attachmentId, tx) : null,
+        sources = [p.settings.version, f.version, day, ...(image ? [image.hash] : [])];
       return {
         previewToken: this.token(g, "submit", b, sources),
         fundName: f.name,
         amount: amount.toString(),
         purpose: b.purpose,
+        hasAttachment: !!image,
         businessDate: day,
         creatorName: g.actorName,
-        approverRole: p.settings.approverRole,
+        approverRole: this.approval(p.settings, amount).role,
       };
     });
   }
@@ -375,10 +516,18 @@ export class Expenses {
           }
           const f = await this.fund(g, objectId(b.fundId), tx),
             amount = moneyValue(b.amount),
-            day = businessDay(this.now());
-          this.verify(g, "submit", b, [p.settings.version, f.version, day], command.previewToken);
+            day = businessDay(this.now()),
+            image = b.attachmentId ? await this.staged(g, b.attachmentId, tx) : null;
+          this.verify(
+            g,
+            "submit",
+            b,
+            [p.settings.version, f.version, day, ...(image ? [image.hash] : [])],
+            command.previewToken,
+          );
           await this.fenceSettings(g, p.settings, tx);
           await this.fenceFund(g, f, tx, true);
+          const approval = this.approval(p.settings, amount);
           const r: ExpenseProposal = {
             _id: new ObjectId(),
             churchId: g.churchId,
@@ -391,6 +540,10 @@ export class Expenses {
                 fundName: f.name,
                 amount: amount.toString(),
                 purpose: b.purpose,
+                ...(image ? { attachmentHash: image.hash } : {}),
+                ...(approval.band
+                  ? { approval: { ...approval, version: p.settings.version } }
+                  : {}),
                 businessDate: day,
                 createdBy: g.actorId.toHexString(),
               }),
@@ -404,13 +557,23 @@ export class Expenses {
             fundVersion: f.version,
             amount: moneyDecimal(amount),
             purpose: b.purpose,
+            ...(image ? { attachment: { id: image._id, hash: image.hash } } : {}),
             settingsVersion: p.settings.version,
-            approverRole: p.settings.approverRole,
+            approverRole: approval.role,
+            ...(approval.band ? { approvalBand: approval.band } : {}),
             state: "pending",
             version: 1,
             createdAt: this.now(),
             decision: null,
           };
+          if (image) {
+            const linked = await this.attachments.updateOne(
+              { ...this.stagingFilter(g, image._id.toHexString()), hash: image.hash },
+              { $set: { proposalId: r._id }, $unset: { expiresAt: "" } },
+              { session: tx },
+            );
+            requireCondition(linked.matchedCount, 422, "EXPENSE_IMAGE_UNAVAILABLE");
+          }
           await this.proposals.insertOne(r, { session: tx });
           await this.historyWrite(g, r, null, operationId, requestId, tx);
           return {
@@ -435,8 +598,7 @@ export class Expenses {
     return this.db.readSnapshot(g.churchId.toHexString(), async (tx) => {
       await g.fence(tx);
       const p = await this.permissions(g, tx),
-        r = await this.row(g, id, tx);
-      this.requireRead(p, g, r);
+        r = await this.readableRow(p, g, id, tx);
       this.requireDecide(p, g, r);
       requireCondition(r.state === "pending", 409, "EXPENSE_ALREADY_DECIDED");
       requireCondition(r.version === expected, 412, "VERSION_CONFLICT");
@@ -451,7 +613,7 @@ export class Expenses {
         ]),
         proposal: this.dto(r),
         currentFundName: f.name,
-        approverRole: p.settings.approverRole,
+        approverRole: r.approvalBand ? r.approverRole : p.settings.approverRole,
         decision: b.decision,
         reason: b.reason,
       };
@@ -479,8 +641,7 @@ export class Expenses {
       expected,
       async (tx, operationId) => {
         const p = await this.permissions(g, tx),
-          old = await this.row(g, id, tx);
-        this.requireRead(p, g, old);
+          old = await this.readableRow(p, g, id, tx);
         this.requireDecide(p, g, old);
         requireCondition(p.settings, 403, "FORBIDDEN");
         requireCondition(old.version === expected, 412, "VERSION_CONFLICT");
@@ -528,14 +689,13 @@ export class Expenses {
     return this.db.readSnapshot(g.churchId.toHexString(), async (tx) => {
       await g.fence(tx);
       const p = await this.permissions(g, tx),
-        r = await this.row(g, id, tx);
-      this.requireRead(p, g, r);
+        r = await this.readableRow(p, g, id, tx);
       return {
         ...this.dto(r),
-        currentApproverRole: p.settings?.approverRole ?? null,
+        currentApproverRole: r.approvalBand ? r.approverRole : (p.settings?.approverRole ?? null),
         canPay: g.role === "treasurer" && r.state === "approved",
         canReadPayment: ["pastor", "treasurer"].includes(g.role),
-        canDecide: p.canDecide && !r.createdBy.equals(g.actorId) && r.state === "pending",
+        canDecide: this.reviews(p, g, r) && !r.createdBy.equals(g.actorId) && r.state === "pending",
       };
     });
   }
@@ -550,7 +710,7 @@ export class Expenses {
     requireCondition(
       /^(?!0000)\d{4}-(0[1-9]|1[0-2])$/.test(period) &&
         ["all", "pending", "approved", "paid", "payment_voided", "rejected"].includes(state) &&
-        (!scope || ["mine", "all"].includes(scope)) &&
+        (!scope || ["mine", "all", "review"].includes(scope)) &&
         text.length <= 100,
       400,
       "INVALID_REQUEST",
@@ -560,13 +720,32 @@ export class Expenses {
     return this.db.readSnapshot(g.churchId.toHexString(), async (tx) => {
       await g.fence(tx);
       const p = await this.permissions(g, tx);
-      this.requireRead(p, g);
-      const own = scope === "mine" || (!scope && !p.canReadAll);
-      requireCondition(own || p.canReadAll, 403, "FORBIDDEN");
+      const view = scope ?? (p.canReadAll ? "all" : p.canReadOwn ? "mine" : "review");
+      requireCondition(
+        view === "all"
+          ? p.canReadAll
+          : view === "review"
+            ? await this.canReview(p, g, tx)
+            : p.canReadAll || p.canReadOwn,
+        403,
+        "FORBIDDEN",
+      );
+      const review: Filter<ExpenseProposal>[] = [
+        { approverRole: g.role, approvalBand: { $exists: true } },
+        ...(p.legacyDecider ? [{ approvalBand: { $exists: false } }] : []),
+      ];
+      const visible: Filter<ExpenseProposal> =
+        view === "mine"
+          ? { createdBy: g.actorId }
+          : view === "review"
+            ? { state: "pending", createdBy: { $ne: g.actorId }, $or: review }
+            : p.unrestricted
+              ? {}
+              : { $or: [...review, { createdBy: g.actorId }] };
       const context = query.context(g, "list", [
           period,
           fund?.toHexString(),
-          own ? "mine" : "all",
+          view,
           state,
           text,
           p.settings?.version ?? null,
@@ -578,7 +757,7 @@ export class Expenses {
         churchId: g.churchId,
         businessDate: { $gte: `${period}-01`, $lt: next.toISOString().slice(0, 10) },
         ...(fund ? { fundId: fund } : {}),
-        ...(own ? { createdBy: g.actorId } : {}),
+        ...visible,
       };
       const sums = await this.proposals
         .aggregate<{
@@ -600,17 +779,21 @@ export class Expenses {
         }),
       );
       const filter: Filter<ExpenseProposal> = {
-        ...base,
-        ...(state !== "all" ? { state: state as ExpenseProposal["state"] } : {}),
-        ...(text ? { code: { $regex: `^${escaped(text)}` } } : {}),
-        ...(after
-          ? {
-              $or: [
-                { businessDate: { $lt: after.key } },
-                { businessDate: after.key, _id: { $lt: objectId(after.id) } },
-              ],
-            }
-          : {}),
+        $and: [
+          base,
+          {
+            ...(state !== "all" ? { state: state as ExpenseProposal["state"] } : {}),
+            ...(text ? { code: { $regex: `^${escaped(text)}` } } : {}),
+            ...(after
+              ? {
+                  $or: [
+                    { businessDate: { $lt: after.key } },
+                    { businessDate: after.key, _id: { $lt: objectId(after.id) } },
+                  ],
+                }
+              : {}),
+          },
+        ],
       };
       const rows = await this.proposals
           .find(filter, { session: tx, maxTimeMS: 3000 })
@@ -623,7 +806,7 @@ export class Expenses {
       return {
         items: rows.map((r) => this.dto(r)),
         summary,
-        scope: own ? "mine" : "all",
+        scope: view,
         nextCursor:
           more && last ? query.encode(context, last.businessDate, last._id.toHexString()) : null,
       };
@@ -639,8 +822,7 @@ export class Expenses {
     return this.db.readSnapshot(g.churchId.toHexString(), async (tx) => {
       await g.fence(tx);
       const p = await this.permissions(g, tx),
-        r = await this.row(g, id, tx);
-      this.requireRead(p, g, r);
+        r = await this.readableRow(p, g, id, tx);
       const rows = await this.db.db
           .collection<FinanceHistory>("finance_history")
           .find(

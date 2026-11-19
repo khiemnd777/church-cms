@@ -15,3 +15,10 @@
   overflow-wrap: anywhere;
   white-space: normal;
 }
+
+.expense-attachment-image {
+  display: block;
+  max-width: 100%;
+  max-height: 50vh;
+  object-fit: contain;
+}
