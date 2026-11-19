@@ -23,6 +23,7 @@ export const ownerCapabilities = [
   "attendance:scan",
   "cards:read",
   "cards:manage",
+  "reports:use",
   "certificates:read",
   "certificates:manage",
   "rites:read",

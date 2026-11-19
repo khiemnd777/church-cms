@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "event_id": "CHURCH-P6/git-delivery/1",
+  "task_id": "CHURCH-P6",
+  "recorded_at": "2026-11-19T09:54:28.163767+07:00",
+  "authority": "Commit push, PR main, before P7.",
+  "phase": "git_delivery",
+  "skills": [
+    {
+      "skill_id": "git-workflow",
+      "source": "Personal",
+      "contribution_percent_estimate": 100,
+      "contribution_summary": "Kiểm nhánh, chọn phạm vi P6, commit, push và tạo PR main.",
+      "sha256": "fae3c6e8c1994066b751a2405c0278e979e0589048d4ced3ae43b324fe9c4f87"
+    }
+  ],
+  "scope": "P6 CLOSED local/synthetic",
+  "verification_ref": "output/p6.6/verification.json"
+}

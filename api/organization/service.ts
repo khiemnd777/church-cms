@@ -156,6 +156,14 @@ export class Organization {
     const config = await this.getSettings(g);
     return { ...config, asOfDate: businessDay(this.now()), units: await this.list(g, query) };
   }
+  async activeAreaCount(g: TenantGrant, tx: ClientSession) {
+    return this.db.db
+      .collection<Unit>("organization_units")
+      .countDocuments(
+        { churchId: g.churchId, kind: "area", namespace: "area", status: "active" },
+        { session: tx, maxTimeMS: 3000 },
+      );
+  }
   async overview(g: TenantGrant, tx: ClientSession, areaIds: string[]) {
     const settings = await this.settings.findOne({ _id: g.churchId }, { session: tx }),
       activeAreas = await this.units.countDocuments(

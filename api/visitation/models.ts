@@ -21,6 +21,7 @@ export interface VisitCase extends Omit<VisitFields, "assigneeId"> {
   churchId: ObjectId;
   code: string;
   version: number;
+  writeFence?: number;
   state: "open" | "completed" | "cancelled";
   targetKind: VisitTarget["kind"];
   targetId: ObjectId;

@@ -5,7 +5,7 @@ import type { AttendanceGrant } from "./attendance/models";
 import { AttendanceReporting } from "./attendance/reporting";
 import { Attendance } from "./attendance/service";
 import { AuditReader } from "./audit/reader";
-import { policyMatrix, policyVersion } from "./authorization/church-policy";
+import { capabilityAllowed, policyMatrix, policyVersion } from "./authorization/church-policy";
 import { ownerCapabilities } from "./authorization/owner-policy";
 import type { TenantGrant } from "./authorization/tenant-grant";
 import type { CardGrant } from "./cards/models";
@@ -34,16 +34,20 @@ import type { ExpenseGrant } from "./finance/expenses-model";
 import type { FinanceGrant } from "./finance/models";
 import { Payments } from "./finance/payments";
 import { FinancePeriods } from "./finance/periods";
+import { FinancePersonalGiving } from "./finance/personal-giving";
 import { FinanceReporting } from "./finance/reporting";
 import { Finance } from "./finance/service";
 import { FinanceTransactions } from "./finance/transactions";
 import { readFileBody, readJson } from "./http";
 import { objectId } from "./http-validation";
+import { AccountSubjects } from "./identity/account-subjects";
 import { Accounts } from "./identity/accounts";
 import { type ChurchAuthContext, ChurchIdentity } from "./identity/church-service";
 import type { Realm } from "./identity/models";
 import { cookie, cookieName, type Identity, type SessionResult } from "./identity/service";
+import { ChurchReportMembers } from "./members/church-report";
 import { FinanceMembers } from "./members/finance";
+import { PortalMembers } from "./members/portal";
 import { Members } from "./members/service";
 import { Operations } from "./operations/service";
 import type { OrganizationGrant } from "./organization/grant";
@@ -51,6 +55,7 @@ import { ProgramOrganization } from "./organization/programs";
 import { OrganizationRuntime } from "./organization/runtime";
 import { Organization } from "./organization/service";
 import { Overview } from "./overview/service";
+import { MemberPortal } from "./portal/service";
 import type { PrayerGrant } from "./prayers/models";
 import { PrayerReporting } from "./prayers/reporting";
 import { Prayers } from "./prayers/service";
@@ -62,12 +67,17 @@ import type { ProgramGrant } from "./programs/models";
 import { printProgram, programPrintError, programPrintScript } from "./programs/printing";
 import { Programs } from "./programs/service";
 import { ProgramSources } from "./programs/sources";
+import { reportLimits } from "./reporting/contracts";
+import { type ReportGrant, Reports } from "./reporting/service";
+import { ReportSource } from "./reporting/source";
 import type { RiteGrant } from "./rites/models";
+import { PortalRites } from "./rites/portal";
 import { RiteReporting } from "./rites/reporting";
 import { Rites } from "./rites/service";
 import type { ScheduleGrant } from "./scheduling/models";
 import { Scheduling } from "./scheduling/service";
 import { Tenancy } from "./tenancy/service";
+import { CertificateVisits } from "./visitation/certificates";
 import { Visitation } from "./visitation/service";
 import { VisitationSources } from "./visitation/sources";
 export interface RequestInfo {
@@ -145,7 +155,27 @@ const messages: Record<string, string> = {
   CERT_DATE_INVALID: "Kiểm tra ngày sinh, ngày lễ và ngày chốt bản.",
   CERT_KIND_IMMUTABLE: "Không đổi loại mẫu của bản nháp đã tạo.",
   CERT_PREVIEW_STALE: "Preview đã hết hạn hoặc nguồn đã thay đổi. Tải lại và chuẩn bị preview mới.",
+  PORTAL_MEMBER_CHANGED: "Hồ sơ vừa thay đổi. Chọn lại và xác nhận đúng người.",
+  PORTAL_MEMBER_NOT_ELIGIBLE: "Chọn hồ sơ tín hữu đang sinh hoạt hoặc vắng lâu.",
+  PORTAL_ACCOUNT_NOT_ELIGIBLE:
+    "Tài khoản phải có vai trò Tín hữu. Để gắn hồ sơ, tài khoản phải đang hoạt động.",
+  PORTAL_SUBJECT_TAKEN: "Hồ sơ này đã liên kết với một tài khoản trong Hội Thánh.",
+  PORTAL_LINK_REQUIRED: "Hồ sơ chưa được liên kết hoặc cần xác nhận lại.",
+  REPORT_SELECTION_CHANGED: "Mẫu đang dùng đã thay đổi. Tải lại danh sách mẫu.",
+  REPORT_PREVIEW_STALE: "Dữ liệu hoặc mẫu đã thay đổi. Tổng hợp lại trước khi chốt.",
+  REPORT_REPLACE_CHANGED: "Bản này đã được thay thế hoặc kỳ báo cáo khác.",
+  REPORT_REPLACE_REASON: "Nhập lý do thay thế bản báo cáo.",
+  REPORT_PERIOD: "Kiểm tra lại ngày bắt đầu và ngày kết thúc.",
+  REPORT_LAYOUT_LIMIT: "Mẫu vượt giới hạn số dòng, cột hoặc độ dài bản xuất.",
+  REPORT_ONE_SHEET: "Mẫu cần có đúng một trang tính.",
+  REPORT_NO_METRICS: "Mẫu cần có ít nhất một mã chỉ tiêu.",
+  REPORT_CELL_INVALID: "Có ô cần sửa. Xem vị trí và lý do bên dưới.",
+  REPORT_FILE_INVALID: "Không đọc được file Excel. Kiểm tra định dạng và thử lại.",
+  REPORT_PROCESS_BUSY: "Đang xử lý các báo cáo khác. Thử lại sau.",
+  REPORT_PREVIEW_LIMIT: "Đã đạt số bản xem trước đồng thời. Thử lại sau khi bản cũ hết hạn.",
   CERT_INCOMPLETE: "Còn dữ kiện thiếu hoặc mâu thuẫn. Đối soát trước khi chốt.",
+  CERT_MEMBER_NOT_ELIGIBLE: "Chọn hồ sơ tín hữu đang sinh hoạt hoặc vắng lâu.",
+  CERT_VISIT_NOT_OPEN: "Chọn hồ sơ thăm viếng đang mở.",
   CERT_FAITH_CONFIRMATION: "Cần xác nhận riêng nội dung đức tin trong GCN Báp-têm.",
   CERT_REASON_REQUIRED: "Nhập lý do thay thế hoặc thu hồi bản.",
   SCHEDULE_PREVIEW_STALE: "Lịch hoặc nguồn đã thay đổi. Hãy xem trước lại.",
@@ -267,6 +297,7 @@ const messages: Record<string, string> = {
   PRAYER_SOURCE_UNAVAILABLE: "Người gửi không còn hợp lệ để chọn mới.",
   PRAYER_DATE_INVALID: "Ngày nhận/chia sẻ không hợp lệ hoặc ở tương lai.",
   PRAYER_CLOSED: "Lời cầu thay đã đóng; chỉ có thể đính chính có lý do.",
+  PRAYER_PORTAL_IMMUTABLE: "Giữ nguyên nội dung cầu thay do tín hữu đã gửi.",
   PRAYER_PRIVATE_SHARE: "Không ghi nhận chia sẻ cho lời cầu thay riêng tư.",
   PRAYER_STATE_CONFLICT: "Trạng thái lời cầu thay đã thay đổi.",
   PRAYER_PREVIEW_STALE: "Thông tin đã thay đổi. Vui lòng xem trước lại.",
@@ -357,6 +388,16 @@ export function createApp(
       fence: (tx) => auth.fence(tx),
     };
   };
+  const portalMembers = new PortalMembers(identity.db);
+  const accountSubjects = new AccountSubjects(
+    identity.db,
+    access,
+    portalMembers,
+    operations,
+    identity.audit,
+    conf.csrfKey,
+    identity.now,
+  );
   const accounts = new Accounts(
     identity.db,
     access,
@@ -484,6 +525,7 @@ export function createApp(
       prepClasses.certificatePort(),
       tenancy,
       identity.now,
+      new CertificateVisits(identity.db, conf.csrfKey, identity.now),
     ),
     operations,
     identity.audit,
@@ -498,10 +540,34 @@ export function createApp(
     conf.csrfKey,
     identity.now,
   );
+  const memberPortal = new MemberPortal(
+    identity.db,
+    portalMembers,
+    new PortalRites(identity.db),
+    new FinancePersonalGiving(identity.db),
+    prayers,
+    conf.csrfKey,
+    identity.now,
+  );
   const care = new Care(
     identity.db,
     new CareSources(members.carePort(), families.carePort(), reports),
     visitation.carePort(),
+    operations,
+    identity.audit,
+    conf.csrfKey,
+    identity.now,
+  );
+  const churchReports = new Reports(
+    identity.db,
+    new ReportSource(
+      new ChurchReportMembers(identity.db, families),
+      organization,
+      new RiteReporting(identity.db),
+      reports,
+      tenancy,
+      identity.now,
+    ),
     operations,
     identity.audit,
     conf.csrfKey,
@@ -1507,7 +1573,129 @@ export function createApp(
             response = json(result.data, result.status, { replayed: result.replayed });
           }
         } else if (
-          /^\/api\/v1\/(?:owner\/)?churches\/[^/]+\/(?:members\/[^/]+\/certificates|certificates\/(?:operations\/[^/]+|drafts(?:\/[^/]+(?:\/(?:prepare|issue|history))?)?|editions(?:\/[^/]+(?:\/(?:revise|revoke|print|print-script|files\/(?:pdf|docx)))?)?))$/.test(
+          /^\/api\/v1\/(?:owner\/)?churches\/[^/]+\/reports\/(?:list|starter|preview|issue|operations\/[^/]+|templates(?:\/[^/]+(?:\/(?:activate|retire))?)?|editions\/[^/]+(?:\/(?:xlsx|pdf))?)$/.test(
+            path,
+          )
+        ) {
+          const parts = path.split("/"),
+            isOwner = parts[3] === "owner",
+            offset = isOwner ? 1 : 0;
+          const churchId = objectId(parts[4 + offset] as string),
+            section = parts[6 + offset],
+            id = parts[7 + offset],
+            action = parts[8 + offset];
+          const writing =
+            section === "preview" ||
+            section === "issue" ||
+            (section === "templates" && (!id || !!action));
+          requireCondition(req.method === (writing ? "POST" : "GET"), 405, "METHOD_NOT_ALLOWED");
+          requireCondition(section === "list" || !url.search, 400, "INVALID_REQUEST");
+          requestRealm = isOwner ? "owner" : "church";
+          targetChurchId = churchId;
+          route = `P62.${requestRealm}.${section}.${action ?? "root"}.${req.method}`;
+          let grant: ReportGrant;
+          if (isOwner) {
+            const ctx = await identity.authorize(ownerToken, "owner", false, true);
+            actorId = ctx.owner._id;
+            const auth = identity.ownerGrant(ctx, "reports:use");
+            grant = {
+              actorKind: "owner",
+              actorId,
+              churchId,
+              canWrite: true,
+              canReadAttendance: true,
+              canUpload: false,
+              canActivate: false,
+              policyContext: `${policyVersion}:owner`,
+              fence: async (tx) => {
+                await auth.fence(tx);
+                await access.fence(churchId, tx, true);
+              },
+            };
+          } else {
+            const ctx = await churchIdentity.authorize(churchToken, false, false);
+            actorId = ctx.account._id;
+            actorChurchId = ctx.account.churchId;
+            requireCondition(churchId.equals(actorChurchId), 404, "NOT_FOUND");
+            const auth = churchIdentity.grant(ctx);
+            auth.require("reports:use");
+            grant = {
+              actorKind: "church_user",
+              actorId,
+              churchId,
+              canWrite: true,
+              canReadAttendance: true,
+              canUpload: capabilityAllowed("reports:templates:upload", ctx.account.role),
+              canActivate: capabilityAllowed("reports:templates:activate", ctx.account.role),
+              policyContext: `${policyVersion}:${ctx.account.version}`,
+              fence: (tx) => auth.fence(tx),
+            };
+          }
+          const file = (
+            bytes: Uint8Array,
+            format: "xlsx" | "pdf",
+            name: string,
+            checksum?: string,
+          ) => {
+            headers.set(
+              "Content-Type",
+              format === "pdf"
+                ? "application/pdf"
+                : "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            );
+            headers.set("Content-Disposition", `attachment; filename="${name}.${format}"`);
+            headers.set("Cache-Control", "no-store");
+            if (checksum) headers.set("X-File-Digest", checksum);
+            return new Response(new Uint8Array(bytes), { headers });
+          };
+          if (writing) {
+            requireCondition(req.headers.get("origin") === conf.origin, 403, "CSRF_FAILED");
+            await identity.csrfSession(
+              isOwner ? ownerToken : churchToken,
+              requestRealm,
+              req.headers.get("x-csrf-token"),
+            );
+            const key = req.headers.get("idempotency-key");
+            if (section === "templates" && !id) {
+              requireCondition(grant.canUpload, 403, "FORBIDDEN");
+              const result = await churchReports.upload(
+                grant,
+                await readFileBody(req, reportLimits.upload),
+                key,
+                requestId,
+              );
+              response = json(result.data, result.status, { replayed: result.replayed });
+            } else if (section === "preview")
+              response = json(await churchReports.prepare(grant, await readJson(req)));
+            else {
+              const result =
+                section === "issue"
+                  ? await churchReports.issue(grant, await readJson(req), key, requestId)
+                  : await churchReports.activate(
+                      grant,
+                      id as string,
+                      await readJson(req),
+                      key,
+                      requestId,
+                      action === "retire",
+                    );
+              response = json(result.data, result.status, { replayed: result.replayed });
+            }
+          } else if (section === "list")
+            response = json(await churchReports.list(grant, url.searchParams));
+          else if (section === "starter")
+            response = file(await churchReports.starter(grant), "xlsx", "mau-thong-ke-noi-bo");
+          else if (section === "operations")
+            response = json(await churchReports.operation(grant, id as string));
+          else if (section === "templates")
+            response = json(await churchReports.viewTemplate(grant, id as string));
+          else if (action) {
+            const format = action as "xlsx" | "pdf";
+            const body = await churchReports.file(grant, id as string, format, requestId);
+            response = file(body.bytes, format, `bao-cao-noi-bo-${id}`, body.digest);
+          } else response = json(await churchReports.viewEdition(grant, id as string));
+        } else if (
+          /^\/api\/v1\/(?:owner\/)?churches\/[^/]+\/(?:members\/[^/]+\/certificates|certificates\/(?:visit-options|operations\/[^/]+|drafts(?:\/[^/]+(?:\/(?:prepare|issue|history))?)?|editions(?:\/[^/]+(?:\/(?:revise|revoke|print|print-script|files\/(?:pdf|docx)))?)?))$/.test(
             path,
           )
         ) {
@@ -1522,6 +1710,7 @@ export function createApp(
             format = parts[9 + offset];
           const methods =
             memberRead ||
+            section === "visit-options" ||
             section === "operations" ||
             action === "history" ||
             action === "files" ||
@@ -1556,6 +1745,7 @@ export function createApp(
               canWrite: true,
               canReadAttendance: true,
               canManageCertificates: true,
+              canReadVisitCertificates: ownerCapabilities.includes("visitation:read"),
               policyContext: `${policyVersion}:owner`,
               fence: async (tx) => {
                 await auth.fence(tx);
@@ -1577,6 +1767,7 @@ export function createApp(
               canReadAttendance: ["pastor", "secretary", "ministry_lead"].includes(
                 ctx.account.role,
               ),
+              canReadVisitCertificates: capabilityAllowed("visitation:read", ctx.account.role),
               canManageCertificates:
                 ctx.account.role === "pastor" || ctx.account.role === "secretary",
               policyContext: `${policyVersion}:${ctx.account.version}`,
@@ -1615,7 +1806,9 @@ export function createApp(
                     : await certificates.saveDraft(grant, id ?? null, body, key, match, requestId);
               response = json(result.data, result.status, { replayed: result.replayed });
             }
-          } else if (memberRead)
+          } else if (section === "visit-options")
+            response = json(await certificates.visitOptions(grant, url.searchParams));
+          else if (memberRead)
             response = json(
               await certificates.list(grant, url.searchParams, parts[6 + offset] as string),
             );
@@ -3153,6 +3346,95 @@ export function createApp(
             response = json(result.data, result.status, { replayed: result.replayed });
           }
         } else if (
+          /^\/api\/v1\/churches\/[^/]+\/portal\/(?:profile|rites|giving|prayers)$/.test(path)
+        ) {
+          const parts = path.split("/"),
+            section = parts[6];
+          requireCondition(
+            req.method === "GET" || (req.method === "POST" && section === "prayers"),
+            405,
+            "METHOD_NOT_ALLOWED",
+          );
+          requestRealm = "church";
+          const churchId = objectId(parts[4] as string);
+          const ctx = await churchIdentity.authorize(churchToken, false, false);
+          actorId = ctx.account._id;
+          actorChurchId = ctx.account.churchId;
+          targetChurchId = churchId;
+          requireCondition(churchId.equals(ctx.account.churchId), 404, "NOT_FOUND");
+          const grant = {
+            ...churchIdentity.grant(ctx),
+            subjectMemberId: ctx.account.subjectMemberId,
+            subjectMemberVersion: ctx.account.subjectMemberVersion,
+          };
+          grant.require("portal:self");
+          route =
+            section === "prayers"
+              ? `P65.portal.prayers.${req.method}`
+              : section === "giving"
+                ? "P64.portal.giving"
+                : `P63.portal.${section}`;
+          headers.set("Cache-Control", "no-store");
+          if (section === "profile") {
+            requireCondition(!url.search, 400, "INVALID_REQUEST");
+            response = json(await memberPortal.profile(grant));
+          } else if (section === "giving") {
+            response = json(await memberPortal.contributions(grant, url.searchParams));
+          } else if (section === "prayers") {
+            if (req.method === "GET")
+              response = json(await memberPortal.prayerRequests(grant, url.searchParams));
+            else {
+              requireCondition(!url.search, 400, "INVALID_REQUEST");
+              requireCondition(req.headers.get("origin") === conf.origin, 403, "CSRF_FAILED");
+              await identity.csrfSession(churchToken, "church", req.headers.get("x-csrf-token"));
+              const result = await memberPortal.sendPrayer(
+                grant,
+                await readJson(req),
+                req.headers.get("idempotency-key"),
+                requestId,
+              );
+              response = json(result.data, result.status, { replayed: result.replayed });
+            }
+          } else response = json(await memberPortal.rituals(grant, url.searchParams));
+        } else if (
+          /^\/api\/v1\/owner\/churches\/[^/]+\/accounts\/[^/]+\/(?:subject|subject-options)$/.test(
+            path,
+          )
+        ) {
+          const parts = path.split("/"),
+            churchId = objectId(parts[5] as string),
+            accountId = objectId(parts[7] as string),
+            options = parts[8] === "subject-options";
+          requireCondition(req.method === (options ? "GET" : "PATCH"), 405, "METHOD_NOT_ALLOWED");
+          requestRealm = "owner";
+          const ctx = await identity.authorize(ownerToken, "owner", false, true);
+          actorId = ctx.owner._id;
+          const grant = identity.ownerGrant(ctx, "accounts:manage");
+          targetChurchId = churchId;
+          targetAccountId = accountId;
+          route = options ? "P63.owner.subject-options" : "P63.owner.subject";
+          headers.set("Cache-Control", "no-store");
+          if (options)
+            response = json(
+              await accountSubjects.options(grant, churchId, accountId, url.searchParams),
+            );
+          else {
+            requireCondition(!url.search, 400, "INVALID_REQUEST");
+            requireCondition(req.headers.get("origin") === conf.origin, 403, "CSRF_FAILED");
+            await identity.csrfSession(ownerToken, "owner", req.headers.get("x-csrf-token"));
+            const result = await accountSubjects.update(
+              grant,
+              churchId,
+              accountId,
+              await readJson(req),
+              req.headers.get("idempotency-key"),
+              req.headers.get("if-match"),
+              requestId,
+            );
+            headers.set("ETag", `"${(result.data.account as { version: number }).version}"`);
+            response = json(result.data, result.status, { replayed: result.replayed });
+          }
+        } else if (
           /^\/api\/v1\/owner\/churches\/[^/]+\/accounts(?:\/[^/]+(?:\/(?:permissions|status|temporary-passwords))?)?$/.test(
             path,
           )
@@ -3493,7 +3775,7 @@ export function createApp(
               /^\/owner\/churches\/[a-f0-9]{24}(?:\/(?:accounts|manage|config|members|families|bans|roles|overview|attendance|rites|forms|worship|care))?$/i.test(
                 path,
               ) ||
-              /^\/h\/[a-z0-9-]{1,100}(?:\/(?:login|change-password|support|config|members|families|bans|roles|overview|access|attendance|rites|forms|worship|care|giving|expense))?$/i.test(
+              /^\/h\/[a-z0-9-]{1,100}(?:\/(?:login|change-password|support|config|members|families|bans|roles|overview|access|attendance|rites|forms|worship|care|giving|expense|portal))?$/i.test(
                 path,
               ),
             404,

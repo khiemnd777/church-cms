@@ -590,6 +590,7 @@ export class Visitation {
       churchId: g.churchId,
       code: before?.code ?? resourceCode("TV"),
       version: (before?.version ?? 0) + 1,
+      writeFence: before?.writeFence ?? 0,
       state: p.nextState,
       targetKind: p.target.kind,
       targetId: objectId(p.target.id),

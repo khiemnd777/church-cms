@@ -31,7 +31,7 @@ describe("P5.1 approved financial boundaries", () => {
     });
   });
   test("policy23 advertises approved finance read/write actions only; owner never inherits", () => {
-    expect(policyVersion).toBe(24);
+    expect(policyVersion).toBe(26);
     expect(capabilitiesFor("pastor")).toContain("finance:settings:manage");
     expect(capabilitiesFor("treasurer")).toContain("finance:funds:read");
     expect(capabilitiesFor("treasurer")).not.toContain("organization:read");

@@ -381,7 +381,12 @@ export function OverviewView({
                 disabled={pending}
                 onClick={() => onNavigate({ kind: "care" })}
               />
-              <OverviewShortcut icon="chart" label="Báo cáo Tổng Liên Hội" disabled />
+              <OverviewShortcut
+                icon="chart"
+                label="Báo cáo Tổng Liên Hội"
+                disabled={pending}
+                onClick={() => onNavigate({ kind: "forms", report: true })}
+              />
             </div>
           </Card>
           <section className="grid g-73">

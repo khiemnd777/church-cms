@@ -92,6 +92,6 @@ export type OverviewTarget =
   | { kind: "attendance"; sessionId?: string }
   | { kind: "rites"; tab?: string; riteId?: string; courseId?: string }
   | { kind: "giving" }
-  | { kind: "forms" }
+  | { kind: "forms"; report?: boolean }
   | { kind: "worship" }
   | { kind: "care"; section?: "prayers" | "suggestions" };

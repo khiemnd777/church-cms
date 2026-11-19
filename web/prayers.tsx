@@ -443,9 +443,11 @@ export function PrayersView(props: Props) {
             <Toolbar>
               {["open", "shared"].includes(record.state) && (
                 <>
-                  <Button disabled={busy} onClick={() => open("update")}>
-                    Sửa cầu thay
-                  </Button>
+                  {!record.fromPortal && (
+                    <Button disabled={busy} onClick={() => open("update")}>
+                      Sửa cầu thay
+                    </Button>
+                  )}
                   {record.visibility === "shared" && record.state === "open" && (
                     <Button disabled={busy} onClick={() => open("share")}>
                       Ghi nhận đã chia sẻ
@@ -459,9 +461,11 @@ export function PrayersView(props: Props) {
                   </Button>
                 </>
               )}
-              <Button disabled={busy} onClick={() => open("correct")}>
-                Đính chính cầu thay
-              </Button>
+              {!record.fromPortal && (
+                <Button disabled={busy} onClick={() => open("correct")}>
+                  Đính chính cầu thay
+                </Button>
+              )}
               <Button disabled={busy} onClick={() => void showHistory()}>
                 Lịch sử cầu thay
               </Button>

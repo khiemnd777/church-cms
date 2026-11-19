@@ -1,5 +1,33 @@
 # Kế hoạch Church CMS
 
+## P6.6 — Kiểm chứng tổng hợp
+
+Khiêm nghiệm thu P6.5-r1 và cho kiểm chứng P6.6 local/synthetic. Ghép luồng P6, đối chiếu file và số liệu, quyền hai Hội Thánh, lỗi/thu hồi, tải có kiểm soát và restore tách biệt trước khi bàn giao. [Task P6.6](tasks/CHURCH-P6.6.md).
+
+## P6.5 — Gửi cầu thay cá nhân theo P6.2–P6.5-plan-r2
+
+Khiêm xác nhận P6.4-r1 đạt đủ 5 mục và mở P6.5 local/synthetic. Dùng sổ Prayers chung, gửi riêng Mục sư, đối soát theo từng ý định gửi và xem trạng thái của chính mình. Bàn giao rồi dừng trước P6.6. [Task P6.5](tasks/CHURCH-P6.5.md).
+
+## P6.4 — Dâng hiến cá nhân theo P6.2–P6.5-plan-r2
+
+Khiêm nghiệm thu P6.3-r1, cho triển khai P6.4 local/synthetic theo kế hoạch và ASCII đã duyệt. Finance trả ngày, quỹ, phần đã gắn chính mình và trạng thái. Tổng ròng trong kỳ chỉ tính phần ghi sổ còn hiệu lực. Bàn giao rồi dừng trước P6.5. [Task P6.4](tasks/CHURCH-P6.4.md).
+
+## P6.3 — gói triển khai đã duyệt
+
+Khiêm nghiệm thu P6.2-r1 đủ năm mục local/synthetic, cho phép P6.3 local/synthetic theo kế hoạch và ASCII đã duyệt. [Task và checklist](tasks/CHURCH-P6.3.md). Handoff trước P6.4.
+
+## P6.2–P6.5-plan-r2
+
+Khiêm duyệt kế hoạch chung và ASCII r2, bổ sung upload mẫu Excel và kích hoạt theo Hội Thánh vào P6.2. Thứ tự nghiệm thu giữ P6.2 → P6.3 → P6.4 → P6.5. Quyền triển khai P6.2 chỉ local/synthetic. [P6.2 và checklist](tasks/CHURCH-P6.2.md). Trạng thái hiện hành tại project-state.
+
+## P6 — danh mục đã duyệt
+
+Khiêm duyệt P6.1–P6.6 và C6-01–08: (1) bảy biểu mẫu, (2) Báo cáo Tổng Liên Hội, (3) liên kết tài khoản và cổng hồ sơ, (4) dâng hiến cá nhân, (5) gửi cầu thay cá nhân, (6) kiểm chứng tổng hợp. Mỗi gói có quyền triển khai và nghiệm thu riêng. P6.1 được duyệt local/synthetic, dùng bộ mẫu nội bộ có watermark. [Task P6.1](tasks/CHURCH-P6.1.md); trạng thái tại project-state.
+
+## Kế hoạch chung P6.2–P6.5
+
+Khiêm nghiệm thu P6.1-r1 local/synthetic và mở một kế hoạch chung cho Báo cáo Tổng Liên Hội, Liên kết tài khoản và cổng hồ sơ, Dâng hiến cá nhân, Gửi cầu thay cá nhân. Chi tiết đề xuất trình trong chat để duyệt trước coding. Giữ các mốc nghiệm thu theo gói; P6.6 theo kế hoạch riêng. Trạng thái tại project-state.
+
 ## Đóng P5 và ranh giới planning P6
 
 Khiêm đã nghiệm thu P5.6-r1 năm mục và đóng P5 local/synthetic. Sáu gói P5 đều HUMAN_ACCEPTED; [biên bản closure](tasks/CHURCH-P5.md#đóng-p5) giữ riêng human decision với technical snapshots. P6 được mở planning trong conversation khác để khảo sát nguồn, chốt gói/tiêu chí/quyền/ASCII trước coding; chưa duyệt implementation. Giữ E51-01/E55-01/UI-POSTP8-01; no main/realdata/publication. Trạng thái hiện hành chỉ project-state.

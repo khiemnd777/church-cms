@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import type { CertificateInput, CertificateKind } from "../api/certificates/validation";
 import { businessDay } from "../api/members/dates";
 import type { PrepClasses } from "../api/prep-classes/service";
-import type { CertificateDraft } from "./certificates-api";
+import type { CertificateDraft, CertificateVisitOptions } from "./certificates-api";
 import { certificateNames } from "./certificates-api";
 import type { Rite, RitePage } from "./rites-api";
 import { dateLabel } from "./rites-api";
@@ -11,11 +11,13 @@ import { type TenantRealm, tenantRequest } from "./tenant-mutation";
 import {
   Button,
   DialogActions,
+  EmptyState,
   Feedback,
   Field,
   Loading,
   PaginationControl,
   Select,
+  Stack,
   TextArea,
   TextInput,
 } from "./ui/components";
@@ -71,7 +73,13 @@ export function CertificateForm({
       null,
     ),
     [courseCursor, setCourseCursor] = useState<string | null>(null),
+    [visits, setVisits] = useState<CertificateVisitOptions | null>(null),
+    [selectedVisit, setSelectedVisit] = useState<CertificateVisitOptions["items"][number] | null>(
+      null,
+    ),
     [loading, setLoading] = useState(false);
+  const riteKind = kind === "baptism" || kind === "dedication" || kind === "marriage";
+  const memberKind = kind === "transfer" || kind === "membership";
   const put = (next: CertificateInput) => {
     setInput(next);
     setDirty(true);
@@ -80,7 +88,24 @@ export function CertificateForm({
     const a = new AbortController();
     setLoading(true);
     void (async () => {
-      if (input.kind !== "application") {
+      if (input.kind === "visit") {
+        const list = await tenantRequest<CertificateVisitOptions>(
+          realm,
+          `${base}/certificates/visit-options?${new URLSearchParams({ q, ...(cursor ? { cursor } : {}) })}`,
+          { signal: a.signal },
+        );
+        if (a.signal.aborted) return;
+        setVisits((old) => ({
+          ...list.data,
+          items: cursor ? [...(old?.items ?? []), ...list.data.items] : list.data.items,
+        }));
+        const chosen = list.data.items.find((item) => item.id === input.visitId);
+        if (chosen) setSelectedVisit(chosen);
+      } else if (
+        input.kind === "baptism" ||
+        input.kind === "dedication" ||
+        input.kind === "marriage"
+      ) {
         const list = await tenantRequest<RitePage>(
           realm,
           `${base}/rites/records?${new URLSearchParams({ kind: input.kind, state: "recorded", q, ...(cursor ? { cursor } : {}) })}`,
@@ -97,7 +122,7 @@ export function CertificateForm({
           });
           if (!a.signal.aborted) setSource(r.data);
         } else setSource(null);
-      } else if (input.memberId) {
+      } else if (input.kind === "application" && input.memberId) {
         const m = await tenantRequest<{ fullName: string; birthDate: string | null }>(
           realm,
           `${base}/members/${input.memberId}`,
@@ -127,7 +152,17 @@ export function CertificateForm({
         if (!a.signal.aborted) setLoading(false);
       });
     return () => a.abort();
-  }, [realm, base, input.kind, input.riteId, input.memberId, q, cursor, courseCursor]);
+  }, [
+    realm,
+    base,
+    input.kind,
+    input.riteId,
+    input.memberId,
+    input.visitId,
+    q,
+    cursor,
+    courseCursor,
+  ]);
   const known = {
     birthDate:
       input.kind === "application"
@@ -242,6 +277,86 @@ export function CertificateForm({
             </Field>
             {supplement("group", "Nhóm/đơn vị nếu biết")}
           </>
+        ) : memberKind ? (
+          <Stack space="content">
+            <RitePersonPicker
+              label="Tín hữu"
+              value={{ source: "member", memberId: input.memberId ?? "" }}
+              onChange={(p) => {
+                if (p?.source === "member") put({ ...input, memberId: p.memberId || null });
+              }}
+              external={false}
+              locked={locked || !!draft?.previousEditionId}
+              realm={realm}
+              prefix={`${base}/rites`}
+              onFail={onFail}
+            />
+            <Feedback>Dùng hồ sơ tín hữu đang sinh hoạt hoặc vắng lâu.</Feedback>
+            {kind === "transfer" && (
+              <Field label="Hội Thánh tiếp nhận" hint="Xác nhận tên trước khi chốt bản.">
+                <TextInput
+                  maxLength={300}
+                  value={input.destination ?? ""}
+                  onChange={(e) => put({ ...input, destination: e.target.value || null })}
+                />
+              </Field>
+            )}
+          </Stack>
+        ) : kind === "visit" ? (
+          <Stack space="content">
+            <Field label="Tìm hồ sơ thăm viếng">
+              <TextInput
+                maxLength={100}
+                value={q}
+                onChange={(e) => {
+                  setQ(e.target.value);
+                  setCursor(null);
+                  setVisits(null);
+                }}
+              />
+            </Field>
+            <Field label="Hồ sơ thăm viếng đang mở">
+              <Select
+                required
+                value={input.visitId ?? ""}
+                disabled={!!draft?.previousEditionId || loading}
+                onChange={(e) => {
+                  const chosen = visits?.items.find((item) => item.id === e.target.value);
+                  setSelectedVisit(chosen ?? null);
+                  put({ ...input, visitId: chosen?.id });
+                }}
+              >
+                <option value="">Chọn hồ sơ</option>
+                {input.visitId && !visits?.items.some((item) => item.id === input.visitId) && (
+                  <option value={input.visitId}>
+                    {selectedVisit
+                      ? `${selectedVisit.code} · ${selectedVisit.target.name}`
+                      : "Hồ sơ đã chọn"}
+                  </option>
+                )}
+                {visits?.items.map((item) => (
+                  <option key={item.id} value={item.id}>
+                    {item.code} · {item.target.name}
+                  </option>
+                ))}
+              </Select>
+            </Field>
+            {selectedVisit && (
+              <Stack space="compact">
+                <p>
+                  Ngày dự kiến:{" "}
+                  {selectedVisit.plannedOn ? dateLabel(selectedVisit.plannedOn) : "Chưa có"}
+                </p>
+                <p>Người phụ trách: {selectedVisit.assignee ?? "Chưa có"}</p>
+              </Stack>
+            )}
+            {visits && !loading && !visits.items.length && (
+              <EmptyState message="Không có hồ sơ thăm viếng đang mở phù hợp." />
+            )}
+            {visits?.nextCursor && (
+              <PaginationControl loading={loading} onMore={() => setCursor(visits.nextCursor)} />
+            )}
+          </Stack>
         ) : (
           <>
             <Field label="Tìm người trong sổ lễ">
@@ -288,21 +403,24 @@ export function CertificateForm({
             {dateLabel(source.record.date)} · snapshot lễ.
           </Feedback>
         )}
-        {kind !== "marriage" && supplement("birthDate", "Ngày sinh", "date")}
-        {kind !== "application" && (
+        {(kind === "application" || kind === "dedication" || kind === "baptism") &&
+          supplement("birthDate", "Ngày sinh", "date")}
+        {riteKind && (
           <>
             {supplement("eventDate", "Ngày cử hành", "date")}
             {supplement("place", "Nơi cử hành")}
           </>
         )}
         {kind === "dedication" && supplement("parents", "Cha mẹ/người giám hộ nếu sổ chưa có")}
-        <Field label="Lý do bổ sung dữ kiện">
-          <TextArea
-            maxLength={500}
-            value={input.supplementReason ?? ""}
-            onChange={(e) => put({ ...input, supplementReason: e.target.value || null })}
-          />
-        </Field>
+        {(riteKind || kind === "application") && (
+          <Field label="Lý do bổ sung dữ kiện">
+            <TextArea
+              maxLength={500}
+              value={input.supplementReason ?? ""}
+              onChange={(e) => put({ ...input, supplementReason: e.target.value || null })}
+            />
+          </Field>
+        )}
         <Field label="Hệ phái/địa hạt nếu đã xác nhận">
           <TextInput
             maxLength={300}
@@ -359,15 +477,24 @@ export function CertificateForm({
           />
         </Field>
         <Feedback>
-          Mẫu nội bộ có dấu kiểm thử. Chữ ký điền/ký thủ công. Đơn xin không thu thập lời làm chứng
-          trong hệ thống.
+          Mẫu nội bộ có dấu kiểm thử. Chữ ký điền/ký thủ công.
+          {kind === "application" && " Đơn xin không thu thập lời làm chứng trong hệ thống."}
         </Feedback>
       </fieldset>
       <DialogActions>
         <Button disabled={locked} onClick={onCancel}>
           Đóng
         </Button>
-        <Button type="submit" disabled={locked || loading} variant="primary">
+        <Button
+          type="submit"
+          disabled={
+            locked ||
+            loading ||
+            (kind === "visit" && !input.visitId) ||
+            (memberKind && !input.memberId)
+          }
+          variant="primary"
+        >
           Lưu nháp
         </Button>
         {draft && (

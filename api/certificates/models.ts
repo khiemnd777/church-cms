@@ -3,14 +3,19 @@ import type { TenantGrant } from "../authorization/tenant-grant";
 import type { CertificateInput, CertificateKind } from "./validation";
 export interface CertificateGrant extends TenantGrant {
   canManageCertificates: boolean;
+  canReadVisitCertificates: boolean;
 }
 export const templateVersion = "internal-r1";
+export const expandedTemplateVersion = "internal-p61-r1";
 export const watermark = "MẪU KIỂM THỬ — KHÔNG DÙNG THỰC TẾ";
 export const titles = {
   baptism: "GIẤY CHỨNG NHẬN BÁP-TÊM",
   dedication: "GIẤY CHỨNG NHẬN DÂNG CON",
   marriage: "CHỨNG THƯ THÀNH HÔN",
   application: "ĐƠN XIN CHỊU BÁP-TÊM",
+  transfer: "THƯ GIỚI THIỆU CHUYỂN SINH HOẠT",
+  membership: "GIẤY XÁC NHẬN TÍN HỮU",
+  visit: "PHIẾU THĂM VIẾNG",
 };
 export interface Line {
   text: string;

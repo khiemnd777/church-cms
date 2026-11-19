@@ -1,0 +1,140 @@
+{
+  "schema_version": 1,
+  "event_id": "CHURCH-P6/P6.6/qualification/1",
+  "event_type": "phase_handoff",
+  "task_id": "CHURCH-P6",
+  "scope_id": "P6.6",
+  "recorded_at": "2026-11-19T09:47:46.082152+07:00",
+  "reported_by": "delivery_owner",
+  "source_kind": "agent_self_report",
+  "phase": "qualification",
+  "handoff_index": 1,
+  "classification": {
+    "delivery": "roadmap",
+    "complexity": "Kiểm chứng liên luồng, phản hồi/mất quyền, file và phục hồi",
+    "ui": false
+  },
+  "authority": {
+    "approval": "Nghiệm thu P6.5-r1 đủ 5 mục checklist. Mở P6.6 để kiểm chứng tổng hợp P6 bằng dữ liệu local/synthetic, bàn giao rồi dừng để tôi nghiệm thu trước khi đóng P6.",
+    "scope": "Kiểm chứng P6.6 local/synthetic, bàn giao trước khi đóng P6."
+  },
+  "skills": [
+    {
+      "skill_id": "test-driven-development",
+      "contribution_summary": "Chạy hồi quy, Firefox và phép thử liên luồng/phục hồi.",
+      "contribution_percent_estimate": 55,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/test-driven-development/SKILL.md",
+        "version": null,
+        "sha256": "48d85b44f5e6286ba2a7a43550083609f299aa4001391768e9da126d2db86742",
+        "fingerprint_basis": "Bytes của skill đã đọc và áp dụng."
+      }
+    },
+    {
+      "skill_id": "security-and-hardening",
+      "contribution_summary": "Kiểm tenant/realm, đổi quyền, và bảo vệ mốc phục hồi.",
+      "contribution_percent_estimate": 20,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/security-and-hardening/SKILL.md",
+        "version": null,
+        "sha256": "4549688254258d5d6836a0f2d8cf606460a9baf426e9c644d3244a9973778ad3",
+        "fingerprint_basis": "Bytes của skill đã đọc và áp dụng."
+      }
+    },
+    {
+      "skill_id": "pdf",
+      "contribution_summary": "Trích nội dung, đối chiếu DOCX/PDF/XLSX và xem PDF đã render.",
+      "contribution_percent_estimate": 15,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "personal",
+        "path": "/Users/khiemnguyen/.codex/skills/pdf/SKILL.md",
+        "version": null,
+        "sha256": "d108cf2b36355ab37eb5962933f4d09785ec002f3105c506129320209306b9d2",
+        "fingerprint_basis": "Bytes của skill đã đọc và áp dụng."
+      }
+    },
+    {
+      "skill_id": "context-engineering",
+      "contribution_summary": "Khôi phục phạm vi đã duyệt và giữ bằng chứng gói trước.",
+      "contribution_percent_estimate": 10,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/context-engineering/SKILL.md",
+        "version": null,
+        "sha256": "fe0b3bc35f5f2d600ef8077f40dbc5eb96336fdbf8773a47576a86180f16bb36",
+        "fingerprint_basis": "Bytes của skill đã đọc và áp dụng."
+      }
+    }
+  ],
+  "outcome": {
+    "delivery_status": "COMPLETED",
+    "verification_level": "LOCAL_SYNTHETIC_SCOPED",
+    "human_acceptance": "PENDING_REVIEW",
+    "limitations": [
+      "Hồi quy và restore local/synthetic, chưa phát hành",
+      "Safari, thiết bị thật, Word cài đặt, UAT, main, pilot, remote CI, production, nhiều replica và review độc lập NOT_RUN",
+      "Tải nhỏ, API trong tiến trình và fixture 8 hồ sơ; không suy SLA",
+      "Mẫu trong phạm vi dùng nội bộ có watermark",
+      "E55-01 hoãn trước production; E51-01 USER_WAIVED; UI-POSTP8-01 sau P8"
+    ]
+  },
+  "measurements": {
+    "elapsed_seconds": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có số đo xác thực riêng cho gói."
+    },
+    "tool_calls": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có số đo xác thực riêng cho gói."
+    },
+    "input_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có số đo xác thực riêng cho gói."
+    },
+    "output_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có số đo xác thực riêng cho gói."
+    },
+    "cached_input_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có số đo xác thực riêng cho gói."
+    },
+    "reasoning_output_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có số đo xác thực riêng cho gói."
+    },
+    "client": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có số đo xác thực riêng cho gói."
+    },
+    "model": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có số đo xác thực riêng cho gói."
+    },
+    "effort": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có số đo xác thực riêng cho gói."
+    }
+  },
+  "evidence_refs": [
+    "docs/tasks/CHURCH-P6.6.md",
+    "output/p6.6/verification.json",
+    "output/p6.6/qualification-handoff/restore.json",
+    "output/p6.6/file-parity.json"
+  ]
+}

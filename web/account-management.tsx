@@ -1,5 +1,6 @@
 import { type FormEvent, useEffect, useRef, useState } from "react";
 import type { ChurchRef } from "./access-context";
+import { AccountSubjectPicker, type SubjectOption } from "./account-subject-picker";
 import {
   type AccountDto,
   type AccountMutation,
@@ -20,6 +21,7 @@ import { type ChurchSummary, church } from "./tenancy-api";
 import {
   Badge,
   Button,
+  Choice,
   DialogActions,
   EmptyState,
   Feedback,
@@ -30,12 +32,13 @@ import {
   Modal,
   PaginationControl,
   Select,
+  Stack,
   TableFrame,
   TextInput,
   Toolbar,
 } from "./ui/components";
 
-type Mode = "create" | "manage" | "permissions" | "status" | "reset" | "credential";
+type Mode = "create" | "manage" | "permissions" | "status" | "reset" | "credential" | "subject";
 const authentication = (e: unknown) =>
   e instanceof ApiError &&
   ["SESSION_EXPIRED", "SESSION_REVOKED", "REAUTH_REQUIRED", "PASSWORD_CHANGE_REQUIRED"].includes(
@@ -83,6 +86,9 @@ export function AccountManagement({
     [unitIds, setUnitIds] = useState<string[]>([]),
     [role, setRole] = useState<Role>("secretary"),
     [reason, setReason] = useState(""),
+    [subject, setSubject] = useState<SubjectOption | null>(null),
+    [detachSubject, setDetachSubject] = useState(false),
+    [confirmedSubject, setConfirmedSubject] = useState(false),
     [supportReference, setSupportReference] = useState(""),
     [credential, setCredential] = useState<CredentialInfo | null>(null),
     [formError, setFormError] = useState(""),
@@ -185,6 +191,9 @@ export function AccountManagement({
       setUnitIds(r.data.scope.kind === "assigned_units" ? r.data.scope.unitIds : []);
       setMode(next);
       setReason("");
+      setSubject(null);
+      setDetachSubject(false);
+      setConfirmedSubject(false);
     } catch (e) {
       if (alive.current) report(e);
     } finally {
@@ -332,6 +341,18 @@ export function AccountManagement({
         path += "/status";
         method = "PATCH";
         body = { status: selected.status === "active" ? "locked" : "active", reason };
+      } else if (mode === "subject") {
+        if (
+          !confirmedSubject ||
+          !reason.trim() ||
+          (detachSubject ? !selected.subjectMemberId : !subject)
+        )
+          return;
+        path += "/subject";
+        method = "PATCH";
+        body = detachSubject
+          ? { memberId: null, reason, confirm: true }
+          : { memberId: subject?.id, memberVersion: subject?.version, reason, confirm: true };
       } else if (mode === "reset") {
         path += "/temporary-passwords";
         body = { supportReference };
@@ -373,7 +394,7 @@ export function AccountManagement({
   }
   async function reloadAccount() {
     if (!selected || frozen) return;
-    await openAccount(selected.id, "permissions");
+    await openAccount(selected.id, mode === "subject" ? "subject" : "permissions");
   }
   async function copyCredential() {
     if (!credential || !selected) return;
@@ -399,7 +420,9 @@ export function AccountManagement({
             ? "Cấp lại mật khẩu tạm"
             : mode === "credential"
               ? "Thông tin đăng nhập"
-              : "Quản lý tài khoản";
+              : mode === "subject"
+                ? "Liên kết hồ sơ"
+                : "Quản lý tài khoản";
   return (
     <>
       <Button variant="link" onClick={onReturn}>
@@ -531,6 +554,14 @@ export function AccountManagement({
                 { label: "Email", value: selected.email },
                 { label: "Vai trò", value: roleLabels[selected.role] },
                 { label: "Phạm vi", value: scopeLabel(selected.scope) },
+                ...(selected.role === "member"
+                  ? [
+                      {
+                        label: "Hồ sơ",
+                        value: selected.subjectMemberId ? "Đã gắn hồ sơ" : "Chưa liên kết",
+                      },
+                    ]
+                  : []),
                 {
                   label: "Trạng thái",
                   value: selected.status === "active" ? "Hoạt động" : "Đã khóa",
@@ -538,6 +569,21 @@ export function AccountManagement({
               ]}
             />
             <DialogActions>
+              {selected.role === "member" &&
+                (selected.status === "active" || selected.subjectMemberId) && (
+                  <Button
+                    onClick={() => {
+                      setFormError("");
+                      setReason("");
+                      setSubject(null);
+                      setConfirmedSubject(false);
+                      setDetachSubject(selected.status !== "active");
+                      setMode("subject");
+                    }}
+                  >
+                    Liên kết hồ sơ
+                  </Button>
+                )}
               <Button
                 onClick={() => {
                   setFormError("");
@@ -589,7 +635,7 @@ export function AccountManagement({
             </DialogActions>
           </>
         )}
-        {mode && ["create", "permissions", "status", "reset"].includes(mode) && (
+        {mode && ["create", "permissions", "status", "reset", "subject"].includes(mode) && (
           <form onSubmit={submit} aria-busy={busy}>
             {mode !== "create" && selected && (
               <KeyValueList
@@ -714,6 +760,56 @@ export function AccountManagement({
                 </Field>
               </>
             )}
+            {mode === "subject" && selected && (
+              <Stack space="section">
+                <AccountSubjectPicker
+                  key={`${selected.id}:${selected.version}`}
+                  churchId={churchId}
+                  accountId={selected.id}
+                  selected={subject}
+                  locked={frozen}
+                  detach={detachSubject}
+                  canAttach={selected.status === "active"}
+                  onSelect={(option) => {
+                    setSubject(option);
+                    setConfirmedSubject(false);
+                    setFormError("");
+                  }}
+                  onError={(e) => report(e, true)}
+                />
+                {selected.subjectMemberId && selected.status === "active" && (
+                  <Button
+                    disabled={frozen}
+                    onClick={() => {
+                      setDetachSubject(!detachSubject);
+                      setConfirmedSubject(false);
+                    }}
+                  >
+                    {detachSubject ? "Chọn hồ sơ liên kết" : "Gỡ liên kết"}
+                  </Button>
+                )}
+                <Stack space="content">
+                  <Field label="Lý do" error={fields.reason}>
+                    <TextInput
+                      required
+                      maxLength={200}
+                      value={reason}
+                      disabled={frozen}
+                      onChange={(e) => setReason(e.target.value)}
+                    />
+                  </Field>
+                  <Choice
+                    label={
+                      detachSubject ? "Xác nhận gỡ liên kết hồ sơ" : "Xác nhận liên kết đúng người"
+                    }
+                    checked={confirmedSubject}
+                    disabled={frozen || (!detachSubject && !subject)}
+                    onChange={(e) => setConfirmedSubject(e.target.checked)}
+                  />
+                  <Feedback>Người dùng cần đăng nhập lại sau khi lưu.</Feedback>
+                </Stack>
+              </Stack>
+            )}
             {conflict && (
               <Button disabled={frozen} onClick={() => void reloadAccount()}>
                 Tải lại tài khoản
@@ -731,7 +827,13 @@ export function AccountManagement({
               <Button
                 type="submit"
                 variant={mode === "status" && selected?.status === "active" ? "danger" : "primary"}
-                disabled={frozen || conflict || !churchInfo}
+                disabled={
+                  frozen ||
+                  conflict ||
+                  !churchInfo ||
+                  (mode === "subject" &&
+                    (!confirmedSubject || !reason.trim() || (!detachSubject && !subject)))
+                }
               >
                 {busy
                   ? "Đang xử lý…"
@@ -743,7 +845,11 @@ export function AccountManagement({
                         : "Mở tài khoản"
                       : mode === "permissions"
                         ? "Lưu quyền"
-                        : "Lưu tài khoản"}
+                        : mode === "subject"
+                          ? detachSubject
+                            ? "Lưu gỡ liên kết"
+                            : "Lưu liên kết"
+                          : "Lưu tài khoản"}
               </Button>
             </DialogActions>
           </form>

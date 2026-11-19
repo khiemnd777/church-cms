@@ -15,6 +15,7 @@ export interface Account {
   role: Role;
   scope: Scope;
   subjectMemberId?: ObjectId;
+  subjectMemberVersion?: number;
   status: "active" | "locked";
   authEpoch: number;
   version: number;
@@ -32,6 +33,7 @@ export function accountDto(a: Account) {
     displayName: a.displayName,
     role: a.role,
     scope: a.scope,
+    ...(a.subjectMemberId ? { subjectMemberId: a.subjectMemberId.toHexString() } : {}),
     status: a.status,
     version: a.version,
     createdAt: a.createdAt.toISOString(),

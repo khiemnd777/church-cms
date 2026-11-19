@@ -1,5 +1,6 @@
 import { mkdir, readdir, readFile } from "node:fs/promises";
 import { firefox } from "@playwright/test";
+import ExcelJS from "exceljs";
 import { ObjectId } from "mongodb";
 import { createApp } from "../api/app";
 import type { Config } from "../api/config";
@@ -165,6 +166,21 @@ async function capture(name: string, subject = page) {
         layout.gaps.every((g) => g >= 17.5),
         `${name}-${theme}-${width}-toolbar-spacing`,
       );
+      if (name === "report-preview" || name === "report-template") {
+        const visible = await subject.locator(".church-report-layout").evaluate((table) => {
+          const frame = table.parentElement;
+          if (!frame) return false;
+          const bounds = frame.getBoundingClientRect();
+          return (
+            frame.scrollWidth <= frame.clientWidth + 2 &&
+            Array.from(table.querySelectorAll("td")).every((cell) => {
+              const box = cell.getBoundingClientRect();
+              return box.left >= bounds.left - 1 && box.right <= bounds.right + 1;
+            })
+          );
+        });
+        assert(visible, `${name}-${theme}-${width}-value-columns-visible`);
+      }
       if (width === 1440 || width === 390)
         await subject.screenshot({
           path: `${evidence}/${name}-${width}-${theme}.png`,
@@ -264,18 +280,46 @@ try {
     assert(made.status === 201, `rite-source-${kind}`);
     rites[kind] = made.payload.data.riteId;
   }
+  const member = await db.db.collection<Member>("members").findOne({
+    churchId: new ObjectId(church.id),
+    type: "believer",
+    participation: { $in: ["active", "long_absent"] },
+  });
+  assert(member, "P61-eligible-member");
+  const carePath = `${base}/care/cases`,
+    visitCommand = {
+      action: "create",
+      target: { kind: "member", id: member._id.toHexString() },
+      fields: {
+        reasonCode: "other",
+        description: "Chỉ dùng nội bộ synthetic",
+        priority: "normal",
+        plannedOn: null,
+        assigneeId: null,
+      },
+      reason: null,
+      preview: null,
+      confirmed: true,
+    },
+    visitPreview = await api(`${carePath}/preview`, visitCommand);
+  assert(visitPreview.status === 200, "P61-visit-source-preview");
+  const visit = await api(carePath, {
+    ...visitCommand,
+    preview: visitPreview.payload.data.context,
+  });
+  assert(visit.status === 201, "P61-visit-source-created");
   await page.goto(`${conf.origin}/owner/churches/${church.id}/forms`);
   await page.getByRole("button", { name: "Giấy chứng nhận Báp-têm", exact: true }).waitFor();
   await page.waitForFunction(
-    () => document.querySelectorAll(".certificates-catalog button:enabled").length === 4,
+    () => document.querySelectorAll(".certificates-catalog button:enabled").length === 8,
   );
   assert(
     (await page.locator(".certificates-catalog button").count()) === 8,
     "W11-eight-catalog-tiles",
   );
   assert(
-    (await page.locator(".certificates-catalog button:disabled").count()) === 4,
-    "W11-four-unopened-tiles",
+    (await page.locator(".certificates-catalog button:disabled").count()) === 0,
+    "W11-W18-enabled-with-report-rights",
   );
   await capture("catalog");
   const source = await context.newPage();
@@ -323,8 +367,19 @@ try {
     dedication: "Giấy chứng nhận Dâng con",
     marriage: "Chứng thư Thành hôn",
     application: "Đơn xin chịu Báp-têm",
+    transfer: "Thư giới thiệu chuyển sinh hoạt",
+    membership: "Giấy xác nhận tín hữu",
+    visit: "Phiếu thăm viếng",
   };
-  for (const kind of ["baptism", "dedication", "marriage", "application"] as const) {
+  for (const kind of [
+    "baptism",
+    "dedication",
+    "marriage",
+    "application",
+    "transfer",
+    "membership",
+    "visit",
+  ] as const) {
     await page.getByRole("button", { name: names[kind], exact: true }).click();
     const dialog = page.getByRole("dialog");
     await dialog.waitFor();
@@ -334,6 +389,21 @@ try {
       await page
         .getByLabel("Ngày xin chịu Báp-têm", { exact: true })
         .fill(certificateFixture(kind).requestedOn ?? "");
+    } else if (kind === "transfer" || kind === "membership") {
+      await dialog.getByLabel("Tìm Tín hữu", { exact: true }).fill(member.code);
+      await dialog
+        .getByRole("button", { name: `${member.fullName} · ${member.code}`, exact: true })
+        .click();
+      if (kind === "transfer")
+        await dialog
+          .getByLabel("Hội Thánh tiếp nhận", { exact: true })
+          .fill("Hội Thánh tiếp nhận synthetic");
+      await capture(`${kind}-draft`);
+    } else if (kind === "visit") {
+      await dialog
+        .getByLabel("Hồ sơ thăm viếng đang mở", { exact: true })
+        .selectOption(visit.payload.data.caseId);
+      await capture("visit-draft");
     } else {
       await page.getByLabel("Lễ đã ghi nhận", { exact: true }).selectOption(rites[kind] ?? "");
       await page.waitForFunction(
@@ -342,10 +412,12 @@ try {
             .length > 0,
       );
     }
-    if (kind !== "marriage") await page.getByLabel("Ngày sinh", { exact: true }).fill("1990-01-02");
-    await page
-      .getByLabel("Lý do bổ sung dữ kiện", { exact: true })
-      .fill("Nguồn synthetic được đối chiếu");
+    if (kind === "baptism" || kind === "dedication" || kind === "application")
+      await page.getByLabel("Ngày sinh", { exact: true }).fill("1990-01-02");
+    if (kind !== "transfer" && kind !== "membership" && kind !== "visit")
+      await page
+        .getByLabel("Lý do bổ sung dữ kiện", { exact: true })
+        .fill("Nguồn synthetic được đối chiếu");
     await page.getByRole("button", { name: "Lưu nháp", exact: true }).click();
     await page.getByRole("button", { name: "Chuẩn bị preview", exact: true }).waitFor();
     await page.getByRole("button", { name: "Chuẩn bị preview", exact: true }).click();
@@ -527,7 +599,127 @@ try {
   const downloadEvent = userPage.waitForEvent("download");
   await userPage.getByRole("button", { name: "PDF", exact: true }).click();
   assert(!(await (await downloadEvent).failure()), "church-realm-PDF-download");
+  await userPage.goto(`${conf.origin}/h/${church.code}/forms`);
+  await userPage
+    .getByRole("button", { name: "Báo cáo thống kê gửi Tổng Liên Hội", exact: true })
+    .click();
+  const secretaryW18 = userPage.getByRole("dialog", { name: "Báo cáo Tổng Liên Hội" });
+  await secretaryW18.getByText("Chưa có mẫu riêng cho Hội Thánh.").waitFor();
+  assert(
+    await secretaryW18.getByRole("button", { name: "Tổng hợp", exact: true }).isDisabled(),
+    "P62-empty-template-blocks-preview",
+  );
+  const book = new ExcelJS.Workbook(),
+    sheet = book.addWorksheet("Bố cục riêng P6.2");
+  sheet.addRow(["I. Nhóm do Hội Thánh chọn"]).font = { bold: true };
+  sheet.addRow(["Gia đình đang sinh hoạt", "{{believer_families}}"]);
+  sheet.addRow(["Bình quân bốn Chúa nhật", "{{sunday_average}}"]);
+  sheet.addRow(["Thân hữu đang theo dõi", "{{visitors}}"]);
+  const template = Buffer.from(await book.xlsx.writeBuffer());
+  await secretaryW18.getByLabel("Tải mẫu .xlsx", { exact: true }).setInputFiles({
+    name: "bao-cao-rieng.xlsx",
+    mimeType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    buffer: template,
+  });
+  await secretaryW18.getByRole("button", { name: "Kiểm tra và lưu mẫu" }).click();
+  await secretaryW18.getByText("Đã kiểm tra", { exact: true }).waitFor();
+  await secretaryW18.getByRole("button", { name: "Xem thử mẫu" }).click();
+  await secretaryW18.getByRole("table", { name: "Xem thử mẫu" }).waitFor();
+  assert(
+    (await secretaryW18.getByRole("button", { name: "Kích hoạt", exact: true }).count()) === 0,
+    "P62-secretary-uploads-without-activation",
+  );
+  await capture("report-template", userPage);
+  await userPage.keyboard.press("Escape");
+  await secretaryW18.waitFor({ state: "hidden" });
+  await userPage.getByRole("button", { name: "Đăng xuất", exact: true }).click();
+  await userPage.getByRole("heading", { name: "Đăng nhập", exact: true }).waitFor();
   await userPage.close();
+
+  const pastorEmail = `pastor-${crypto.randomUUID()}@example.test`,
+    pastorPassword = `User 🌿 ${crypto.randomUUID()}`;
+  const pastor = await api(`${base}/accounts`, {
+    email: pastorEmail,
+    displayName: "Mục sư synthetic",
+    role: "pastor",
+    scope: { kind: "church" },
+  });
+  assert(pastor.status === 201, "P62-pastor-created");
+  secrets.push(pastorPassword, pastor.payload.data.temporaryCredential.password);
+  const pastorPage = await context.newPage();
+  await pastorPage.goto(`${conf.origin}/h/${church.code}/login`);
+  await pastorPage.getByLabel("Email", { exact: true }).fill(pastorEmail);
+  await pastorPage
+    .getByLabel("Mật khẩu", { exact: true })
+    .fill(pastor.payload.data.temporaryCredential.password);
+  await pastorPage.getByRole("button", { name: "Đăng nhập", exact: true }).click();
+  await pastorPage.getByLabel("Mật khẩu mới", { exact: true }).fill(pastorPassword);
+  await pastorPage.getByLabel("Nhập lại mật khẩu", { exact: true }).fill(pastorPassword);
+  await pastorPage.getByRole("button", { name: "Lưu mật khẩu", exact: true }).click();
+  await pastorPage.getByRole("heading", { name: "Đăng nhập", exact: true }).waitFor();
+  await pastorPage.getByLabel("Mật khẩu", { exact: true }).fill(pastorPassword);
+  await pastorPage.getByRole("button", { name: "Đăng nhập", exact: true }).click();
+  await pastorPage
+    .getByRole("navigation")
+    .getByRole("button", { name: /^Biểu mẫu/ })
+    .waitFor();
+
+  await pastorPage.goto(`${conf.origin}/h/${church.code}/overview`);
+  await pastorPage.getByRole("button", { name: "Báo cáo Tổng Liên Hội", exact: true }).click();
+  const pastorW18 = pastorPage.getByRole("dialog", { name: "Báo cáo Tổng Liên Hội" });
+  await pastorW18.getByRole("button", { name: "Kích hoạt", exact: true }).click();
+  await pastorW18.getByText("Đang dùng", { exact: true }).waitFor();
+  await pastorW18.getByRole("button", { name: "Tổng hợp", exact: true }).click();
+  await pastorW18.getByRole("table", { name: "Chỉ tiêu báo cáo", exact: true }).waitFor();
+  const reportTable = pastorW18.getByRole("table", { name: "Chỉ tiêu báo cáo", exact: true });
+  assert(
+    (await reportTable.getByText("I. Nhóm do Hội Thánh chọn", { exact: true }).count()) === 1,
+    "P62-report-keeps-tenant-layout",
+  );
+  assert(
+    (await reportTable.getByText("—", { exact: true }).count()) === 1,
+    "P62-report-missing-source-visible",
+  );
+  assert(
+    await pastorW18.getByRole("button", { name: "Chốt báo cáo", exact: true }).isDisabled(),
+    "P62-report-confirmation-required",
+  );
+  await capture("report-preview", pastorPage);
+  await reportTable.screenshot({ path: `${evidence}/report-values.png` });
+  await pastorW18
+    .getByLabel("Tôi xác nhận số liệu và các cảnh báo trước khi chốt", { exact: true })
+    .check();
+  await pastorW18.getByRole("button", { name: "Chốt báo cáo", exact: true }).click();
+  for (const [label, format] of [
+    ["Excel", "xlsx"],
+    ["PDF", "pdf"],
+  ] as const) {
+    const event = pastorPage.waitForEvent("download");
+    await pastorW18.getByRole("button", { name: label, exact: true }).click();
+    const download = await event;
+    await download.saveAs(`${evidence}/downloads/church-report.${format}`);
+    assert(!(await download.failure()), `P62-report-${format}-download`);
+  }
+  await pastorW18.getByRole("button", { name: "Tạo bản thay thế", exact: true }).click();
+  assert(
+    await pastorW18
+      .getByLabel("Lý do thay thế", { exact: true })
+      .evaluate((el) => el === document.activeElement),
+    "P62-replacement-focus",
+  );
+  await pastorW18.getByLabel("Lý do thay thế", { exact: true }).fill("Đối chiếu số liệu synthetic");
+  await pastorW18.getByRole("button", { name: "Tổng hợp", exact: true }).click();
+  await pastorW18
+    .getByLabel("Tôi xác nhận số liệu và các cảnh báo trước khi chốt", { exact: true })
+    .check();
+  await pastorW18.getByRole("button", { name: "Chốt báo cáo", exact: true }).click();
+  await pastorW18.getByText("Bản 2", { exact: true }).waitFor();
+  await pastorW18.getByText(/Bản 1 · Đã thay thế/).waitFor();
+  assert(
+    (await pastorW18.getByText(/Bản 1 · Đã thay thế/).count()) === 1,
+    "P62-report-replacement-preserves-history",
+  );
+  await pastorPage.close();
   assert(errors.length === 0, "no-browser-script-errors");
   await Bun.write(
     `${evidence}/browser-results.json`,

@@ -21,6 +21,12 @@ export interface Prayer extends Omit<PrayerFields, "requester"> {
   requester: PrayerRequester;
   requesterSnapshot: RequesterSnapshot;
   requesterNameKey: string;
+  portalSubmission?: {
+    accountId: ObjectId;
+    memberId: ObjectId;
+    key: string;
+    payloadHash: string;
+  };
   contentKey: string;
   sharedOn: string | null;
   closeReason: string | null;

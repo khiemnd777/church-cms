@@ -5,12 +5,18 @@ import { firefox } from "@playwright/test";
 import { ObjectId } from "mongodb";
 import { createApp } from "../api/app";
 import type { Config } from "../api/config";
+import { moneyDecimal } from "../api/finance/money";
+import type { Receipt } from "../api/finance/transactions-model";
 import { OwnerOperations } from "../api/identity/owner-operations";
 import { Identity } from "../api/identity/service";
 import { Database, initialize } from "../api/infrastructure/database";
 import { RateLimit } from "../api/infrastructure/rate-limit";
+import { businessDay, monthPeriod } from "../api/members/dates";
+import type { Member } from "../api/members/models";
 import { assertComposition } from "./browser-composition";
 import { localTls } from "./local-tls";
+import { seedP2 } from "./p2-fixtures";
+import { riteFixture } from "./p35-fixtures";
 
 const evidence = process.env.CHURCH_EVIDENCE_DIR ?? "output/p1.3";
 // Only executed in the disposable browser container; CA trust is private to its Firefox profile.
@@ -118,7 +124,14 @@ async function capture(name: string, subject = page) {
             return !!frame || (r.left >= 0 && r.right <= innerWidth + 1);
           }),
           mobile:
-            innerWidth > 560 || controls.every((el) => el.getBoundingClientRect().height >= 44),
+            innerWidth > 560 ||
+            controls.every((el) => {
+              // Choice's containing label is the native click target.
+              const target = el.matches('input[type="checkbox"],input[type="radio"]')
+                ? (el.closest("label.opt") ?? el)
+                : el;
+              return target.getBoundingClientRect().height >= 44;
+            }),
           names: controls
             .filter((el) => el.tagName === "BUTTON")
             .every((el) => !!(el.textContent?.trim() || el.getAttribute("aria-label"))),
@@ -333,9 +346,9 @@ try {
   await page.getByRole("button", { name: "Sửa quyền", exact: true }).waitFor();
   await page.getByRole("button", { name: "Đóng", exact: true }).last().click();
   await user.reload();
-  await user.getByText("Chưa liên kết", { exact: true }).waitFor();
+  await user.getByText("Chưa có hồ sơ liên kết.", { exact: true }).waitFor();
   assert(
-    await user.getByText("Của mình", { exact: true }).isVisible(),
+    await user.getByRole("heading", { name: "Cổng tín hữu", exact: true, level: 1 }).isVisible(),
     "fresh-user-context-member-self-not-owner",
   );
   for (const theme of ["light", "dark"] as const) {
@@ -366,7 +379,7 @@ try {
   await capture("user-reauth", user);
   await user.getByLabel("Mật khẩu", { exact: true }).fill(password);
   await user.getByRole("button", { name: "Tiếp tục", exact: true }).click();
-  await user.getByText("Chưa liên kết", { exact: true }).waitFor();
+  await user.getByText("Chưa có hồ sơ liên kết.", { exact: true }).waitFor();
   const userSessionAfter = await db.sessions.findOne({
     realm: "church",
     principalId: new ObjectId(accountId),
@@ -378,6 +391,333 @@ try {
       userSessionAfter?.absoluteExpiresAt.getTime() ===
         userSessionBefore.absoluteExpiresAt.getTime(),
     "user-reauth-rotates-keeps-absolute-deadline",
+  );
+  await seedP2(db, church.id, fixture.employeeId, 8);
+  const subjects = await db.db
+    .collection<Member>("members")
+    .find({
+      churchId: new ObjectId(church.id),
+      type: "believer",
+      participation: "active",
+    })
+    .sort({ _id: 1 })
+    .limit(2)
+    .toArray();
+  const subject = subjects[0],
+    otherSubject = subjects[1];
+  assert(subject && otherSubject, "P63-synthetic-profiles");
+  const marriage = riteFixture("marriage", subject._id.toHexString());
+  if (marriage.record.payload.kind !== "marriage") throw Error("Marriage fixture");
+  marriage.record.payload.bride = { source: "member", memberId: otherSubject._id.toHexString() };
+  marriage.record.note = "Ghi chú nội bộ synthetic";
+  const ritesPath = `owner/churches/${church.id}/rites/records`;
+  const ritePreview = await api(`${ritesPath}/preview`, marriage);
+  assert(ritePreview.status === 200, "P63-synthetic-rite-preview");
+  assert(
+    (await api(ritesPath, { ...marriage, preview: ritePreview.payload.data.context })).status ===
+      201,
+    "P63-synthetic-rite-recorded",
+  );
+
+  await manage(name);
+  await page.getByRole("button", { name: "Liên kết hồ sơ", exact: true }).click();
+  const dialog = page.getByRole("dialog", { name: "Liên kết hồ sơ" });
+  await dialog.getByLabel("Tìm tín hữu cùng Hội Thánh", { exact: true }).fill(subject.code);
+  await dialog.getByRole("button", { name: new RegExp(subject.code) }).click();
+  await dialog.getByLabel("Lý do", { exact: true }).fill("Đã đối chiếu đúng người synthetic");
+  assert(
+    await dialog.getByRole("button", { name: "Lưu liên kết", exact: true }).isDisabled(),
+    "P63-confirm-required",
+  );
+  await dialog.getByText("Xác nhận liên kết đúng người", { exact: true }).click();
+  assert(
+    await dialog.getByLabel("Xác nhận liên kết đúng người", { exact: true }).isChecked(),
+    "P63-tapping-label-toggles-confirmation",
+  );
+  await capture("member-link");
+  await dialog.getByRole("button", { name: "Lưu liên kết", exact: true }).click();
+  await page.getByText("Đã gắn hồ sơ", { exact: true }).waitFor();
+  assert(
+    (await api(`${prefix}/${accountId}`)).payload.data.subjectMemberId ===
+      subject._id.toHexString(),
+    "P63-owner-links-selected-profile",
+  );
+  await page.getByRole("button", { name: "Đóng", exact: true }).last().click();
+
+  await user.reload();
+  await user.getByRole("heading", { name: "Đăng nhập", exact: true }).waitFor();
+  assert(true, "P63-link-revokes-open-session");
+  await user.getByLabel("Email", { exact: true }).fill(email);
+  await user.getByLabel("Mật khẩu", { exact: true }).fill(password);
+  await user.getByRole("button", { name: "Đăng nhập", exact: true }).click();
+  await user.getByRole("heading", { name: "Hồ sơ của tôi", exact: true }).waitFor();
+  await user.getByText(subject.code, { exact: true }).waitFor();
+  assert(
+    (await user.getByRole("navigation").getByRole("button").count()) === 4,
+    "P65-portal-only-personal-menu",
+  );
+  await capture("portal-profile", user);
+  await user.getByRole("navigation").getByRole("button", { name: "Lễ nghi", exact: true }).click();
+  await user.getByRole("heading", { name: "Lễ nghi của tôi", exact: true }).waitFor();
+  await user.getByText("Chú rể", { exact: true }).waitFor();
+  await user.reload();
+  await user.getByText("Chú rể", { exact: true }).waitFor();
+  assert(
+    !(await user.getByText(otherSubject.fullName, { exact: true }).count()) &&
+      !(await user.getByText("Ghi chú nội bộ synthetic", { exact: true }).count()),
+    "P63-rite-omits-other-person-and-notes",
+  );
+  await capture("portal-rites", user);
+  await user.setViewportSize({ width: 390, height: 844 });
+  assert(
+    await user.getByText("Chú rể", { exact: true }).evaluate((e) => {
+      const box = e.getBoundingClientRect();
+      return box.width > 0 && box.left >= 0 && box.right <= innerWidth;
+    }),
+    "P63-own-rite-role-visible-without-horizontal-scroll",
+  );
+  await user.setViewportSize({ width: 1440, height: 1000 });
+
+  const businessDate = businessDay(),
+    givingPeriod = businessDate.slice(0, 7),
+    fundId = new ObjectId(),
+    ownCode = new ObjectId(),
+    otherCode = new ObjectId();
+  // Product integration tests post and void through Finance; this screen fixture
+  // supplies 27 immutable receipt snapshots for real default pagination.
+  await db.db.collection<Receipt>("finance_receipts").insertMany(
+    Array.from({ length: 27 }, (_, index) => {
+      const voided = index === 26;
+      return {
+        _id: new ObjectId(),
+        churchId: new ObjectId(church.id),
+        code: `P64-PRIVATE-${index}`,
+        submissionId: crypto.randomUUID(),
+        actorId: new ObjectId(accountId),
+        payloadHash: "synthetic",
+        businessDate,
+        period: givingPeriod,
+        fundId,
+        fundName: "Quỹ sinh hoạt thử nghiệm",
+        sourceReference: `P64-INTERNAL-${index}`,
+        purpose: "Nội dung phiếu riêng thử nghiệm",
+        mode: "itemized",
+        total: moneyDecimal((voided ? 25_000n : 10_000n) + 8_888_888n),
+        lines: [
+          {
+            givingId: ownCode,
+            givingCode: "DH-OWN",
+            memberId: subject._id,
+            memberCode: subject.code,
+            memberName: subject.fullName,
+            amount: moneyDecimal(voided ? 25_000n : 10_000n),
+          },
+          {
+            givingId: otherCode,
+            givingCode: "DH-OTHER",
+            memberId: otherSubject._id,
+            memberCode: otherSubject.code,
+            memberName: otherSubject.fullName,
+            amount: moneyDecimal(8_888_888n),
+          },
+        ],
+        state: voided ? "voided" : "posted",
+        version: voided ? 2 : 1,
+        replacesReceiptId: null,
+        voidReason: voided ? "Lý do hủy riêng thử nghiệm" : null,
+        voidedAt: voided ? new Date() : null,
+        createdAt: new Date(),
+      };
+    }),
+  );
+  const givingApi = /\/portal\/giving\?/;
+  await user.route(
+    givingApi,
+    async (route) => {
+      await user.getByText("Đang tải dâng hiến…", { exact: true }).waitFor();
+      await assertComposition(user, "giving-loading", assert, evidence);
+      await route.fulfill({
+        status: 503,
+        json: {
+          error: { code: "DEPENDENCY_UNAVAILABLE", message: "Tạm thời chưa tải được dâng hiến." },
+        },
+      });
+    },
+    { times: 1 },
+  );
+  await user
+    .getByRole("navigation")
+    .getByRole("button", { name: "Dâng hiến", exact: true })
+    .click();
+  await user.getByRole("heading", { name: "Dâng hiến của tôi", exact: true }).waitFor();
+  await user.getByText("Tạm thời chưa tải được dâng hiến.", { exact: true }).waitFor();
+  assert(!(await user.getByText("Phần của tôi", { exact: true }).count()), "P64-error-no-data");
+  await capture("giving-error", user);
+  await user.getByRole("button", { name: "Tải lại", exact: true }).click();
+  await user.getByText("260.000 ₫", { exact: true }).waitFor();
+  assert(user.url().endsWith("/portal?view=giving"), "P64-giving-route");
+  assert(
+    (await user.getByText("Phần của tôi", { exact: true }).count()) === 25,
+    "P64-first-page-limited",
+  );
+  await user.getByText("25.000 ₫", { exact: true }).waitFor();
+  await user.getByText("Đã hủy", { exact: true }).waitFor();
+  for (const hidden of [
+    "8.888.888 ₫",
+    otherSubject.fullName,
+    "Lý do hủy riêng thử nghiệm",
+    "Nội dung phiếu riêng thử nghiệm",
+  ]) {
+    assert(
+      !(await user.getByText(hidden, { exact: true }).count()),
+      `P64-private-projection-${hidden}`,
+    );
+  }
+  await capture("portal-giving", user);
+  await user.setViewportSize({ width: 390, height: 844 });
+  assert(
+    await user.getByText("Đã hủy", { exact: true }).evaluate((el) => {
+      const box = el.getBoundingClientRect();
+      return box.width > 0 && box.left >= 0 && box.right <= innerWidth;
+    }),
+    "P64-own-amount-and-status-readable-on-mobile",
+  );
+  await user.getByRole("button", { name: "Xem thêm", exact: true }).click();
+  await user.waitForFunction(() => document.querySelectorAll("main dl").length === 28);
+  assert(
+    !(await user.getByRole("button", { name: "Xem thêm", exact: true }).count()),
+    "P64-last-page",
+  );
+  await user.getByLabel("Kỳ dâng hiến", { exact: true }).fill(monthPeriod(businessDate, -1));
+  await user.getByText("Chưa có dâng hiến trong kỳ.", { exact: true }).waitFor();
+  await user.getByText("0 ₫", { exact: true }).waitFor();
+  await capture("giving-empty", user);
+  await user.reload();
+  await user.getByText("260.000 ₫", { exact: true }).waitFor();
+  assert(user.url().endsWith("/portal?view=giving"), "P64-deep-link-after-reload");
+
+  const personalPrayerApi = "**/api/v1/churches/*/portal/prayers",
+    personalPrayer = "Xin cầu thay cho gia đình trong tuần này. Nội dung giả lập.",
+    prayerBody = user.getByLabel("Nội dung cầu thay", { exact: true }),
+    confirmPrayer = user.getByText("Xác nhận gửi riêng cho Mục sư", { exact: true }),
+    sendPrayer = user.getByRole("button", { name: "Gửi cầu thay", exact: true });
+  await user.route(
+    personalPrayerApi,
+    async (route) => {
+      await user.getByText("Đang tải yêu cầu…", { exact: true }).waitFor();
+      await assertComposition(user, "prayers-loading", assert, evidence);
+      await route.fulfill({
+        status: 503,
+        json: {
+          error: { code: "DEPENDENCY_UNAVAILABLE", message: "Tạm thời chưa tải được yêu cầu." },
+        },
+      });
+    },
+    { times: 1 },
+  );
+  await user.getByRole("navigation").getByRole("button", { name: "Cầu thay", exact: true }).click();
+  await user.getByText("Tạm thời chưa tải được yêu cầu.", { exact: true }).waitFor();
+  await capture("prayers-error", user);
+  await user.getByRole("button", { name: "Tải lại yêu cầu" }).click();
+  await user.getByText("Bạn chưa gửi yêu cầu cầu thay.", { exact: true }).waitFor();
+  await user.getByText("Mục sư", { exact: true }).waitFor();
+  assert(user.url().endsWith("/portal?view=prayers"), "P65-portal-prayers-deep-link");
+  await capture("prayers-empty", user);
+  await user.getByLabel("Danh mục", { exact: true }).selectOption("family");
+  await prayerBody.fill(personalPrayer);
+  assert(await sendPrayer.isDisabled(), "P65-confirmation-required");
+  await confirmPrayer.click();
+  await prayerBody.fill(`${personalPrayer} `);
+  assert(await sendPrayer.isDisabled(), "P65-edit-invalidates-confirmation");
+  await prayerBody.fill(personalPrayer);
+  await confirmPrayer.click();
+  let submittedKey = "";
+  await user.route(
+    personalPrayerApi,
+    async (route) => {
+      const req = route.request(),
+        headers = await req.allHeaders();
+      submittedKey = headers["idempotency-key"] ?? "";
+      delete headers.host;
+      await user.getByText("Đang gửi cầu thay…", { exact: true }).waitFor();
+      await assertComposition(user, "prayers-sending", assert, evidence);
+      const committed = await new Promise<number>((resolve, reject) => {
+        const forward = httpsRequest(
+          req.url(),
+          {
+            method: req.method(),
+            headers,
+            ca: readFileSync(tls.ca),
+            servername: "localhost",
+            family: 4,
+          },
+          (response) => {
+            response.resume();
+            response.on("end", () => resolve(response.statusCode ?? 0));
+          },
+        );
+        forward.on("error", reject);
+        forward.end(req.postData());
+      });
+      assert(committed === 201, "P65-lost-response-after-real-commit");
+      await route.abort("failed");
+    },
+    { times: 1 },
+  );
+  await sendPrayer.click();
+  const retryPrayer = user.getByRole("button", { name: "Thử lại gửi", exact: true });
+  await retryPrayer.waitFor();
+  assert(await prayerBody.isDisabled(), "P65-retry-keeps-confirmed-content-frozen");
+  assert(
+    !(await user.getByText("Bạn chưa gửi yêu cầu cầu thay.", { exact: true }).count()),
+    "P65-pending-does-not-claim-no-request",
+  );
+  await capture("prayers-pending", user);
+  const retried = user.waitForRequest(
+    (req) => req.url().endsWith("/portal/prayers") && req.method() === "POST",
+  );
+  await retryPrayer.click();
+  assert(
+    (await (await retried).allHeaders())["idempotency-key"] === submittedKey,
+    "P65-retry-key-unchanged",
+  );
+  await user.getByText(/^Đã gửi yêu cầu CT-/).waitFor();
+  await user.getByText(personalPrayer, { exact: true }).waitFor();
+  await user.getByText("Đã gửi", { exact: true }).waitFor();
+  const prayerCount = await db.db.collection("prayer_requests").countDocuments({
+    churchId: new ObjectId(church.id),
+    "portalSubmission.accountId": new ObjectId(accountId),
+  });
+  assert(prayerCount === 1, "P65-lost-response-creates-one-prayer");
+  await capture("portal-prayers", user);
+  await user.reload();
+  await user.getByText(personalPrayer, { exact: true }).waitFor();
+  assert(
+    !(await user.getByRole("button", { name: "Sửa cầu thay", exact: true }).count()),
+    "P65-no-member-edit-action",
+  );
+
+  await manage(name);
+  await page.getByRole("button", { name: "Liên kết hồ sơ", exact: true }).click();
+  await page.getByRole("button", { name: "Gỡ liên kết", exact: true }).click();
+  await page.getByLabel("Lý do", { exact: true }).fill("Gỡ liên kết synthetic");
+  await page.getByLabel("Xác nhận gỡ liên kết hồ sơ", { exact: true }).check();
+  await page.getByRole("button", { name: "Lưu gỡ liên kết", exact: true }).click();
+  await page.getByText("Chưa liên kết", { exact: true }).waitFor();
+  await page.getByRole("button", { name: "Đóng", exact: true }).last().click();
+  assert(!(await api(`${prefix}/${accountId}`)).payload.data.subjectMemberId, "P63-owner-unlinks");
+  // Keep a live account session for the existing account-lock regression below.
+  await user.reload();
+  await user.getByRole("heading", { name: "Đăng nhập", exact: true }).waitFor();
+  await user.getByLabel("Email", { exact: true }).fill(email);
+  await user.getByLabel("Mật khẩu", { exact: true }).fill(password);
+  await user.getByRole("button", { name: "Đăng nhập", exact: true }).click();
+  await user.getByText("Chưa có hồ sơ liên kết.", { exact: true }).waitFor();
+  await user.getByRole("navigation").getByRole("button", { name: "Cầu thay", exact: true }).click();
+  await user.getByText("Chưa có hồ sơ liên kết.", { exact: true }).waitFor();
+  assert(
+    !(await prayerBody.count()) && !(await user.getByText(personalPrayer, { exact: true }).count()),
+    "P65-no-form-or-content-after-unlink",
   );
   // CAS conflict: an independent HTTP writer changes the same account after the dialog was opened.
   await manage(name);
@@ -707,6 +1047,14 @@ try {
   await context.close();
   if (server) await server.stop(true);
   if (db.db.databaseName === conf.database) await db.db.dropDatabase();
+  const removed = !(await db.client.db("admin").admin().listDatabases()).databases.some(
+    (d) => d.name === conf.database,
+  );
+  await Bun.write(
+    `${evidence}/browser-cleanup.json`,
+    JSON.stringify({ database: conf.database, removed }),
+  );
+  if (!removed) process.exitCode = 1;
   await db.client.close();
   if (rate.client.isOpen) rate.client.destroy();
 }

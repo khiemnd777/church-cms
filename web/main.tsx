@@ -125,6 +125,7 @@ function App() {
       ownerNavigate("members", route.churchId, q);
     } else {
       const q = new URLSearchParams();
+      if (target.kind === "forms" && target.report) q.set("report", "1");
       if (target.kind === "care" && target.section) q.set("careSection", target.section);
       if (target.kind === "attendance" && target.sessionId) q.set("sessionId", target.sessionId);
       if (target.kind === "rites") {

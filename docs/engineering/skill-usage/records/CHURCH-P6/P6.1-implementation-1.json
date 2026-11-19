@@ -1,0 +1,146 @@
+{
+  "schema_version": 1,
+  "event_id": "CHURCH-P6/P6.1/implementation/1",
+  "event_type": "phase_handoff",
+  "task_id": "CHURCH-P6",
+  "scope_id": "P6.1",
+  "recorded_at": "2026-11-19T07:20:25.916232+07:00",
+  "reported_by": "delivery_owner",
+  "source_kind": "agent_self_report",
+  "phase": "implementation",
+  "handoff_index": 1,
+  "classification": {
+    "delivery": "roadmap",
+    "complexity": "Certificates, source ports, protected artifacts and W11/W17",
+    "ui": true
+  },
+  "authority": {
+    "approval": "Khiêm duyệt P6.1-plan-r1, ba quy tắc dữ kiện, ASCII và bộ mẫu nội bộ có watermark.",
+    "scope": "P61-01–04 local/synthetic; dừng trước P6.2."
+  },
+  "skills": [
+    {
+      "skill_id": "incremental-implementation",
+      "contribution_summary": "Nối mẫu, nguồn, quyền, snapshot và vòng đời phát hành từ API đến W11/W17.",
+      "contribution_percent_estimate": 40,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/incremental-implementation/SKILL.md",
+        "version": null,
+        "sha256": "4663b276ac0d2f38be6f14a23d792783a255efe714710726af21c0f52c873359",
+        "fingerprint_basis": "Bytes của skill đã đọc và áp dụng trong lượt triển khai."
+      }
+    },
+    {
+      "skill_id": "frontend-ui-engineering",
+      "contribution_summary": "Nối bộ chọn nguồn, giữ chuẩn giao diện và kiểm khoảng cách trong trình duyệt.",
+      "contribution_percent_estimate": 25,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/frontend-ui-engineering/SKILL.md",
+        "version": null,
+        "sha256": "b5c47fed383892428172bf0b9c1ed1aeab50066ff9421a87a6c344f746386495",
+        "fingerprint_basis": "Bytes của skill đã đọc và áp dụng trong lượt triển khai."
+      }
+    },
+    {
+      "skill_id": "test-driven-development",
+      "contribution_summary": "Kiểm luồng, quyền, cạnh tranh và hồi quy sau khi hoàn thiện wiring.",
+      "contribution_percent_estimate": 25,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/test-driven-development/SKILL.md",
+        "version": null,
+        "sha256": "48d85b44f5e6286ba2a7a43550083609f299aa4001391768e9da126d2db86742",
+        "fingerprint_basis": "Bytes của skill đã đọc và áp dụng trong lượt triển khai."
+      }
+    },
+    {
+      "skill_id": "pdf",
+      "contribution_summary": "Đối chiếu watermark, A4 và xem 9 ảnh trang đã kết xuất.",
+      "contribution_percent_estimate": 10,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "host_skill",
+        "path": "pdf/SKILL.md",
+        "version": null,
+        "sha256": "d108cf2b36355ab37eb5962933f4d09785ec002f3105c506129320209306b9d2",
+        "fingerprint_basis": "Bytes của skill đã đọc và áp dụng trong lượt triển khai."
+      }
+    }
+  ],
+  "outcome": {
+    "delivery_status": "COMPLETED",
+    "verification_level": "LOCAL_SYNTHETIC_SCOPED",
+    "human_acceptance": "PENDING_REVIEW",
+    "limitations": [
+      "full repository suite",
+      "native Word and independent DOCX visual rendering",
+      "physical paper and camera",
+      "Safari",
+      "UAT",
+      "main runtime",
+      "pilot",
+      "remote CI",
+      "production",
+      "multi-replica",
+      "independent review",
+      "dependency audit deferred under E55-01"
+    ]
+  },
+  "measurements": {
+    "elapsed_seconds": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có số đo xác thực riêng cho lượt này."
+    },
+    "tool_calls": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có số đo xác thực riêng cho lượt này."
+    },
+    "input_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có số đo xác thực riêng cho lượt này."
+    },
+    "output_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có số đo xác thực riêng cho lượt này."
+    },
+    "cached_input_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có số đo xác thực riêng cho lượt này."
+    },
+    "reasoning_output_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có số đo xác thực riêng cho lượt này."
+    },
+    "client": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có số đo xác thực riêng cho lượt này."
+    },
+    "model": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có số đo xác thực riêng cho lượt này."
+    },
+    "effort": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có số đo xác thực riêng cho lượt này."
+    }
+  },
+  "evidence_refs": [
+    "docs/tasks/CHURCH-P6.1.md",
+    "output/p6.1/verification.json",
+    "output/p6.1/browser-run/browser/browser-results.json"
+  ]
+}

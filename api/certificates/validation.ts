@@ -12,13 +12,22 @@ export const isDocumentText = (s: string) =>
     );
   });
 const text = (n: number) => z.string().normalize("NFC").trim().min(1).max(n).refine(isDocumentText);
-export const kindSchema = z.enum(["baptism", "dedication", "marriage", "application"]);
+export const riteCertificateKinds = ["baptism", "dedication", "marriage"] as const;
+export const kindSchema = z.enum([
+  ...riteCertificateKinds,
+  "transfer",
+  "membership",
+  "application",
+  "visit",
+]);
 export const inputSchema = z
   .strictObject({
     kind: kindSchema,
     riteId: idSchema.nullable(),
     memberId: idSchema.nullable(),
     courseId: idSchema.nullable(),
+    visitId: idSchema.optional(),
+    destination: text(300).nullable().optional(),
     affiliation: text(300).nullable(),
     issuedOn: daySchema,
     requestedOn: daySchema.nullable(),
@@ -37,9 +46,34 @@ export const inputSchema = z
       guide: text(200).nullable(),
     }),
   })
-  .refine((i) =>
-    i.kind === "application" ? !!i.memberId && !i.riteId : !!i.riteId && !i.memberId && !i.courseId,
-  );
+  .refine((i) => {
+    if (i.kind === "application")
+      return !!i.memberId && !i.riteId && i.visitId === undefined && i.destination === undefined;
+    if (i.kind === "baptism" || i.kind === "dedication" || i.kind === "marriage")
+      return (
+        !!i.riteId &&
+        !i.memberId &&
+        !i.courseId &&
+        i.visitId === undefined &&
+        i.destination === undefined
+      );
+    if (
+      i.riteId ||
+      i.courseId ||
+      i.requestedOn ||
+      Object.values(i.supplements).some(Boolean) ||
+      i.supplementReason ||
+      i.signers.applicant ||
+      i.signers.guide
+    )
+      return false;
+    if (i.kind === "visit") return !!i.visitId && !i.memberId && i.destination === undefined;
+    return (
+      !!i.memberId &&
+      i.visitId === undefined &&
+      (i.kind === "transfer" || i.destination === undefined)
+    );
+  });
 export const draftInput = z.strictObject({ input: inputSchema, reason: text(500).nullable() });
 export const issueInput = z.strictObject({
   previewId: idSchema,
