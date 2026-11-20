@@ -577,7 +577,7 @@ try {
   assert(made.status === 201, "secretary-created");
   secrets.push(userPassword, made.payload.data.temporaryCredential.password);
   const userPage = await context.newPage();
-  await userPage.goto(`${conf.origin}/h/${church.code}/login`);
+  await userPage.goto(`${conf.origin}/${church.code}/login`);
   await userPage.getByLabel("Email", { exact: true }).fill(email);
   await userPage
     .getByLabel("Mật khẩu", { exact: true })
@@ -593,13 +593,13 @@ try {
     .getByRole("navigation")
     .getByRole("button", { name: /^Biểu mẫu/ })
     .waitFor();
-  await userPage.goto(`${conf.origin}/h/${church.code}/forms?editionId=${editions.marriage}`);
+  await userPage.goto(`${conf.origin}/${church.code}/forms?editionId=${editions.marriage}`);
   await userPage.getByRole("button", { name: "Word", exact: true }).waitFor();
   await capture("secretary-edition", userPage);
   const downloadEvent = userPage.waitForEvent("download");
   await userPage.getByRole("button", { name: "PDF", exact: true }).click();
   assert(!(await (await downloadEvent).failure()), "church-realm-PDF-download");
-  await userPage.goto(`${conf.origin}/h/${church.code}/forms`);
+  await userPage.goto(`${conf.origin}/${church.code}/forms`);
   await userPage
     .getByRole("button", { name: "Báo cáo thống kê gửi Tổng Liên Hội", exact: true })
     .click();
@@ -647,7 +647,7 @@ try {
   assert(pastor.status === 201, "P62-pastor-created");
   secrets.push(pastorPassword, pastor.payload.data.temporaryCredential.password);
   const pastorPage = await context.newPage();
-  await pastorPage.goto(`${conf.origin}/h/${church.code}/login`);
+  await pastorPage.goto(`${conf.origin}/${church.code}/login`);
   await pastorPage.getByLabel("Email", { exact: true }).fill(pastorEmail);
   await pastorPage
     .getByLabel("Mật khẩu", { exact: true })
@@ -664,7 +664,7 @@ try {
     .getByRole("button", { name: /^Biểu mẫu/ })
     .waitFor();
 
-  await pastorPage.goto(`${conf.origin}/h/${church.code}/overview`);
+  await pastorPage.goto(`${conf.origin}/${church.code}/overview`);
   await pastorPage.getByRole("button", { name: "Báo cáo Tổng Liên Hội", exact: true }).click();
   const pastorW18 = pastorPage.getByRole("dialog", { name: "Báo cáo Tổng Liên Hội" });
   await pastorW18.getByRole("button", { name: "Kích hoạt", exact: true }).click();

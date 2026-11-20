@@ -471,7 +471,7 @@ try {
   assert(made.status === 201, "secretary-created");
   secrets.push(password, made.payload.data.temporaryCredential.password);
   const user = await context.newPage();
-  await user.goto(`${conf.origin}/h/${church.code}/login`);
+  await user.goto(`${conf.origin}/${church.code}/login`);
   await user.getByLabel("Email", { exact: true }).fill(email);
   await user
     .getByLabel("Mật khẩu", { exact: true })

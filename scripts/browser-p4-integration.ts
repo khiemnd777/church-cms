@@ -116,8 +116,8 @@ try {
   for (const realm of ["owner", "church"] as const) {
     const page = await context.newPage();
     page.on("pageerror", (e) => errors.push(e.message));
-    const prefix = realm === "owner" ? `/owner/churches/${flow.c.id}` : `/h/${flow.c.code}`,
-      login = realm === "owner" ? "/owner/login" : `/h/${flow.c.code}/login`,
+    const prefix = realm === "owner" ? `/owner/churches/${flow.c.id}` : `/${flow.c.code}`,
+      login = realm === "owner" ? "/owner/login" : `/${flow.c.code}/login`,
       account = realm === "owner" ? actor : flow.secretaryAccount;
     await page.goto(`${conf.origin}${login}`);
     await page.getByLabel("Email", { exact: true }).fill(account.email);

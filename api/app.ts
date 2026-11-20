@@ -77,6 +77,7 @@ import { RiteReporting } from "./rites/reporting";
 import { Rites } from "./rites/service";
 import type { ScheduleGrant } from "./scheduling/models";
 import { Scheduling } from "./scheduling/service";
+import { churchPage, churchPagePath } from "./tenancy/church-routes";
 import { Tenancy } from "./tenancy/service";
 import { CertificateVisits } from "./visitation/certificates";
 import { Visitation } from "./visitation/service";
@@ -3801,11 +3802,18 @@ export function createApp(
         }
       } else {
         requireCondition(req.method === "GET" || req.method === "HEAD", 405, "METHOD_NOT_ALLOWED");
+        const legacyChurchPage = /^\/h\//i.test(path) ? churchPage(path.slice(2)) : null;
         const root = resolve(options.dist ?? "dist");
         const decoded = decodeURIComponent(path);
         const file = resolve(root, `.${decoded}`);
         requireCondition(file === root || file.startsWith(`${root}/`), 404, "NOT_FOUND");
-        if (path.startsWith("/assets/")) {
+        if (legacyChurchPage) {
+          headers.set(
+            "Location",
+            `${churchPagePath(legacyChurchPage.code, legacyChurchPage.page)}${url.search}`,
+          );
+          response = new Response(null, { status: 308, headers });
+        } else if (path.startsWith("/assets/")) {
           requireCondition(await Bun.file(file).exists(), 404, "NOT_FOUND");
           response = new Response(req.method === "HEAD" ? null : Bun.file(file), {
             headers: {
@@ -3827,9 +3835,7 @@ export function createApp(
               /^\/owner\/churches\/[a-f0-9]{24}(?:\/(?:accounts|manage|config|members|families|bans|roles|overview|attendance|rites|forms|worship|care))?$/i.test(
                 path,
               ) ||
-              /^\/h\/[a-z0-9-]{1,100}(?:\/(?:login|change-password|support|config|members|families|bans|roles|overview|access|attendance|rites|forms|worship|care|giving|expense|portal))?$/i.test(
-                path,
-              ),
+              churchPage(path),
             404,
             "NOT_FOUND",
           );

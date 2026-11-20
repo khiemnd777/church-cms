@@ -1,5 +1,6 @@
 import { type FormEvent, useCallback, useEffect, useRef, useState } from "react";
 import type { OverviewTarget } from "../api/overview/contracts";
+import { churchPage, churchPagePath, isChurchSection } from "../api/tenancy/church-routes";
 import { AccessContextView } from "./access-context";
 import type { Role, Scope } from "./accounts-api";
 import { ApiError, churchAuth, churchRequest, refreshChurchCsrf } from "./api";
@@ -61,10 +62,14 @@ const portalSuffix = (section: string) => {
   if (section === "portal-prayers") return "/portal?view=prayers";
   return null;
 };
-export function ChurchApp() {
-  const code = decodeURIComponent(location.pathname.split("/")[2] ?? "").toUpperCase();
+function currentSection() {
+  const page = churchPage(location.pathname)?.page ?? "";
+  if (page === "portal") return currentPortalSection();
+  return isChurchSection(page) ? page : "access";
+}
+export function ChurchApp({ code }: { code: string }) {
   const [screen, setScreen] = useState<Screen>(
-      location.pathname.endsWith("/support") ? "support" : "loading",
+      churchPage(location.pathname)?.page === "support" ? "support" : "loading",
     ),
     [user, setUser] = useState<User | null>(null),
     [email, setEmail] = useState(""),
@@ -77,73 +82,7 @@ export function ChurchApp() {
     [title, setTitle] = useState("Thông tin truy cập"),
     [context, setContext] = useState(""),
     [reload, setReload] = useState(0);
-  const [section, setSection] = useState(
-    location.pathname.endsWith("/portal")
-      ? currentPortalSection()
-      : location.pathname.endsWith("/expense")
-        ? "expense"
-        : location.pathname.endsWith("/giving")
-          ? "giving"
-          : location.pathname.endsWith("/care")
-            ? "care"
-            : location.pathname.endsWith("/worship")
-              ? "worship"
-              : location.pathname.endsWith("/forms")
-                ? "forms"
-                : location.pathname.endsWith("/rites")
-                  ? "rites"
-                  : location.pathname.endsWith("/attendance")
-                    ? "attendance"
-                    : location.pathname.endsWith("/overview")
-                      ? "overview"
-                      : location.pathname.endsWith("/bans")
-                        ? "bans"
-                        : location.pathname.endsWith("/roles")
-                          ? "roles"
-                          : location.pathname.endsWith("/config")
-                            ? "config"
-                            : location.pathname.endsWith("/members")
-                              ? "members"
-                              : location.pathname.endsWith("/families")
-                                ? "families"
-                                : "access",
-  );
-  useEffect(() => {
-    const back = () =>
-      setSection(
-        location.pathname.endsWith("/portal")
-          ? currentPortalSection()
-          : location.pathname.endsWith("/expense")
-            ? "expense"
-            : location.pathname.endsWith("/giving")
-              ? "giving"
-              : location.pathname.endsWith("/care")
-                ? "care"
-                : location.pathname.endsWith("/worship")
-                  ? "worship"
-                  : location.pathname.endsWith("/forms")
-                    ? "forms"
-                    : location.pathname.endsWith("/rites")
-                      ? "rites"
-                      : location.pathname.endsWith("/attendance")
-                        ? "attendance"
-                        : location.pathname.endsWith("/overview")
-                          ? "overview"
-                          : location.pathname.endsWith("/bans")
-                            ? "bans"
-                            : location.pathname.endsWith("/roles")
-                              ? "roles"
-                              : location.pathname.endsWith("/config")
-                                ? "config"
-                                : location.pathname.endsWith("/members")
-                                  ? "members"
-                                  : location.pathname.endsWith("/families")
-                                    ? "families"
-                                    : "access",
-      );
-    window.addEventListener("popstate", back);
-    return () => window.removeEventListener("popstate", back);
-  }, []);
+  const [section, setSection] = useState(currentSection);
   const [familyToOpen, setFamilyToOpen] = useState<string | null>(null),
     [memberToOpen, setMemberToOpen] = useState<string | null>(null);
   const [pendingIntent, setPendingIntent] = useState<TenantIntent | null>(null);
@@ -246,10 +185,11 @@ export function ChurchApp() {
   function selectSection(next: string, query?: URLSearchParams) {
     if (pendingIntent) return;
     setSection(next);
+    const path = portalSuffix(next) ?? (isChurchSection(next) ? `/${next}` : "");
     history.pushState(
       null,
       "",
-      `/h/${code}${portalSuffix(next) ?? (next === "expense" || next === "giving" || next === "care" || next === "worship" || next === "forms" || next === "rites" || next === "attendance" || next === "overview" || next === "access" || next === "config" || next === "members" || next === "families" || next === "bans" || next === "roles" ? `/${next}` : "")}${query?.size ? `?${query}` : ""}`,
+      `${churchPagePath(code, "")}${path}${query?.size ? `?${query}` : ""}`,
     );
     if (next === "access") setReload((x) => x + 1);
   }
@@ -265,11 +205,15 @@ export function ChurchApp() {
     setConfirmation("");
     setFields({});
     setScreen(next);
-    history.replaceState(
-      null,
-      "",
-      `/h/${code}${next === "home" || next === "reauth" ? (portalSuffix(selectedSection) ?? (selectedSection === "expense" || selectedSection === "giving" || selectedSection === "care" || selectedSection === "worship" || selectedSection === "forms" || selectedSection === "rites" || selectedSection === "attendance" || selectedSection === "overview" || selectedSection === "access" || selectedSection === "config" || selectedSection === "members" || selectedSection === "families" || selectedSection === "bans" || selectedSection === "roles" ? `/${selectedSection}${location.search}` : "")) : next === "change" ? "/change-password" : next === "support" ? "/support" : "/login"}`,
-    );
+    if (next === "home" || next === "reauth") {
+      const path =
+        portalSuffix(selectedSection) ??
+        (isChurchSection(selectedSection) ? `/${selectedSection}${location.search}` : "");
+      history.replaceState(null, "", `${churchPagePath(code, "")}${path}`);
+    } else {
+      const page = next === "change" ? "change-password" : next === "support" ? "support" : "login";
+      history.replaceState(null, "", churchPagePath(code, page));
+    }
   }
   function accept(identity: User) {
     if (identity.churchCode.toUpperCase() !== code) {
@@ -283,13 +227,14 @@ export function ChurchApp() {
     setUser(identity);
     setEmail(identity.email);
     setError("");
-    const entry = /^\/h\/[^/]+(?:\/(?:login|change-password))?$/.test(location.pathname);
+    const page = churchPage(location.pathname)?.page;
+    const entry = !page || page === "login" || page === "change-password";
     const nextSection =
       identity.role === "member"
-        ? location.pathname.endsWith("/portal")
+        ? page === "portal"
           ? currentPortalSection()
           : "portal"
-        : (entry || location.pathname.endsWith("/portal")) &&
+        : (entry || page === "portal") &&
             !pendingIntent &&
             ["pastor", "secretary"].includes(identity.role ?? "")
           ? "overview"
@@ -333,7 +278,10 @@ export function ChurchApp() {
       if (e instanceof ApiError && ["SESSION_EXPIRED", "SESSION_REVOKED"].includes(e.code)) {
         discardPersonalPrayerIntent();
         setUser(null);
-        navigate("login");
+        if (screen === "loading" && churchPage(location.pathname)?.page === "portal") {
+          // Keep the requested portal view while prompting for credentials.
+          setScreen("login");
+        } else navigate("login");
       } else fail(e);
     }
   }

@@ -592,7 +592,7 @@ describe("P53 real financial proposal transactions", () => {
   });
   test("tenant/realm/owner routes and immutable future stages deny", async () => {
     for (const entry of ["expense", "giving"]) {
-      const shell = await app(new Request(`${conf.origin}/h/${c.code}/${entry}`), {
+      const shell = await app(new Request(`${conf.origin}/${c.code}/${entry}`), {
         ip: "p53-shell",
       });
       expect(shell.status).toBe(200);

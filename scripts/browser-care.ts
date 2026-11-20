@@ -509,7 +509,7 @@ try {
   const userPage = await context.newPage();
   screenshotPage = userPage;
   userPage.on("pageerror", (e) => errors.push(e.message));
-  await userPage.goto(`${conf.origin}/h/${church.code}/login`);
+  await userPage.goto(`${conf.origin}/${church.code}/login`);
   await userPage.getByLabel("Email", { exact: true }).fill(secretaryAccount.email);
   await userPage.getByLabel("Mật khẩu", { exact: true }).fill(secretaryAccount.password);
   await userPage.getByRole("button", { name: "Đăng nhập", exact: true }).click();
@@ -527,7 +527,7 @@ try {
     );
   assert(fresh.status === 201 && work, "secretary-manual-known-belief-source");
   await userPage.goto(
-    `${conf.origin}/h/${church.code}/care?careSection=suggestions&careSuggestionId=${work.id}`,
+    `${conf.origin}/${church.code}/care?careSection=suggestions&careSuggestionId=${work.id}`,
   );
   await userPage.getByRole("button", { name: "Chuyển sang thăm viếng", exact: true }).click();
   const ud = userPage.locator("dialog[open]");
@@ -624,12 +624,12 @@ try {
     );
   assert(skipSource.status === 201 && skip, "pastor-source-fixture");
   await context.clearCookies();
-  await userPage.goto(`${conf.origin}/h/${church.code}/login`);
+  await userPage.goto(`${conf.origin}/${church.code}/login`);
   await userPage.getByLabel("Email", { exact: true }).fill(pastorAccount.email);
   await userPage.getByLabel("Mật khẩu", { exact: true }).fill(pastorAccount.password);
   await userPage.getByRole("button", { name: "Đăng nhập", exact: true }).click();
   await userPage.getByRole("button", { name: "Chăm sóc & Cầu thay", exact: true }).waitFor();
-  await userPage.goto(`${conf.origin}/h/${church.code}/care?careSuggestionId=${skip.id}`);
+  await userPage.goto(`${conf.origin}/${church.code}/care?careSuggestionId=${skip.id}`);
   await userPage.getByRole("button", { name: "Bỏ qua có lý do", exact: true }).click();
   await ud.getByLabel("Lý do quyết định", { exact: true }).fill("Bỏ qua đã kiểm tra synthetic");
   await ud.getByRole("button", { name: "Xem trước quyết định", exact: true }).click();
@@ -657,7 +657,7 @@ try {
     (r: { target: { id: string } }) => r.target.id === lossPerson._id.toHexString(),
   );
   assert(loss, "role-loss-pending-alert");
-  await userPage.goto(`${conf.origin}/h/${church.code}/care?careSuggestionId=${loss.id}`);
+  await userPage.goto(`${conf.origin}/${church.code}/care?careSuggestionId=${loss.id}`);
   await userPage.getByRole("button", { name: "Chuyển sang thăm viếng", exact: true }).waitFor();
   await userPage
     .getByLabel("Tìm người / gia đình / mã đề nghị", { exact: true })

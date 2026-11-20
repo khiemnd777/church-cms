@@ -653,7 +653,7 @@ try {
     "owner-O03-creates-validated-scope",
   );
   await dialog.getByRole("button", { name: "Đóng", exact: true }).last().click();
-  await page.goto(`${conf.origin}/h/${church.code}/login`);
+  await page.goto(`${conf.origin}/${church.code}/login`);
   await page.getByLabel("Email", { exact: true }).fill(leadEmail);
   await page.getByLabel("Mật khẩu", { exact: true }).fill(temp);
   await page.getByRole("button", { name: "Đăng nhập", exact: true }).click();
@@ -782,7 +782,7 @@ try {
         },
       });
   });
-  await privatePage.goto(`${conf.origin}/h/${church.code}/bans`);
+  await privatePage.goto(`${conf.origin}/${church.code}/bans`);
   await privatePage.getByRole("button", { name: "Xem Ban Âm nhạc", exact: true }).waitFor();
   const privateSwitch = privatePage.getByRole("region", {
     name: "Cách hiển thị tổ chức",

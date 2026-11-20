@@ -1,0 +1,95 @@
+{
+  "schema_version": 1,
+  "event_id": "CHURCH-URL/canonical-church-url/publication-preparation/1",
+  "event_type": "phase_handoff",
+  "task_id": "CHURCH-URL",
+  "scope_id": "canonical-church-url",
+  "recorded_at": "2026-11-20T08:54:52+07:00",
+  "reported_by": "delivery_owner",
+  "source_kind": "agent_self_report",
+  "phase": "implementation",
+  "handoff_index": 2,
+  "classification": {
+    "delivery": "one_off",
+    "complexity": "Rà Git và chuẩn bị PR cho thay đổi đã nghiệm thu local.",
+    "ui": false
+  },
+  "authority": {
+    "approval": "Khiêm nghiệm thu local, cho phép commit và mở PR.",
+    "scope": "PR chứa URL Hội Thánh, chuyển hướng 308, Glossary và bằng chứng nghiệm thu. Chưa được phép deploy."
+  },
+  "skills": [
+    {
+      "skill_id": "git-workflow",
+      "contribution_summary": "Rà phạm vi diff, nhánh gốc và quyền GitHub để chuẩn bị commit và PR.",
+      "contribution_percent_estimate": 100,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "host_skill",
+        "path": "git-workflow/SKILL.md",
+        "version": null,
+        "sha256": "fae3c6e8c1994066b751a2405c0278e979e0589048d4ced3ae43b324fe9c4f87",
+        "fingerprint_basis": "SHA-256 của tệp skill Personal được đọc trong lượt bàn giao."
+      }
+    }
+  ],
+  "outcome": {
+    "delivery_status": "COMPLETED",
+    "verification_level": "GIT_AND_LOCAL_EVIDENCE_REVIEW",
+    "human_acceptance": "ACCEPTED",
+    "limitations": [
+      "Biên bản chuẩn bị được ghi trước commit và PR. Kết quả phát hành nằm ngoài phạm vi."
+    ]
+  },
+  "measurements": {
+    "elapsed_seconds": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có số đo hoặc nguồn xác thực riêng cho pha."
+    },
+    "tool_calls": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có số đo hoặc nguồn xác thực riêng cho pha."
+    },
+    "input_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có số đo hoặc nguồn xác thực riêng cho pha."
+    },
+    "output_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có số đo hoặc nguồn xác thực riêng cho pha."
+    },
+    "cached_input_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có số đo hoặc nguồn xác thực riêng cho pha."
+    },
+    "reasoning_output_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có số đo hoặc nguồn xác thực riêng cho pha."
+    },
+    "client": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có số đo hoặc nguồn xác thực riêng cho pha."
+    },
+    "model": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có số đo hoặc nguồn xác thực riêng cho pha."
+    },
+    "effort": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có số đo hoặc nguồn xác thực riêng cho pha."
+    }
+  },
+  "evidence_refs": [
+    "docs/engineering/skill-usage/records/CHURCH-URL/human-acceptance-1.json",
+    "docs/project-state.md"
+  ]
+}

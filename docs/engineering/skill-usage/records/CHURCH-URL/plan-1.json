@@ -1,0 +1,109 @@
+{
+  "schema_version": 1,
+  "event_id": "CHURCH-URL/canonical-church-url/planning/1",
+  "event_type": "phase_handoff",
+  "task_id": "CHURCH-URL",
+  "scope_id": "canonical-church-url",
+  "recorded_at": "2026-11-20T08:50:36+07:00",
+  "reported_by": "delivery_owner",
+  "source_kind": "agent_self_report",
+  "phase": "planning",
+  "handoff_index": 1,
+  "classification": {
+    "delivery": "one_off",
+    "complexity": "Đổi URL nhất quán giữa định tuyến máy chủ, trình duyệt và bàn giao tài khoản.",
+    "ui": false
+  },
+  "authority": {
+    "approval": "Khiêm duyệt kế hoạch trong chat và yêu cầu URL cũ chuyển hướng sang URL mới.",
+    "scope": "Triển khai và kiểm chứng local với dữ liệu tổng hợp, cập nhật Glossary."
+  },
+  "skills": [
+    {
+      "skill_id": "planning-and-task-breakdown",
+      "contribution_summary": "Xác định phạm vi một lần bàn giao và tiêu chí nghiệm thu.",
+      "contribution_percent_estimate": 60,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/planning-and-task-breakdown/SKILL.md",
+        "version": null,
+        "sha256": "fb768e0a3d3a77f733eb613c078fb61dde0845a438c65cc095fc6448dc166d4c",
+        "fingerprint_basis": "SHA-256 của tệp skill dùng trong checkout."
+      }
+    },
+    {
+      "skill_id": "api-and-interface-design",
+      "contribution_summary": "Rà nơi tạo và nhận URL, quyền theo Hội Thánh và xung đột tiền tố.",
+      "contribution_percent_estimate": 40,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/api-and-interface-design/SKILL.md",
+        "version": null,
+        "sha256": "2550ac99404f1d52566cdd95fd809e0984eb29f1174132a864fb7beb9f688f79",
+        "fingerprint_basis": "SHA-256 của tệp skill dùng trong checkout."
+      }
+    }
+  ],
+  "outcome": {
+    "delivery_status": "COMPLETED",
+    "verification_level": "SOURCE_REVIEW",
+    "human_acceptance": "ACCEPTED",
+    "limitations": [
+      "Phê duyệt kế hoạch kèm chỉ dẫn giữ tương thích bằng chuyển hướng URL cũ."
+    ]
+  },
+  "measurements": {
+    "elapsed_seconds": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có số đo hoặc nguồn xác thực riêng cho pha."
+    },
+    "tool_calls": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có số đo hoặc nguồn xác thực riêng cho pha."
+    },
+    "input_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có số đo hoặc nguồn xác thực riêng cho pha."
+    },
+    "output_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có số đo hoặc nguồn xác thực riêng cho pha."
+    },
+    "cached_input_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có số đo hoặc nguồn xác thực riêng cho pha."
+    },
+    "reasoning_output_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có số đo hoặc nguồn xác thực riêng cho pha."
+    },
+    "client": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có số đo hoặc nguồn xác thực riêng cho pha."
+    },
+    "model": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có số đo hoặc nguồn xác thực riêng cho pha."
+    },
+    "effort": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có số đo hoặc nguồn xác thực riêng cho pha."
+    }
+  },
+  "evidence_refs": [
+    "api/app.ts",
+    "api/identity/accounts.ts",
+    "web/church-app.tsx"
+  ]
+}

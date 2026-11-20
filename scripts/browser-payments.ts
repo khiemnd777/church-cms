@@ -81,7 +81,7 @@ async function login(
   // Actor switches use isolated browser cookies; logout behavior belongs to the existing identity suite.
   await p.goto("about:blank");
   await context.clearCookies();
-  await p.goto(`${conf.origin}/h/${c.code}/login`);
+  await p.goto(`${conf.origin}/${c.code}/login`);
   await p.getByLabel("Email", { exact: true }).fill(account.email);
   await p.getByLabel("Mật khẩu", { exact: true }).fill(account.password);
   await p.getByRole("button", { name: "Đăng nhập", exact: true }).click();
@@ -394,7 +394,7 @@ try {
   );
   await capture(page, "pastor-readonly");
   await login(page, c, member, false);
-  await page.goto(`${conf.origin}/h/${c.code}/expense`);
+  await page.goto(`${conf.origin}/${c.code}/expense`);
   await expect(page.getByRole("heading", { name: "Cổng tín hữu", exact: true })).toBeVisible();
   assert(
     new URL(page.url()).pathname.endsWith("/portal"),

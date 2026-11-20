@@ -1,6 +1,7 @@
 import { type FormEvent, type ReactNode, useCallback, useEffect, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
 import type { OverviewTarget } from "../api/overview/contracts";
+import { churchPage } from "../api/tenancy/church-routes";
 import { AccessContextView, type ChurchRef } from "./access-context";
 import { AccountManagement } from "./account-management";
 import type { ResumeReset } from "./accounts-api";
@@ -813,4 +814,7 @@ function App() {
   );
 }
 const root = document.getElementById("root");
-if (root) createRoot(root).render(location.pathname.startsWith("/h/") ? <ChurchApp /> : <App />);
+if (root) {
+  const church = churchPage(location.pathname);
+  createRoot(root).render(church ? <ChurchApp code={church.code} /> : <App />);
+}

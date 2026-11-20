@@ -6,6 +6,8 @@ Revision: **P0-FOUNDATION-r2** · 2026-11-10 · Task cha `CHURCH-P0`.
 
 Nguồn sản phẩm: [CHURCH-P0](../tasks/CHURCH-P0.md). Trạng thái sống: [project-state](../project-state.md). Không có schema/code/runtime để chứng minh thiết kế đã hoạt động.
 
+Đường dẫn người dùng Hội Thánh trong quyết định FD05 là thiết kế ban đầu. Đường dẫn hiện hành và tương thích liên kết cũ được ghi trong [Bảng thuật ngữ](../glossary.md).
+
 ## 1. Yêu cầu có thẩm quyền và lựa chọn kỹ thuật
 
 **ĐÃ XÁC NHẬN tại C19:** owner là nhân viên của công ty cung cấp dịch vụ QLHT. Tài khoản người dùng thuộc **đúng một Hội Thánh duy nhất**. Tenant cô lập; chỉ tài khoản owner được across tenant. Không có tài khoản người dùng toàn hệ thống hoặc tài khoản tham gia nhiều Hội Thánh.
