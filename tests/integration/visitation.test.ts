@@ -118,7 +118,7 @@ afterAll(async () => {
 });
 describe("P4.3 real Mongo Redis HTTP", () => {
   test("both W08 deep links serve SPA while unknown routes stay404", async () => {
-    for (const path of ["/owner/churches/0123456789abcdef01234567/care", "/h/SYNTHETIC/care"]) {
+    for (const path of ["/owner/churches/0123456789abcdef01234567/care", "/SYNTHETIC/care"]) {
       const r = await app(new Request(`${conf.origin}${path}`), { ip: crypto.randomUUID() });
       expect(r.status).toBe(200);
       expect(await r.text()).toContain("Synthetic app shell");

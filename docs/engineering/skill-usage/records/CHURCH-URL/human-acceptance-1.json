@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "event_id": "CHURCH-URL/canonical-church-url/human-acceptance/1",
+  "event_type": "evaluation",
+  "task_id": "CHURCH-URL",
+  "scope_id": "canonical-church-url",
+  "recorded_at": "2026-11-20T08:54:42+07:00",
+  "reported_by": "delivery_owner",
+  "source_kind": "human_feedback",
+  "subject_event_id": "CHURCH-URL/canonical-church-url/implementation/1",
+  "assessment_source": "human",
+  "review_index": 1,
+  "decision": "ACCEPTED",
+  "findings": [],
+  "evidence_refs": [
+    "docs/engineering/skill-usage/records/CHURCH-URL/implementation-1.json",
+    "docs/project-state.md"
+  ]
+}

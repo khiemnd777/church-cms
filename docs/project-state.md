@@ -1,5 +1,11 @@
 # Hiện trạng Church CMS
 
+## URL Hội Thánh và Glossary — 2026-11-20
+
+Đã triển khai local URL `/{churchCode}/login`, `/{churchCode}/portal` và các trang Hội Thánh cùng cấu trúc. Đăng nhập Owner dùng `/owner/login`. URL Hội Thánh cũ hợp lệ chuyển hướng HTTP 308 và giữ query string. Tạo tài khoản và đặt lại mật khẩu trả URL mới. [Glossary](glossary.md) ghi đối tượng sử dụng và các điểm vào.
+
+Kiểm chứng local với dữ liệu tổng hợp: 69 test tích hợp đạt, 1 test TTL/backup-restore ngoài phạm vi được bỏ qua theo điều kiện của suite, Firefox 499 kiểm tra đạt và đã dọn database trình duyệt. Typecheck, lint, build và chuẩn UI đạt. Khiêm nghiệm thu bản local và cho phép commit, mở PR với chuyển hướng 308. UAT và production chưa thực hiện. [Bằng chứng tích hợp](../output/church-url/integration.log) · [Bằng chứng Firefox](../output/church-url/browser/browser-results.json) · [Nghiệm thu](engineering/skill-usage/records/CHURCH-URL/human-acceptance-1.json).
+
 ## P7 đã chốt local/synthetic
 
 Khiêm xác nhận chốt P7 với P7.1–P7.3 đã nghiệm thu local/synthetic và P7.4–P7.5 giữ hoãn. Phạm vi PR vào `main` gồm mã P7.1–P7.3 và hồ sơ quyết định. Mã thử nghiệm OCR P7.4 lưu local. Khi rà soát roadmap P7/P8, nhắc lại hai mục hoãn. P8 chưa mở. [Biên bản chốt P7](tasks/CHURCH-P7.md#chốt-p7).

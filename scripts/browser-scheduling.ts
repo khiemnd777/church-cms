@@ -517,16 +517,16 @@ try {
   const secClient = new SyntheticClient("church", conf.origin, transport);
   const sec = await syntheticUser(ownerClient, secClient, church);
   secrets.push(sec.password);
-  await userPage.goto(`${conf.origin}/h/${church.code}/login`);
+  await userPage.goto(`${conf.origin}/${church.code}/login`);
   await userPage.getByLabel("Email", { exact: true }).fill(sec.email);
   await userPage.getByLabel("Mật khẩu", { exact: true }).fill(sec.password);
   await userPage.getByRole("button", { name: "Đăng nhập", exact: true }).click();
   await userPage.getByRole("button", { name: /Thờ phượng & Lịch giảng/ }).click();
-  await userPage.goto(`${conf.origin}/h/${church.code}/worship?from=${sunday}&week=${sunday}`);
+  await userPage.goto(`${conf.origin}/${church.code}/worship?from=${sunday}&week=${sunday}`);
   await userPage.getByRole("button", { name: "Chi tiết Thờ phượng synthetic" }).first().waitFor();
   await capture("secretary-w07", userPage);
   assert(true, "church-realm-W07");
-  const staffReaderUrl = `${conf.origin}/h/${church.code}/worship?from=${sunday}&week=${sunday}&view=large-text&occurrenceId=${first.id}`;
+  const staffReaderUrl = `${conf.origin}/${church.code}/worship?from=${sunday}&week=${sunday}&view=large-text&occurrenceId=${first.id}`;
   await userPage.goto(staffReaderUrl);
   await userPage.getByRole("heading", { name: readerHeading }).waitFor();
   const otherChurch = await syntheticChurch(ownerClient, "Hội Thánh P71 cách ly synthetic");
@@ -539,7 +539,7 @@ try {
   });
   assert(otherOccurrence.status === 201, "reader-other-tenant-fixture-commit");
   await userPage.goto(
-    `${conf.origin}/h/${church.code}/worship?view=large-text&occurrenceId=${otherOccurrence.payload.data.occurrenceId}`,
+    `${conf.origin}/${church.code}/worship?view=large-text&occurrenceId=${otherOccurrence.payload.data.occurrenceId}`,
   );
   await userPage.getByText("Buổi giảng không còn khả dụng.", { exact: true }).waitFor();
   assert(
@@ -744,12 +744,12 @@ try {
   const leadClient = new SyntheticClient("church", conf.origin, transport);
   const lead = await syntheticUser(ownerClient, leadClient, church, "ministry_lead", [unitId]);
   secrets.push(lead.password);
-  await userPage.goto(`${conf.origin}/h/${church.code}/login`);
+  await userPage.goto(`${conf.origin}/${church.code}/login`);
   await userPage.getByLabel("Email", { exact: true }).fill(lead.email);
   await userPage.getByLabel("Mật khẩu", { exact: true }).fill(lead.password);
   await userPage.getByRole("button", { name: "Đăng nhập", exact: true }).click();
   await userPage.getByRole("button", { name: /Thờ phượng & Lịch giảng/ }).waitFor();
-  await userPage.goto(`${conf.origin}/h/${church.code}/worship?from=${sunday}&week=${sunday}`);
+  await userPage.goto(`${conf.origin}/${church.code}/worship?from=${sunday}&week=${sunday}`);
   await userPage.getByRole("button", { name: "Chi tiết Lịch lead synthetic" }).first().waitFor();
   assert(
     await userPage.getByRole("button", { name: "Tạo lịch", exact: true }).isDisabled(),
@@ -783,7 +783,7 @@ try {
     "reader-lost-unit-scope-clears-data",
   );
   await userPage.goto(
-    `${conf.origin}/h/${church.code}/worship?view=large-text&occurrenceId=${first.id}`,
+    `${conf.origin}/${church.code}/worship?view=large-text&occurrenceId=${first.id}`,
   );
   await userPage.getByText("Buổi giảng không còn khả dụng.", { exact: true }).waitFor();
   assert(

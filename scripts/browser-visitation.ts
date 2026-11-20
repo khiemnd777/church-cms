@@ -497,7 +497,7 @@ try {
   secrets.push(sec.password);
   const userPage = await context.newPage();
   userPage.on("pageerror", (e) => errors.push(e.message));
-  await userPage.goto(`${conf.origin}/h/${church.code}/login`);
+  await userPage.goto(`${conf.origin}/${church.code}/login`);
   await userPage.getByLabel("Email", { exact: true }).fill(sec.email);
   await userPage.getByLabel("Mật khẩu", { exact: true }).fill(sec.password);
   await userPage.getByRole("button", { name: "Đăng nhập", exact: true }).click();
@@ -516,7 +516,7 @@ try {
   );
   assert(fresh.status === 201, "source-change-fixture-public-create");
   await userPage.goto(
-    `${conf.origin}/h/${church.code}/care?caseId=${fresh.payload.data.caseId}&assigneeId=${church.people[2]?._id.toHexString()}`,
+    `${conf.origin}/${church.code}/care?caseId=${fresh.payload.data.caseId}&assigneeId=${church.people[2]?._id.toHexString()}`,
   );
   await userPage.getByRole("button", { name: "Đã thăm", exact: true }).waitFor();
   await userPage.getByRole("button", { name: "Bỏ lọc người phụ trách", exact: true }).waitFor();
@@ -556,7 +556,7 @@ try {
     await userPage.getByRole("button", { name: "Đã thăm", exact: true }).isEnabled(),
     "explicit-unassign-restores-entry-workflow",
   );
-  await userPage.goto(`${conf.origin}/h/${church.code}/overview`);
+  await userPage.goto(`${conf.origin}/${church.code}/overview`);
   await userPage.getByRole("button", { name: "Thăm viếng", exact: true }).click();
   await userPage.getByRole("heading", { name: "Danh sách thăm viếng", exact: true }).waitFor();
   assert(new URL(userPage.url()).pathname.endsWith("/care"), "W01-shortcut-opens-real-W08");

@@ -575,7 +575,7 @@ try {
       })
     ).payload.data;
     secrets.push(made.temporaryCredential.password);
-    await userPage.goto(`${conf.origin}/h/${church.code}/login`);
+    await userPage.goto(`${conf.origin}/${church.code}/login`);
     await userPage.getByLabel("Email", { exact: true }).fill(email);
     await userPage.getByLabel("Mật khẩu", { exact: true }).fill(made.temporaryCredential.password);
     await userPage.getByRole("button", { name: "Đăng nhập", exact: true }).click();

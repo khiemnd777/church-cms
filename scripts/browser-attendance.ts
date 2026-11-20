@@ -526,7 +526,7 @@ try {
     });
     assert(made.status === 201, `${role}-created`);
     secrets.push(password, made.payload.data.temporaryCredential.password);
-    await userPage.goto(`${conf.origin}/h/${church.code}/login`);
+    await userPage.goto(`${conf.origin}/${church.code}/login`);
     await userPage.getByLabel("Email", { exact: true }).fill(email);
     await userPage
       .getByLabel("Mật khẩu", { exact: true })
@@ -560,7 +560,7 @@ try {
         "treasurer-backend-denied",
       );
     } else {
-      await userPage.goto(`${conf.origin}/h/${church.code}/attendance?sessionId=${sessionId}`);
+      await userPage.goto(`${conf.origin}/${church.code}/attendance?sessionId=${sessionId}`);
       await userPage.getByRole("button", { name: `${firstName} — Có mặt`, exact: true }).waitFor();
       assert(
         await userPage

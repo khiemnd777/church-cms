@@ -443,12 +443,12 @@ try {
 
   userPage.on("pageerror", (e) => errors.push(e.message));
   const login = async (credentials: { email: string; password: string }) => {
-    await userPage.goto(`${conf.origin}/h/${church.code}/login`);
+    await userPage.goto(`${conf.origin}/${church.code}/login`);
     await userPage.getByLabel("Email", { exact: true }).fill(credentials.email);
     await userPage.getByLabel("Mật khẩu", { exact: true }).fill(credentials.password);
     await userPage.getByRole("button", { name: "Đăng nhập", exact: true }).click();
     await userPage.getByRole("button", { name: "Chăm sóc & Cầu thay", exact: true }).waitFor();
-    await userPage.goto(`${conf.origin}/h/${church.code}/care?careSection=prayers`);
+    await userPage.goto(`${conf.origin}/${church.code}/care?careSection=prayers`);
     await userPage.getByRole("button", { name: "Thêm lời cầu thay", exact: true }).waitFor();
   };
   await login(pastorAccount);
@@ -669,13 +669,13 @@ try {
   const secretaryPage = await context.newPage();
   screenshotPage = secretaryPage;
   secretaryPage.on("pageerror", (e) => errors.push(e.message));
-  await secretaryPage.goto(`${conf.origin}/h/${church.code}/login`);
+  await secretaryPage.goto(`${conf.origin}/${church.code}/login`);
   await secretaryPage.getByLabel("Email", { exact: true }).fill(secretaryAccount.email);
   await secretaryPage.getByLabel("Mật khẩu", { exact: true }).fill(secretaryAccount.password);
   await secretaryPage.getByRole("button", { name: "Đăng nhập", exact: true }).click();
   await secretaryPage.getByRole("button", { name: "Chăm sóc & Cầu thay", exact: true }).waitFor();
   await secretaryPage.goto(
-    `${conf.origin}/h/${church.code}/care?caseId=${visit.payload.data.caseId}&prayerId=${shared.payload.data.prayerId}&careSection=prayers`,
+    `${conf.origin}/${church.code}/care?caseId=${visit.payload.data.caseId}&prayerId=${shared.payload.data.prayerId}&careSection=prayers`,
   );
   await secretaryPage.getByRole("button", { name: "Ghi nhận đã chia sẻ", exact: true }).waitFor();
   assert(
@@ -703,7 +703,7 @@ try {
     )?.state === "cancelled",
     "secretary-can-cancel-shared-with-reason",
   );
-  await secretaryPage.goto(`${conf.origin}/h/${church.code}/care?prayerId=${privateId}`);
+  await secretaryPage.goto(`${conf.origin}/${church.code}/care?prayerId=${privateId}`);
   await secretaryPage
     .locator('#prayers > .card [role="alert"]')
     .filter({ hasText: "Không tìm thấy." })

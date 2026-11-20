@@ -566,7 +566,7 @@ try {
     ).payload.data;
     const pw = `User 🕊 ${crypto.randomUUID()}`;
     secrets.push(pw, account.temporaryCredential.password);
-    await userPage.goto(`${conf.origin}/h/${church.code}/login`);
+    await userPage.goto(`${conf.origin}/${church.code}/login`);
     await userPage.getByLabel("Email", { exact: true }).fill(account.account.email);
     await userPage
       .getByLabel("Mật khẩu", { exact: true })
@@ -611,7 +611,7 @@ try {
         (await userPage.getByRole("button", { name: "Thuộc viên", exact: true }).count()) === 0,
         "treasurer-no-member-menu",
       );
-      await userPage.goto(`${conf.origin}/h/${church.code}/members`);
+      await userPage.goto(`${conf.origin}/${church.code}/members`);
       await userPage
         .getByRole("alert")
         .filter({ hasText: "Bạn không có quyền xem hồ sơ Hội Thánh." })

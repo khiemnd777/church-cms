@@ -529,7 +529,7 @@ try {
     const temp = made.payload.data.temporaryCredential.password,
       password = `User ${crypto.randomUUID()}`;
     secrets.push(temp, password);
-    await user.goto(`${conf.origin}/h/${church.code}/login`);
+    await user.goto(`${conf.origin}/${church.code}/login`);
     await user.getByLabel("Email", { exact: true }).fill(email);
     await user.getByLabel("Mật khẩu", { exact: true }).fill(temp);
     await user.getByRole("button", { name: "Đăng nhập", exact: true }).click();

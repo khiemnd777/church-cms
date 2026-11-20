@@ -10,6 +10,7 @@ import type { RateLimit } from "../infrastructure/rate-limit";
 import type { Operations } from "../operations/service";
 import type { UnitScopeValidator } from "../organization/scope";
 import type { ChurchAccess } from "../tenancy/access";
+import { churchPagePath } from "../tenancy/church-routes";
 import { recordSubjectChange, revokeAccountSessions } from "./account-subjects";
 import { AccountCursors } from "./accounts-cursor";
 import { type Account, accountDto, roles } from "./accounts-model";
@@ -294,7 +295,7 @@ export class Accounts {
               temporaryCredential: {
                 password,
                 expiresAt: expiresAt.toISOString(),
-                loginPath: `/h/${church.code}/login`,
+                loginPath: churchPagePath(church.code, "login"),
               },
               credentialReplay: "first_response",
             },
@@ -578,7 +579,7 @@ export class Accounts {
             temporaryCredential: {
               password,
               expiresAt: expiresAt.toISOString(),
-              loginPath: `/h/${church.code}/login`,
+              loginPath: churchPagePath(church.code, "login"),
             },
             credentialReplay: "first_response",
           },

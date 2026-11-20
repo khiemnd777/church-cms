@@ -1,0 +1,111 @@
+{
+  "schema_version": 1,
+  "event_id": "CHURCH-URL/canonical-church-url/implementation/1",
+  "event_type": "phase_handoff",
+  "task_id": "CHURCH-URL",
+  "scope_id": "canonical-church-url",
+  "recorded_at": "2026-11-20T08:51:08+07:00",
+  "reported_by": "delivery_owner",
+  "source_kind": "agent_self_report",
+  "phase": "implementation",
+  "handoff_index": 1,
+  "classification": {
+    "delivery": "one_off",
+    "complexity": "Đổi URL nhất quán giữa định tuyến máy chủ, trình duyệt và bàn giao tài khoản.",
+    "ui": false
+  },
+  "authority": {
+    "approval": "Khiêm duyệt kế hoạch trong chat và yêu cầu URL cũ chuyển hướng sang URL mới.",
+    "scope": "Triển khai và kiểm chứng local với dữ liệu tổng hợp, cập nhật Glossary."
+  },
+  "skills": [
+    {
+      "skill_id": "api-and-interface-design",
+      "contribution_summary": "Dùng chung quy tắc URL cho máy chủ và trình duyệt, giữ tương thích liên kết cũ và kiểm hợp đồng bàn giao.",
+      "contribution_percent_estimate": 75,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/api-and-interface-design/SKILL.md",
+        "version": null,
+        "sha256": "2550ac99404f1d52566cdd95fd809e0984eb29f1174132a864fb7beb9f688f79",
+        "fingerprint_basis": "SHA-256 của tệp skill dùng trong checkout."
+      }
+    },
+    {
+      "skill_id": "documentation-and-adrs",
+      "contribution_summary": "Cập nhật Glossary tiếng Việt, hướng dẫn bàn giao và trạng thái kiểm chứng.",
+      "contribution_percent_estimate": 25,
+      "estimate_source": "agent_self_report",
+      "source_identity": {
+        "kind": "repository",
+        "path": ".agents/skills/documentation-and-adrs/SKILL.md",
+        "version": null,
+        "sha256": "f3199cfec5d6fdfa6533f180b1e6cbee584cd6175d8eb25c0d186c833120609c",
+        "fingerprint_basis": "SHA-256 của tệp skill dùng trong checkout."
+      }
+    }
+  ],
+  "outcome": {
+    "delivery_status": "COMPLETED",
+    "verification_level": "LOCAL_SYNTHETIC_SCOPED",
+    "human_acceptance": "PENDING_REVIEW",
+    "limitations": [
+      "Đã chạy 3 tệp tích hợp hiện hành và bộ Firefox tài khoản/Cổng tín hữu.",
+      "Test TTL/backup-restore phụ thuộc điều kiện được bỏ qua. Safari, thiết bị thật, UAT và production chưa chạy."
+    ]
+  },
+  "measurements": {
+    "elapsed_seconds": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có số đo hoặc nguồn xác thực riêng cho pha."
+    },
+    "tool_calls": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có số đo hoặc nguồn xác thực riêng cho pha."
+    },
+    "input_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có số đo hoặc nguồn xác thực riêng cho pha."
+    },
+    "output_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có số đo hoặc nguồn xác thực riêng cho pha."
+    },
+    "cached_input_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có số đo hoặc nguồn xác thực riêng cho pha."
+    },
+    "reasoning_output_tokens": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có số đo hoặc nguồn xác thực riêng cho pha."
+    },
+    "client": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có số đo hoặc nguồn xác thực riêng cho pha."
+    },
+    "model": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có số đo hoặc nguồn xác thực riêng cho pha."
+    },
+    "effort": {
+      "value": null,
+      "source_ref": null,
+      "missing_reason": "Không có số đo hoặc nguồn xác thực riêng cho pha."
+    }
+  },
+  "evidence_refs": [
+    "output/church-url/integration.log",
+    "output/church-url/browser/browser-results.json",
+    "output/church-url/browser/browser-cleanup.json",
+    "docs/glossary.md"
+  ]
+}

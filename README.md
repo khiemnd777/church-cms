@@ -5,6 +5,7 @@ Nền tảng Quản lý Hội Thánh: React/TypeScript/Vite/TailwindCSS, Bun/Typ
 P1.1/P1.2 cung cấp luồng owner cục bộ và O01/O02: tạo/tìm/sửa/tạm ngưng/mở lại Hội Thánh, CAS/idempotency/audit và đối soát thao tác. User account/O03 tiếp tục theo gói đã duyệt; xem trạng thái hiện hành, không suy ra production readiness từ scaffold.
 
 - [Khởi động và vận hành cục bộ](docs/engineering/P1.1-local-runbook.md)
+- [Bảng thuật ngữ và đường dẫn đăng nhập](docs/glossary.md)
 - [Kế hoạch P1 và quyền thực hiện](docs/tasks/CHURCH-P1.md)
 - [Hiện trạng](docs/project-state.md)
 - [Chuẩn UI dùng chung từ HTML](docs/ui-system.md)

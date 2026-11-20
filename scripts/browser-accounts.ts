@@ -236,6 +236,7 @@ try {
   const temp = await page.getByLabel("Mật khẩu tạm", { exact: true }).inputValue();
   secrets.push(temp);
   assert(temp.length === 20, "first-response-temporary-secret-visible");
+  await page.getByText(`${conf.origin}/${church.code}/login`, { exact: true }).waitFor();
   await capture("credential-masked");
   await page.getByRole("button", { name: "Đóng", exact: true }).last().click();
   assert(
@@ -265,7 +266,7 @@ try {
   const user = await context.newPage();
   user.setDefaultTimeout(15000);
   user.on("pageerror", (e) => errors.push(e.message));
-  await user.goto(`${conf.origin}/h/${church.code}/login`);
+  await user.goto(`${conf.origin}/${church.code}/login`);
   await user.getByRole("heading", { name: "Đăng nhập", exact: true }).waitFor();
   await capture("user-login", user);
   await user.getByLabel("Email", { exact: true }).fill(email);
@@ -447,9 +448,21 @@ try {
   await user.reload();
   await user.getByRole("heading", { name: "Đăng nhập", exact: true }).waitFor();
   assert(true, "P63-link-revokes-open-session");
+  await user.goto(`${conf.origin}/h/${church.code}/portal?view=rites`);
+  await user.getByRole("heading", { name: "Đăng nhập", exact: true }).waitFor();
+  assert(
+    user.url() === `${conf.origin}/${church.code}/portal?view=rites`,
+    "legacy-portal-redirect-preserves-view",
+  );
   await user.getByLabel("Email", { exact: true }).fill(email);
   await user.getByLabel("Mật khẩu", { exact: true }).fill(password);
   await user.getByRole("button", { name: "Đăng nhập", exact: true }).click();
+  await user.getByRole("heading", { name: "Lễ nghi của tôi", exact: true }).waitFor();
+  assert(
+    user.url() === `${conf.origin}/${church.code}/portal?view=rites`,
+    "portal-keeps-requested-view-after-sign-in",
+  );
+  await user.getByRole("navigation").getByRole("button", { name: "Hồ sơ", exact: true }).click();
   await user.getByRole("heading", { name: "Hồ sơ của tôi", exact: true }).waitFor();
   await user.getByText(subject.code, { exact: true }).waitFor();
   assert(
@@ -939,7 +952,7 @@ try {
     "F24-provider-context-config-available-dashboard-unavailable",
   );
   // No user tenant picker: opening a different church URL clears content and requires explicit logout.
-  await user.goto(`${conf.origin}/h/${church.code}/login`);
+  await user.goto(`${conf.origin}/${church.code}/login`);
   await user.getByLabel("Email", { exact: true }).fill(email);
   await user.getByLabel("Mật khẩu", { exact: true }).fill(reset);
   await user.getByRole("button", { name: "Đăng nhập", exact: true }).click();
@@ -972,7 +985,7 @@ try {
   await secondOwner.close();
   const mismatch = await context.newPage();
   mismatch.setDefaultTimeout(15000);
-  await mismatch.goto(`${conf.origin}/h/${anotherChurch.payload.data.church.code}/login`);
+  await mismatch.goto(`${conf.origin}/${anotherChurch.payload.data.church.code}/login`);
   await mismatch
     .getByRole("heading", { name: "Phiên đăng nhập đã thay đổi", exact: true })
     .waitFor();

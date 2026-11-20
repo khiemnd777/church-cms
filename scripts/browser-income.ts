@@ -73,7 +73,7 @@ const client = (realm: "owner" | "church" = "church") => {
 };
 let app: ReturnType<typeof createApp>;
 async function login(p: Page, c: { code: string }, account: { email: string; password: string }) {
-  await p.goto(`${conf.origin}/h/${c.code}/login`);
+  await p.goto(`${conf.origin}/${c.code}/login`);
   await p.evaluate(async () => {
     const csrf = (await (await fetch("/api/v1/auth/csrf?realm=church")).json()).data.csrfToken;
     await fetch("/api/v1/auth/logout", {
@@ -82,7 +82,7 @@ async function login(p: Page, c: { code: string }, account: { email: string; pas
       body: "{}",
     });
   });
-  await p.goto(`${conf.origin}/h/${c.code}/login`);
+  await p.goto(`${conf.origin}/${c.code}/login`);
   await p.getByLabel("Email", { exact: true }).fill(account.email);
   await p.getByLabel("Mật khẩu", { exact: true }).fill(account.password);
   await p.getByRole("button", { name: "Đăng nhập", exact: true }).click();
@@ -367,7 +367,7 @@ try {
     "pastor-readonly-money",
   );
   await capture(page, "pastor-readonly");
-  await page.goto(`${conf.origin}/h/${c.code}/members?memberId=${person._id}`);
+  await page.goto(`${conf.origin}/${c.code}/members?memberId=${person._id}`);
   await page.getByRole("heading", { name: "Dâng hiến", exact: true }).waitFor();
   await expect(page.getByText(giving.code, { exact: false }).first()).toBeVisible();
   assert(true, "pastor-W14-giving-separate-finance-read");

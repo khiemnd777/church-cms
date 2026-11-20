@@ -73,7 +73,7 @@ const client = (realm: "owner" | "church" = "church") => {
 };
 let app: ReturnType<typeof createApp>;
 async function login(p: Page, c: { code: string }, account: { email: string; password: string }) {
-  await p.goto(`${conf.origin}/h/${c.code}/login`);
+  await p.goto(`${conf.origin}/${c.code}/login`);
   await p.evaluate(async () => {
     const csrf = (await (await fetch("/api/v1/auth/csrf?realm=church")).json()).data.csrfToken;
     await fetch("/api/v1/auth/logout", {
@@ -82,7 +82,7 @@ async function login(p: Page, c: { code: string }, account: { email: string; pas
       body: "{}",
     });
   });
-  await p.goto(`${conf.origin}/h/${c.code}/login`);
+  await p.goto(`${conf.origin}/${c.code}/login`);
   await p.getByLabel("Email", { exact: true }).fill(account.email);
   await p.getByLabel("Mật khẩu", { exact: true }).fill(account.password);
   await p.getByRole("button", { name: "Đăng nhập", exact: true }).click();
@@ -358,7 +358,7 @@ try {
     "owner-backend-finance-denied",
   );
   const sp = await context.newPage();
-  await sp.goto(`${conf.origin}/h/${c.code}/login`);
+  await sp.goto(`${conf.origin}/${c.code}/login`);
   await sp.getByRole("button", { name: "Đăng xuất", exact: true }).click();
   await sp.getByLabel("Email", { exact: true }).fill(secretary.email);
   await sp.getByLabel("Mật khẩu", { exact: true }).fill(secretary.password);

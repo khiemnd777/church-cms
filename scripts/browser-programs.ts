@@ -583,12 +583,12 @@ try {
     lead = await syntheticUser(ownerClient, leadClient, church, "ministry_lead", [church.unit]);
   secrets.push(lead.password);
   const userPage = await context.newPage();
-  await userPage.goto(`${conf.origin}/h/${church.code}/login`);
+  await userPage.goto(`${conf.origin}/${church.code}/login`);
   await userPage.getByLabel("Email", { exact: true }).fill(lead.email);
   await userPage.getByLabel("Mật khẩu", { exact: true }).fill(lead.password);
   await userPage.getByRole("button", { name: "Đăng nhập", exact: true }).click();
   await userPage.getByRole("button", { name: /Thờ phượng & Lịch giảng/ }).waitFor();
-  const leadTarget = `${conf.origin}/h/${church.code}/worship?programId=${programId}&programRevision=1`;
+  const leadTarget = `${conf.origin}/${church.code}/worship?programId=${programId}&programRevision=1`;
   await userPage.goto(leadTarget);
   await userPage.getByRole("button", { name: "In bản chốt r1", exact: true }).waitFor();
   assert(

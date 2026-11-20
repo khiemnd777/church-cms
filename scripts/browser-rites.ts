@@ -523,7 +523,7 @@ try {
   assert(made.status === 201, "secretary-created");
   secrets.push(userPassword, made.payload.data.temporaryCredential.password);
   const userPage = await context.newPage();
-  await userPage.goto(`${conf.origin}/h/${church.code}/login`);
+  await userPage.goto(`${conf.origin}/${church.code}/login`);
   await userPage.getByLabel("Email", { exact: true }).fill(email);
   await userPage
     .getByLabel("Mật khẩu", { exact: true })
@@ -539,7 +539,7 @@ try {
     .getByRole("navigation")
     .getByRole("button", { name: /^Sổ lễ nghi/ })
     .waitFor();
-  await userPage.goto(`${conf.origin}/h/${church.code}/rites?tab=com&riteId=${communionId}`);
+  await userPage.goto(`${conf.origin}/${church.code}/rites?tab=com&riteId=${communionId}`);
   await userPage.getByRole("heading", { name: "Chi tiết Tiệc Thánh", exact: true }).waitFor();
   await userPage.getByRole("button", { name: "Sửa / đính chính", exact: true }).click();
   await userPage.getByLabel("Ghi chú", { exact: true }).fill("Thư ký đính chính synthetic");

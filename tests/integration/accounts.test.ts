@@ -123,6 +123,7 @@ const input = (email = `acct-${crypto.randomUUID()}@example.test`) => ({
 async function created(church = churchA, body = input()) {
   const r = await owner.create(church.id, body);
   expect(r.res.status).toBe(201);
+  expect(r.json.data.temporaryCredential.loginPath).toBe(`/${church.code}/login`);
   return r.json.data as {
     account: { id: string; churchId: string; version: number; email: string };
     temporaryCredential: { password: string; expiresAt: string; loginPath: string };
@@ -621,6 +622,7 @@ describe("P1.3 Accounts and church realm — real Mongo/Redis", () => {
         key,
       );
     expect(reset.res.status).toBe(201);
+    expect(reset.json.data.temporaryCredential.loginPath).toBe(`/${churchA.code}/login`);
     expect((await c.call("auth/me")).res.status).toBe(401);
     const replay = await owner.mutate(
       churchA.id,
@@ -1142,13 +1144,28 @@ describe("P1.3 Accounts and church realm — real Mongo/Redis", () => {
     for (const path of ["me/churches", "owner/accounts"])
       expect((await owner.call(path)).res.status).toBe(404);
     for (const path of [
-      `/h/${churchA.code}/login`,
-      `/h/${churchA.code}/change-password`,
-      `/h/${churchA.code}`,
+      `/${churchA.code}/login`,
+      `/${churchA.code}/change-password`,
+      `/${churchA.code}/portal?view=giving`,
+      `/${churchA.code}`,
+      "/owner/login",
       `/owner/churches/${churchA.id}/accounts`,
     ]) {
       const r = await app(new Request(`${conf.origin}${path}`), { ip: "static" });
       expect(r.status).toBe(200);
+    }
+    for (const method of ["GET", "HEAD"]) {
+      for (const suffix of ["", "/login", "/change-password", "/portal?view=giving", "/care"]) {
+        const r = await app(new Request(`${conf.origin}/h/${churchA.code}${suffix}`, { method }), {
+          ip: "static",
+        });
+        expect(r.status).toBe(308);
+        expect(r.headers.get("location")).toBe(`/${churchA.code}${suffix}`);
+      }
+    }
+    for (const path of ["/OWNeR/portal", "/API/login", "/Assets/portal", "/h/OWNER/portal"]) {
+      const r = await app(new Request(`${conf.origin}${path}`), { ip: "static" });
+      expect(r.status).toBe(404);
     }
   });
 });
